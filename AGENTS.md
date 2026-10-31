@@ -1,3 +1,13 @@
+## Lightweight fork maintenance
+
+Before changing this fork or merging a community release, read the [lightweight differences and merge guide](ui/litellm-dashboard/LITE_UI_CUSTOMIZATIONS.md)
+
+For every update, check the guide against the actual differences from its recorded community baseline and update affected sections in the same change before committing and pushing. Keep employee and administrator visibility, menus, pages, fields, changed files, Docker and demo customizations, and validation results and limits accurate. Add new customizations and remove entries for restored or obsolete differences. Distinguish frontend masking from backend changes, and record only checks actually run
+
+When merging or upgrading community code, record the previous and new baseline commit IDs and versions, reconcile the full customization inventory, and refresh the merge checklist and verification evidence. Keeping this guide current is part of completing the update
+
+---
+
 Do not write comments unless they are any of:
 - absolutely necessary to explain some very complex business logic (in which case, keep it concise and clear)
 - used as an input for tools to read and act on. For example:

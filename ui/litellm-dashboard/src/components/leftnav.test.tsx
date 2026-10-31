@@ -242,7 +242,6 @@ describe("Sidebar (leftnav)", () => {
     for (const label of [
       "Home",
       "Virtual Keys",
-      "Playground",
       "Models + Endpoints",
       "Usage",
       "Logs",
@@ -263,18 +262,19 @@ describe("Sidebar (leftnav)", () => {
       "AI Hub",
       "Cost Tracking",
       "UI Theme",
+      "Playground",
     ]) {
       expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
     }
   });
 
-  it("keeps the six employee pages even when team features are enabled", () => {
+  it("keeps the five employee pages even when team features are enabled", () => {
     mockUseAuthorized.mockReturnValue(teamMemberAuthorization);
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
-    for (const label of ["Home", "Virtual Keys", "Playground", "Models + Endpoints", "Usage", "API Reference"]) {
+    for (const label of ["Home", "Virtual Keys", "Models + Endpoints", "Usage", "API Reference"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
-    for (const label of ["Logs", "Internal Users", "Projects", "Teams", "MCP Servers"]) {
+    for (const label of ["Logs", "Internal Users", "Projects", "Teams", "MCP Servers", "Playground"]) {
       expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
     }
     expect(screen.queryByRole("button", { name: "Settings" })).not.toBeInTheDocument();
@@ -307,7 +307,7 @@ describe("Sidebar (leftnav)", () => {
   it("keeps retained menu links usable in the collapsed rail", () => {
     renderWithProviders(<Sidebar {...defaultProps} collapsed />);
     expect(screen.getByRole("link", { name: "Virtual Keys" })).toHaveAttribute("href", "/ui/api-keys");
-    expect(screen.getByRole("link", { name: "Playground" })).toHaveAttribute("href", "/ui/playground");
+    expect(screen.queryByRole("link", { name: "Playground" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Usage" })).toHaveAttribute("href", "/ui/usage");
   });
 });

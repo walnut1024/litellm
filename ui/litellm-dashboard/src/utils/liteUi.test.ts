@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { liteColumnAllowed, liteFieldHidden, litePageAllowed, liteRouteAllowed, liteTabAllowed } from "./liteUi";
 
 describe("lightweight UI visibility", () => {
-  it.each(["home", "api-keys", "models", "new_usage", "api_ref"])("keeps the core employee page %s", (page) =>
+  it.each(["home", "api-keys", "models", "new_usage"])("keeps the core employee page %s", (page) =>
     expect(litePageAllowed(page, "Internal User")).toBe(true),
   );
 
@@ -14,16 +14,25 @@ describe("lightweight UI visibility", () => {
     },
   );
 
-  it.each(["playground", "agents", "mcp-servers", "guardrails", "teams", "organizations", "budgets", "chat", "moyai"])(
-    "blocks direct access to %s for both roles",
-    (route) => {
-      expect(liteRouteAllowed(route, "Internal User")).toBe(false);
-      expect(liteRouteAllowed(route, "Admin")).toBe(false);
-    },
-  );
+  it.each([
+    "api-reference",
+    "playground",
+    "agents",
+    "mcp-servers",
+    "guardrails",
+    "teams",
+    "organizations",
+    "budgets",
+    "chat",
+    "moyai",
+  ])("blocks direct access to %s for both roles", (route) => {
+    expect(liteRouteAllowed(route, "Internal User")).toBe(false);
+    expect(liteRouteAllowed(route, "Admin")).toBe(false);
+  });
 
-  it.each(["Internal User", "Admin"])("hides Playground navigation for %s", (role) => {
+  it.each(["Internal User", "Admin"])("hides Playground and API Reference navigation for %s", (role) => {
     expect(litePageAllowed("llm-playground", role)).toBe(false);
+    expect(litePageAllowed("api_ref", role)).toBe(false);
   });
 
   it.each(["login", "onboarding", "change-password", "mcp"])("preserves identity flow %s", (route) => {

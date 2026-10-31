@@ -77,9 +77,10 @@ describe("visibleMenuGroups", () => {
     expect(flattenNavItems(visible).some(({ route }) => route === "organizations")).toBe(false);
   });
 
-  it.each(["Internal User", "Admin"])("omits Playground from search results for %s", (userRole) => {
+  it.each(["Internal User", "Admin"])("omits masked developer pages from search results for %s", (userRole) => {
     const items = flattenNavItems(visibleMenuGroups(menuGroups, { ...context, userRole }));
     expect(matchNavItems(items, "Playground")).toEqual([]);
+    expect(matchNavItems(items, "API Reference")).toEqual([]);
   });
 });
 

@@ -49,7 +49,7 @@ describe("Page Utils - LeftNav Sync", () => {
       getAvailablePages()
         .map((page) => page.page)
         .sort(),
-    ).toEqual(["home", "api-keys", "models", "new_usage", "api_ref"].sort());
+    ).toEqual(["home", "api-keys", "models", "new_usage"].sort());
   });
 
   it("should not include parent container pages (tools, experimental, settings)", () => {

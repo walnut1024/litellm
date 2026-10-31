@@ -239,15 +239,7 @@ describe("Sidebar (leftnav)", () => {
 
   it("keeps the administrator pages and the original Settings children", () => {
     renderWithProviders(<Sidebar {...defaultProps} />);
-    for (const label of [
-      "Home",
-      "Virtual Keys",
-      "Models + Endpoints",
-      "Usage",
-      "Logs",
-      "Internal Users",
-      "API Reference",
-    ]) {
+    for (const label of ["Home", "Virtual Keys", "Models + Endpoints", "Usage", "Logs", "Internal Users"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     fireEvent.click(screen.getByRole("button", { name: "Settings" }));
@@ -263,18 +255,19 @@ describe("Sidebar (leftnav)", () => {
       "Cost Tracking",
       "UI Theme",
       "Playground",
+      "API Reference",
     ]) {
       expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
     }
   });
 
-  it("keeps the five employee pages even when team features are enabled", () => {
+  it("keeps the four employee pages even when team features are enabled", () => {
     mockUseAuthorized.mockReturnValue(teamMemberAuthorization);
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
-    for (const label of ["Home", "Virtual Keys", "Models + Endpoints", "Usage", "API Reference"]) {
+    for (const label of ["Home", "Virtual Keys", "Models + Endpoints", "Usage"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
-    for (const label of ["Logs", "Internal Users", "Projects", "Teams", "MCP Servers", "Playground"]) {
+    for (const label of ["Logs", "Internal Users", "Projects", "Teams", "MCP Servers", "Playground", "API Reference"]) {
       expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
     }
     expect(screen.queryByRole("button", { name: "Settings" })).not.toBeInTheDocument();

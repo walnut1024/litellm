@@ -1,6 +1,6 @@
 import { isAdminRole } from "./roles";
 
-const employeePages = ["home", "api-keys", "models", "new_usage", "api_ref"];
+const employeePages = ["home", "api-keys", "models", "new_usage"];
 const adminPages = ["logs", "users", "settings", "router-settings", "logging-and-alerts", "admin-panel"];
 
 const routePages: Readonly<Record<string, string>> = {
@@ -9,7 +9,6 @@ const routePages: Readonly<Record<string, string>> = {
   "api-keys": "api-keys",
   "models-and-endpoints": "models",
   usage: "new_usage",
-  "api-reference": "api_ref",
   logs: "logs",
   users: "users",
   "router-settings": "router-settings",

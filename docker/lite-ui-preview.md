@@ -39,7 +39,7 @@ For UI-only updates, rebuild the dashboard and run the same Compose command. The
 
 Stop this stack with the same project name and environment file. Do not use volume deletion unless you intend to discard the preview database
 
-The dashboard keeps the existing page names, layout, form defaults, validation, and backend APIs. The employee view exposes Home, Virtual Keys, Models + Endpoints, Usage, and API Reference. Administrators additionally retain Logs, Internal Users, Router Settings, Logging & Alerts, and Admin Settings. Playground is hidden for both roles, including navigation, search, and direct page URLs
+The dashboard keeps the existing page names, layout, form defaults, validation, and backend APIs. The employee view exposes Home, Virtual Keys, Models + Endpoints, and Usage. Administrators additionally retain Logs, Internal Users, Router Settings, Logging & Alerts, and Admin Settings. Playground and the deprecated API Reference page are hidden for both roles, including navigation, search, and direct page URLs
 
 Browser verification covered both roles signing in, employee key creation, administrator visibility of that key, and blocked page URLs. Mock chat and hidden-tab fallback were verified before Playground was fully hidden. The static dashboard build, scoped frontend lint gates, and focused tests passed
 

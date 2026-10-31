@@ -420,17 +420,19 @@ export default function UISettings() {
               />
             </LiteUiMask>
             {enableProjectsUIProperty && (
-              <SettingRow
-                checked={Boolean(values.enable_projects_ui)}
-                disabled={isUpdating}
-                onCheckedChange={handleToggleEnableProjectsUI}
-                ariaLabel={enableProjectsUIProperty.description ?? "Enable Projects UI"}
-                label="[BETA] Enable Projects (page will refresh)"
-                description={
-                  enableProjectsUIProperty.description ??
-                  "If enabled, shows the Projects feature in the UI sidebar and the project field in key management."
-                }
-              />
+              <LiteUiMask>
+                <SettingRow
+                  checked={Boolean(values.enable_projects_ui)}
+                  disabled={isUpdating}
+                  onCheckedChange={handleToggleEnableProjectsUI}
+                  ariaLabel={enableProjectsUIProperty.description ?? "Enable Projects UI"}
+                  label="[BETA] Enable Projects (page will refresh)"
+                  description={
+                    enableProjectsUIProperty.description ??
+                    "If enabled, shows the Projects feature in the UI sidebar and the project field in key management."
+                  }
+                />
+              </LiteUiMask>
             )}
             <LiteUiMask>
               <SettingRow

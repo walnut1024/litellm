@@ -14,7 +14,7 @@ describe("lightweight UI visibility", () => {
     },
   );
 
-  it.each(["api-reference", "playground", "agents", "mcp-servers", "guardrails", "chat", "moyai"])(
+  it.each(["projects", "api-reference", "playground", "agents", "mcp-servers", "guardrails", "chat", "moyai"])(
     "blocks direct access to %s for both roles",
     (route) => {
       expect(liteRouteAllowed(route, "Internal User")).toBe(false);
@@ -22,7 +22,7 @@ describe("lightweight UI visibility", () => {
     },
   );
 
-  it.each(["teams", "projects", "users", "organizations", "access-groups", "budgets"])(
+  it.each(["teams", "users", "organizations", "access-groups", "budgets"])(
     "leaves %s available to the original role and feature checks",
     (page) => {
       expect(litePageAllowed(page, "Admin")).toBe(true);
@@ -34,6 +34,7 @@ describe("lightweight UI visibility", () => {
   it.each(["Internal User", "Admin"])("hides Playground and API Reference navigation for %s", (role) => {
     expect(litePageAllowed("llm-playground", role)).toBe(false);
     expect(litePageAllowed("api_ref", role)).toBe(false);
+    expect(litePageAllowed("projects", role)).toBe(false);
   });
 
   it.each(["login", "onboarding", "change-password", "mcp"])("preserves identity flow %s", (route) => {
@@ -64,8 +65,13 @@ describe("lightweight UI visibility", () => {
     expect(liteColumnAllowed("models-and-endpoints", "litellm_credential_name", true)).toBe(true);
   });
 
-  it.each(["organization_id", "team_id", "project_id", "access_group_ids", "model_access_group"])(
+  it.each(["organization_id", "team_id", "access_group_ids", "model_access_group"])(
     "restores the access-control field %s",
     (name) => expect(liteFieldHidden("api-keys", name)).toBe(false),
   );
+
+  it("masks project fields and columns", () => {
+    expect(liteFieldHidden("api-keys", "project_id")).toBe(true);
+    expect(liteColumnAllowed("api-keys", "project_id", true)).toBe(false);
+  });
 });

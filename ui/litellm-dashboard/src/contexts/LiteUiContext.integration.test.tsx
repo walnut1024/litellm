@@ -14,7 +14,7 @@ import { DataTable, DataTableToolbar } from "@/components/shared/DataTable";
 
 function SavedFields({ onSave }: { onSave: (values: MountedFormValues) => void }) {
   const form = useForm<MountedFormValues>({
-    defaultValues: { key_alias: "editor", tags: "existing-tag", team_id: "" },
+    defaultValues: { key_alias: "editor", tags: "existing-tag", team_id: "", project_id: "existing-project" },
   });
   const registry = useMountRegistry();
   return (
@@ -27,6 +27,9 @@ function SavedFields({ onSave }: { onSave: (values: MountedFormValues) => void }
           {({ value, ...props }) => <input {...props} value={String(value)} />}
         </MountedFormField>
         <MountedFormField name="team_id" label="Team">
+          {({ value, ...props }) => <input {...props} value={String(value)} />}
+        </MountedFormField>
+        <MountedFormField name="project_id" label="Project">
           {({ value, ...props }) => <input {...props} value={String(value)} />}
         </MountedFormField>
         <button type="submit">Save</button>
@@ -44,12 +47,18 @@ describe("lightweight UI rendering", () => {
       </LiteUiContext.Provider>,
     );
     expect(screen.getByLabelText("Tags")).not.toBeVisible();
+    expect(screen.getByLabelText("Project")).not.toBeVisible();
     expect(screen.getByRole("textbox", { name: "Team" })).toBeVisible();
     fireEvent.change(screen.getByRole("textbox", { name: "Key Name" }), { target: { value: "renamed" } });
     fireEvent.change(screen.getByRole("textbox", { name: "Team" }), { target: { value: "assigned-team" } });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() =>
-      expect(onSave).toHaveBeenCalledWith({ key_alias: "renamed", tags: "existing-tag", team_id: "assigned-team" }),
+      expect(onSave).toHaveBeenCalledWith({
+        key_alias: "renamed",
+        tags: "existing-tag",
+        team_id: "assigned-team",
+        project_id: "existing-project",
+      }),
     );
   });
 

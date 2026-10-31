@@ -813,19 +813,19 @@ function KeyEditSession({
             )}
           </FormField>
 
-          {enableProjectsUI && hasProject && (
-            <KeyProjectField
-              projectId={keyData.project_id}
-              canDetach={canDetachProject}
-              pending={detachProject}
-              disabled={isKeySaving}
-              onToggle={() =>
-                form.setValue("project_id", detachProject ? keyData.project_id : null, { shouldDirty: true })
-              }
-            />
-          )}
-
           <LiteUiMask>
+            {enableProjectsUI && hasProject && (
+              <KeyProjectField
+                projectId={keyData.project_id}
+                canDetach={canDetachProject}
+                pending={detachProject}
+                disabled={isKeySaving}
+                onToggle={() =>
+                  form.setValue("project_id", detachProject ? keyData.project_id : null, { shouldDirty: true })
+                }
+              />
+            )}
+
             <Field>
               <FieldLabel>Router Settings</FieldLabel>
               <RouterSettingsAccordion

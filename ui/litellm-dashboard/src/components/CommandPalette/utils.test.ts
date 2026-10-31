@@ -57,12 +57,12 @@ describe("visibleMenuGroups", () => {
     expect(flattenNavItems(visible).map(({ route }) => route)).toEqual(["api-keys"]);
   });
 
-  it("applies the original Projects UI setting", () => {
+  it("keeps Projects masked even if its original UI setting is enabled", () => {
     const projectAdminContext = { ...context, userRole: "Admin", isTeamAdmin: true };
     const visibleWithFlag = visibleMenuGroups(menuGroups, { ...projectAdminContext, enableProjectsUI: true });
     const visibleWithoutFlag = visibleMenuGroups(menuGroups, { ...projectAdminContext, enableProjectsUI: false });
 
-    expect(flattenNavItems(visibleWithFlag).some(({ route }) => route === "projects")).toBe(true);
+    expect(flattenNavItems(visibleWithFlag).some(({ route }) => route === "projects")).toBe(false);
     expect(flattenNavItems(visibleWithoutFlag).some(({ route }) => route === "projects")).toBe(false);
   });
 

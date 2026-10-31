@@ -1,7 +1,7 @@
 import { isAdminRole } from "./roles";
 
 const employeePages = ["home", "api-keys", "models", "new_usage"];
-const accessControlPages = ["teams", "projects", "users", "organizations", "access-groups", "budgets"];
+const accessControlPages = ["teams", "users", "organizations", "access-groups", "budgets"];
 const adminPages = ["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel"];
 
 const routePages: Readonly<Record<string, string>> = {
@@ -13,7 +13,6 @@ const routePages: Readonly<Record<string, string>> = {
   logs: "logs",
   users: "users",
   teams: "teams",
-  projects: "projects",
   organizations: "organizations",
   "access-groups": "access-groups",
   budgets: "budgets",
@@ -50,6 +49,7 @@ export const liteTabAllowed = (route: string, tab: string, admin: boolean): bool
 };
 
 const hiddenFields = [
+  "project_id",
   "metadata",
   "tags",
   "guardrails",
@@ -98,7 +98,7 @@ export const liteFieldHidden = (route: string, name: string): boolean =>
 
 export const liteColumnAllowed = (route: string, column: string, admin: boolean): boolean => {
   if (["api-keys", "models-and-endpoints", "logs"].includes(route)) {
-    if (["request_tags", "tags", "end_user"].includes(column)) return false;
+    if (["project_id", "request_tags", "tags", "end_user"].includes(column)) return false;
   }
   if (!admin && route === "api-keys" && ["user_id", "user", "user_email"].includes(column)) return false;
   if (!admin && route === "models-and-endpoints") {

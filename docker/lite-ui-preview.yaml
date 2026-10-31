@@ -4,6 +4,96 @@ model_list:
       model: openai/preview-text
       api_key: preview-only
       mock_response: "Local UI preview response"
+  - model_name: demo-openai-chat
+    litellm_params:
+      model: openai/gpt-6.1-sol
+      api_key: preview-only
+      mock_response: "Local mock response for general conversation. No provider request was sent."
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: chat
+      description: "Local mock for general conversation"
+  - model_name: demo-openai-code
+    litellm_params:
+      model: openai/gpt-6.1-terra
+      api_key: preview-only
+      mock_response: "Local mock response for coding assistance. No provider request was sent."
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: chat
+      description: "Local mock for coding assistance"
+  - model_name: demo-claude-writing
+    litellm_params:
+      model: anthropic/claude-opus-5-5
+      api_key: preview-only
+      mock_response: "Local mock response for document writing. No provider request was sent."
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: chat
+      description: "Local mock for document writing"
+  - model_name: demo-claude-fast
+    litellm_params:
+      model: anthropic/claude-haiku-5-5
+      api_key: preview-only
+      mock_response: "Local mock response for fast text tasks. No provider request was sent."
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: chat
+      description: "Local mock for fast text tasks"
+  - model_name: demo-gemini-long-context
+    litellm_params:
+      model: gemini/gemini-3.8-flash
+      api_key: preview-only
+      mock_response: "Local mock response for long document analysis. No provider request was sent."
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: chat
+      description: "Local mock for long document analysis"
+  - model_name: demo-deepseek-reasoning
+    litellm_params:
+      model: deepseek/deepseek-v4-pro
+      api_key: preview-only
+      mock_response: "Local mock response for reasoning tasks. No provider request was sent."
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: chat
+      description: "Local mock for reasoning tasks"
+  - model_name: demo-qwen-chat
+    litellm_params:
+      model: qwen_ai_platform/qwen3.8-max
+      api_key: preview-only
+      mock_response: "Local mock response for Chinese text tasks. No provider request was sent."
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: chat
+      description: "Local mock for Chinese text tasks"
+  - model_name: demo-embedding-small
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: preview-only
+      mock_response: [0.12, -0.04, 0.33, 0.08]
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: embedding
+      description: "Local mock embedding with a fixed four-dimensional vector"
+  - model_name: demo-embedding-large
+    litellm_params:
+      model: openai/text-embedding-3-large
+      api_key: preview-only
+      mock_response: [0.21, 0.07, -0.16, 0.42]
+      input_cost_per_token: 0
+      output_cost_per_token: 0
+    model_info:
+      mode: embedding
+      description: "Local mock embedding with a fixed four-dimensional vector"
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
   store_model_in_db: true

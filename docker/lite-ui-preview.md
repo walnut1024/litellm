@@ -33,7 +33,9 @@ docker compose -p litellm-lite-preview --env-file "$LITELLM_PREVIEW_ENV" -f dock
 
 Open [the dashboard](http://localhost:4001/ui/) and use the `admin` account with the generated `LITELLM_PREVIEW_PASSWORD`. Invite employees through Internal Users and grant them the `internal_user` role with access to `preview-text`
 
-The `preview-text` model returns a local mock response. It validates the UI flow without sending requests to a provider. Its usage is preview data, with no real supplier balance or production billing represented
+The stack includes `preview-text` and nine `demo-*` models for general conversation, coding, writing, fast text tasks, long documents, reasoning, Chinese text, and two embedding examples. Provider names and icons demonstrate OpenAI, Anthropic, Gemini, DeepSeek, and Qwen. Every model uses a local mock response. The new demo models have zero configured token cost. Both embedding models return fixed four-dimensional vectors, which are preview data rather than usable semantic embeddings
+
+Grant the preview employee access to the configured model names through Internal Users. Keep existing user budgets and roles in place. These models do not send requests to providers, and their usage does not represent real supplier balances or production billing
 
 For UI-only updates, rebuild the dashboard and run the same Compose command. The final image replaces only the exported dashboard in the source-built runtime, so it does not need to recompile Rust for every UI edit
 

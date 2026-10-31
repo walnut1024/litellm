@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { BarChart } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
@@ -57,7 +59,9 @@ const KeyModelUsageView: React.FC<KeyModelUsageViewProps> = ({ topModels }) => {
   return (
     <Card className="mt-4">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Model Usage</CardTitle>
+        <CardTitle className="text-base font-semibold">
+          <L>Model Usage</L>
+        </CardTitle>
         <CardAction>
           <div className="flex space-x-2">
             <button

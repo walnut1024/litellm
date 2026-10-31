@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { ColumnDef, FilterFn } from "@tanstack/react-table";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
@@ -35,7 +37,11 @@ function RateLimitCell({ value }: { value: number | null | undefined }) {
 
 function BudgetDurationCell({ value }: { value: string | null | undefined }) {
   if (!value) {
-    return <span className="text-muted-foreground">Not set</span>;
+    return (
+      <span className="text-muted-foreground">
+        <L>Not set</L>
+      </span>
+    );
   }
   return <span className="whitespace-nowrap">{getBudgetDurationLabel(value)}</span>;
 }
@@ -59,7 +65,7 @@ function BudgetRowActions({ budget, onEditClick, onDeleteClick }: BudgetRowActio
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem data-testid="budget-action-edit" onClick={() => onEditClick(budget)}>
           <Pencil />
-          Edit budget
+          <L>Edit budget</L>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -68,7 +74,7 @@ function BudgetRowActions({ budget, onEditClick, onDeleteClick }: BudgetRowActio
           onClick={() => onDeleteClick(budget)}
         >
           <Trash2 />
-          Delete budget
+          <L>Delete budget</L>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -158,7 +164,11 @@ export const getBudgetTableColumns = ({
         {
           id: "actions",
           meta: { className: "text-right", headerClassName: "text-right" },
-          header: () => <span className="sr-only">Actions</span>,
+          header: () => (
+            <span className="sr-only">
+              <L>Actions</L>
+            </span>
+          ),
           size: 64,
           enableSorting: false,
           enableHiding: false,

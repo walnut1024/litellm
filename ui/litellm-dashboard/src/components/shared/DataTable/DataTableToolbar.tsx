@@ -1,5 +1,9 @@
 "use client";
 
+import { LocalizedText } from "@/contexts/LocaleContext";
+
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import type { Table } from "@tanstack/react-table";
 import { RefreshCw, Search, SlidersHorizontal, X } from "lucide-react";
 import type * as React from "react";
@@ -71,7 +75,9 @@ export function DataTableToolbar<TData>({
         )}
         {filters.map((filter) => (
           <Badge key={filter.id} variant="outline" className="gap-1 py-1" data-testid={`filter-chip-${filter.id}`}>
-            <span className="text-muted-foreground">{labelFor(filter.id)}:</span>
+            <span className="text-muted-foreground">
+              <LocalizedText>{labelFor(filter.id)}</LocalizedText>:
+            </span>
             {valueFor(filter.id, filter.value)}
             <button
               type="button"
@@ -91,7 +97,7 @@ export function DataTableToolbar<TData>({
             onClick={() => table.setColumnFilters([])}
             data-testid="datatable-clear-filters"
           >
-            Clear all
+            <L>Clear all</L>
           </Button>
         )}
       </div>
@@ -114,7 +120,7 @@ export function DataTableToolbar<TData>({
         {onOpenFilters !== undefined && (
           <Button variant="outline" size="sm" onClick={onOpenFilters} data-testid="datatable-filters-trigger">
             <SlidersHorizontal />
-            Filters
+            <L>Filters</L>
             {filters.length > 0 && (
               <Badge className="ml-1 h-5 min-w-5 justify-center rounded-full px-1" data-testid="datatable-filter-count">
                 {filters.length}

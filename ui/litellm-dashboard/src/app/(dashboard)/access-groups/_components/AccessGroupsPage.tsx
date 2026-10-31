@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { Page, PageContent } from "@/components/shared/Page";
 import { AccessGroupResponse, useAccessGroups } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import { useDeleteAccessGroup } from "@/app/(dashboard)/hooks/accessGroups/useDeleteAccessGroup";
@@ -65,14 +67,16 @@ export function AccessGroupsPage() {
       <PageHeader>
         <PageHeaderTitle>
           <Boxes />
-          Access Groups
+          <L>Access Groups</L>
         </PageHeaderTitle>
-        <PageHeaderDescription>Manage resource permissions for your organization</PageHeaderDescription>
+        <PageHeaderDescription>
+          <L>Manage resource permissions for your organization</L>
+        </PageHeaderDescription>
         {canModify && (
           <PageHeaderControls>
             <Button onClick={() => setIsCreateModalVisible(true)}>
               <Plus className="size-4" />
-              Create Access Group
+              <L>Create Access Group</L>
             </Button>
           </PageHeaderControls>
         )}

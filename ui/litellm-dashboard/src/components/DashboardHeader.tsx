@@ -1,17 +1,16 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 
-import { useTerminology } from "@/contexts/TerminologyContext";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { ToolbarSeparator } from "@/components/shared/ToolbarSeparator";
-import { getBreadcrumb } from "@/components/leftnav";
+import Link from "next/link";
+import { uiHref } from "@/utils/uiHref";
+import { MomaNavigation } from "@/components/MomaNavigation";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import SidebarAccountMenu from "@/components/SidebarAccountMenu/SidebarAccountMenu";
+import { useLogout } from "@/app/(dashboard)/hooks/useLogout";
 import { BlogDropdown } from "@/components/Navbar/BlogDropdown/BlogDropdown";
 import { DocsLink } from "@/components/Navbar/DocsLink/DocsLink";
 import { CommunityEngagementButtons } from "@/components/Navbar/CommunityEngagementButtons/CommunityEngagementButtons";
@@ -24,7 +23,6 @@ import { useWorker } from "@/hooks/useWorker";
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
 import { clearTokenCookies } from "@/utils/cookieUtils";
 import { clearStoredReturnUrl, getLoginUrl } from "@/utils/returnUrlUtils";
-import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { Ellipsis } from "lucide-react";
@@ -32,8 +30,6 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
 import { CommandPaletteTrigger } from "@/components/CommandPalette/CommandPaletteTrigger";
 
-// Top bar for the dashboard shell. Sits only over the content column (the brand
-// lives in the sidebar header); mirrors the design's breadcrumb-left / tools-right layout.
 export function DashboardHeader({
   accessToken,
   navigationTrigger,
@@ -43,8 +39,7 @@ export function DashboardHeader({
   navigationTrigger?: ReactNode;
   deploymentHealth?: ReactNode;
 }) {
-  const term = useTerminology();
-  const { title } = getBreadcrumb(usePathname());
+  const logout = useLogout(accessToken);
   const isDesktop = useMediaQuery("(min-width: 768px)", { initializeWithValue: false });
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   if (isDesktop && mobileToolsOpen) setMobileToolsOpen(false);
@@ -61,25 +56,18 @@ export function DashboardHeader({
   };
 
   return (
-    <header className="flex h-14 flex-none items-center justify-between gap-4 border-b border-border bg-background px-4 max-md:gap-2 max-md:px-2">
+    <header className="moma-header flex flex-none items-center border-b border-border bg-background">
       {navigationTrigger}
-      <Breadcrumb className="min-w-0 max-md:flex-1">
-        <BreadcrumbList className="flex-nowrap">
-          <BreadcrumbItem className="flex-none max-md:hidden">
-            <LiteUiMask>
-              <ViewSwitcher />
-            </LiteUiMask>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="max-md:hidden" />
-          <BreadcrumbItem className="min-w-0">
-            <BreadcrumbPage className="truncate">{term(title)}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Link href={uiHref("home")} className="moma-brand">
+        MoMA 轻量版
+      </Link>
+      <MomaNavigation />
 
-      <CommandPaletteTrigger />
-
-      <div className="flex shrink-0 items-center gap-1">
+      <div className="ml-auto flex shrink-0 items-center gap-1">
+        <LanguageSwitcher />
+        <div className="max-md:hidden">
+          <CommandPaletteTrigger compact />
+        </div>
         <LiteUiMask>
           <LiteAdmin />
         </LiteUiMask>
@@ -117,8 +105,12 @@ export function DashboardHeader({
               <Ellipsis />
             </PopoverTrigger>
             <PopoverContent align="end" className="max-w-[calc(100vw-2rem)]">
-              <PopoverTitle>Gateway tools</PopoverTitle>
-              <ViewSwitcher />
+              <PopoverTitle>
+                <L>Gateway tools</L>
+              </PopoverTitle>
+              <LiteUiMask>
+                <ViewSwitcher />
+              </LiteUiMask>
               {showWorkerSwitch && <WorkerDropdown onWorkerSwitch={handleWorkerSwitch} />}
               <div className="flex flex-wrap items-center gap-2">
                 <ThemeToggle />
@@ -136,6 +128,9 @@ export function DashboardHeader({
               </div>
             </PopoverContent>
           </Popover>
+        </div>
+        <div className="moma-header-account">
+          <SidebarAccountMenu onLogout={logout} />
         </div>
       </div>
     </header>

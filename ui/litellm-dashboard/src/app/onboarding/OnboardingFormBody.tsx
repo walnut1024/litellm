@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React from "react";
 import { CircleAlert, Info } from "lucide-react";
 import { z } from "zod";
@@ -38,12 +40,16 @@ export function OnboardingFormBody({ variant, userEmail, isPending, claimError, 
     <div className="mx-auto w-full max-w-md mt-10">
       <Card>
         <CardContent>
-          <h5 className="text-center mb-5 text-base font-semibold text-foreground">🚅 LiteLLM</h5>
-          <h3 className="text-2xl font-semibold text-foreground">{actionLabel}</h3>
+          <h5 className="text-center mb-5 text-base font-semibold text-foreground">MoMA 轻量版</h5>
+          <h3 className="text-2xl font-semibold text-foreground">
+            <L>{actionLabel}</L>
+          </h3>
           <p className="text-sm text-foreground">
-            {isResetPassword
-              ? "Reset your password to access Admin UI."
-              : "Claim your user account to login to Admin UI."}
+            <L>
+              {isResetPassword
+                ? "Reset your password to access Admin UI."
+                : "Claim your user account to login to Admin UI."}
+            </L>
           </p>
 
           {variant === "signup" && (
@@ -69,7 +75,9 @@ export function OnboardingFormBody({ variant, userEmail, isPending, claimError, 
           <form className="mt-10 mb-5" onSubmit={form.handleSubmit(handleSubmit)}>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor={emailFieldId}>Email Address</FieldLabel>
+                <FieldLabel htmlFor={emailFieldId}>
+                  <L>Email Address</L>
+                </FieldLabel>
                 <Input id={emailFieldId} type="email" value={userEmail} readOnly disabled />
               </Field>
 

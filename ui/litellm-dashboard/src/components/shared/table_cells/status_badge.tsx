@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 
 import { useEntityLinkClick } from "@/components/shared/EntityLink";
@@ -28,14 +30,15 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ tone, label, tooltip, dataTestId, className, href }: StatusBadgeProps) {
+  const t = useTranslation();
   const badgeClassName = cn("whitespace-nowrap font-normal", TONE_CLASS[tone], className);
   const badge = href ? (
     <LinkedStatusBadge href={href} dataTestId={dataTestId} className={badgeClassName}>
-      {label}
+      {t(label)}
     </LinkedStatusBadge>
   ) : (
     <Badge variant="outline" data-testid={dataTestId} className={badgeClassName}>
-      {label}
+      {t(label)}
     </Badge>
   );
 

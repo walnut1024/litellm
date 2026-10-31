@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, UserPlus } from "lucide-react";
 
@@ -35,7 +37,7 @@ function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; on
       <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem data-testid="available-team-action-join" onClick={() => onJoinTeam(team.team_id)}>
           <UserPlus />
-          Join team
+          <L>Join team</L>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -84,7 +86,10 @@ export const getAvailableTeamsTableColumns = ({
     size: 120,
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="text-sm text-muted-foreground">{row.original.members_with_roles.length} members</span>
+      <span className="text-sm text-muted-foreground">
+        {row.original.members_with_roles.length}
+        <L> members</L>
+      </span>
     ),
   },
   {
@@ -98,7 +103,11 @@ export const getAvailableTeamsTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => (
+      <span className="sr-only">
+        <L>Actions</L>
+      </span>
+    ),
     size: 64,
     enableSorting: false,
     enableHiding: false,

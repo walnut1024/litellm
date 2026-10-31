@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useId, useState } from "react";
 import { userBulkUpdateUserCall, teamBulkMemberAddCall, Member } from "@/components/networking";
 import { UserEditView } from "./user_edit_view";
@@ -236,13 +238,13 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
                 aria-label="Update ALL users in the system"
               />
               <label htmlFor={updateAllUsersId} className="cursor-pointer text-sm font-medium text-foreground">
-                Update ALL users in the system
+                <L>Update ALL users in the system</L>
               </label>
             </div>
             {updateAllUsers && (
               <div className="mt-2">
                 <span className="text-xs text-warning">
-                  ⚠️ This will apply changes to ALL users in the system, not just the selected ones.
+                  <L>⚠️ This will apply changes to ALL users in the system, not just the selected ones.</L>
                 </span>
               </div>
             )}
@@ -251,15 +253,26 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
 
         {!updateAllUsers && (
           <div className="mb-4">
-            <h5 className="mb-2 text-sm font-semibold text-foreground">Selected Users ({selectedUsers.length}):</h5>
+            <h5 className="mb-2 text-sm font-semibold text-foreground">
+              <L>Selected Users (</L>
+              {selectedUsers.length}):
+            </h5>
             <div className="max-h-[200px] overflow-y-auto rounded-md border border-border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[30%]">User ID</TableHead>
-                    <TableHead className="w-[25%]">Email</TableHead>
-                    <TableHead className="w-[25%]">Current Role</TableHead>
-                    <TableHead className={cn("w-[20%]", NUMERIC_CELL_CLASS)}>Budget</TableHead>
+                    <TableHead className="w-[30%]">
+                      <L>User ID</L>
+                    </TableHead>
+                    <TableHead className="w-[25%]">
+                      <L>Email</L>
+                    </TableHead>
+                    <TableHead className="w-[25%]">
+                      <L>Current Role</L>
+                    </TableHead>
+                    <TableHead className={cn("w-[20%]", NUMERIC_CELL_CLASS)}>
+                      <L>Budget</L>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -287,15 +300,23 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
 
         <div className="mb-4">
           <p className="text-sm text-foreground">
-            <strong>Instructions:</strong> Fill in the fields below with the values you want to apply to all selected
-            users. You can bulk edit: role, budget, models, and metadata. You can also add users to teams.
+            <strong>
+              <L>Instructions:</L>
+            </strong>
+            <L>
+              {" "}
+              Fill in the fields below with the values you want to apply to all selected users. You can bulk edit: role,
+              budget, models, and metadata. You can also add users to teams.
+            </L>
           </p>
         </div>
 
         {/* Team Management Section */}
         <Card size="sm" className="mb-4 bg-muted/50">
           <CardHeader>
-            <CardTitle>Team Management</CardTitle>
+            <CardTitle>
+              <L>Team Management</L>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-2">
@@ -307,7 +328,7 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
                   aria-label="Add selected users to teams"
                 />
                 <label htmlFor={addToTeamsId} className="cursor-pointer text-sm text-foreground">
-                  Add selected users to teams
+                  <L>Add selected users to teams</L>
                 </label>
               </div>
 
@@ -315,7 +336,7 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
                 <>
                   <div>
                     <label htmlFor={selectedTeamsId} className="block text-sm font-medium text-foreground">
-                      Select Teams:
+                      <L>Select Teams:</L>
                     </label>
                     <MultiSelect
                       id={selectedTeamsId}
@@ -334,7 +355,7 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
 
                   <div>
                     <label htmlFor={teamBudgetId} className="block text-sm font-medium text-foreground">
-                      Team Budget (Optional):
+                      <L>Team Budget (Optional):</L>
                     </label>
                     <NumericalInput
                       id={teamBudgetId}
@@ -348,13 +369,15 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
                       step={0.01}
                     />
                     <span className="text-xs text-muted-foreground">
-                      Leave empty for unlimited budget within team limits
+                      <L>Leave empty for unlimited budget within team limits</L>
                     </span>
                   </div>
 
                   <span className="text-xs text-muted-foreground">
-                    Users will be added with &quot;user&quot; role by default. All users will be added to each selected
-                    team.
+                    <L>
+                      Users will be added with &quot;user&quot; role by default. All users will be added to each
+                      selected team.
+                    </L>
                   </span>
                 </>
               )}
@@ -379,7 +402,9 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
         {loading && (
           <div className="mt-2.5 text-center">
             <span className="text-sm text-foreground">
-              Updating {updateAllUsers ? "all users" : selectedUsers.length} user(s)...
+              <L>Updating </L>
+              {updateAllUsers ? "all users" : selectedUsers.length}
+              <L> user(s)...</L>
             </span>
           </div>
         )}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import { Menu } from "@base-ui/react/menu";
 import type { Table } from "@tanstack/react-table";
 import { Check, Columns3 } from "lucide-react";
@@ -20,6 +22,7 @@ export function DataTableViewOptions<TData>({
   iconOnly = false,
   className,
 }: DataTableViewOptionsProps<TData>) {
+  const t = useTranslation();
   const hideableColumns = table.getAllLeafColumns().filter((column) => column.getCanHide());
 
   if (hideableColumns.length === 0) {
@@ -34,7 +37,7 @@ export function DataTableViewOptions<TData>({
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label={label}
+              aria-label={t(label)}
               title={label}
               className={cn(
                 "text-muted-foreground/60 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
@@ -47,7 +50,7 @@ export function DataTableViewOptions<TData>({
           ) : (
             <Button variant="outline" size="sm" className={className} data-testid="view-options-trigger">
               <Columns3 />
-              {label}
+              {t(label)}
             </Button>
           )
         }
@@ -67,8 +70,10 @@ export function DataTableViewOptions<TData>({
                 <Menu.CheckboxItemIndicator className="absolute left-2 flex size-4 items-center justify-center">
                   <Check className="size-3.5" />
                 </Menu.CheckboxItemIndicator>
-                {column.columnDef.meta?.title ??
-                  (typeof column.columnDef.header === "string" ? column.columnDef.header : column.id)}
+                {t(
+                  column.columnDef.meta?.title ??
+                    (typeof column.columnDef.header === "string" ? column.columnDef.header : column.id),
+                )}
               </Menu.CheckboxItem>
             ))}
           </Menu.Popup>

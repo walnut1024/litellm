@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 import { AlertDialog as AlertDialogPrimitive } from "@base-ui/react/alert-dialog";
 
@@ -93,7 +95,7 @@ function AlertDialogMedia({ className, ...props }: React.ComponentProps<"div">) 
   );
 }
 
-function AlertDialogTitle({ className, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
+function AlertDialogTitle({ className, children, ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Title>) {
   return (
     <AlertDialogPrimitive.Title
       data-slot="alert-dialog-title"
@@ -102,12 +104,15 @@ function AlertDialogTitle({ className, ...props }: React.ComponentProps<typeof A
         className,
       )}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </AlertDialogPrimitive.Title>
   );
 }
 
 function AlertDialogDescription({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Description>) {
   return (
@@ -118,7 +123,9 @@ function AlertDialogDescription({
         className,
       )}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </AlertDialogPrimitive.Description>
   );
 }
 

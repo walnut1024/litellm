@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import { InheritedBudgetHint, type InheritedBudgetGate } from "@/components/shared/InheritedBudgetHint";
 import { Meter, MeterIndicator, MeterTrack } from "@/components/shared/Meter";
 import { formatNumberWithCommas, getSpendString } from "@/utils/dataUtils";
@@ -50,6 +52,7 @@ export function SpendBudgetCell({
   spendDecimals = 4,
   budgetDecimals = 0,
 }: SpendBudgetCellProps) {
+  const t = useTranslation();
   const spendValue = typeof spend === "number" && !Number.isNaN(spend) ? spend : 0;
   const ownBudget = maxBudget ?? null;
   const budget = ownBudget ?? teamMemberGate?.maxBudget ?? null;
@@ -70,7 +73,7 @@ export function SpendBudgetCell({
     <div className="flex min-w-[130px] flex-col gap-1">
       <div className="whitespace-nowrap text-xs">
         <span className="font-medium tabular-nums text-foreground">{spendText}</span>{" "}
-        <span className="text-muted-foreground">{budgetLabel}</span>
+        <span className="text-muted-foreground">{budget === null ? t("· Unlimited") : budgetLabel}</span>
         {ownBudget === null && <InheritedBudgetHint gates={inheritedGates} />}
       </div>
       {hasBudget && (

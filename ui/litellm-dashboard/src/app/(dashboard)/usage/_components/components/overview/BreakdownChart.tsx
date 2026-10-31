@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useMemo } from "react";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
@@ -142,7 +144,11 @@ export function Leaderboard({
   const value = (row: LeaderRow) => rankValue(row, metric);
   const rows = ranking.slice(0, limit);
   if (rows.length === 0) {
-    return <p className="py-8 text-center text-xs text-muted-foreground">No usage in this range</p>;
+    return (
+      <p className="py-8 text-center text-xs text-muted-foreground">
+        <L>No usage in this range</L>
+      </p>
+    );
   }
   const half = columns === 2 ? Math.ceil(rows.length / 2) : rows.length;
   const groups = columns === 2 ? [rows.slice(0, half), rows.slice(half)] : [rows];
@@ -168,7 +174,10 @@ export function Leaderboard({
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-medium text-foreground">{row.key}</span>
                   {providerForModel(row.key) && (
-                    <span className="block truncate text-xs text-muted-foreground">by {providerForModel(row.key)}</span>
+                    <span className="block truncate text-xs text-muted-foreground">
+                      <L>by </L>
+                      {providerForModel(row.key)}
+                    </span>
                   )}
                 </span>
               </span>

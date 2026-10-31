@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
+import "./moma-theme.css";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
@@ -12,12 +13,9 @@ import HotkeysProvider from "@/contexts/HotkeysProvider";
 import { TerminologyProvider } from "@/contexts/TerminologyContext";
 import { Toaster } from "@/components/ui/sonner";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "LiteLLM Dashboard",
-  description: "LiteLLM Proxy Admin UI",
-  icons: { icon: "/get_favicon" },
+  title: "MoMA 轻量版",
+  description: "MoMA 企业内部模型服务控制台",
 };
 
 export default function RootLayout({
@@ -28,22 +26,24 @@ export default function RootLayout({
   return (
     // next-themes stamps the theme class on <html> before paint, which the exported markup
     // cannot predict; suppressHydrationWarning confines that mismatch to this element.
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <NuqsAdapter>
-            <ReactQueryProvider>
-              <TerminologyProvider>
-                <HotkeysProvider>
-                  <AuthProvider>
-                    <LiteUiBoundary>{children}</LiteUiBoundary>
-                  </AuthProvider>
-                </HotkeysProvider>
-              </TerminologyProvider>
-              <Toaster />
-            </ReactQueryProvider>
-          </NuqsAdapter>
-        </ThemeProvider>
+    <html lang="zh-CN" suppressHydrationWarning>
+      <body>
+        <LocaleProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+            <NuqsAdapter>
+              <ReactQueryProvider>
+                <TerminologyProvider>
+                  <HotkeysProvider>
+                    <AuthProvider>
+                      <LiteUiBoundary>{children}</LiteUiBoundary>
+                    </AuthProvider>
+                  </HotkeysProvider>
+                </TerminologyProvider>
+                <Toaster />
+              </ReactQueryProvider>
+            </NuqsAdapter>
+          </ThemeProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

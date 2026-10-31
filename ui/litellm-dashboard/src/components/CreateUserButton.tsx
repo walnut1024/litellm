@@ -1,3 +1,5 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import { MultiSelect } from "@/components/shared/MultiSelect";
@@ -126,10 +128,12 @@ const buildSsoInvitationLink = (userId: string, createdBy: string): InvitationLi
 
 const labelWithHint = (label: string, hint: string): React.ReactNode => (
   <>
-    {label}
+    <L>{label}</L>
     <Tooltip>
       <TooltipTrigger render={<CircleHelp className="size-3.5 shrink-0 cursor-help text-muted-foreground" />} />
-      <TooltipContent>{hint}</TooltipContent>
+      <TooltipContent>
+        <L>{hint}</L>
+      </TooltipContent>
     </Tooltip>
   </>
 );
@@ -137,11 +141,13 @@ const labelWithHint = (label: string, hint: string): React.ReactNode => (
 const EmailInvitationsNotice: React.FC = () => (
   <Alert variant="info" className="mb-4">
     <Info />
-    <AlertTitle>Email invitations</AlertTitle>
+    <AlertTitle>
+      <L>Email invitations</L>
+    </AlertTitle>
     <AlertDescription>
-      New users receive an email invite only when an email integration (SMTP, Resend, or SendGrid) is configured.{" "}
+      <L>New users receive an email invite only when an email integration (SMTP, Resend, or SendGrid) is configured.</L>{" "}
       <a href="https://docs.litellm.ai/docs/proxy/email" target="_blank" rel="noreferrer">
-        Learn how to set up email notifications
+        <L>Learn how to set up email notifications</L>
       </a>
     </AlertDescription>
   </Alert>
@@ -154,6 +160,7 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
   onUserCreated,
   isEmbedded = false,
 }) => {
+  const t = useTranslation();
   const queryClient = useQueryClient();
   const [uiSettings, setUISettings] = useState<UISettings | null>(null);
   const defaultValues = isEmbedded ? EMBEDDED_DEFAULTS : STANDALONE_DEFAULTS;
@@ -240,8 +247,8 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
 
   const roleOptions = Object.entries(possibleUIRoles ?? {}).map(([role, { ui_label, description }]) => ({
     value: role,
-    label: ui_label,
-    description,
+    label: t(ui_label),
+    description: description ? t(description) : description,
   }));
 
   const userEmailField = (
@@ -315,7 +322,9 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
             {sendInviteEmailField}
           </FieldGroup>
           <div className="mt-4 text-right">
-            <Button type="submit">Create User</Button>
+            <Button type="submit">
+              <L>Create User</L>
+            </Button>
           </div>
         </form>
       </TooltipProvider>
@@ -326,15 +335,19 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
   return (
     <>
       <Button type="button" onClick={() => setIsModalVisible(true)}>
-        + Invite User
+        <L>+ Invite User</L>
       </Button>
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Invite User</DialogTitle>
+            <DialogTitle>
+              <L>Invite User</L>
+            </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-3">
-            <p className="mb-1 text-sm text-foreground">Create a User who can own keys</p>
+            <p className="mb-1 text-sm text-foreground">
+              <L>Create a User who can own keys</L>
+            </p>
             <EmailInvitationsNotice />
           </div>
           <TooltipProvider>
@@ -394,7 +407,7 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
                       className={`size-4 transition-transform ${isPersonalKeyOpen ? "rotate-90" : ""}`}
                       aria-hidden
                     />
-                    Personal Key Creation
+                    <L>Personal Key Creation</L>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pt-4">
                     <FormField
@@ -423,7 +436,7 @@ export const CreateUserButton: React.FC<CreateuserProps> = ({
               <div className="mt-4 text-right">
                 <Button type="submit">
                   <UserPlus />
-                  Invite User
+                  <L>Invite User</L>
                 </Button>
               </div>
             </form>

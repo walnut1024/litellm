@@ -10,7 +10,7 @@
 
 | 项目               | 当前记录                                        |
 | ------------------ | ----------------------------------------------- |
-| 记录日期           | 2026-10-31                                      |
+| 记录日期           | 2026-11-01                                      |
 | 工作分支           | `litellm_lite_ui_masking`                       |
 | 裁剪前的源码提交   | `9546f9a69ff470dfcc5a21eccab89d2fd86a634f`      |
 | 基线提交标题       | `test(router): audit #47498 (#48799)`           |
@@ -22,7 +22,7 @@
 
 ## 修改边界
 
-只屏蔽前端入口、页面、页签、控件和部分展示字段，保留原有页面名称、布局、交互和表单提交逻辑。没有做界面重设计、中文化或后端功能删除
+最初只屏蔽前端入口、页面、页签、控件和部分展示字段。2026-10-31 根据选定的方案 2 增加 MoMA 顶部导航主题与中英文国际化，默认中文。保留表单提交、页面权限、API 调用和后端业务实现
 
 模型转发、供应商适配、数据库结构、API 路由、预算计算、鉴权和许可证校验均保持社区实现。前端隐藏不等于 API 禁用或权限隔离，隐藏的数据也可能仍在接口响应及已挂载组件中。必须继续依靠后端权限保护敏感数据
 
@@ -100,7 +100,7 @@ Playground 已整页屏蔽，早期添加到 `Composer`、`Inspector`、`Playgro
 | 共享筛选抽屉            | 隐藏 Organization 筛选                                                          |
 | Key、模型、日志筛选抽屉 | 另隐藏 Project、End User、Tags、Cache、Credential、Span Type、Request Type 筛选 |
 
-列过滤发生在创建表格实例之前，Columns 菜单不能重新勾出被屏蔽的列。筛选抽屉当前按标签识别，社区改标签或引入国际化时必须复查
+列过滤发生在创建表格实例之前，显示列菜单不能重新勾出被屏蔽的列。筛选抽屉当前按原始英文标签识别，翻译仅发生在显示层。社区改标签或调整国际化接入点时必须复查
 
 ## 实现位置与数据保留
 
@@ -133,6 +133,35 @@ Playground 已整页屏蔽，早期添加到 `Composer`、`Inspector`、`Playgro
 共享字段对必填项和当前校验错误保留原有保护。例如 Team Admin 添加模型仍需要的团队作用域不能隐藏，否则原表单无法提交。已有团队 Admin 成员的角色也不会被强制改为普通成员
 
 隐藏字段的已有值可能继续随原表单提交，或按社区原有 diff 逻辑不发送未改动字段。这不负责撤销已经启用的后端能力。若需要停用配置，必须另外评估并授权相应的数据或后端修改
+
+## MoMA 主题与国际化
+
+界面采用方案 2 的开放工作区。桌面主导航改为首页、API 密钥、模型管理、用量统计和团队，管理员其他可用入口归入管理下拉菜单。小于 1100px 时使用原有抽屉导航。菜单数据、角色判断和页面白名单继续复用社区菜单过滤函数，未新增管理员权限或放开已屏蔽页面
+
+品牌在控制台页头、窄屏导航、登录、开通账户、加载页和账户菜单中改为纯文字 MoMA 轻量版。页面标题同时更新。供应商标识、模型名称、技术参数和社区文档链接保留原值
+
+设计基准见 [方案 2 中文稿](design/moma-workspace-zh.png)，视觉验收见 [design-qa.md](design-qa.md)
+
+暖白与墨绿主题集中在 `src/app/moma-theme.css`，包括深色模式、系统中文字体、导航、留白、标题、表格和响应式规则。手机工具栏使用紧凑语言标记和图标，所有入口继续保留。1100px 至 1535px 的英文导航另外收紧间距并显示头像入口，以适应更长的英文文案。表格高度随内容结束，不再用空白行撑满屏幕。密钥页创建按钮移到标题右侧，窄屏恢复到标题下方。这些是展示调整，原有创建、编辑、筛选、排序、分页和弹窗操作继续使用原实现
+
+| 实现位置，相对 dashboard                                                                                                                                                                                                                                                                                                    | 维护内容                                               |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `src/components/MomaNavigation.tsx`、`DashboardHeader.tsx`、`src/app/(dashboard)/layout.tsx`                                                                                                                                                                                                                                | 顶部导航、管理员下拉菜单、账号入口、窄屏抽屉           |
+| `src/app/moma-theme.css`、`src/components/shared/PageHeader.tsx`、`DataTable/DataTable.tsx`                                                                                                                                                                                                                                 | 主题令牌、页面留白、密钥页操作区、表格高度与样式作用域 |
+| `src/contexts/LocaleContext.tsx`、`src/i18n/translate.ts`、`src/i18n/zh-CN.json`                                                                                                                                                                                                                                            | 中英文切换、词典与参数插值、未知文案回退               |
+| `src/components/LanguageSwitcher.tsx`、`src/contexts/TerminologyContext.tsx`、`src/app/layout.tsx`                                                                                                                                                                                                                          | 语言切换按钮、现有术语层接入、默认中文和 HTML lang     |
+| `src/components/ui/` 中的 input、textarea、button、combobox、select、label、field、tabs、dialog、alert-dialog、card、sheet                                                                                                                                                                                                  | 标签、提示、占位符和无障碍文案的显示层翻译             |
+| `src/components/shared/` 中的 PageHeader、DataTable、CopyButton、MultiSelect、advanced_date_picker、chart_loader、CreatedKeyDisplay、form/LabelWithHint、table_cells                                                                                                                                                        | 表头、分页、状态、日期与常用交互文案                   |
+| `src/app/(dashboard)/` 下 home、api-keys、models-and-endpoints、usage、users、teams、access-groups、budgets、logs、admin-panel                                                                                                                                                                                              | 保留页面的静态中文文案                                 |
+| `src/components/` 下 UsagePage、Teams、TeamsPage、team、organisms/create_key_button、templates/key_info_view、templates/key_edit_view、model_info_view、CreateUserButton、bulk_create_users_button、settings、router_settings、email_settings、Settings/AdminSettings/UISettings、Settings/AdminSettings/UserBannerSettings | 保留表单、详情与管理区域的界面文案                     |
+| `src/components/CommandPalette/CommandPaletteTrigger.tsx`、`ThemeToggle/ThemeToggle.tsx`、`DeploymentHealth/DeploymentHealth.tsx`、`common_components/budget_duration_dropdown.tsx`                                                                                                                                         | 紧凑搜索入口、主题切换、告警标题、预算周期的界面文案   |
+| `src/app/login`、`src/app/onboarding`、`src/app/(dashboard)/change-password`、leftnav、navbar、SidebarAccountMenu、common_components/LoadingScreen                                                                                                                                                                          | 文字品牌与账户流程文案                                 |
+
+英文源码文案作为词典键，中文词典位于一个 JSON 文件。`LocalizedText` 只翻译显式包裹的界面字符串，不扫描或改写 DOM，不递归翻译用户数据。字段的 name、选项 value、请求参数、模型 ID、用户邮箱和密钥值保持原样。模型通配选项、角色选项等只翻译显示标签，提交值保持原值
+
+语言偏好保存在浏览器 `moma.locale`，不发送到后端。支持 `zh-CN` 与 `en`，默认中文，刷新时恢复已保存语言。语言切换不重新挂载页面或表单。日期显示可以本地化，时间戳、时区语义、货币单位和接口数字保持原逻辑
+
+未知英文文案回退为英文。供应商返回的错误、接口原始 JSON、技术说明和代码示例可能继续显示英文。社区新增或修改界面文案时，需要同步补充词典和渲染位置，不能把中英文字符串用于权限、路由或筛选条件判断。已有组织等字段屏蔽仍以原始字段名和英文配置标签为依据，翻译发生在显示层之后
 
 ## Docker 与演示数据
 
@@ -171,10 +200,15 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 | 告警参数元数据            | `premium_field` 的含义和重置接口索引仍与原配置一致                                                        |
 | 关联入口                  | Home、模型详情、Key 详情、设置开关没有留下通往被屏蔽页面的按钮或链接                                      |
 | Docker 运行时             | Python 或 Rust 更新后先重建 `litellm-lite-runtime:local`，不能只替换 UI 后声称后端也升级                  |
+| 主题与导航                | 顶部导航与窄屏抽屉复用同一权限过滤，管理员管理菜单不会遗漏原可用入口，深浅色均可读                        |
+| 中文与数据边界            | 新文案补齐词典，用户输入、API 参数、权限判断与模型 ID 不参与翻译，语言切换不重置表单                      |
+| 视觉基准                  | 参考 design/moma-workspace-zh.png 与 design-qa.md 重测桌面、中英文、手机和弹窗                            |
 
 推荐把上述检查和本文清单一起更新。优先在集中策略或共享组件补规则，只有独立按钮、无共享表单字段的区块才增加就地屏蔽。已整页屏蔽的功能不再逐个改其内部组件
 
 ## 验证记录与限制
+
+### 屏蔽阶段
 
 2026-10-31 的定向检查覆盖 26 个测试文件、848 个用例，整体通过。其中 845 个为普通通过，3 个是社区已有的 `it.fails` 预期失败用例，分别位于 `create_key_button.integration.test.tsx` 和 `key_edit_view.integration.test.tsx`，不代表这 3 个既有问题已修复
 
@@ -243,3 +277,24 @@ curl -s -o /dev/null -w '%{http_code}\n' http://localhost:4001/health/liveliness
 Docker 浏览器验收使用 4001 的独立演示环境。真实供应商调用、真实成本核算、SSO 登录、生产部署和全站跨浏览器回归不在此次验证范围内。前序预览中部分员工页面仍有原有管理配置请求返回 403，不能把前端屏蔽当作消除后台请求或修复这些接口权限
 
 社区升级后可能通过新增独立控件引入新的企业版入口，这份静态清单需要随升级维护，不能把本轮检查理解为未来版本的自动保证
+
+### MoMA 主题与中文阶段
+
+2026-11-01 完成生产构建与下列定向测试，不运行整套 Vitest。测试批次有少量文件重叠，不能直接把批次用例数相加作为唯一用例总数
+
+| 测试批次                                                                               | 结果                                                          |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 基础国际化、顶部导航、原导航、表格、登录、密钥创建与编辑、用户和模型页面，共 23 个文件 | 579 项通过，3 项为社区原有 it.fails 预期失败                  |
+| 用量页指标、分组控件、统计范围、供应商统计、密钥排行与图表加载，共 6 个文件            | 78 项通过                                                     |
+| 系统设置、团队管理员可编辑字段、公告设置与日期单元格，共 4 个文件                      | 42 项通过                                                     |
+| 最终密钥表格、批量邀请、语言切换与顶部导航复核，共 4 个文件                            | 99 项通过                                                     |
+| 词典边界复核，共 2 个文件                                                              | 5 项通过，包含 constructor 与 **proto** 等未知文案原样回退    |
+| npm run build                                                                          | TypeScript 与静态导出通过                                     |
+| ./scripts/pre_commit_lint.sh                                                           | Prettier、ESLint 和规则预算通过，未提高预算或添加 suppression |
+| Impeccable detect                                                                      | 对主题与公共导航相关文件检查，未报告反模式                    |
+
+新增国际化测试验证默认中文、英文偏好恢复、未知文案回退与参数插值。输入的 Home 别名在语言切换及提交时仍保持 Home。顶部导航测试验证员工页面限制、管理员管理菜单和原有页面可见性设置
+
+本轮没有新增后端端点、修改数据库或调整 API 请求数据。保留演示数据库与账户，更新的是 4001 镜像中的 Dashboard 静态资源。验证仍使用本地 Mock 模型，没有测试真实供应商计费、负载或生产 SSO。后端错误、原始 JSON、代码和客户端配置示例保留原文，未知或后续新增界面文案会回退英文
+
+浏览器复核覆盖员工与管理员、中文和英文、深浅色、360px、390px、900px、1100px 及 1488px。实际表单内输入 Home 后跨标签切换语言，原值仍保留，未创建新密钥。截图与同尺寸设计对比见 [design-qa.md](design-qa.md)。4001 使用最终构建重新启动，健康检查返回 200

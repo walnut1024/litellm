@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useTerminology } from "@/contexts/TerminologyContext";
 import React, { useMemo, useState } from "react";
 import { ArrowRight, Bot, Monitor, Terminal } from "lucide-react";
@@ -104,7 +106,7 @@ function AgentItem({
         <span className="block truncate text-sm font-medium text-foreground">{agent.label}</span>
         {openRow ? (
           <span className="inline-flex items-center gap-1 text-xs text-muted-foreground group-hover:text-foreground">
-            View activity
+            <L>View activity</L>
             <ArrowRight aria-hidden="true" className="size-3 transition-transform group-hover:translate-x-0.5" />
           </span>
         ) : (

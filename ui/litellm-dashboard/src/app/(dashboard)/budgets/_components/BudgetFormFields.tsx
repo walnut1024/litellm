@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useId } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -59,14 +61,18 @@ const numberProps = <T extends { value?: number | null; onChange: (value: number
     onChange(event.target.value === "" ? null : event.target.valueAsNumber),
 });
 
-const OptionalBadge = () => <Badge variant="secondary">Optional</Badge>;
+const OptionalBadge = () => (
+  <Badge variant="secondary">
+    <L>Optional</L>
+  </Badge>
+);
 
 function SpendLimitField({ form }: { form: BudgetForm }) {
   const amountId = useId();
   return (
     <Field className="gap-2">
       <FieldLabel htmlFor={amountId}>
-        Spend limit
+        <L>Spend limit</L>
         <OptionalBadge />
       </FieldLabel>
       <ButtonGroup className="w-full">
@@ -139,14 +145,14 @@ export function BudgetFormFields({ form, isEditing }: { form: BudgetForm; isEdit
       <FieldSeparator />
       <FieldSet className="gap-3">
         <FieldLegend className="mb-4 flex items-center gap-2 text-[15px] leading-[22px] font-semibold">
-          Rate limits
+          <L>Rate limits</L>
           <OptionalBadge />
         </FieldLegend>
         <RateLimitField form={form} name="tpm_limit" label="Tokens per minute" />
         <RateLimitField form={form} name="rpm_limit" label="Requests per minute" />
         <RateLimitField form={form} name="tpd_limit" label="Batch tokens per day" />
         <FieldDescription>
-          Batches count against the daily limit instead of the per-minute ones. Provider rate limits still apply.
+          <L>Batches count against the daily limit instead of the per-minute ones. Provider rate limits still apply.</L>
         </FieldDescription>
       </FieldSet>
     </FieldGroup>

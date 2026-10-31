@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import type { FetchUserPage } from "./userActivityData";
@@ -55,13 +57,17 @@ const TopUsersView: React.FC<TopUsersViewProps> = ({ fetchUserPage }) => {
           className="font-medium text-foreground underline"
           onClick={() => setRetryToken((token) => token + 1)}
         >
-          Retry
+          <L>Retry</L>
         </button>
       </p>
     );
   }
   if (loading) {
-    return <p className="px-1 py-6 text-center text-sm text-muted-foreground">Loading users...</p>;
+    return (
+      <p className="px-1 py-6 text-center text-sm text-muted-foreground">
+        <L>Loading users...</L>
+      </p>
+    );
   }
   if (current.rows.length === 0) {
     return <p className="px-1 py-6 text-center text-sm text-muted-foreground">No user activity in this date range</p>;
@@ -73,9 +79,15 @@ const TopUsersView: React.FC<TopUsersViewProps> = ({ fetchUserPage }) => {
         aria-hidden="true"
         className={`${TOP_USER_ROW_GRID} border-b pb-1.5 text-xs font-medium text-muted-foreground`}
       >
-        <span>User</span>
-        <span className="text-right">Spend</span>
-        <span className="text-right">Requests</span>
+        <span>
+          <L>User</L>
+        </span>
+        <span className="text-right">
+          <L>Spend</L>
+        </span>
+        <span className="text-right">
+          <L>Requests</L>
+        </span>
       </li>
       {current.rows.map((row) => {
         const secondary = userSecondaryLabel(row);

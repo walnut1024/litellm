@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { BarChart } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
@@ -248,7 +250,9 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                       <span className="break-all font-mono text-foreground">{item?.key_alias}</span>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Key ID: </span>
+                      <span className="text-muted-foreground">
+                        <L>Key ID: </L>
+                      </span>
                       <span className="break-all font-mono text-foreground">{item?.api_key}</span>
                     </div>
                     <div>

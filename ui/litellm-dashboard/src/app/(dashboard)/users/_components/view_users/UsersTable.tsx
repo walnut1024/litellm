@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import {
   ColumnFiltersState,
   OnChangeFn,
@@ -63,8 +65,12 @@ function EmptyState() {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Users className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No users found</div>
-      <div className="text-sm text-muted-foreground">Try adjusting your search or filters.</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>No users found</L>
+      </div>
+      <div className="text-sm text-muted-foreground">
+        <L>Try adjusting your search or filters.</L>
+      </div>
     </div>
   );
 }

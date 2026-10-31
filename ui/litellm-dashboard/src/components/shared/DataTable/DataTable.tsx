@@ -1,5 +1,9 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
+import { LocalizedText } from "@/contexts/LocaleContext";
+
 import {
   type Cell,
   type Column,
@@ -221,7 +225,7 @@ function DataTableHeadCell<TData>({ header, size, stickyHeader, enableColumnResi
     >
       {header.isPlaceholder ? null : (
         <div className={cn("flex items-center gap-1", meta?.numeric ? "justify-end" : "")}>
-          {flexRender(column.columnDef.header, header.getContext())}
+          <LocalizedText>{flexRender(column.columnDef.header, header.getContext())}</LocalizedText>
         </div>
       )}
       {canResize && (
@@ -360,8 +364,12 @@ function DefaultEmptyState() {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <SearchX className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No results</div>
-      <div className="text-sm text-muted-foreground">No rows match your search or filters.</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>No results</L>
+      </div>
+      <div className="text-sm text-muted-foreground">
+        <L>No rows match your search or filters.</L>
+      </div>
     </div>
   );
 }
@@ -431,7 +439,9 @@ function SkeletonRows<TData>({
             <TableCell key={column?.id ?? columnKey} className={size === "compact" ? "px-2 py-1" : ""}>
               <SkeletonCell column={column} index={columnKey} />
               {rowKey === 0 && columnKey === 0 && message !== undefined ? (
-                <span className="sr-only">{message}</span>
+                <span className="sr-only">
+                  <LocalizedText>{message}</LocalizedText>
+                </span>
               ) : null}
             </TableCell>
           ))}
@@ -680,7 +690,7 @@ export function DataTable<TData extends RowData, TValue>(props: DataTableProps<T
     if (rows.length === 0) {
       return (
         <MessageRow colSpan={visibleColumnCount} stretch={stretchEmpty}>
-          {noDataMessage ?? <DefaultEmptyState />}
+          <LocalizedText>{noDataMessage ?? <DefaultEmptyState />}</LocalizedText>
         </MessageRow>
       );
     }
@@ -701,8 +711,8 @@ export function DataTable<TData extends RowData, TValue>(props: DataTableProps<T
   const paginationNode = renderPagination();
 
   return (
-    <div data-testid="data-table-root" className={dataTableRoot({ fill: fillHeight })}>
-      <div data-testid="data-table-frame" className={dataTableFrame({ fill: fillHeight })}>
+    <div data-slot="data-table-root" data-testid="data-table-root" className={dataTableRoot({ fill: fillHeight })}>
+      <div data-slot="data-table-frame" data-testid="data-table-frame" className={dataTableFrame({ fill: fillHeight })}>
         {toolbar !== undefined && <div className="shrink-0 border-b border-border px-4 py-3">{toolbar(table)}</div>}
         <div
           data-testid="data-table-scroller"

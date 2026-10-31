@@ -1,3 +1,5 @@
+import { LocalizedText } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 
 import { cn } from "@/lib/cva.config";
@@ -34,20 +36,24 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutR
 CardHeader.displayName = "CardHeader";
 
 const CardTitle = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>(
-  ({ className, ...props }, ref) => (
+  ({ className, children, ...props }, ref) => (
     <div
       ref={ref}
       data-slot="card-title"
       className={cn("text-base leading-normal font-medium group-data-[size=sm]/card:text-sm", className)}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </div>
   ),
 );
 CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>(
-  ({ className, ...props }, ref) => (
-    <div ref={ref} data-slot="card-description" className={cn("text-sm text-muted-foreground", className)} {...props} />
+  ({ className, children, ...props }, ref) => (
+    <div ref={ref} data-slot="card-description" className={cn("text-sm text-muted-foreground", className)} {...props}>
+      <LocalizedText>{children}</LocalizedText>
+    </div>
   ),
 );
 CardDescription.displayName = "CardDescription";

@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useResetTeamMemberBudget } from "@/app/(dashboard)/hooks/teams/useResetTeamMemberBudget";
 import { useResetTeamMemberSpend } from "@/app/(dashboard)/hooks/teams/useResetTeamMemberSpend";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
@@ -171,7 +173,7 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          Model Scope
+          <L>Model Scope</L>
           <SimpleTooltip content="Models this member can access. Empty means they inherit all team models.">
             <CircleHelp className="size-4" aria-label="Model scope information" />
           </SimpleTooltip>
@@ -181,7 +183,11 @@ export default function TeamMemberTab({
       render: (record: Member) => {
         const models = getUserAllowedModels(record.user_id);
         if (!models) {
-          return <span className="text-muted-foreground">(all team models)</span>;
+          return (
+            <span className="text-muted-foreground">
+              <L>(all team models)</L>
+            </span>
+          );
         }
         const displayed = models.slice(0, 2);
         const remaining = models.length - displayed.length;
@@ -194,7 +200,10 @@ export default function TeamMemberTab({
             ))}
             {remaining > 0 && (
               <SimpleTooltip content={models.slice(2).join(", ")}>
-                <span className="text-muted-foreground">+{remaining} more</span>
+                <span className="text-muted-foreground">
+                  +{remaining}
+                  <L> more</L>
+                </span>
               </SimpleTooltip>
             )}
           </div>
@@ -204,7 +213,7 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          Current Period Spend (USD)
+          <L>Current Period Spend (USD)</L>
           <SimpleTooltip content="Spend in this member's current budget period, the value checked against their budget. The Budget Period column shows the dates that period covers, or Never resets. Spend above a rollover cap at reset carries into the next period.">
             <CircleHelp className="size-4" aria-label="Current period spend information" />
           </SimpleTooltip>
@@ -218,7 +227,7 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          Total Spend (USD)
+          <L>Total Spend (USD)</L>
           <SimpleTooltip content="Cumulative spend by this member within this team, across budget periods. This is a lower bound: lifetime tracking began 2026-04-21, so periods that reset before then are not included. It is never less than Current Period Spend.">
             <CircleHelp className="size-4" aria-label="Total spend information" />
           </SimpleTooltip>
@@ -232,7 +241,7 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          Team Member Budget (USD)
+          <L>Team Member Budget (USD)</L>
           <SimpleTooltip content="Team default follows the team's member budget, so changing it in team settings updates this member too. Custom is set on this member only and ignores later team changes.">
             <CircleHelp className="size-4" aria-label="Team member budget information" />
           </SimpleTooltip>
@@ -259,7 +268,7 @@ export default function TeamMemberTab({
                 data-testid="reset-member-budget"
                 onClick={() => setMemberToResetBudget(record)}
               >
-                Use team default
+                <L>Use team default</L>
               </Button>
             )}
           </span>
@@ -275,7 +284,7 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          Team Member Rate Limits
+          <L>Team Member Rate Limits</L>
           <SimpleTooltip content="Rate limits for this member's usage within this team.">
             <CircleHelp className="size-4" aria-label="Team member rate limits information" />
           </SimpleTooltip>
@@ -355,27 +364,29 @@ export default function TeamMemberTab({
       <Dialog open={memberToResetSpend !== null} onOpenChange={(open) => !open && setMemberToResetSpend(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reset Team Member Spend</DialogTitle>
+            <DialogTitle>
+              <L>Reset Team Member Spend</L>
+            </DialogTitle>
           </DialogHeader>
           <p>
-            Reset current period spend for{" "}
-            <strong>{memberToResetSpend?.user_email || memberToResetSpend?.user_id}</strong> in this team to{" "}
-            <strong>$0</strong>?
+            <L>Reset current period spend for</L>{" "}
+            <strong>{memberToResetSpend?.user_email || memberToResetSpend?.user_id}</strong>
+            <L> in this team to</L> <strong>$0</strong>?
           </p>
           <p className="text-sm text-muted-foreground">
-            Current period spend
+            <L>Current period spend</L>
             {resetSpendPeriod ? ` (${resetSpendPeriod})` : ""}:{" "}
             <strong>
               ${formatNumberWithCommas(getUserCurrentPeriodSpend(memberToResetSpend?.user_id ?? null), 4)}
             </strong>
-            . This is the value checked against the member&apos;s budget. Total spend and logs are preserved.
+            <L>. This is the value checked against the member&apos;s budget. Total spend and logs are preserved.</L>
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setMemberToResetSpend(null)}>
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button variant="destructive" onClick={handleResetSpend} disabled={isResettingSpend}>
-              Reset
+              <L>Reset</L>
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -383,23 +394,27 @@ export default function TeamMemberTab({
       <Dialog open={memberToResetBudget !== null} onOpenChange={(open) => !open && setMemberToResetBudget(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reset Team Member Budget</DialogTitle>
+            <DialogTitle>
+              <L>Reset Team Member Budget</L>
+            </DialogTitle>
           </DialogHeader>
           <p>
-            Remove the custom budget for{" "}
-            <strong>{memberToResetBudget?.user_email || memberToResetBudget?.user_id}</strong> and put them back on the
-            team default of <strong>{formatBudget(teamDefaultBudget)}</strong>?
+            <L>Remove the custom budget for</L>{" "}
+            <strong>{memberToResetBudget?.user_email || memberToResetBudget?.user_id}</strong>
+            <L> and put them back on the team default of </L>
+            <strong>{formatBudget(teamDefaultBudget)}</strong>?
           </p>
           <p className="text-sm text-muted-foreground">
-            Custom budget: <strong>{formatBudget(getUserBudget(memberToResetBudget?.user_id ?? null))}</strong>. Their
-            spend is kept. Future changes to the team&apos;s member budget will apply to them again.
+            <L>Custom budget: </L>
+            <strong>{formatBudget(getUserBudget(memberToResetBudget?.user_id ?? null))}</strong>
+            <L>. Their spend is kept. Future changes to the team&apos;s member budget will apply to them again.</L>
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setMemberToResetBudget(null)}>
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button onClick={handleResetBudget} disabled={isResettingBudget}>
-              Use team default
+              <L>Use team default</L>
             </Button>
           </DialogFooter>
         </DialogContent>

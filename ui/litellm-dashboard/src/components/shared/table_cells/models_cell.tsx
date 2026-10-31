@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { deriveKeyModelScope } from "@/components/key_scope";
 import { getModelDisplayName } from "@/components/key_team_helpers/fetch_available_models_team_key";
 import { Badge } from "@/components/ui/badge";
@@ -32,13 +34,17 @@ export function ModelsCell({ models, maxVisible = 3, allowedRoutes, keyType }: M
           content={`Scoped to ${scope.label} routes; this key cannot call any models`}
           trigger={
             <Badge variant="secondary" className="cursor-default">
-              No model access
+              <L>No model access</L>
             </Badge>
           }
         />
       );
     }
-    return <Badge variant="secondary">All Proxy Models</Badge>;
+    return (
+      <Badge variant="secondary">
+        <L>All Proxy Models</L>
+      </Badge>
+    );
   }
 
   const visible = models.slice(0, maxVisible);
@@ -48,7 +54,7 @@ export function ModelsCell({ models, maxVisible = 3, allowedRoutes, keyType }: M
     <div className="flex flex-wrap items-center gap-1">
       {visible.map((model, index) => (
         <Badge key={index} variant={model === WILDCARD_MODEL ? "secondary" : "outline"}>
-          {formatModel(model)}
+          {model === WILDCARD_MODEL ? <L>All Proxy Models</L> : formatModel(model)}
         </Badge>
       ))}
       {overflow.length > 0 && (
@@ -56,13 +62,13 @@ export function ModelsCell({ models, maxVisible = 3, allowedRoutes, keyType }: M
           content={
             <div className="flex max-w-[280px] flex-col gap-0.5">
               {overflow.map((model, index) => (
-                <span key={index}>{formatModel(model)}</span>
+                <span key={index}>{model === WILDCARD_MODEL ? <L>All Proxy Models</L> : formatModel(model)}</span>
               ))}
             </div>
           }
           trigger={
             <Badge variant="outline" className="cursor-default">
-              +{overflow.length} more
+              +{overflow.length} <L>more</L>
             </Badge>
           }
         />

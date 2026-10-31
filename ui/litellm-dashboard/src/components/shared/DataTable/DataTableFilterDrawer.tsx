@@ -1,5 +1,6 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { useLiteUi } from "@/contexts/LiteUiContext";
 
 import type { ColumnFiltersState, Table } from "@tanstack/react-table";
@@ -96,10 +97,10 @@ export function DataTableFilterDrawer<TData>({
         </div>
         <SheetFooter className="flex-row">
           <Button variant="outline" className="flex-1" onClick={reset} data-testid="filter-drawer-reset">
-            {resetLabel}
+            <L>{resetLabel}</L>
           </Button>
           <Button className="flex-1" onClick={apply} data-testid="filter-drawer-apply">
-            {applyLabel}
+            <L>{applyLabel}</L>
           </Button>
         </SheetFooter>
       </SheetContent>

@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
 import { TerminologyProvider } from "@/contexts/TerminologyContext";
@@ -145,96 +145,9 @@ describe("Sidebar (leftnav)", () => {
     expect(screen.queryByText("AI Hub")).not.toBeInTheDocument();
   });
 
-  it("should link the logo to the UI home route rather than the proxy origin", () => {
+  it("uses the MoMA text brand to return to the dashboard home", () => {
     renderWithProviders(<Sidebar {...defaultProps} />);
-
-    expect(screen.getByRole("link", { name: /litellm home/i })).toHaveAttribute("href", "/ui");
-  });
-
-  it("pairs the logo with a dark-mode variant that swaps on the dark class", () => {
-    renderWithProviders(<Sidebar {...defaultProps} />);
-
-    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm home/i }).querySelectorAll("img"));
-    const classesOf = (el: Element) => new Set(el.className.split(/\s+/));
-
-    const lightSrc = light.getAttribute("src") ?? "";
-    expect(light).toHaveAttribute("src", expect.stringMatching(/\/get_image$/));
-    expect(dark).toHaveAttribute("src", `${lightSrc}?theme=dark`);
-    expect(classesOf(light).has("dark:hidden")).toBe(true);
-    expect(classesOf(light).has("hidden")).toBe(false);
-    expect(classesOf(dark).has("hidden")).toBe(true);
-    expect(classesOf(dark).has("dark:block")).toBe(true);
-  });
-
-  const collapsedLogos = () => {
-    const home = within(screen.getByRole("link", { name: /litellm home/i }));
-    return {
-      light: home.getByRole("img", { name: "LiteLLM" }),
-      dark: home.getByRole("presentation", { hidden: true }),
-    };
-  };
-
-  it("requests the bundled monogram for both themes when collapsed", () => {
-    renderWithProviders(<Sidebar collapsed />);
-
-    const { light, dark } = collapsedLogos();
-
-    expect(light).toHaveAttribute("src", expect.stringMatching(/\/get_image\?variant=monogram$/));
-    expect(dark).toHaveAttribute("src", expect.stringMatching(/\/get_image\?theme=dark&variant=monogram$/));
-  });
-
-  it("keeps a configured custom logo when collapsed instead of the LiteLLM monogram", () => {
-    mockUseThemeImpl = () => ({
-      ...unbrandedTheme(),
-      logoUrl: "https://cdn.example.com/logo.png",
-      logoUrlDark: "https://cdn.example.com/logo-dark.png",
-    });
-    renderWithProviders(<Sidebar collapsed />);
-
-    const { light, dark } = collapsedLogos();
-
-    expect(light).toHaveAttribute("src", "https://cdn.example.com/logo.png");
-    expect(dark).toHaveAttribute("src", "https://cdn.example.com/logo-dark.png");
-  });
-
-  it("prefers a configured dark logo over the light one in dark mode", () => {
-    mockUseThemeImpl = () => ({
-      ...unbrandedTheme(),
-      logoUrl: "https://cdn.example.com/logo.png",
-      logoUrlDark: "https://cdn.example.com/logo-dark.png",
-    });
-    renderWithProviders(<Sidebar {...defaultProps} />);
-
-    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm home/i }).querySelectorAll("img"));
-
-    expect(light).toHaveAttribute("src", "https://cdn.example.com/logo.png");
-    expect(dark).toHaveAttribute("src", "https://cdn.example.com/logo-dark.png");
-  });
-
-  it("reuses the light custom logo in dark mode when no dark one is configured", () => {
-    mockUseThemeImpl = () => ({ ...unbrandedTheme(), logoUrl: "https://cdn.example.com/logo.png" });
-    renderWithProviders(<Sidebar {...defaultProps} />);
-
-    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm home/i }).querySelectorAll("img"));
-
-    expect(light).toHaveAttribute("src", "https://cdn.example.com/logo.png");
-    expect(dark).toHaveAttribute("src", "https://cdn.example.com/logo.png");
-  });
-
-  it("falls back to the light logo when a configured dark logo fails to load", () => {
-    mockUseThemeImpl = () => ({
-      ...unbrandedTheme(),
-      logoUrl: "https://cdn.example.com/logo.png",
-      logoUrlDark: "https://cdn.example.com/gone.png",
-    });
-    renderWithProviders(<Sidebar {...defaultProps} />);
-
-    const [, dark] = Array.from(screen.getByRole("link", { name: /litellm home/i }).querySelectorAll("img"));
-    expect(dark).toHaveAttribute("src", "https://cdn.example.com/gone.png");
-
-    fireEvent.error(dark);
-
-    expect(dark).toHaveAttribute("src", "https://cdn.example.com/logo.png");
+    expect(screen.getByRole("link", { name: "MoMA 轻量版" })).toHaveAttribute("href", "/ui/home");
   });
 
   it("keeps the administrator pages and the original Settings children", () => {

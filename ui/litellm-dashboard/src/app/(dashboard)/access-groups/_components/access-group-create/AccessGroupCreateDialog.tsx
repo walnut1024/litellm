@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BotIcon, InfoIcon, LayersIcon, ServerIcon, SparklesIcon } from "lucide-react";
 import * as React from "react";
@@ -100,7 +102,9 @@ export const AccessGroupCreateDialog = ({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Access Group</DialogTitle>
+          <DialogTitle>
+            <L>Create Access Group</L>
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={onSubmit} noValidate>
@@ -108,11 +112,11 @@ export const AccessGroupCreateDialog = ({
             <TabsList className="w-full">
               <TabsTrigger value={GENERAL_TAB}>
                 <InfoIcon />
-                General Info
+                <L>General Info</L>
               </TabsTrigger>
               <TabsTrigger value="models">
                 <LayersIcon />
-                Models
+                <L>Models</L>
               </TabsTrigger>
               <TabsTrigger value="mcp-servers">
                 <ServerIcon />
@@ -211,7 +215,7 @@ export const AccessGroupCreateDialog = ({
               onClick={() => handleOpenChange(false)}
               disabled={mutation.isPending}
             >
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
               {mutation.isPending ? "Creating..." : "Create Group"}

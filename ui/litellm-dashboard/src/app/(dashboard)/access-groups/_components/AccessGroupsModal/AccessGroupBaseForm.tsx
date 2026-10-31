@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { BotIcon, InfoIcon, LayersIcon, ServerIcon, SparklesIcon } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -98,11 +100,11 @@ export function AccessGroupBaseForm({
       <TabsList className="w-full">
         <TabsTrigger value={GENERAL_TAB}>
           <InfoIcon size={16} />
-          General Info
+          <L>General Info</L>
         </TabsTrigger>
         <TabsTrigger value={MODELS_TAB}>
           <LayersIcon size={16} />
-          Models
+          <L>Models</L>
         </TabsTrigger>
         <TabsTrigger value={MCP_SERVERS_TAB}>
           <ServerIcon size={16} />

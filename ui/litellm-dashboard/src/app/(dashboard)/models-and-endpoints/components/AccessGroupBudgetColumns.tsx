@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, Trash2, Wallet } from "lucide-react";
 
@@ -61,7 +63,7 @@ function AccessGroupRowActions({ accessGroup, canWrite, onSetBudget, onClearBudg
           onClick={() => onSetBudget(accessGroup)}
         >
           <Wallet />
-          {hasBudget ? "Edit budget" : "Set budget"}
+          <L>{hasBudget ? "Edit budget" : "Set budget"}</L>
         </DropdownMenuItem>
         <DropdownMenuItem
           variant="destructive"
@@ -71,7 +73,7 @@ function AccessGroupRowActions({ accessGroup, canWrite, onSetBudget, onClearBudg
           onClick={() => onClearBudget(accessGroup)}
         >
           <Trash2 />
-          Clear budget
+          <L>Clear budget</L>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -149,7 +151,11 @@ export const getAccessGroupBudgetColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => (
+      <span className="sr-only">
+        <L>Actions</L>
+      </span>
+    ),
     size: 64,
     enableSorting: false,
     enableHiding: false,

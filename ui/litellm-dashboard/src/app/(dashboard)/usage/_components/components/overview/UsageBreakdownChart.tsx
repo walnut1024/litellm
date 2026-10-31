@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useMemo, useState } from "react";
 import type { DailyData } from "@/components/UsagePage/types";
 import { StackedUsageChart, type StackedUsageScale } from "@/components/shared/charts";
@@ -84,7 +86,9 @@ export default function UsageBreakdownChart({
         )}
       </div>
       <div className={cn("border-t pt-3 pb-2", PANEL_INSET_X)}>
-        <h4 className="text-sm leading-5 font-medium text-foreground">Top models</h4>
+        <h4 className="text-sm leading-5 font-medium text-foreground">
+          <L>Top models</L>
+        </h4>
         {loading ? (
           <div role="status" aria-label="Loading top models">
             <ChartSkeleton className="my-2 h-20" />

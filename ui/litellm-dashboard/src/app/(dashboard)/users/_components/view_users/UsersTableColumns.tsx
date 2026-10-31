@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { ChartColumn, Copy, Info, KeyRound, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -50,18 +52,18 @@ function UserRowActions({ user, canViewUserUsage, onUserClick, onDeleteUser, onR
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem onClick={() => onUserClick(user.user_id, true)} data-testid="user-action-edit">
           <Pencil />
-          Edit user
+          <L>Edit user</L>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onResetPassword(user.user_id)} data-testid="user-action-reset-password">
           <KeyRound />
-          Reset password
+          <L>Reset password</L>
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => void copyToClipboard(user.user_id, "User ID copied")}
           data-testid="user-action-copy"
         >
           <Copy />
-          Copy user ID
+          <L>Copy user ID</L>
         </DropdownMenuItem>
         {canViewUserUsage && (
           <DropdownMenuItem
@@ -69,13 +71,13 @@ function UserRowActions({ user, canViewUserUsage, onUserClick, onDeleteUser, onR
             data-testid="user-action-view-usage"
           >
             <ChartColumn />
-            View usage
+            <L>View usage</L>
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onClick={() => onDeleteUser(user)} data-testid="user-action-delete">
           <Trash2 />
-          Delete user
+          <L>Delete user</L>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -234,7 +236,7 @@ export const getUsersTableColumns = ({
               variant="outline"
               className="whitespace-nowrap border-indigo-200 bg-indigo-50 font-normal text-indigo-600 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-300"
             >
-              {keyCount} {keyCount === 1 ? "Key" : "Keys"}
+              {keyCount} <L>{keyCount === 1 ? "Key" : "Keys"}</L>
             </Badge>
           );
         }
@@ -243,7 +245,7 @@ export const getUsersTableColumns = ({
             variant="outline"
             className="whitespace-nowrap border-border bg-muted font-normal text-muted-foreground"
           >
-            No Keys
+            <L>No Keys</L>
           </Badge>
         );
       },
@@ -270,7 +272,11 @@ export const getUsersTableColumns = ({
     {
       id: "actions",
       meta: { title: "Actions", className: "text-right", headerClassName: "text-right" },
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => (
+        <span className="sr-only">
+          <L>Actions</L>
+        </span>
+      ),
       size: 60,
       enableSorting: false,
       enableHiding: false,

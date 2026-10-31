@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useMemo } from "react";
 import { ArrowLeft, Coins } from "lucide-react";
 import { useTagSummary } from "@/app/(dashboard)/hooks/tags/useTagSummary";
@@ -152,7 +154,8 @@ export default function ClientUsagePanel({
       <SheetContent className="gap-0 data-[side=right]:w-[calc(100%-16px)] data-[side=right]:sm:max-w-[600px]">
         <SheetHeader className="shrink-0 border-b px-6 pt-5 pb-4">
           <Button variant="ghost" size="sm" className="mb-3 w-fit -ml-2 text-muted-foreground" onClick={onClose}>
-            <ArrowLeft className="size-4" /> Back to Usage
+            <ArrowLeft className="size-4" />
+            <L> Back to Usage</L>
           </Button>
           <div className="flex items-center gap-3">
             <AgentMark agent={{ id: client, label, logo: claudeLogo.src }} />
@@ -176,7 +179,7 @@ export default function ClientUsagePanel({
           {teams.length > 0 && onTeamChange && (
             <div className="space-y-2">
               <label htmlFor="client-usage-team" className="text-xs font-medium text-muted-foreground">
-                Usage scope
+                <L>Usage scope</L>
               </label>
               <SearchSelect
                 id="client-usage-team"
@@ -194,7 +197,7 @@ export default function ClientUsagePanel({
           {teamId && (
             <div className="space-y-2">
               <label htmlFor="client-usage-member" className="text-xs font-medium text-muted-foreground">
-                Team member
+                <L>Team member</L>
               </label>
               <SearchSelect
                 id="client-usage-member"
@@ -213,11 +216,11 @@ export default function ClientUsagePanel({
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <label htmlFor="client-usage-user" className="text-xs font-medium text-muted-foreground">
-                  Filter by person
+                  <L>Filter by person</L>
                 </label>
                 {userId && (
                   <Button variant="ghost" size="sm" onClick={() => onUserChange(null)}>
-                    All users
+                    <L>All users</L>
                   </Button>
                 )}
               </div>
@@ -231,7 +234,9 @@ export default function ClientUsagePanel({
           )}
           {error && (
             <div role="alert" className="rounded-lg border p-4">
-              <p className="font-medium">Could not load client usage</p>
+              <p className="font-medium">
+                <L>Could not load client usage</L>
+              </p>
               <p className="mt-1 text-muted-foreground">{error}</p>
               {canRetry && (
                 <Button
@@ -246,13 +251,17 @@ export default function ClientUsagePanel({
                     }
                   }}
                 >
-                  Try again
+                  <L>Try again</L>
                 </Button>
               )}
             </div>
           )}
           {ready && !summary && (
-            <p className="rounded-lg border p-4 text-muted-foreground">No {label} usage recorded in this date range.</p>
+            <p className="rounded-lg border p-4 text-muted-foreground">
+              <L>No </L>
+              {label}
+              <L> usage recorded in this date range.</L>
+            </p>
           )}
           {ready && summary && (
             <>
@@ -263,7 +272,9 @@ export default function ClientUsagePanel({
               </div>
               {summary.requests === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No {label} requests in the selected range. Try another date range.
+                  <L>No </L>
+                  {label}
+                  <L> requests in the selected range. Try another date range.</L>
                   {(canChooseUser || teamId) && " You can also choose another person."}
                 </p>
               ) : (
@@ -283,7 +294,7 @@ export default function ClientUsagePanel({
                         {chartError}
                       </p>
                       <Button variant="outline" size="sm" className="mt-3" onClick={retryModels}>
-                        Retry model breakdown
+                        <L>Retry model breakdown</L>
                       </Button>
                     </div>
                   )}
@@ -294,7 +305,7 @@ export default function ClientUsagePanel({
                 {scopedRequest
                   ? "Based on retained request logs within the exact selected time range."
                   : "All-user totals use UTC daily aggregates for the selected dates. Filtering by person uses the exact selected times. Cache values are reported counts."}{" "}
-                Spend is the cost recorded by LiteLLM.
+                <L>Spend is the cost recorded by LiteLLM.</L>
               </p>
             </>
           )}
@@ -339,7 +350,8 @@ function TokenExplanation({ total, breakdown }: { total: number; breakdown: Clie
       )}
       {cacheReadTokens !== null && total > 0 && (
         <p className="text-xs text-muted-foreground">
-          {((cacheReadTokens / total) * 100).toFixed(1)}% of these tokens are cache reads.
+          {((cacheReadTokens / total) * 100).toFixed(1)}
+          <L>% of these tokens are cache reads.</L>
         </p>
       )}
       <dl className="divide-y rounded-lg border px-3 text-xs">
@@ -354,8 +366,10 @@ function TokenExplanation({ total, breakdown }: { total: number; breakdown: Clie
         ))}
       </dl>
       <p className="text-xs leading-5 text-muted-foreground">
-        Total tokens include input, cached input and output. Cached input is priced differently, so token count alone
-        does not explain spend. Compare the same person and dates when checking the count shown by a client.
+        <L>
+          Total tokens include input, cached input and output. Cached input is priced differently, so token count alone
+          does not explain spend. Compare the same person and dates when checking the count shown by a client.
+        </L>
       </p>
     </Panel>
   );

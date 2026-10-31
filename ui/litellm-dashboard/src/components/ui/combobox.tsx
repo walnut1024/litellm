@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 import { Combobox as ComboboxPrimitive } from "@base-ui/react";
 
@@ -57,9 +59,15 @@ function ComboboxInput({
   showTrigger?: boolean;
   showClear?: boolean;
 }) {
+  const t = useTranslation();
   return (
     <InputGroup className={cn("w-auto", className)}>
-      <ComboboxPrimitive.Input disabled={disabled} render={<InputGroupInput />} {...props} />
+      <ComboboxPrimitive.Input
+        disabled={disabled}
+        render={<InputGroupInput />}
+        {...props}
+        placeholder={props.placeholder ? t(props.placeholder) : undefined}
+      />
       <InputGroupAddon align="inline-end">
         {showTrigger && (
           <InputGroupButton
@@ -239,11 +247,14 @@ function ComboboxChip({
 }
 
 function ComboboxChipsInput({ className, ...props }: ComboboxPrimitive.Input.Props) {
+  const t = useTranslation();
   return (
     <ComboboxPrimitive.Input
       data-slot="combobox-chip-input"
       className={cn("min-w-16 flex-1 outline-none", className)}
       {...props}
+      placeholder={props.placeholder ? t(props.placeholder) : undefined}
+      aria-label={props["aria-label"] ? t(props["aria-label"]) : undefined}
     />
   );
 }

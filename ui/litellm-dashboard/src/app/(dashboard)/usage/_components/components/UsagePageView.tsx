@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 /**
  * New Usage Page
@@ -487,7 +489,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
             />
             <Button variant="outline" onClick={() => void copyToClipboard(window.location.href, "Link copied")}>
               <Link2 />
-              Copy Share Link
+              <L>Copy Share Link</L>
             </Button>
           </div>
         </div>
@@ -511,16 +513,16 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <TabsList variant="line">
                     <TabsTrigger value="cost" className="flex-none px-3">
-                      Overview
+                      <L>Overview</L>
                     </TabsTrigger>
                     <TabsTrigger value="models" className="flex-none px-3">
-                      Model Activity
+                      <L>Model Activity</L>
                     </TabsTrigger>
                     <TabsTrigger value="keys" className="flex-none px-3">
-                      Key Activity
+                      <L>Key Activity</L>
                     </TabsTrigger>
                     <TabsTrigger value="users" className="flex-none px-3">
-                      User Activity
+                      <L>User Activity</L>
                     </TabsTrigger>
                     <TabsTrigger value="mcp" className="flex-none px-3">
                       MCP Server Activity
@@ -530,7 +532,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                     </TabsTrigger>
                     {isAdmin && (
                       <TabsTrigger value="errors" className="flex-none px-3">
-                        Errors
+                        <L>Errors</L>
                       </TabsTrigger>
                     )}
                   </TabsList>
@@ -540,7 +542,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                     </LiteUiMask>
                     <Button variant="outline" size="sm" onClick={() => setIsGlobalExportModalOpen(true)}>
                       <Download />
-                      Export Data
+                      <L>Export Data</L>
                     </Button>
                   </div>
                 </div>
@@ -631,7 +633,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                   Object.keys(modelMetrics).length > 0 &&
                   Object.keys(filteredModelMetrics).length === 0 ? (
                     <p className="rounded-lg border p-6 text-center text-sm text-muted-foreground">
-                      No models match &quot;{trimmedModelQuery}&quot; in this date range
+                      <L>No models match &quot;</L>
+                      {trimmedModelQuery}
+                      <L>&quot; in this date range</L>
                     </p>
                   ) : (
                     <ActivityMetrics

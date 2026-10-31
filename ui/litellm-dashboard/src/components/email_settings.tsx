@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useState } from "react";
 import { useLiteUi } from "@/contexts/LiteUiContext";
 import { Button } from "@/components/ui/button";
@@ -14,15 +16,44 @@ interface EmailSettingsProps {
   alerts: any[];
 }
 
-const REQUIRED_MARKER = <span className="text-destructive"> Required * </span>;
+const REQUIRED_MARKER = (
+  <span className="text-destructive">
+    <L> Required * </L>
+  </span>
+);
 
 const FIELD_HELP: Record<string, React.ReactNode> = {
-  SMTP_HOST: <>Enter the SMTP host address, e.g. `smtp.resend.com`{REQUIRED_MARKER}</>,
-  SMTP_PORT: <>Enter the SMTP port number, e.g. `587`{REQUIRED_MARKER}</>,
-  SMTP_USERNAME: <>Enter the SMTP username, e.g. `username`{REQUIRED_MARKER}</>,
+  SMTP_HOST: (
+    <>
+      <L>Enter the SMTP host address, e.g. `smtp.resend.com`</L>
+      {REQUIRED_MARKER}
+    </>
+  ),
+  SMTP_PORT: (
+    <>
+      <L>Enter the SMTP port number, e.g. `587`</L>
+      {REQUIRED_MARKER}
+    </>
+  ),
+  SMTP_USERNAME: (
+    <>
+      <L>Enter the SMTP username, e.g. `username`</L>
+      {REQUIRED_MARKER}
+    </>
+  ),
   SMTP_PASSWORD: REQUIRED_MARKER,
-  SMTP_SENDER_EMAIL: <>Enter the sender email address, e.g. `sender@berri.ai`{REQUIRED_MARKER}</>,
-  TEST_EMAIL_ADDRESS: <>Email Address to send `Test Email Alert` to. example: `info@berri.ai`{REQUIRED_MARKER}</>,
+  SMTP_SENDER_EMAIL: (
+    <>
+      <L>Enter the sender email address, e.g. `sender@berri.ai`</L>
+      {REQUIRED_MARKER}
+    </>
+  ),
+  TEST_EMAIL_ADDRESS: (
+    <>
+      <L>Email Address to send `Test Email Alert` to. example: `info@berri.ai`</L>
+      {REQUIRED_MARKER}
+    </>
+  ),
   EMAIL_LOGO_URL: <>(Optional) Customize the Logo that appears in the email, pass a url to your logo</>,
   EMAIL_SUPPORT_CONTACT: (
     <>(Optional) Customize the support email address that appears in the email. Default is support@berri.ai</>
@@ -93,7 +124,9 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
       </div>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Email Server Settings</CardTitle>
+          <CardTitle className="text-base">
+            <L>Email Server Settings</L>
+          </CardTitle>
           <p className="text-sm">
             <a
               href="https://docs.litellm.ai/docs/proxy/email"
@@ -101,7 +134,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
               rel="noreferrer"
               className="text-primary underline underline-offset-4"
             >
-              LiteLLM Docs: email alerts
+              <L>LiteLLM Docs: email alerts</L>
             </a>
           </p>
         </CardHeader>
@@ -157,7 +190,9 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
             ))}
 
           <div className="mt-6 flex gap-2">
-            <Button onClick={() => handleSaveEmailSettings()}>Save Changes</Button>
+            <Button onClick={() => handleSaveEmailSettings()}>
+              <L>Save Changes</L>
+            </Button>
             <Button
               variant="secondary"
               onClick={async () => {
@@ -170,7 +205,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
                 }
               }}
             >
-              Test Email Alerts
+              <L>Test Email Alerts</L>
             </Button>
           </div>
         </CardContent>

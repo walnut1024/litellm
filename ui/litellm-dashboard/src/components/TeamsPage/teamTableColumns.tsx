@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { Copy, KeyRound, Layers, MoreHorizontal, Pencil, Trash2, Users } from "lucide-react";
 
@@ -105,19 +107,19 @@ function TeamRowActions({ team, canManage, onEditTeam, onDeleteTeam }: TeamRowAc
         {canManage && (
           <DropdownMenuItem onClick={() => onEditTeam(team)} data-testid="team-action-edit">
             <Pencil />
-            Edit team
+            <L>Edit team</L>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem onClick={handleCopy} data-testid="team-action-copy">
           <Copy />
-          Copy team ID
+          <L>Copy team ID</L>
         </DropdownMenuItem>
         {canManage && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={() => onDeleteTeam(team)} data-testid="team-action-delete">
               <Trash2 />
-              Delete team
+              <L>Delete team</L>
             </DropdownMenuItem>
           </>
         )}
@@ -304,7 +306,11 @@ export const getTeamTableColumns = ({
     {
       id: "actions",
       meta: { className: "text-right", headerClassName: "text-right" },
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => (
+        <span className="sr-only">
+          <L>Actions</L>
+        </span>
+      ),
       size: 60,
       enableSorting: false,
       enableHiding: false,

@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import type { ReactNode } from "react";
 import { Info } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
@@ -86,7 +88,7 @@ const getKeyStatus = (key: KeyResponse): KeyStatus => {
 
 const InfoHeader = ({ label, tooltip }: { label: ReactNode; tooltip: string }) => (
   <span className="flex items-center gap-1">
-    {label}
+    <L>{label}</L>
     <HoverCard>
       <HoverCardTrigger render={<Info className="size-3 text-muted-foreground cursor-help" />} />
       <HoverCardContent className="w-auto">{tooltip}</HoverCardContent>
@@ -368,8 +370,14 @@ export const getKeyTableColumns = ({
       const key = row.original;
       return (
         <div className="text-xs">
-          <div>TPM: {key.tpm_limit !== null ? key.tpm_limit : "Unlimited"}</div>
-          <div>RPM: {key.rpm_limit !== null ? key.rpm_limit : "Unlimited"}</div>
+          <div>
+            <L>TPM: </L>
+            {key.tpm_limit !== null ? key.tpm_limit : "Unlimited"}
+          </div>
+          <div>
+            <L>RPM: </L>
+            {key.rpm_limit !== null ? key.rpm_limit : "Unlimited"}
+          </div>
         </div>
       );
     },

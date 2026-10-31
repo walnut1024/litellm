@@ -4,9 +4,7 @@ import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useIsOrgAdmin from "@/app/(dashboard)/hooks/useIsOrgAdmin";
 import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails";
 import { useLogout } from "@/app/(dashboard)/hooks/useLogout";
-import { getProxyBaseUrl } from "@/components/networking";
 import { useTerminology } from "@/contexts/TerminologyContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -87,14 +85,6 @@ import SidebarUsageCard from "./SidebarUsageCard";
 import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
 
 const ICON = { strokeWidth: 1.75 } as const;
-
-const LOGO_CLASS_NAME =
-  "h-5 w-auto max-w-[150px] object-contain group-data-[collapsed=true]/sidebar:h-7 group-data-[collapsed=true]/sidebar:w-7";
-
-function bundledLogoSrc(baseUrl: string, { dark, monogram }: { dark: boolean; monogram: boolean }): string {
-  const query = [dark && "theme=dark", monogram && "variant=monogram"].filter(Boolean).join("&");
-  return `${baseUrl}/get_image${query ? `?${query}` : ""}`;
-}
 
 interface SidebarProps {
   collapsed?: boolean;
@@ -554,12 +544,9 @@ const Sidebar_: React.FC<SidebarProps> = ({
   const labelOf = (item: MenuItem) => (typeof item.label === "string" ? term(item.label) : item.label);
   const isOrgAdmin = useIsOrgAdmin();
   const { data: teams } = useTeams();
-  const { logoUrl, logoUrlDark } = useTheme();
-  const [erroredDarkLogo, setErroredDarkLogo] = useState<string | null>(null);
   const { data: healthData } = useHealthReadinessDetails(accessToken);
   const logout = useLogout(accessToken);
 
-  const baseUrl = getProxyBaseUrl();
   const version = healthData?.litellm_version;
   const currentRoute = routeForPathname(usePathname());
   const selectedKey = findMenuItemKey(currentRoute);
@@ -697,24 +684,13 @@ const Sidebar_: React.FC<SidebarProps> = ({
     );
   };
 
-  const logoSrc = logoUrl || bundledLogoSrc(baseUrl, { dark: false, monogram: collapsed });
-  const reachableDarkLogo = logoUrlDark === erroredDarkLogo ? null : logoUrlDark;
-  const darkLogoSrc = reachableDarkLogo || logoUrl || bundledLogoSrc(baseUrl, { dark: true, monogram: collapsed });
-
   return (
     <Sidebar collapsed={collapsed}>
       <SidebarHeader className="h-14 border-b border-border group-data-[collapsed=true]/sidebar:h-auto">
         <div className="flex items-center justify-between gap-2 group-data-[collapsed=true]/sidebar:flex-col">
           <div className="flex min-w-0 items-center gap-2">
-            <Link href={uiHref("")} className="flex min-w-0 items-center" aria-label="LiteLLM home">
-              <img src={logoSrc} alt="LiteLLM" className={cn(LOGO_CLASS_NAME, "dark:hidden")} />
-              <img
-                src={darkLogoSrc}
-                alt=""
-                aria-hidden
-                onError={() => setErroredDarkLogo(logoUrlDark)}
-                className={cn(LOGO_CLASS_NAME, "hidden dark:block")}
-              />
+            <Link href={uiHref("home")} className="moma-brand text-xl">
+              MoMA 轻量版
             </Link>
             {version && (
               <Badge

@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 
@@ -69,7 +71,9 @@ function DialogContent({
             render={<Button variant="ghost" className="absolute top-4 right-4" size="icon-sm" />}
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">
+              <LocalizedText>Close</LocalizedText>
+            </span>
           </DialogPrimitive.Close>
         )}
       </DialogPrimitive.Popup>
@@ -101,13 +105,15 @@ function DialogFooter({
   );
 }
 
-function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
+function DialogTitle({ className, children, ...props }: DialogPrimitive.Title.Props) {
   return (
-    <DialogPrimitive.Title data-slot="dialog-title" className={cn("leading-none font-medium", className)} {...props} />
+    <DialogPrimitive.Title data-slot="dialog-title" className={cn("leading-none font-medium", className)} {...props}>
+      <LocalizedText>{children}</LocalizedText>
+    </DialogPrimitive.Title>
   );
 }
 
-function DialogDescription({ className, ...props }: DialogPrimitive.Description.Props) {
+function DialogDescription({ className, children, ...props }: DialogPrimitive.Description.Props) {
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
@@ -116,7 +122,9 @@ function DialogDescription({ className, ...props }: DialogPrimitive.Description.
         className,
       )}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </DialogPrimitive.Description>
   );
 }
 

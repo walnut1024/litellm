@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React from "react";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import {
@@ -74,7 +76,9 @@ function UserField({ userAlias, userEmail, userId }: { userAlias?: string | null
       <span className="text-muted-foreground">
         <User className="size-3.5" />
       </span>
-      <span className="text-xs uppercase tracking-[0.05em] text-muted-foreground">User</span>
+      <span className="text-xs uppercase tracking-[0.05em] text-muted-foreground">
+        <L>User</L>
+      </span>
     </div>
   );
 
@@ -178,7 +182,7 @@ export function KeyInfoHeader({
     <span>
       <Button variant="outline" onClick={onRegenerate} disabled={regenerateDisabled}>
         <RefreshCw className="size-3.5" />
-        Regenerate Key
+        <L>Regenerate Key</L>
       </Button>
     </span>
   );
@@ -189,7 +193,7 @@ export function KeyInfoHeader({
         <div style={{ marginBottom: 16 }}>
           <Button onClick={onCreateNew}>
             <Plus className="size-3.5" />
-            Create New Key
+            <L>Create New Key</L>
           </Button>
         </div>
       )}
@@ -211,12 +215,15 @@ export function KeyInfoHeader({
             {isBlocked && (
               <Badge variant="destructive">
                 <Ban className="size-3" />
-                Blocked
+                <L>Blocked</L>
               </Badge>
             )}
           </div>
           <div className="flex min-w-0 items-center gap-1">
-            <span className="min-w-0 break-words text-muted-foreground">Key ID: {data.keyId}</span>
+            <span className="min-w-0 break-words text-muted-foreground">
+              <L>Key ID: </L>
+              {data.keyId}
+            </span>
             <CopyButton value={data.keyId} label="Copy Key ID" iconClassName="size-3.5" />
           </div>
         </div>
@@ -243,23 +250,23 @@ export function KeyInfoHeader({
                   (isBlocked ? (
                     <DropdownMenuItem onClick={onToggleBlocked}>
                       <CircleCheck className="size-3.5" />
-                      Unblock Key
+                      <L>Unblock Key</L>
                     </DropdownMenuItem>
                   ) : (
                     <DropdownMenuItem variant="destructive" onClick={onToggleBlocked}>
                       <Ban className="size-3.5" />
-                      Block Key
+                      <L>Block Key</L>
                     </DropdownMenuItem>
                   ))}
                 {onResetSpend && (
                   <DropdownMenuItem variant="destructive" onClick={onResetSpend}>
                     <ArrowLeftRight className="size-3.5" />
-                    Reset Spend
+                    <L>Reset Spend</L>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem variant="destructive" onClick={onDelete}>
                   <Trash2 className="size-3.5" />
-                  Delete Key
+                  <L>Delete Key</L>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

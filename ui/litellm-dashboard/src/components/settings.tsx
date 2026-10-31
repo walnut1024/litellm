@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useEffect, useState } from "react";
 import { useLiteUi } from "@/contexts/LiteUiContext";
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
@@ -212,7 +214,9 @@ export const CallbackSelector: React.FC<CallbackSelectorProps> = ({
               aria-invalid={fieldState.error !== undefined || undefined}
             />
             <ComboboxContent>
-              <ComboboxEmpty>No results</ComboboxEmpty>
+              <ComboboxEmpty>
+                <L>No results</L>
+              </ComboboxEmpty>
               <ComboboxList>
                 {(callbackConfig: CallbackConfigOption) => (
                   <ComboboxItem key={callbackConfig.id} value={callbackConfig}>
@@ -576,10 +580,18 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
           <TabsList variant="line">
             <TabsTrigger value="logging-callbacks">Logging Callbacks</TabsTrigger>
             <TabsTrigger value="cloudzero-cost-tracking">CloudZero Cost Tracking</TabsTrigger>
-            <TabsTrigger value="alerting-types">Alerting Types</TabsTrigger>
-            <TabsTrigger value="alerting-settings">Alerting Settings</TabsTrigger>
-            <TabsTrigger value="email-alerts">Email Alerts</TabsTrigger>
-            <TabsTrigger value="ms-teams-alerts">MS Teams Alerts</TabsTrigger>
+            <TabsTrigger value="alerting-types">
+              <L>Alerting Types</L>
+            </TabsTrigger>
+            <TabsTrigger value="alerting-settings">
+              <L>Alerting Settings</L>
+            </TabsTrigger>
+            <TabsTrigger value="email-alerts">
+              <L>Email Alerts</L>
+            </TabsTrigger>
+            <TabsTrigger value="ms-teams-alerts">
+              <L>MS Teams Alerts</L>
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="logging-callbacks" keepMounted>
             <LoggingCallbacksTable
@@ -610,10 +622,12 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
           <TabsContent value="alerting-types" keepMounted>
             <Card className="p-6">
               <p className="my-2">
-                Alerts are sent to any Slack-compatible incoming webhook URL (Slack, Rocket.Chat, Mattermost, etc.). Get
-                Slack webhook urls from{" "}
+                <L>
+                  Alerts are sent to any Slack-compatible incoming webhook URL (Slack, Rocket.Chat, Mattermost, etc.).
+                  Get Slack webhook urls from
+                </L>{" "}
                 <a href="https://api.slack.com/messaging/webhooks" target="_blank" style={{ color: "blue" }}>
-                  here
+                  <L>here</L>
                 </a>
               </p>
               <Table>
@@ -621,7 +635,9 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                   <TableRow>
                     <TableHead></TableHead>
                     <TableHead></TableHead>
-                    <TableHead>Webhook URL (Slack-compatible)</TableHead>
+                    <TableHead>
+                      <L>Webhook URL (Slack-compatible)</L>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
 
@@ -674,7 +690,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                 </TableBody>
               </Table>
               <Button size="xs" className="mt-2" onClick={handleSaveAlerts}>
-                Save Changes
+                <L>Save Changes</L>
               </Button>
 
               <Button
@@ -690,7 +706,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                 }}
                 className="mx-2"
               >
-                Test Alerts
+                <L>Test Alerts</L>
               </Button>
             </Card>
           </TabsContent>
@@ -737,7 +753,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
 
               <div className="flex justify-end space-x-3 pt-6 mt-6 border-t border-border">
                 <Button type="button" variant="outline" onClick={cancelAddCallback} disabled={isAddingCallback}>
-                  Cancel
+                  <L>Cancel</L>
                 </Button>
                 <Button type="submit" disabled={isAddingCallback}>
                   {isAddingCallback ? "Adding..." : "Add Callback"}
@@ -778,10 +794,10 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
 
               <div className="flex justify-end space-x-3 pt-6 mt-6 border-t border-border">
                 <Button type="button" variant="outline" onClick={closeEditCallbackModal} disabled={isUpdatingCallback}>
-                  Cancel
+                  <L>Cancel</L>
                 </Button>
                 <Button type="submit" disabled={isUpdatingCallback}>
-                  {isUpdatingCallback ? "Saving..." : "Save Changes"}
+                  <L>{isUpdatingCallback ? "Saving..." : "Save Changes"}</L>
                 </Button>
               </div>
             </form>

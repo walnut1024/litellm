@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 
 import { ArrowRight, Plus, Rocket, Sparkles } from "lucide-react";
@@ -32,12 +34,14 @@ export default function HomePage() {
   return (
     <Page>
       <PageHeader>
-        <PageHeaderTitle>Home</PageHeaderTitle>
+        <PageHeaderTitle>
+          <L>Home</L>
+        </PageHeaderTitle>
         {!isViewOnly && (
           <PageHeaderControls>
             <Button render={<a href={uiHref("api-keys?create=true")} />}>
               <Plus />
-              Create New Virtual Key
+              <L>Create New Virtual Key</L>
             </Button>
           </PageHeaderControls>
         )}
@@ -50,9 +54,11 @@ export default function HomePage() {
       <section aria-label={`Usage, last ${HOME_USAGE_DAYS} days`}>
         {usage.failed ? (
           <div className="flex items-center justify-between gap-2 rounded-xl border bg-card px-4 py-3 text-sm">
-            <span className="text-destructive">Failed to load usage</span>
+            <span className="text-destructive">
+              <L>Failed to load usage</L>
+            </span>
             <Button variant="outline" size="sm" onClick={usage.retry}>
-              Retry
+              <L>Retry</L>
             </Button>
           </div>
         ) : (

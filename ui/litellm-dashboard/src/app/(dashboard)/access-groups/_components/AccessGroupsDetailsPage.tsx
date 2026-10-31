@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useAccessGroupDetails } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroupDetails";
 import {
   ArrowLeftIcon,
@@ -127,7 +129,9 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
         <Button variant="ghost" size="icon" aria-label="Back" onClick={onBack} className="mb-4">
           <ArrowLeftIcon className="size-4" />
         </Button>
-        <p className="py-8 text-center text-sm text-muted-foreground">Access group not found</p>
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          <L>Access group not found</L>
+        </p>
       </div>
     );
   }
@@ -152,41 +156,56 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
           <div>
             <h1 className="text-xl font-semibold tracking-tight text-foreground">{accessGroup.access_group_name}</h1>
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <span>ID: {accessGroup.access_group_id}</span>
+              <span>
+                <L>ID: </L>
+                {accessGroup.access_group_id}
+              </span>
               <CopyButton value={accessGroup.access_group_id} label="Copy access group ID" />
             </div>
           </div>
         </div>
         <Button onClick={() => setIsEditModalVisible(true)}>
           <EditIcon className="size-4" />
-          Edit Access Group
+          <L>Edit Access Group</L>
         </Button>
       </div>
 
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Group Details</CardTitle>
+          <CardTitle>
+            <L>Group Details</L>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
-            <dt className="text-muted-foreground">Description</dt>
+            <dt className="text-muted-foreground">
+              <L>Description</L>
+            </dt>
             <dd className="text-foreground">{accessGroup.description || "—"}</dd>
-            <dt className="text-muted-foreground">Created</dt>
+            <dt className="text-muted-foreground">
+              <L>Created</L>
+            </dt>
             <dd className="flex items-center gap-1 text-foreground">
               {new Date(accessGroup.created_at).toLocaleString()}
               {accessGroup.created_by && (
                 <>
-                  <span>by</span>
+                  <span>
+                    <L>by</L>
+                  </span>
                   <DefaultProxyAdminTag userId={accessGroup.created_by} />
                 </>
               )}
             </dd>
-            <dt className="text-muted-foreground">Last Updated</dt>
+            <dt className="text-muted-foreground">
+              <L>Last Updated</L>
+            </dt>
             <dd className="flex items-center gap-1 text-foreground">
               {new Date(accessGroup.updated_at).toLocaleString()}
               {accessGroup.updated_by && (
                 <>
-                  <span>by</span>
+                  <span>
+                    <L>by</L>
+                  </span>
                   <DefaultProxyAdminTag userId={accessGroup.updated_by} />
                 </>
               )}
@@ -200,7 +219,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <KeyIcon className="size-4" />
-              Attached Keys
+              <L>Attached Keys</L>
               <Badge variant="secondary">{keys.length}</Badge>
             </CardTitle>
             {keys.length > MAX_PREVIEW && (
@@ -219,7 +238,9 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No keys attached</p>
+              <p className="text-sm text-muted-foreground">
+                <L>No keys attached</L>
+              </p>
             )}
           </CardContent>
         </Card>
@@ -228,7 +249,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UsersIcon className="size-4" />
-              Attached Teams
+              <L>Attached Teams</L>
               <Badge variant="secondary">{teams.length}</Badge>
             </CardTitle>
             {teams.length > MAX_PREVIEW && (
@@ -247,7 +268,9 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No teams attached</p>
+              <p className="text-sm text-muted-foreground">
+                <L>No teams attached</L>
+              </p>
             )}
           </CardContent>
         </Card>
@@ -259,7 +282,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
             <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
               <TabsTrigger value="models" className="flex-none gap-2 rounded-none px-4 py-2">
                 <LayersIcon className="size-4" />
-                Models
+                <L>Models</L>
                 <Badge variant="secondary">{models.length}</Badge>
               </TabsTrigger>
               <TabsTrigger value="mcp" className="flex-none gap-2 rounded-none px-4 py-2">

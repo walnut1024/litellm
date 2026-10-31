@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 /**
  * Compact type-indicator badges for LLM, Agent, and MCP log entries.
  * Used in the request logs table and session type column.
@@ -100,6 +102,6 @@ export const AgentBadge = ({ count }: { count?: number }) => (
 export const BatchBadge = () => (
   <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-teal-50 text-teal-700 border border-teal-200 rounded-full text-[11px] font-medium whitespace-nowrap dark:bg-teal-950 dark:text-teal-300 dark:border-teal-800">
     <LayersIcon />
-    Batch
+    <L>Batch</L>
   </span>
 );

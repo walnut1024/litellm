@@ -1,5 +1,6 @@
 "use client";
 
+import { LocalizedText } from "@/contexts/LocaleContext";
 import * as React from "react";
 import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
 
@@ -65,7 +66,9 @@ function SheetContent({
             render={<Button variant="ghost" className="absolute top-4 right-4" size="icon-sm" />}
           >
             <XIcon />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">
+              <LocalizedText>Close</LocalizedText>
+            </span>
           </SheetPrimitive.Close>
         )}
       </SheetPrimitive.Popup>
@@ -81,19 +84,23 @@ function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
   return <div data-slot="sheet-footer" className={cn("mt-auto flex flex-col gap-2 p-4", className)} {...props} />;
 }
 
-function SheetTitle({ className, ...props }: SheetPrimitive.Title.Props) {
+function SheetTitle({ className, children, ...props }: SheetPrimitive.Title.Props) {
   return (
-    <SheetPrimitive.Title data-slot="sheet-title" className={cn("font-medium text-foreground", className)} {...props} />
+    <SheetPrimitive.Title data-slot="sheet-title" className={cn("font-medium text-foreground", className)} {...props}>
+      <LocalizedText>{children}</LocalizedText>
+    </SheetPrimitive.Title>
   );
 }
 
-function SheetDescription({ className, ...props }: SheetPrimitive.Description.Props) {
+function SheetDescription({ className, children, ...props }: SheetPrimitive.Description.Props) {
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
       className={cn("text-sm text-muted-foreground", className)}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </SheetPrimitive.Description>
   );
 }
 

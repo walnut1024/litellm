@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 
 import { useTerminology } from "@/contexts/TerminologyContext";
@@ -40,14 +42,19 @@ function SettingRow({
   muted = false,
   onCheckedChange,
 }: SettingRowProps) {
+  const t = useTranslation();
   return (
     <div className={indented ? "ml-8 flex items-start gap-3" : "flex items-start gap-3"}>
-      <Switch checked={checked} disabled={disabled} onCheckedChange={onCheckedChange} aria-label={ariaLabel} />
+      <Switch checked={checked} disabled={disabled} onCheckedChange={onCheckedChange} aria-label={t(ariaLabel)} />
       <div className="space-y-1">
         <p className={muted ? "text-sm font-medium text-muted-foreground" : "text-sm font-medium text-foreground"}>
-          {label}
+          <L>{label}</L>
         </p>
-        {description && <p className="text-sm text-muted-foreground">{description}</p>}
+        {description && (
+          <p className="text-sm text-muted-foreground">
+            <L>{description}</L>
+          </p>
+        )}
       </div>
     </div>
   );
@@ -298,7 +305,9 @@ export default function UISettings() {
     <Card>
       <CardHeader>
         <CardTitle>
-          <h3>UI Settings</h3>
+          <h3>
+            <L>UI Settings</L>
+          </h3>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -310,29 +319,41 @@ export default function UISettings() {
           </div>
         ) : isError ? (
           <Alert variant="error">
-            <AlertTitle>Could not load UI settings</AlertTitle>
+            <AlertTitle>
+              <L>Could not load UI settings</L>
+            </AlertTitle>
             {error instanceof Error && <AlertDescription>{error.message}</AlertDescription>}
           </Alert>
         ) : (
           <div className="space-y-6">
-            {schema?.description && <p className="text-sm text-foreground">{schema.description}</p>}
+            {schema?.description && (
+              <p className="text-sm text-foreground">
+                <L>{schema.description}</L>
+              </p>
+            )}
             {updateError && (
               <Alert variant="error">
-                <AlertTitle>Could not update UI settings</AlertTitle>
+                <AlertTitle>
+                  <L>Could not update UI settings</L>
+                </AlertTitle>
                 {updateError instanceof Error && <AlertDescription>{updateError.message}</AlertDescription>}
               </Alert>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="usage-default-time-range">Default Usage time range</Label>
+              <Label htmlFor="usage-default-time-range">
+                <L>Default Usage time range</L>
+              </Label>
               <p id="usage-default-time-range-help" className="text-sm text-muted-foreground">
-                The starting range for everyone opening Usage. Shared links and manual date selections take precedence.
-                Calendar ranges use your browser’s timezone.
+                <L>
+                  The starting range for everyone opening Usage. Shared links and manual date selections take
+                  precedence. Calendar ranges use your browser’s timezone.
+                </L>
               </p>
               <Select
                 value={usageRange}
                 disabled={isUpdating || usageRangeConfigOwned}
-                items={relativeTimeOptions.map((option) => ({ value: option.settingValue, label: option.label }))}
+                items={relativeTimeOptions.map((option) => ({ value: option.settingValue, label: term(option.label) }))}
                 onValueChange={(value) => {
                   if (value === null) return;
                   updateSettings(
@@ -354,13 +375,15 @@ export default function UISettings() {
                 <SelectContent>
                   {relativeTimeOptions.map((option) => (
                     <SelectItem key={option.settingValue} value={option.settingValue}>
-                      {option.label}
+                      <L>{option.label}</L>
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {usageRangeConfigOwned && (
-                <p className="text-sm text-muted-foreground">Managed by the deployment configuration.</p>
+                <p className="text-sm text-muted-foreground">
+                  <L>Managed by the deployment configuration.</L>
+                </p>
               )}
             </div>
             <SettingRow

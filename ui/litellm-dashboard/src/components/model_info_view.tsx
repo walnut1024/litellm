@@ -1,3 +1,5 @@
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
 import { useModelHub, useModelsInfo } from "@/app/(dashboard)/hooks/models/useModels";
@@ -74,6 +76,7 @@ export default function ModelInfoView({
   onModelUpdate,
   modelAccessGroups,
 }: ModelInfoViewProps) {
+  const t = useTranslation();
   const queryClient = useQueryClient();
   const [localModelData, setLocalModelData] = useState<any>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -410,9 +413,9 @@ export default function ModelInfoView({
       <div className="p-4">
         <Button variant="ghost" onClick={onClose} className="mb-4">
           <ArrowLeft className="size-4" />
-          Back to Models
+          {t("Back to Models")}
         </Button>
-        <p className="text-sm">Loading...</p>
+        <p className="text-sm">{t("Loading...")}</p>
       </div>
     );
   }
@@ -423,9 +426,9 @@ export default function ModelInfoView({
       <div className="p-4">
         <Button variant="ghost" onClick={onClose} className="mb-4">
           <ArrowLeft className="size-4" />
-          Back to Models
+          {t("Back to Models")}
         </Button>
-        <p className="text-sm">Model not found</p>
+        <p className="text-sm">{t("Model not found")}</p>
       </div>
     );
   }
@@ -532,9 +535,12 @@ export default function ModelInfoView({
         <div>
           <Button variant="ghost" onClick={onClose} className="mb-4">
             <ArrowLeft className="size-4" />
-            Back to Models
+            {t("Back to Models")}
           </Button>
-          <h2 className="text-xl font-semibold">Public Model Name: {getDisplayModelName(modelData)}</h2>
+          <h2 className="text-xl font-semibold">
+            {t("Public Model Name:")}
+            {getDisplayModelName(modelData)}
+          </h2>
           <div className="flex items-center cursor-pointer">
             <span className="text-sm text-muted-foreground font-mono">{modelData.model_info.id}</span>
             <Button
@@ -562,7 +568,7 @@ export default function ModelInfoView({
                 data-testid="test-connection-button"
               >
                 <RefreshIcon className="h-4 w-4" />
-                Test Connection
+                {t("Test Connection")}
               </Button>
             )}
 
@@ -576,7 +582,7 @@ export default function ModelInfoView({
                   data-testid="update-api-key-button"
                 >
                   <KeyIcon className="h-4 w-4" />
-                  Update API Key
+                  {t("Update API Key")}
                 </Button>
 
                 <Button
@@ -587,7 +593,7 @@ export default function ModelInfoView({
                   data-testid="reuse-credentials-button"
                 >
                   <KeyIcon className="h-4 w-4" />
-                  Re-use Credentials
+                  {t("Re-use Credentials")}
                 </Button>
               </>
             )}
@@ -608,10 +614,10 @@ export default function ModelInfoView({
       <Tabs defaultValue="overview">
         <TabsList variant="line" className="mb-6 h-auto w-full justify-start rounded-none border-b p-0">
           <TabsTrigger value="overview" className="flex-none rounded-none px-4 py-2">
-            Overview
+            {t("Overview")}
           </TabsTrigger>
           <TabsTrigger value="raw" className="flex-none rounded-none px-4 py-2">
-            Raw JSON
+            {t("Raw JSON")}
           </TabsTrigger>
         </TabsList>
 
@@ -620,7 +626,7 @@ export default function ModelInfoView({
             {/* Overview Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
               <Card className="block p-6">
-                <p className="text-sm">Provider</p>
+                <p className="text-sm">{t("Provider")}</p>
                 <div className="mt-2 flex items-center space-x-2">
                   {modelData.provider && <Logo provider={modelData.provider} className="w-4 h-4" />}
                   <h3 className="text-lg font-medium">{modelData.provider || "Not Set"}</h3>
@@ -628,7 +634,7 @@ export default function ModelInfoView({
               </Card>
               <LiteUiMask adminOnly>
                 <Card className="block p-6">
-                  <p className="text-sm">LiteLLM Model</p>
+                  <p className="text-sm">{t("LiteLLM Model")}</p>
                   <div className="mt-2 overflow-hidden">
                     <SimpleTooltip content={modelData.litellm_model_name || "Not Set"} className="w-full min-w-0">
                       <div className="break-all text-sm font-medium leading-relaxed cursor-pointer">
@@ -640,7 +646,7 @@ export default function ModelInfoView({
               </LiteUiMask>
               <LiteUiMask adminOnly>
                 <Card className="block p-6">
-                  <p className="text-sm">Pricing</p>
+                  <p className="text-sm">{t("Pricing")}</p>
                   <ModelPricingSummary model={modelData} />
                 </Card>
               </LiteUiMask>
@@ -657,7 +663,7 @@ export default function ModelInfoView({
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                Created At{" "}
+                {t("Created At")}{" "}
                 {modelData.model_info.created_at
                   ? new Date(modelData.model_info.created_at).toLocaleDateString("en-US", {
                       month: "short",
@@ -675,7 +681,8 @@ export default function ModelInfoView({
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-                Created By {modelData.model_info.created_by || "Not Set"}
+                {t("Created By")}
+                {modelData.model_info.created_by || "Not Set"}
               </div>
             </div>
 
@@ -689,7 +696,7 @@ export default function ModelInfoView({
             <LiteUiMask adminOnly>
               <Card className="block p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-medium">Model Settings</h3>
+                  <h3 className="text-lg font-medium">{t("Model Settings")}</h3>
                   <div className="flex gap-2">
                     {isAutoRouterModel && canEditRouter && !isEditing && (
                       <Button onClick={() => setIsAutoRouterModalOpen(true)} className="flex items-center">
@@ -699,7 +706,7 @@ export default function ModelInfoView({
                     {canEditModel ? (
                       !isEditing && (
                         <Button onClick={() => setIsEditing(true)} className="flex items-center">
-                          Edit Settings
+                          {t("Edit Settings")}
                         </Button>
                       )
                     ) : (
@@ -732,7 +739,7 @@ export default function ModelInfoView({
                     teams={assignableTeams}
                   />
                 ) : (
-                  <p className="text-sm">Loading...</p>
+                  <p className="text-sm">{t("Loading...")}</p>
                 )}
               </Card>
             </LiteUiMask>
@@ -789,7 +796,7 @@ export default function ModelInfoView({
         <Dialog open={isCredentialModalOpen} onOpenChange={(open) => !open && setIsCredentialModalOpen(false)}>
           <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Using Existing Credential</DialogTitle>
+              <DialogTitle>{t("Using Existing Credential")}</DialogTitle>
             </DialogHeader>
             <CredentialIdentity
               className="text-sm"
@@ -800,7 +807,7 @@ export default function ModelInfoView({
             />
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsCredentialModalOpen(false)}>
-                Cancel
+                {t("Cancel")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -833,7 +840,7 @@ export default function ModelInfoView({
       <Dialog open={isAutoRouterTestModalOpen} onOpenChange={(open) => !open && setIsAutoRouterTestModalOpen(false)}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[700px]">
           <DialogHeader>
-            <DialogTitle>Connection Test Results</DialogTitle>
+            <DialogTitle>{t("Connection Test Results")}</DialogTitle>
           </DialogHeader>
           {isAutoRouterTestModalOpen && accessToken && (
             <AutoRouterConnectionTest
@@ -849,7 +856,7 @@ export default function ModelInfoView({
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAutoRouterTestModalOpen(false)}>
-              Close
+              {t("Close")}
             </Button>
           </DialogFooter>
         </DialogContent>

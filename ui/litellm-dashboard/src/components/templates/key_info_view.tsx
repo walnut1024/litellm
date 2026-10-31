@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useModelAccessGroupNames } from "@/app/(dashboard)/hooks/models/useModels";
@@ -202,7 +204,9 @@ export default function KeyInfoView({
           <ArrowLeft className="size-4" />
           {backButtonText}
         </Button>
-        <p className="text-sm">Key not found</p>
+        <p className="text-sm">
+          <L>Key not found</L>
+        </p>
       </div>
     );
   }
@@ -658,22 +662,29 @@ export default function KeyInfoView({
       <Dialog open={isResetSpendModalOpen} onOpenChange={(open) => setIsResetSpendModalOpen(open)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reset Key Spend</DialogTitle>
+            <DialogTitle>
+              <L>Reset Key Spend</L>
+            </DialogTitle>
           </DialogHeader>
           <p>
-            Reset spend for <strong>{currentKeyData?.key_alias || currentKeyData?.token_id || "this key"}</strong> to{" "}
-            <strong>$0</strong>?
+            <L>Reset spend for </L>
+            <strong>{currentKeyData?.key_alias || currentKeyData?.token_id || "this key"}</strong>
+            <L> to</L> <strong>$0</strong>?
           </p>
           <p style={{ color: "#666", fontSize: "0.875rem", marginTop: 8 }}>
-            Current spend: <strong>${formatNumberWithCommas(currentKeyData.spend, 4)}</strong>. Spend history is
-            preserved in logs. This resets the current period spend counter, the same as an automatic budget reset.
+            <L>Current spend: </L>
+            <strong>${formatNumberWithCommas(currentKeyData.spend, 4)}</strong>
+            <L>
+              . Spend history is preserved in logs. This resets the current period spend counter, the same as an
+              automatic budget reset.
+            </L>
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsResetSpendModalOpen(false)}>
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button variant="destructive" onClick={handleResetSpend} disabled={resetSpendLoading}>
-              Reset
+              <L>Reset</L>
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -682,7 +693,9 @@ export default function KeyInfoView({
       <Dialog open={isBlockModalOpen} onOpenChange={(open) => setIsBlockModalOpen(open)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{isBlocked ? "Unblock Key" : "Block Key"}</DialogTitle>
+            <DialogTitle>
+              <L>{isBlocked ? "Unblock Key" : "Block Key"}</L>
+            </DialogTitle>
           </DialogHeader>
           <p>
             {isBlocked ? "Unblock" : "Block"}{" "}
@@ -695,7 +708,7 @@ export default function KeyInfoView({
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsBlockModalOpen(false)}>
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button
               variant={isBlocked ? "default" : "destructive"}
@@ -711,7 +724,7 @@ export default function KeyInfoView({
       <Tabs defaultValue="overview">
         <TabsList variant="line" className="mb-4 h-auto w-full justify-start rounded-none border-b p-0">
           <TabsTrigger value="overview" className="flex-none rounded-none px-4 py-2">
-            Overview
+            <L>Overview</L>
           </TabsTrigger>
           <TabsTrigger value="savings" className="flex-none rounded-none px-4 py-2">
             Savings
@@ -722,7 +735,7 @@ export default function KeyInfoView({
             </TabsTrigger>
           )}
           <TabsTrigger value="settings" className="flex-none rounded-none px-4 py-2">
-            Settings
+            <L>Settings</L>
           </TabsTrigger>
         </TabsList>
 
@@ -732,7 +745,7 @@ export default function KeyInfoView({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="block p-6">
                 <p className="text-sm">
-                  Spend
+                  <L>Spend</L>
                   <BudgetPeriodTooltip
                     spend={currentKeyData.spend}
                     maxBudget={currentKeyData.max_budget}
@@ -749,10 +762,14 @@ export default function KeyInfoView({
                     <InheritedBudgetHint gates={inheritedGates} />
                   </p>
                   {currentKeyData.budget_reset_at && (
-                    <p className="text-sm">Resets {formatTimestamp(currentKeyData.budget_reset_at)}</p>
+                    <p className="text-sm">
+                      <L>Resets </L>
+                      {formatTimestamp(currentKeyData.budget_reset_at)}
+                    </p>
                   )}
                   <p className="text-sm mt-2" data-testid="key-lifetime-spend">
-                    Lifetime spend: ${formatNumberWithCommas(currentKeyData.total_spend ?? 0, 4)}
+                    <L>Lifetime spend: $</L>
+                    {formatNumberWithCommas(currentKeyData.total_spend ?? 0, 4)}
                     {needsLifetimeSpendBackfill(currentKeyData.spend, currentKeyData.total_spend) && (
                       <HoverCard>
                         <HoverCardTrigger
@@ -768,8 +785,10 @@ export default function KeyInfoView({
                           <Info className="size-3 text-muted-foreground" />
                         </HoverCardTrigger>
                         <HoverCardContent className="w-80">
-                          Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026 and was not backfilled,
-                          so this key&apos;s lifetime spend only counts usage since that upgrade.
+                          <L>
+                            Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026 and was not
+                            backfilled, so this key&apos;s lifetime spend only counts usage since that upgrade.
+                          </L>
                         </HoverCardContent>
                       </HoverCard>
                     )}
@@ -778,13 +797,17 @@ export default function KeyInfoView({
               </Card>
 
               <Card className="block p-6">
-                <p className="text-sm">Rate Limits</p>
+                <p className="text-sm">
+                  <L>Rate Limits</L>
+                </p>
                 <div className="mt-2">
                   <p className="text-sm">
-                    TPM: {currentKeyData.tpm_limit !== null ? currentKeyData.tpm_limit : "Unlimited"}
+                    <L>TPM: </L>
+                    {currentKeyData.tpm_limit !== null ? currentKeyData.tpm_limit : "Unlimited"}
                   </p>
                   <p className="text-sm">
-                    RPM: {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : "Unlimited"}
+                    <L>RPM: </L>
+                    {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : "Unlimited"}
                   </p>
                   <LiteUiMask>
                     <p className="text-sm">TPD (batch): {currentKeyData.tpd_limit ?? "Unlimited"}</p>
@@ -796,7 +819,9 @@ export default function KeyInfoView({
               </Card>
 
               <Card className="block p-6">
-                <p className="text-sm">Models</p>
+                <p className="text-sm">
+                  <L>Models</L>
+                </p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {currentKeyData.models && currentKeyData.models.length > 0 ? (
                     currentKeyData.models.map((model, index) => (
@@ -809,7 +834,9 @@ export default function KeyInfoView({
                       </BadgeLink>
                     ))
                   ) : (
-                    <p className="text-sm">No models specified</p>
+                    <p className="text-sm">
+                      <L>No models specified</L>
+                    </p>
                   )}
                 </div>
               </Card>
@@ -925,10 +952,12 @@ export default function KeyInfoView({
           <TabsContent value="settings" keepMounted>
             <Card className="block p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Key Settings</h3>
+                <h3 className="text-lg font-medium">
+                  <L>Key Settings</L>
+                </h3>
                 {!isEditing && canModifyKey && (
                   <Button variant="outline" onClick={() => setIsEditing(true)}>
-                    Edit Settings
+                    <L>Edit Settings</L>
                   </Button>
                 )}
               </div>
@@ -947,22 +976,30 @@ export default function KeyInfoView({
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium">Key ID</p>
+                    <p className="text-sm font-medium">
+                      <L>Key ID</L>
+                    </p>
                     <p className="text-sm font-mono">{currentKeyData.token_id || currentKeyData.token}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium">Key Alias</p>
+                    <p className="text-sm font-medium">
+                      <L>Key Alias</L>
+                    </p>
                     <p className="text-sm">{currentKeyData.key_alias || "Not Set"}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium">Secret Key</p>
+                    <p className="text-sm font-medium">
+                      <L>Secret Key</L>
+                    </p>
                     <p className="text-sm font-mono">{currentKeyData.key_name}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium">Team ID</p>
+                    <p className="text-sm font-medium">
+                      <L>Team ID</L>
+                    </p>
                     <p className="text-sm">
                       {currentKeyData.team_id ? (
                         <EntityLink href={teamDetailHref(currentKeyData.team_id)} className="font-normal">
@@ -992,28 +1029,38 @@ export default function KeyInfoView({
                     )}
 
                     <div>
-                      <p className="text-sm font-medium">Organization</p>
+                      <p className="text-sm font-medium">
+                        <L>Organization</L>
+                      </p>
                       <p className="text-sm">{keyOrganizationId(currentKeyData) || "Not Set"}</p>
                     </div>
                   </LiteUiMask>
 
                   <div>
-                    <p className="text-sm font-medium">Created</p>
+                    <p className="text-sm font-medium">
+                      <L>Created</L>
+                    </p>
                     <p className="text-sm">{formatTimestamp(currentKeyData.created_at)}</p>
                   </div>
 
                   {lastRegeneratedAt && (
                     <div>
-                      <p className="text-sm font-medium">Last Regenerated</p>
+                      <p className="text-sm font-medium">
+                        <L>Last Regenerated</L>
+                      </p>
                       <div className="flex items-center gap-2">
                         <p className="text-sm">{formatTimestamp(lastRegeneratedAt)}</p>
-                        <Badge variant="secondary">Recent</Badge>
+                        <Badge variant="secondary">
+                          <L>Recent</L>
+                        </Badge>
                       </div>
                     </div>
                   )}
 
                   <div>
-                    <p className="text-sm font-medium">Expires</p>
+                    <p className="text-sm font-medium">
+                      <L>Expires</L>
+                    </p>
                     <p className="text-sm">
                       {currentKeyData.expires ? formatTimestamp(currentKeyData.expires) : "Never"}
                     </p>
@@ -1041,22 +1088,30 @@ export default function KeyInfoView({
                   </LiteUiMask>
 
                   <div>
-                    <p className="text-sm font-medium">Spend</p>
+                    <p className="text-sm font-medium">
+                      <L>Spend</L>
+                    </p>
                     <p className="text-sm">${formatNumberWithCommas(currentKeyData.spend, 4)} USD</p>
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium">Lifetime Spend</p>
+                    <p className="text-sm font-medium">
+                      <L>Lifetime Spend</L>
+                    </p>
                     <p className="text-sm">${formatNumberWithCommas(currentKeyData.total_spend ?? 0, 4)} USD</p>
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium">Budget</p>
+                    <p className="text-sm font-medium">
+                      <L>Budget</L>
+                    </p>
                     <p className="text-sm">{budgetDisplay}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium">Budget Reset</p>
+                    <p className="text-sm font-medium">
+                      <L>Budget Reset</L>
+                    </p>
                     <p data-testid="budget-reset-value" className="text-sm">
                       {currentKeyData.budget_reset_at
                         ? `${currentKeyData.budget_duration ? `Every ${currentKeyData.budget_duration}, next ` : ""}${formatTimestamp(currentKeyData.budget_reset_at)}`
@@ -1082,7 +1137,9 @@ export default function KeyInfoView({
 
                     {hasRouterSettings(currentKeyData.router_settings) && (
                       <div>
-                        <p className="text-sm font-medium">Router Settings</p>
+                        <p className="text-sm font-medium">
+                          <L>Router Settings</L>
+                        </p>
                         <div className="mt-1">
                           <RouterSettingsSummary routerSettings={currentKeyData.router_settings} />
                         </div>
@@ -1156,7 +1213,9 @@ export default function KeyInfoView({
                     </div>
                   </LiteUiMask>
                   <div>
-                    <p className="text-sm font-medium">Models</p>
+                    <p className="text-sm font-medium">
+                      <L>Models</L>
+                    </p>
                     <div className="flex flex-wrap gap-2 mt-1">
                       {currentKeyData.models && currentKeyData.models.length > 0 ? (
                         currentKeyData.models.map((model, index) => (
@@ -1169,24 +1228,30 @@ export default function KeyInfoView({
                           </BadgeLink>
                         ))
                       ) : (
-                        <p className="text-sm">No models specified</p>
+                        <p className="text-sm">
+                          <L>No models specified</L>
+                        </p>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-sm font-medium">Rate Limits</p>
-                    <p className="text-sm">
-                      TPM: {currentKeyData.tpm_limit !== null ? currentKeyData.tpm_limit : "Unlimited"}
+                    <p className="text-sm font-medium">
+                      <L>Rate Limits</L>
                     </p>
                     <p className="text-sm">
-                      RPM: {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : "Unlimited"}
+                      <L>TPM: </L>
+                      {currentKeyData.tpm_limit !== null ? currentKeyData.tpm_limit : "Unlimited"}
+                    </p>
+                    <p className="text-sm">
+                      <L>RPM: </L>
+                      {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : "Unlimited"}
                     </p>
                     <LiteUiMask>
                       <p className="text-sm">TPD (batch): {currentKeyData.tpd_limit ?? "Unlimited"}</p>
                     </LiteUiMask>
                     <p className="text-sm">
-                      Max Parallel Requests:{" "}
+                      <L>Max Parallel Requests:</L>{" "}
                       {currentKeyData.max_parallel_requests !== null
                         ? currentKeyData.max_parallel_requests
                         : "Unlimited"}
@@ -1228,7 +1293,9 @@ export default function KeyInfoView({
 
                   <LiteUiMask>
                     <div>
-                      <p className="text-sm font-medium">Metadata</p>
+                      <p className="text-sm font-medium">
+                        <L>Metadata</L>
+                      </p>
                       <pre className="bg-muted p-2 rounded-sm text-xs overflow-auto mt-1">
                         {formatMetadataForDisplay(stripTagsFromMetadata(currentKeyData.metadata))}
                       </pre>

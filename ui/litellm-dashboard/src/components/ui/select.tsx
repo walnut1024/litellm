@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 import { Select as SelectPrimitive } from "@base-ui/react/select";
 
@@ -12,9 +14,15 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return <SelectPrimitive.Group data-slot="select-group" className={cn("scroll-my-1 p-1", className)} {...props} />;
 }
 
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
+function SelectValue({ className, placeholder, ...props }: SelectPrimitive.Value.Props) {
+  const t = useTranslation();
   return (
-    <SelectPrimitive.Value data-slot="select-value" className={cn("flex flex-1 text-left", className)} {...props} />
+    <SelectPrimitive.Value
+      data-slot="select-value"
+      placeholder={typeof placeholder === "string" ? t(placeholder) : placeholder}
+      className={cn("flex flex-1 text-left", className)}
+      {...props}
+    />
   );
 }
 

@@ -1,4 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React from "react";
 import { SimpleTooltip } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -343,7 +345,7 @@ const LoggingSettings: React.FC<LoggingSettingsProps> = ({
                   type="button"
                 >
                   <Trash2 />
-                  Remove
+                  <L>Remove</L>
                 </Button>
               </div>
               <div className="space-y-4">

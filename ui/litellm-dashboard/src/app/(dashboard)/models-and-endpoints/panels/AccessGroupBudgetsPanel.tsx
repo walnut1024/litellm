@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { SortingState } from "@tanstack/react-table";
 import { Inbox } from "lucide-react";
 import React, { useMemo, useState } from "react";
@@ -26,9 +28,11 @@ function EmptyState() {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Inbox className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No model access groups yet</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>No model access groups yet</L>
+      </div>
       <div className="text-sm text-muted-foreground">
-        Put a deployment in an access group from its model settings, then give the group a shared budget here.
+        <L>Put a deployment in an access group from its model settings, then give the group a shared budget here.</L>
       </div>
     </div>
   );
@@ -78,8 +82,10 @@ export default function AccessGroupBudgetsPanel() {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-muted-foreground">
-        A model access group can carry one budget that every key granted the group by name draws from together. Keys
-        that reach the group&apos;s models through a wildcard or all-proxy-models are not charged against it.
+        <L>
+          A model access group can carry one budget that every key granted the group by name draws from together. Keys
+          that reach the group&apos;s models through a wildcard or all-proxy-models are not charged against it.
+        </L>
       </p>
 
       <DataTable

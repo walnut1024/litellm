@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { BudgetResetSchedule, describeBudgetResetSchedule } from "@/utils/budgetUtils";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
 import { SimpleTooltip } from "@/components/ui/tooltip";
@@ -42,7 +44,9 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="text-muted-foreground">Loading your membership info…</CardContent>
+        <CardContent className="text-muted-foreground">
+          <L>Loading your membership info…</L>
+        </CardContent>
       </Card>
     );
   }
@@ -61,7 +65,7 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
     return (
       <Card>
         <CardContent className="text-muted-foreground">
-          No membership info available for the current user in this team.
+          <L>No membership info available for the current user in this team.</L>
         </CardContent>
       </Card>
     );
@@ -82,12 +86,16 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
         <CardContent>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             <div>
-              <span className="text-muted-foreground">User</span>
+              <span className="text-muted-foreground">
+                <L>User</L>
+              </span>
               <div className="mt-1 font-semibold">{data.user_email || data.user_id}</div>
               <span className="font-mono text-xs text-muted-foreground">{data.user_id}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Team Role</span>
+              <span className="text-muted-foreground">
+                <L>Team Role</L>
+              </span>
               <div className="mt-1">
                 <Badge variant={data.role === "admin" ? "default" : "secondary"}>{data.role || "user"}</Badge>
               </div>
@@ -103,7 +111,8 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
             <div className="mt-2">
               <h3 className="text-2xl font-semibold">${formatNumber(spend, 4)}</h3>
               <span className="text-muted-foreground">
-                of {maxBudget === null ? "Unlimited" : `$${formatNumber(maxBudget, 4)}`}
+                <L>of </L>
+                {maxBudget === null ? "Unlimited" : `$${formatNumber(maxBudget, 4)}`}
               </span>
             </div>
             <div className="mt-1 text-muted-foreground">{describePeriodLine(budgetReset)}</div>
@@ -114,9 +123,15 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
           <CardContent>
             {labelWithTooltip("Rate Limits", "Your per-member rate limits within this team.")}
             <div className="mt-2">
-              <span>TPM: {formatRateLimit(tpmLimit)}</span>
+              <span>
+                <L>TPM: </L>
+                {formatRateLimit(tpmLimit)}
+              </span>
               <br />
-              <span>RPM: {formatRateLimit(rpmLimit)}</span>
+              <span>
+                <L>RPM: </L>
+                {formatRateLimit(rpmLimit)}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -144,7 +159,9 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
                   ))}
                 </div>
               ) : (
-                <span>All Team Models</span>
+                <span>
+                  <L>All Team Models</L>
+                </span>
               )}
             </div>
           </CardContent>

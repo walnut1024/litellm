@@ -1,3 +1,5 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import React, { useMemo, useState } from "react";
 import { z } from "zod";
 import { all_admin_roles } from "@/utils/roles";
@@ -138,10 +140,12 @@ const changedLimit = (value: number | null, stored: number | null | undefined): 
 
 const labelWithHint = (label: string, hint: string): React.ReactNode => (
   <>
-    {label}
+    <L>{label}</L>
     <Tooltip>
       <TooltipTrigger render={<CircleHelp className="size-3.5 shrink-0 cursor-help text-muted-foreground" />} />
-      <TooltipContent>{hint}</TooltipContent>
+      <TooltipContent>
+        <L>{hint}</L>
+      </TooltipContent>
     </Tooltip>
   </>
 );
@@ -160,6 +164,7 @@ export function UserEditView({
   objectPermission,
   premiumUser = false,
 }: UserEditViewProps) {
+  const t = useTranslation();
   const canEditMcpPermissions = !isBulkEdit && all_admin_roles.includes(userRole || "");
   const [unlimitedBudget, setUnlimitedBudget] = useState(false);
   const [modelMaxBudget, setModelMaxBudget] = useSeededState<ModelMaxBudget>(
@@ -214,8 +219,8 @@ export function UserEditView({
 
   const roleOptions = Object.entries(possibleUIRoles ?? {}).map(([role, { ui_label, description }]) => ({
     value: role,
-    label: ui_label,
-    description,
+    label: t(ui_label),
+    description: description ? t(description) : description,
   }));
 
   return (
@@ -291,10 +296,10 @@ export function UserEditView({
             name="max_budget"
             label={
               <>
-                Max Budget (USD)
+                <L>Max Budget (USD)</L>
                 <label className="ml-3 inline-flex items-center gap-2 font-normal">
                   <Checkbox checked={unlimitedBudget} onCheckedChange={handleUnlimitedBudgetChange} />
-                  Unlimited Budget
+                  <L>Unlimited Budget</L>
                 </label>
               </>
             }
@@ -430,9 +435,11 @@ export function UserEditView({
 
         <div className="mt-6 flex justify-end gap-2">
           <Button variant="secondary" type="button" onClick={onCancel}>
-            Cancel
+            <L>Cancel</L>
           </Button>
-          <Button type="submit">Save Changes</Button>
+          <Button type="submit">
+            <L>Save Changes</L>
+          </Button>
         </div>
       </form>
     </TooltipProvider>

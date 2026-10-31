@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useEffect, useMemo, useState } from "react";
 import { useLiteUi } from "@/contexts/LiteUiContext";
 import dayjs from "dayjs";
@@ -240,7 +242,9 @@ const MemberModal = <T extends BaseMember>({
             )}
 
             {config.showEmail && config.showUserId && (
-              <div className="text-center text-sm text-muted-foreground">OR</div>
+              <div className="text-center text-sm text-muted-foreground">
+                <L>OR</L>
+              </div>
             )}
 
             {config.showUserId && (
@@ -262,9 +266,14 @@ const MemberModal = <T extends BaseMember>({
               name="role"
               label={
                 <span className="flex items-center gap-2">
-                  <span>Role</span>
+                  <span>
+                    <L>Role</L>
+                  </span>
                   {mode === "edit" && initialData && (
-                    <span className="text-sm text-muted-foreground">(Current: {getRoleLabel(initialData.role)})</span>
+                    <span className="text-sm text-muted-foreground">
+                      <L>(Current: </L>
+                      {getRoleLabel(initialData.role)})
+                    </span>
                   )}
                 </span>
               }
@@ -294,7 +303,7 @@ const MemberModal = <T extends BaseMember>({
 
           <div className="mt-6 text-right">
             <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="mr-2">
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button type="submit" variant="outline" disabled={isSubmitting}>
               {isSubmitting && <UiLoadingSpinner className="size-4" />}

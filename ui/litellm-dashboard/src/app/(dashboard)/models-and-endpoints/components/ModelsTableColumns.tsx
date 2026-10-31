@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { useLiteUi } from "@/contexts/LiteUiContext";
 import { CredentialIdentity } from "@/components/shared/CredentialIdentity";
@@ -96,7 +98,9 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
             <span className="truncate text-xs text-muted-foreground">{model.provider || "Unknown provider"}</span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-muted-foreground">Public Model Name</span>
+            <span className="text-xs text-muted-foreground">
+              <L>Public Model Name</L>
+            </span>
             <span className="truncate text-sm font-medium text-foreground" title={displayName}>
               {displayName}
             </span>
@@ -106,7 +110,9 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
             style={hideUpstream ? { display: "none" } : undefined}
             className="flex flex-col gap-0.5"
           >
-            <span className="text-xs text-muted-foreground">LiteLLM Model Name</span>
+            <span className="text-xs text-muted-foreground">
+              <L>LiteLLM Model Name</L>
+            </span>
             <span className="flex min-w-0 items-center gap-1.5">
               <span className="truncate font-mono text-sm text-foreground" title={litellmModelName}>
                 {litellmModelName}
@@ -131,7 +137,7 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
 function CredentialsHeader() {
   return (
     <span className="flex items-center gap-1">
-      Credentials
+      <L>Credentials</L>
       <HoverCard>
         <HoverCardTrigger
           render={
@@ -147,23 +153,25 @@ function CredentialsHeader() {
         </HoverCardTrigger>
         <HoverCardContent align="start" className="w-80">
           <div className="flex flex-col gap-3">
-            <span className="text-sm font-medium text-foreground">Credential types</span>
+            <span className="text-sm font-medium text-foreground">
+              <L>Credential types</L>
+            </span>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-info">
                 <RefreshCw className="size-3.5" />
-                Reusable
+                <L>Reusable</L>
               </span>
               <span className="text-xs text-muted-foreground">
-                Credentials saved in LiteLLM that can be added to models repeatedly.
+                <L>Credentials saved in LiteLLM that can be added to models repeatedly.</L>
               </span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
                 <Pencil className="size-3.5" />
-                Manual
+                <L>Manual</L>
               </span>
               <span className="text-xs text-muted-foreground">
-                Credentials added directly during model creation or defined in the config file.
+                <L>Credentials added directly during model creation or defined in the config file.</L>
               </span>
             </div>
           </div>
@@ -178,7 +186,7 @@ function CredentialsCell({ credentialName, label }: { credentialName: string | u
     return (
       <Badge variant="outline" className="gap-1 font-normal text-muted-foreground">
         <Pencil className="size-3" />
-        Manual
+        <L>Manual</L>
       </Badge>
     );
   }
@@ -265,7 +273,8 @@ function AccessGroupsCell({ accessGroups }: { accessGroups: string[] | null }) {
           }
           trigger={
             <Badge variant="outline" className="shrink-0 cursor-default font-normal">
-              +{overflow.length} more
+              +{overflow.length}
+              <L> more</L>
             </Badge>
           }
         />

@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { CircleAlert, Shield, TriangleAlert } from "lucide-react";
 import {
@@ -68,14 +70,14 @@ export const DeploymentHealthBanner = ({ handle }: { handle: DeploymentHealthHan
     >
       <Icon aria-hidden />
       <AlertTitle className="flex flex-wrap items-center gap-x-2">
-        {deploymentWarningContent(top.id).title}
+        <L>{deploymentWarningContent(top.id).title}</L>
         <SheetTrigger
           handle={handle}
           render={
             <Button variant="link" className="h-auto p-0 text-[13px] leading-5 font-medium text-foreground underline" />
           }
         >
-          Review
+          <L>Review</L>
         </SheetTrigger>
       </AlertTitle>
     </Alert>

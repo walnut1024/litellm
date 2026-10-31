@@ -151,7 +151,7 @@ export const UsageViewSelect: React.FC<UsageViewSelectProps> = ({
       }
       return {
         value: option.value,
-        label,
+        label: term(label),
         description: term(desc),
         icon: option.icon,
         badgeText: option.badgeText,
@@ -164,7 +164,7 @@ export const UsageViewSelect: React.FC<UsageViewSelectProps> = ({
     <div className="flex items-center gap-3" data-id={dataId}>
       <h1 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
         <BarChart3 aria-hidden="true" className="size-4" strokeWidth={2} />
-        {title}
+        {term(title)}
       </h1>
       <Select
         value={value}
@@ -172,7 +172,7 @@ export const UsageViewSelect: React.FC<UsageViewSelectProps> = ({
           if (next) onChange(next);
         }}
       >
-        <SelectTrigger aria-label={description} className="h-8 w-52">
+        <SelectTrigger aria-label={term(description)} className="h-8 w-52">
           <SelectValue>
             {selectedOption && (
               <span className="flex items-center gap-2">

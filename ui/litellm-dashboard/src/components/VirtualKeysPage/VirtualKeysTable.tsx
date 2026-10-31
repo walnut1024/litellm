@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useKeyInfo } from "@/app/(dashboard)/hooks/keys/useKeyInfo";
 import { useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
@@ -223,7 +225,11 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
 
   if (selectedKeyId) {
     if (!selectedKey && !selectedKeyLoadFailed) {
-      return <div className="p-4 text-sm text-muted-foreground">Loading key...</div>;
+      return (
+        <div className="p-4 text-sm text-muted-foreground">
+          <L>Loading key...</L>
+        </div>
+      );
     }
     return (
       <div className="w-full h-full overflow-hidden">
@@ -241,12 +247,14 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
 
   return (
     <PageContent>
-      <PageHeader>
+      <PageHeader className="moma-key-header">
         <PageHeaderTitle>
           <KeyRound />
-          Virtual Keys
+          <L>Virtual Keys</L>
         </PageHeaderTitle>
-        <PageHeaderDescription>Every key that authenticates requests to the gateway.</PageHeaderDescription>
+        <PageHeaderDescription>
+          <L>Every key that authenticates requests to the gateway.</L>
+        </PageHeaderDescription>
         {headerActions != null && <PageHeaderControls>{headerActions}</PageHeaderControls>}
       </PageHeader>
       <DataTable

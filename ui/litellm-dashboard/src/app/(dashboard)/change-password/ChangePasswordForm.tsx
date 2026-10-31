@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useState } from "react";
 import { CircleAlert } from "lucide-react";
 import { z } from "zod";
@@ -67,19 +69,25 @@ export function ChangePasswordForm() {
     <div className="mx-auto mt-10 w-full max-w-md">
       <Card>
         <CardContent>
-          <h3 className="text-2xl font-semibold text-foreground">Change Password</h3>
+          <h3 className="text-2xl font-semibold text-foreground">
+            <L>Change Password</L>
+          </h3>
           <p className="text-sm text-muted-foreground">
-            Enter your current password and choose a new one. The new password must meet this proxy&apos;s password
-            policy.
+            <L>
+              Enter your current password and choose a new one. The new password must meet this proxy&apos;s password
+              policy.
+            </L>
           </p>
 
           {passwordResetRequired && (
             <Alert variant="warning" className="mt-4">
               <CircleAlert />
               <AlertTitle>
-                Your password must be changed before you can use the dashboard: it was either found in a known data
-                breach or set by an administrator as a temporary password. After updating it, you will be signed out to
-                log in again.
+                <L>
+                  Your password must be changed before you can use the dashboard: it was either found in a known data
+                  breach or set by an administrator as a temporary password. After updating it, you will be signed out
+                  to log in again.
+                </L>
               </AlertTitle>
             </Alert>
           )}
@@ -109,7 +117,7 @@ export function ChangePasswordForm() {
             <div className="mt-8">
               <Button type="submit" disabled={isPending}>
                 {isPending && <UiLoadingSpinner className="size-4" role="img" aria-label="loading" />}
-                Change Password
+                <L>Change Password</L>
               </Button>
             </div>
           </form>

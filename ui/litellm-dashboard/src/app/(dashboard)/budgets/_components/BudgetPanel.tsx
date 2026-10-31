@@ -3,6 +3,8 @@
  *
  */
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
 import { Plus, Wallet } from "lucide-react";
 import React, { useCallback, useState } from "react";
@@ -85,22 +87,28 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
         <PageHeader>
           <PageHeaderTitle>
             <Wallet />
-            Budgets
+            <L>Budgets</L>
           </PageHeaderTitle>
-          <PageHeaderDescription>Spend, TPM and RPM limits you can assign to customers.</PageHeaderDescription>
+          <PageHeaderDescription>
+            <L>Spend, TPM and RPM limits you can assign to customers.</L>
+          </PageHeaderDescription>
           <PageHeaderControls>
             <PageTabsList>
               {canModify && (
                 <>
                   <Button onClick={() => setIsCreateModelVisible(true)}>
                     <Plus className="size-4" />
-                    Create Budget
+                    <L>Create Budget</L>
                   </Button>
                   <ToolbarSeparator className="mx-0 h-6" />
                 </>
               )}
-              <PageTabsTrigger value="budgets">Budgets</PageTabsTrigger>
-              <PageTabsTrigger value="examples">Examples</PageTabsTrigger>
+              <PageTabsTrigger value="budgets">
+                <L>Budgets</L>
+              </PageTabsTrigger>
+              <PageTabsTrigger value="examples">
+                <L>Examples</L>
+              </PageTabsTrigger>
             </PageTabsList>
           </PageHeaderControls>
         </PageHeader>
@@ -140,17 +148,19 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
         </TabsContent>
         <TabsContent value="examples" className="min-h-0 flex-1 overflow-y-auto" keepMounted>
           <div className="pt-6">
-            <p className="text-base text-muted-foreground">How to use budget id</p>
+            <p className="text-base text-muted-foreground">
+              <L>How to use budget id</L>
+            </p>
             <Tabs defaultValue="assign-budget">
               <TabsList variant="line" className="h-auto w-full justify-start rounded-none border-b p-0">
                 <TabsTrigger value="assign-budget" className="flex-none rounded-none px-4 py-2">
-                  Assign Budget to Customer
+                  <L>Assign Budget to Customer</L>
                 </TabsTrigger>
                 <TabsTrigger value="curl" className="flex-none rounded-none px-4 py-2">
-                  Test it (Curl)
+                  <L>Test it (Curl)</L>
                 </TabsTrigger>
                 <TabsTrigger value="openai-sdk" className="flex-none rounded-none px-4 py-2">
-                  Test it (OpenAI SDK)
+                  <L>Test it (OpenAI SDK)</L>
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="assign-budget" keepMounted>

@@ -8,19 +8,19 @@ import { paletteScopeForRoute } from "./utils";
 import { useCommandPalette } from "./CommandPaletteProvider";
 import { useShortcutLabel } from "./useShortcutLabel";
 
-export function CommandPaletteTrigger({ mobile = false }: { mobile?: boolean }) {
+export function CommandPaletteTrigger({ mobile = false, compact = false }: { mobile?: boolean; compact?: boolean }) {
   const pathname = usePathname();
   const { open, setOpen } = useCommandPalette();
   const shortcut = useShortcutLabel();
   const isKeysRoute = paletteScopeForRoute(routeSegmentForPathname(pathname)) === "keys";
   const label = isKeysRoute ? "Search keys…" : "Search or jump to…";
 
-  if (mobile) {
+  if (mobile || compact) {
     return (
       <Button
         variant="ghost"
         size="icon"
-        className="size-11 md:hidden"
+        className={mobile ? "size-11 md:hidden" : "size-9"}
         aria-label="Search"
         aria-expanded={open}
         onClick={() => setOpen(true)}

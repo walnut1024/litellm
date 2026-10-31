@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useId } from "react";
 import { useCreateBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
 import { applyBudgetPrecision } from "./budgetPrecision";
@@ -37,15 +39,19 @@ const BudgetModal: React.FC<BudgetModalProps> = ({ isModalVisible, setIsModalVis
     <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-[15px] leading-[22px] font-semibold">Create budget</DialogTitle>
+          <DialogTitle className="text-[15px] leading-[22px] font-semibold">
+            <L>Create budget</L>
+          </DialogTitle>
         </DialogHeader>
         <form id={formId} onSubmit={form.handleSubmit(handleCreate)} noValidate>
           <BudgetFormFields form={form} isEditing={false} />
         </form>
         <DialogFooter>
-          <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+          <DialogClose render={<Button variant="outline" />}>
+            <L>Cancel</L>
+          </DialogClose>
           <Button type="submit" form={formId}>
-            Create budget
+            <L>Create budget</L>
           </Button>
         </DialogFooter>
       </DialogContent>

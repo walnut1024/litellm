@@ -2,9 +2,7 @@ import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadine
 import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBouncingIcon";
 import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
 import { useWorker } from "@/hooks/useWorker";
-import { getProxyBaseUrl } from "@/components/networking";
 import { uiHref } from "@/utils/uiHref";
-import { useTheme } from "@/contexts/ThemeContext";
 import { revokeSessionAndClearClientState, useLogout } from "@/app/(dashboard)/hooks/useLogout";
 import { getLoginUrl } from "@/utils/returnUrlUtils";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +12,6 @@ import React from "react";
 import { BlogDropdown } from "./Navbar/BlogDropdown/BlogDropdown";
 import { DocsLink } from "./Navbar/DocsLink/DocsLink";
 import { CommunityEngagementButtons } from "./Navbar/CommunityEngagementButtons/CommunityEngagementButtons";
-import { cn } from "@/lib/cva.config";
 import { NotificationsBell } from "./Navbar/NotificationsBell/NotificationsBell";
 import UserDropdown from "./Navbar/UserDropdown/UserDropdown";
 import ThemeToggle from "./ThemeToggle/ThemeToggle";
@@ -29,8 +26,6 @@ interface NavbarProps {
   deploymentHealth?: React.ReactNode;
 }
 
-const NAV_LOGO_CLASS_NAME = "h-auto max-h-full w-auto max-w-full object-contain";
-
 const Navbar: React.FC<NavbarProps> = ({
   accessToken,
   isPublicPage = false,
@@ -38,17 +33,12 @@ const Navbar: React.FC<NavbarProps> = ({
   onToggleSidebar,
   deploymentHealth,
 }) => {
-  const baseUrl = getProxyBaseUrl();
-  const { logoUrl, logoUrlDark } = useTheme();
   const { data: healthData } = useHealthReadinessDetails(accessToken);
   const version = healthData?.litellm_version;
   const disableBouncingIcon = useDisableBouncingIcon();
   const hideCommunityLinks = useDisableShowPrompts();
   const { isControlPlane, selectedWorker } = useWorker();
   const showWorkerSwitch = isControlPlane && selectedWorker !== null;
-
-  const imageUrl = logoUrl || `${baseUrl}/get_image`;
-  const darkImageUrl = logoUrlDark || logoUrl || `${baseUrl}/get_image?theme=dark`;
 
   const handleLogout = useLogout(accessToken);
 
@@ -80,18 +70,8 @@ const Navbar: React.FC<NavbarProps> = ({
             )}
 
             <div className="flex items-center gap-2">
-              <Link href={uiHref("")} className="flex items-center">
-                <div className="relative">
-                  <div className="flex h-10 max-w-48 items-center justify-center overflow-hidden">
-                    <img src={imageUrl} alt="LiteLLM Brand" className={cn(NAV_LOGO_CLASS_NAME, "dark:hidden")} />
-                    <img
-                      src={darkImageUrl}
-                      alt=""
-                      aria-hidden
-                      className={cn(NAV_LOGO_CLASS_NAME, "hidden dark:block")}
-                    />
-                  </div>
-                </div>
+              <Link href={uiHref("home")} className="moma-brand">
+                MoMA 轻量版
               </Link>
               {version && (
                 <div className="relative">

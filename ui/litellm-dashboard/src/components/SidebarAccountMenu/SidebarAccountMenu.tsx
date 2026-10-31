@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails";
 import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts";
@@ -65,7 +67,7 @@ const InfoRow: React.FC<{ icon: React.ReactNode; label: string; children: React.
   <div className="flex min-h-[34px] items-center justify-between gap-3">
     <span className="flex items-center gap-2 text-[13px] text-muted-foreground">
       {icon}
-      {label}
+      <L>{label}</L>
     </span>
     {children}
   </div>
@@ -172,7 +174,11 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
           <>
             <span className="min-w-0 flex-1 leading-tight">
               <span className="block truncate text-[13px] font-medium text-sidebar-foreground">{displayName}</span>
-              {userRole && <span className="block truncate text-[11px] text-muted-foreground">{userRole}</span>}
+              {userRole && (
+                <span className="block truncate text-[11px] text-muted-foreground">
+                  <L>{userRole}</L>
+                </span>
+              )}
             </span>
             <ChevronsUpDown size={16} strokeWidth={1.75} className="shrink-0 text-muted-foreground" aria-hidden />
           </>
@@ -187,7 +193,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
         data-testid="sidebar-account-menu-panel"
       >
         <div className="flex items-center gap-2 border-b border-border px-3 py-3">
-          <span className="text-[15px] font-bold tracking-tight text-foreground">LiteLLM</span>
+          <span className="text-[15px] font-bold tracking-tight text-foreground">MoMA 轻量版</span>
           {!disableBouncingIcon && (
             <span
               className="animate-bounce text-lg leading-none"
@@ -215,12 +221,12 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
             {premiumUser ? (
               <Badge variant="outline" className="gap-1 border-warning/30 bg-warning/10 text-warning">
                 <Crown />
-                Premium
+                <L>Premium</L>
               </Badge>
             ) : (
               <Badge variant="secondary" className="gap-1" title="Upgrade to Premium for advanced features">
                 <Crown />
-                Standard
+                <L>Standard</L>
               </Badge>
             )}
           </InfoRow>
@@ -240,7 +246,9 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
         <div className="py-1">
           {toggles.map((toggle) => (
             <div key={toggle.key} className="flex h-[38px] items-center justify-between gap-3 px-3">
-              <span className="text-[13px] text-foreground">{toggle.label}</span>
+              <span className="text-[13px] text-foreground">
+                <L>{toggle.label}</L>
+              </span>
               <Switch
                 size="sm"
                 checked={toggle.checked}
@@ -251,7 +259,10 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
           ))}
           {premiumUser === true && canUseLiteAdmin && (
             <div className="flex h-[38px] items-center justify-between gap-3 px-3">
-              <span className="text-[13px] text-foreground">Hide {ARIA_AGENT_LABEL}</span>
+              <span className="text-[13px] text-foreground">
+                <L>Hide </L>
+                {ARIA_AGENT_LABEL}
+              </span>
               <Switch
                 size="sm"
                 checked={disableLiteAdmin}
@@ -274,7 +285,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
             className="h-[42px] w-full justify-start gap-2.5 rounded-none px-3 text-sm font-medium text-foreground"
           >
             <KeyRound className="size-[19px] text-muted-foreground" />
-            Change Password
+            <L>Change Password</L>
           </Button>
         )}
 
@@ -284,7 +295,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
           className="h-[42px] w-full justify-start gap-2.5 rounded-none px-3 text-sm font-medium text-foreground"
         >
           <LogOut className="size-[19px] text-muted-foreground" />
-          Logout
+          <L>Logout</L>
         </Button>
       </PopoverContent>
     </Popover>

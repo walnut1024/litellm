@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
@@ -694,16 +696,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
           <PageHeader>
             <PageHeaderTitle>
               <Users />
-              Teams
+              <L>Teams</L>
             </PageHeaderTitle>
-            <PageHeaderDescription>Manage teams, members, and their access to models and budgets</PageHeaderDescription>
+            <PageHeaderDescription>
+              <L>Manage teams, members, and their access to models and budgets</L>
+            </PageHeaderDescription>
             <PageHeaderControls>
               <PageTabsList>
                 {canCreateOrManageTeams(userRole, userID, organizations) && (
                   <>
                     <UIButton onClick={openCreateTeamModal} data-testid="create-team-button">
                       <Plus className="size-4" />
-                      Create Team
+                      <L>Create Team</L>
                     </UIButton>
                     <ToolbarSeparator className="mx-0 h-6" />
                   </>
@@ -728,7 +732,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
         <Dialog open={isTeamModalVisible} onOpenChange={(open) => !open && handleCancel()}>
           <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
             <DialogHeader>
-              <DialogTitle>Create Team</DialogTitle>
+              <DialogTitle>
+                <L>Create Team</L>
+              </DialogTitle>
             </DialogHeader>
             <TooltipProvider>
               <form onSubmit={form.handleSubmit(onCreateSubmit)}>
@@ -864,7 +870,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     )}
                   </FormField>
                   <Field>
-                    <FieldLabel>Metadata</FieldLabel>
+                    <FieldLabel>
+                      <L>Metadata</L>
+                    </FieldLabel>
                     <MetadataKeyValueFields
                       control={form.control}
                       getValues={form.getValues}
@@ -873,7 +881,8 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                       schemaLoading={isTeamMetadataSchemaLoading}
                     />
                     <FieldDescription>
-                      Values are saved as text. Enter JSON for typed values, e.g. 3, true, or {'{"region": "us"}'}.
+                      <L>Values are saved as text. Enter JSON for typed values, e.g. 3, true, or </L>
+                      {'{"region": "us"}'}.
                     </FieldDescription>
                   </Field>
 
@@ -883,7 +892,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     className="mt-20 mb-8 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>Additional Settings</b>
+                      <b>
+                        <L>Additional Settings</L>
+                      </b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">
@@ -1280,7 +1291,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <LiteUiMask>
                     <Collapsible className="mt-8 mb-8 overflow-hidden rounded-lg border">
                       <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                        <b>Logging Settings</b>
+                        <b>
+                          <L>Logging Settings</L>
+                        </b>
                         <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                       </CollapsibleTrigger>
                       <CollapsibleContent className="px-4 pb-3">
@@ -1300,7 +1313,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     className="mt-8 mb-8 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>Router Settings</b>
+                      <b>
+                        <L>Router Settings</L>
+                      </b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">
@@ -1322,14 +1337,18 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
 
                   <Collapsible className="mt-8 mb-8 overflow-hidden rounded-lg border">
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>Model Aliases</b>
+                      <b>
+                        <L>Model Aliases</L>
+                      </b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">
                       <div className="mt-4">
                         <p className="mb-4 block text-sm text-muted-foreground">
-                          Create custom aliases for models that can be used by team members in API calls. This allows
-                          you to create shortcuts for specific models.
+                          <L>
+                            Create custom aliases for models that can be used by team members in API calls. This allows
+                            you to create shortcuts for specific models.
+                          </L>
                         </p>
                         <ModelAliasManager
                           accessToken={accessToken || ""}
@@ -1343,7 +1362,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                 </FieldGroup>
                 <div className="mt-[10px] text-right">
                   <UIButton type="submit" data-testid="create-team-submit">
-                    Create Team
+                    <L>Create Team</L>
                   </UIButton>
                 </div>
               </form>

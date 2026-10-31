@@ -1,3 +1,5 @@
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import React, { useState, useEffect } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -57,6 +59,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
   possibleUIRoles,
   onUsersCreated,
 }) => {
+  const t = useTranslation();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [parsedData, setParsedData] = useState<UserData[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -485,28 +488,28 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
         <div>
           <div className="flex items-center">
             <XCircleIcon className="h-5 w-5 text-destructive mr-2" />
-            <span className="text-destructive">Invalid</span>
+            <span className="text-destructive">{t("Invalid")}</span>
           </div>
           {record.error && <span className="text-sm text-destructive ml-7">{record.error}</span>}
         </div>
       );
     }
     if (!record.status || record.status === "pending") {
-      return <span className="text-muted-foreground">Pending</span>;
+      return <span className="text-muted-foreground">{t("Pending")}</span>;
     }
     if (record.status === "success") {
       return (
         <div>
           <div className="flex items-center">
             <CheckCircleIcon className="h-5 w-5 text-success mr-2" />
-            <span className="text-success">Success</span>
+            <span className="text-success">{t("Success")}</span>
           </div>
           {record.invitation_link && (
             <div className="mt-1">
               <div className="flex items-center">
                 <span className="text-xs text-muted-foreground truncate max-w-[150px]">{record.invitation_link}</span>
                 <CopyToClipboard text={record.invitation_link} onCopy={() => toast.success("Invitation link copied!")}>
-                  <button className="ml-1 text-info text-xs hover:text-info/80">Copy</button>
+                  <button className="ml-1 text-info text-xs hover:text-info/80">{t("Copy")}</button>
                 </CopyToClipboard>
               </div>
             </div>
@@ -518,7 +521,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
       <div>
         <div className="flex items-center">
           <XCircleIcon className="h-5 w-5 text-destructive mr-2" />
-          <span className="text-destructive">Failed</span>
+          <span className="text-destructive">{t("Failed")}</span>
         </div>
         {record.error && <span className="text-sm text-destructive ml-7">{JSON.stringify(record.error)}</span>}
       </div>
@@ -532,13 +535,13 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
   return (
     <>
       <Button className="mb-0" onClick={() => setIsModalVisible(true)}>
-        + Bulk Invite Users
+        {t("+ Bulk Invite Users")}
       </Button>
 
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && setIsModalVisible(false)}>
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
-            <DialogTitle>Bulk Invite Users</DialogTitle>
+            <DialogTitle>{t("Bulk Invite Users")}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col">
             {/* Step indicator */}
@@ -655,7 +658,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         </div>
                         <Button variant="outline" size="sm" onClick={removeSelectedFile} className="flex items-center">
                           <Trash2 className="size-4" />
-                          Remove
+                          {t("Remove")}
                         </Button>
                       </div>
 
@@ -763,7 +766,8 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                           </p>
                           {parsedData.some((d) => d.status === "failed") && (
                             <p className="text-sm bg-destructive/15 text-destructive px-2 py-1 rounded-sm">
-                              {parsedData.filter((d) => d.status === "failed").length} Failed
+                              {parsedData.filter((d) => d.status === "failed").length}
+                              {t("Failed")}
                             </p>
                           )}
                         </div>
@@ -771,7 +775,9 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         <div className="flex items-center">
                           <p className="text-lg font-medium mr-3">User Preview</p>
                           <p className="text-sm bg-info/15 text-info px-2 py-1 rounded-sm">
-                            {parsedData.filter((d) => d.isValid).length} of {parsedData.length} users valid
+                            {parsedData.filter((d) => d.isValid).length}
+                            {t("of")}
+                            {parsedData.length} users valid
                           </p>
                         </div>
                       )}
@@ -780,7 +786,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                     {!parsedData.some((user) => user.status === "success" || user.status === "failed") && (
                       <div className="flex space-x-3">
                         <Button variant="outline" onClick={resetParsedData}>
-                          Back
+                          {t("Back")}
                         </Button>
                         <Button
                           onClick={handleBulkCreate}
@@ -815,11 +821,11 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-20">Row</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Role</TableHead>
-                          <TableHead>Teams</TableHead>
-                          <TableHead className={NUMERIC_CELL_CLASS}>Budget</TableHead>
-                          <TableHead>Status</TableHead>
+                          <TableHead>{t("Email")}</TableHead>
+                          <TableHead>{t("Role")}</TableHead>
+                          <TableHead>{t("Teams")}</TableHead>
+                          <TableHead className={NUMERIC_CELL_CLASS}>{t("Budget")}</TableHead>
+                          <TableHead>{t("Status")}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -840,7 +846,9 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                   {pageCount > 1 && (
                     <div className="flex items-center justify-end gap-3 mt-2">
                       <span className="text-sm text-muted-foreground">
-                        Page {currentPage + 1} of {pageCount}
+                        Page {currentPage + 1}
+                        {t("of")}
+                        {pageCount}
                       </span>
                       <Button
                         variant="outline"
@@ -848,7 +856,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         onClick={() => setPageIndex(currentPage - 1)}
                         disabled={currentPage === 0}
                       >
-                        Previous
+                        {t("Previous")}
                       </Button>
                       <Button
                         variant="outline"
@@ -856,7 +864,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                         onClick={() => setPageIndex(currentPage + 1)}
                         disabled={currentPage >= pageCount - 1}
                       >
-                        Next
+                        {t("Next")}
                       </Button>
                     </div>
                   )}
@@ -864,7 +872,7 @@ const BulkCreateUsersButton: React.FC<BulkCreateUsersProps> = ({
                   {!parsedData.some((user) => user.status === "success" || user.status === "failed") && (
                     <div className="flex justify-end mt-4">
                       <Button variant="outline" onClick={resetParsedData} className="mr-3">
-                        Back
+                        {t("Back")}
                       </Button>
                       <Button
                         onClick={handleBulkCreate}

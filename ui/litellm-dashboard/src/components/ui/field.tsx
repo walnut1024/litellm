@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText } from "@/contexts/LocaleContext";
+
 import { useMemo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -103,7 +105,7 @@ function FieldLabel({ className, ...props }: React.ComponentProps<typeof Label>)
   );
 }
 
-function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
+function FieldTitle({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="field-label"
@@ -112,11 +114,13 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
         className,
       )}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </div>
   );
 }
 
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
+function FieldDescription({ className, children, ...props }: React.ComponentProps<"p">) {
   return (
     <p
       data-slot="field-description"
@@ -127,7 +131,9 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
         className,
       )}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </p>
   );
 }
 
@@ -199,7 +205,7 @@ function FieldError({
       className={cn("text-sm font-normal text-destructive", className)}
       {...props}
     >
-      {content}
+      <LocalizedText>{content}</LocalizedText>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useEffect, useId } from "react";
 import { useUpdateBudget } from "@/app/(dashboard)/hooks/budgets/useBudgets";
 import { budgetItem } from "@/app/(dashboard)/hooks/budgets/useBudgets";
@@ -55,15 +57,19 @@ const EditBudgetModal: React.FC<EditBudgetModalProps> = ({ isModalVisible, setIs
     <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-[15px] leading-[22px] font-semibold">Edit budget</DialogTitle>
+          <DialogTitle className="text-[15px] leading-[22px] font-semibold">
+            <L>Edit budget</L>
+          </DialogTitle>
         </DialogHeader>
         <form id={formId} onSubmit={form.handleSubmit(handleUpdate)} noValidate>
           <BudgetFormFields form={form} isEditing />
         </form>
         <DialogFooter>
-          <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
+          <DialogClose render={<Button variant="outline" />}>
+            <L>Cancel</L>
+          </DialogClose>
           <Button type="submit" form={formId}>
-            Save
+            <L>Save</L>
           </Button>
         </DialogFooter>
       </DialogContent>

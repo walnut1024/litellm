@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import moment from "moment";
 import { CalendarDays } from "lucide-react";
 import { type ComponentProps, useState } from "react";
@@ -84,7 +86,7 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
               className="w-full justify-start font-normal"
               onClick={() => onValueChange({ ...value, isCustomDate: !value.isCustomDate })}
             >
-              Custom Range
+              <L>Custom Range</L>
             </Button>
           </div>
         </PopoverContent>
@@ -98,7 +100,9 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
             value={value.startTime}
             onChange={(event) => onValueChange({ ...value, startTime: event.target.value })}
           />
-          <span className="text-sm text-muted-foreground">to</span>
+          <span className="text-sm text-muted-foreground">
+            <L>to</L>
+          </span>
           <Input
             type="datetime-local"
             className="w-auto"

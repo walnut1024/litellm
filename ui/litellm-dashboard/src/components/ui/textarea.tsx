@@ -1,8 +1,13 @@
+"use client";
+
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 
 import { cn } from "@/lib/cva.config";
 
 function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+  const t = useTranslation();
   return (
     <textarea
       data-slot="textarea"
@@ -11,6 +16,7 @@ function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
         className,
       )}
       {...props}
+      placeholder={props.placeholder ? t(props.placeholder) : undefined}
     />
   );
 }

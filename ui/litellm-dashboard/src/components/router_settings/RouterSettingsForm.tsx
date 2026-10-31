@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import React from "react";
 import LatencyBasedConfiguration from "./LatencyBasedConfiguration";
@@ -48,8 +50,12 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
       {/* Routing Settings Section */}
       <div className="space-y-6">
         <div className="max-w-3xl">
-          <h3 className="text-sm font-medium text-foreground">Routing Settings</h3>
-          <p className="text-xs text-muted-foreground mt-1">Configure how requests are routed to deployments</p>
+          <h3 className="text-sm font-medium text-foreground">
+            <L>Routing Settings</L>
+          </h3>
+          <p className="text-xs text-muted-foreground mt-1">
+            <L>Configure how requests are routed to deployments</L>
+          </p>
         </div>
 
         {/* Routing Strategy */}

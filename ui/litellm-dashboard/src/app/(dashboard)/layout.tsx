@@ -112,8 +112,6 @@ export function AgentControlPlaneView() {
   );
 }
 
-const FULL_BLEED_SEGMENTS = new Set(["logs"]);
-
 function DashboardShell({ children }: { children: React.ReactNode }) {
   const { accessToken } = useAuth();
   const { mode } = usePluginMode();
@@ -124,7 +122,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
   }, [routeSegment]);
   const searchParams = useSearchParams();
   const navigationKey = `${pathname}?${searchParams.toString()}`;
-  const isDesktop = useMediaQuery("(min-width: 768px)", { initializeWithValue: false });
+  const isDesktop = useMediaQuery("(min-width: 1100px)", { initializeWithValue: false });
   const [mobileNavigationKey, setMobileNavigationKey] = useState<string | null>(null);
   const [mobileNavigationHandle] = useState(() => DialogPrimitive.createHandle());
   const [deploymentHealthHandle] = useState(createDeploymentHealthHandle);
@@ -132,18 +130,9 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     setMobileNavigationKey(null);
   }
   const mobileNavigationOpen = !isDesktop && mobileNavigationKey === navigationKey;
-  const isFullBleed = FULL_BLEED_SEGMENTS.has(routeSegment);
-  // A manual toggle holds only for the route it was made on; full-bleed routes default to collapsed.
-  const [sidebarOverride, setSidebarOverride] = useState<{ segment: string; collapsed: boolean } | null>(null);
-  const sidebarCollapsed = sidebarOverride?.segment === routeSegment ? sidebarOverride.collapsed : isFullBleed;
-  const toggleSidebar = () => setSidebarOverride({ segment: routeSegment, collapsed: !sidebarCollapsed });
 
   const isGateway = mode === "ai-gateway";
 
-  // Non-gateway (agent control plane) mode keeps the original full-width Navbar,
-  // which carries the account menu; the redesigned sidebar + header shell is
-  // scoped to the ai-gateway dashboard. Chat and the public model hub are
-  // separate routes that likewise keep the old Navbar.
   if (!isGateway) {
     return (
       <div className="flex h-screen flex-col overflow-hidden bg-background">
@@ -162,14 +151,8 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Standard app shell: the viewport is fixed height and never scrolls. The
-  // sidebar owns its own scroll and the content column scrolls independently,
-  // so the page can't be dragged past the end of the nav.
   return (
-    <div className="flex h-screen overflow-hidden bg-background max-md:h-dvh">
-      <div className="hidden h-full md:flex">
-        <SidebarProvider sidebarCollapsed={sidebarCollapsed} onToggleCollapsed={toggleSidebar} />
-      </div>
+    <div className="moma-console flex h-screen overflow-hidden bg-background max-md:h-dvh">
       <Sheet
         handle={mobileNavigationHandle}
         open={mobileNavigationOpen}
@@ -196,7 +179,12 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
                 <SheetTrigger
                   handle={mobileNavigationHandle}
                   render={
-                    <Button variant="ghost" size="icon" className="size-11 md:hidden" aria-label="Open navigation" />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-11 min-[1100px]:hidden"
+                      aria-label="Open navigation"
+                    />
                   }
                 >
                   <Menu />
@@ -209,7 +197,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             <UserBanner accessToken={accessToken} />
             <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
               <TelemetryEnvBanner />
-              {children}
+              <div className="moma-content">{children}</div>
             </main>
           </div>
         </CommandPaletteProvider>

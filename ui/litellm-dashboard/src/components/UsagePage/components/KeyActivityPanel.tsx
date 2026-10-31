@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { KeyRound, Search, X } from "lucide-react";
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
@@ -80,7 +82,7 @@ const KeyDetailContent: React.FC<KeyDetailContentProps> = ({ apiKey, detail, hid
       <p className="py-4 text-sm text-muted-foreground">
         Could not load key details.{" "}
         <button type="button" className="font-medium text-foreground underline" onClick={onRetry}>
-          Retry
+          <L>Retry</L>
         </button>
       </p>
     );
@@ -131,7 +133,7 @@ const KeySummaryStrip: React.FC<KeySummaryStripProps> = ({ summary, loading, hid
     >
       {loading ? (
         <span role="status" className="sr-only">
-          Loading chart data...
+          <L>Loading chart data...</L>
         </span>
       ) : (
         <h3 className="sr-only">Overall Usage</h3>
@@ -144,13 +146,14 @@ const KeySummaryStrip: React.FC<KeySummaryStripProps> = ({ summary, loading, hid
         {!loading && (
           <div className="mt-0.5 flex gap-3 text-xs text-muted-foreground">
             <span>
-              <span className="text-success tabular-nums">{summary.total_successful_requests.toLocaleString()}</span> ok
+              <span className="text-success tabular-nums">{summary.total_successful_requests.toLocaleString()}</span>
+              <L> ok</L>
             </span>
             <span>
               <span className={summary.total_failed_requests > 0 ? "text-destructive tabular-nums" : "tabular-nums"}>
                 {summary.total_failed_requests.toLocaleString()}
               </span>{" "}
-              failed
+              <L>failed</L>
             </span>
           </div>
         )}
@@ -385,7 +388,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
     <p className="px-4 py-8 text-center text-sm text-muted-foreground">
       Could not load keys for this range.{" "}
       <button type="button" className="font-medium text-foreground underline" onClick={retryFirstPage}>
-        Retry
+        <L>Retry</L>
       </button>
     </p>
   );
@@ -447,7 +450,8 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
     <p className="px-4 py-8 text-center text-sm text-muted-foreground">Could not search keys. {searchRetryButton}</p>
   ) : (
     <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-      No keys match &quot;{trimmedQuery}&quot; in this date range
+      No keys match &quot;{trimmedQuery}
+      <L>&quot; in this date range</L>
     </p>
   );
 
@@ -521,9 +525,15 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
             aria-hidden="true"
             className={`${KEY_ROW_GRID} border-y bg-muted/40 py-2 pr-4 pl-10 text-xs font-medium text-muted-foreground`}
           >
-            <span>Key</span>
-            <span className="text-right">Spend</span>
-            <span className="text-right">Requests</span>
+            <span>
+              <L>Key</L>
+            </span>
+            <span className="text-right">
+              <L>Spend</L>
+            </span>
+            <span className="text-right">
+              <L>Requests</L>
+            </span>
           </div>
         )}
         <div className={showColumnHeaders ? undefined : "border-t"}>{noMatches ? emptyFilterBody : listBody}</div>
@@ -535,7 +545,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
               <p>
                 Could not load more keys.{" "}
                 <button type="button" className="font-medium text-foreground underline" onClick={retryNextPage}>
-                  Retry
+                  <L>Retry</L>
                 </button>
               </p>
             )}

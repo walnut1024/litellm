@@ -1,10 +1,12 @@
 "use client";
 
+import { LocalizedText } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 
 import { cn } from "@/lib/cva.config";
 
-function Label({ className, ...props }: React.ComponentProps<"label">) {
+function Label({ className, children, ...props }: React.ComponentProps<"label">) {
   return (
     <label
       data-slot="label"
@@ -13,7 +15,9 @@ function Label({ className, ...props }: React.ComponentProps<"label">) {
         className,
       )}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </label>
   );
 }
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 import { useFieldArray, type Control } from "react-hook-form";
@@ -118,18 +120,23 @@ const TeamsField = ({ control }: { control: SettingsControl }) => {
   return (
     <div className="flex w-full flex-col gap-3">
       <div>
-        <p className="text-sm font-medium">Default Teams</p>
+        <p className="text-sm font-medium">
+          <L>Default Teams</L>
+        </p>
         <p className="text-sm text-muted-foreground">
-          New users are added to these teams. Only teams that already exist can be selected.
+          <L>New users are added to these teams. Only teams that already exist can be selected.</L>
         </p>
       </div>
 
       {fields.map((field, index) => (
         <div key={field.id} className="rounded-lg border border-border p-4">
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-medium">Team {index + 1}</p>
+            <p className="text-sm font-medium">
+              <L>Team </L>
+              {index + 1}
+            </p>
             <Button type="button" variant="destructive" size="sm" onClick={() => remove(index)}>
-              Remove
+              <L>Remove</L>
             </Button>
           </div>
 
@@ -172,7 +179,7 @@ const TeamsField = ({ control }: { control: SettingsControl }) => {
       ))}
 
       <Button type="button" variant="outline" onClick={() => append(EMPTY_TEAM_ROW)}>
-        Add Team
+        <L>Add Team</L>
       </Button>
     </div>
   );
@@ -207,14 +214,24 @@ const SettingsView = ({ values, roleOptions }: SettingsViewProps) => {
           : values.models.map((model) => MODEL_SENTINEL_LABELS.get(model) ?? model).join(", ")}
       </ViewRow>
       <div>
-        <p className="text-sm font-medium">Default Teams</p>
+        <p className="text-sm font-medium">
+          <L>Default Teams</L>
+        </p>
         {values.teams.length === 0 ? (
-          <p className="text-sm text-muted-foreground">None</p>
+          <p className="text-sm text-muted-foreground">
+            <L>None</L>
+          </p>
         ) : (
           values.teams.map((team) => (
             <p key={team.team_id} className="text-sm text-muted-foreground">
               {team.team_id}
-              {team.max_budget_in_team !== "" && <> · ${team.max_budget_in_team} max budget</>}
+              {team.max_budget_in_team !== "" && (
+                <>
+                  {" "}
+                  · ${team.max_budget_in_team}
+                  <L> max budget</L>
+                </>
+              )}
               <> · {team.user_role}</>
             </p>
           ))
@@ -347,10 +364,10 @@ const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, on
           }}
           disabled={mutation.isPending}
         >
-          Cancel
+          <L>Cancel</L>
         </Button>
         <Button type="submit" disabled={!isDirty || mutation.isPending}>
-          {mutation.isPending ? "Saving..." : "Save Changes"}
+          <L>{mutation.isPending ? "Saving..." : "Save Changes"}</L>
         </Button>
       </div>
     </form>
@@ -360,9 +377,11 @@ const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, on
 const SettingsCard = ({ action, children }: { action?: React.ReactNode; children: React.ReactNode }) => (
   <Card>
     <CardHeader>
-      <CardTitle>Default User Settings</CardTitle>
+      <CardTitle>
+        <L>Default User Settings</L>
+      </CardTitle>
       <CardDescription>
-        Applied to every new internal user created through SSO or the user management APIs.
+        <L>Applied to every new internal user created through SSO or the user management APIs.</L>
       </CardDescription>
       {action !== undefined && <CardAction>{action}</CardAction>}
     </CardHeader>
@@ -405,7 +424,9 @@ export const DefaultUserSettingsForm = ({
   if (isError || initialValues === undefined) {
     return (
       <SettingsCard>
-        <p role="alert">Could not load the default user settings.</p>
+        <p role="alert">
+          <L>Could not load the default user settings.</L>
+        </p>
       </SettingsCard>
     );
   }
@@ -415,7 +436,7 @@ export const DefaultUserSettingsForm = ({
       action={
         isEditing ? undefined : (
           <Button type="button" onClick={() => setIsEditing(true)}>
-            Edit Settings
+            <L>Edit Settings</L>
           </Button>
         )
       }

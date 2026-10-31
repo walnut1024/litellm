@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowUpRight } from "lucide-react";
@@ -105,8 +107,12 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
     return (
       <Alert role="status">
         <AlertCircle />
-        <AlertTitle>Errors are deployment-wide</AlertTitle>
-        <AlertDescription>Clear the user filter in Global Usage to see failure analytics</AlertDescription>
+        <AlertTitle>
+          <L>Errors are deployment-wide</L>
+        </AlertTitle>
+        <AlertDescription>
+          <L>Clear the user filter in Global Usage to see failure analytics</L>
+        </AlertDescription>
       </Alert>
     );
   }
@@ -114,9 +120,11 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
     return (
       <Alert variant="destructive" role="alert">
         <AlertCircle />
-        <AlertTitle>Error activity could not be loaded</AlertTitle>
+        <AlertTitle>
+          <L>Error activity could not be loaded</L>
+        </AlertTitle>
         <AlertDescription>
-          The proxy did not answer the failed-request query. Reload the page to try again.
+          <L>The proxy did not answer the failed-request query. Reload the page to try again.</L>
         </AlertDescription>
       </Alert>
     );
@@ -260,10 +268,18 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
               <TableHeader>
                 <TableRow>
                   <TableHead>{ERROR_ENTITY_LABEL[kind].singular}</TableHead>
-                  <TableHead className="text-right">Requests</TableHead>
-                  <TableHead className="text-right">Failed</TableHead>
-                  <TableHead>Error rate</TableHead>
-                  <TableHead>Top status</TableHead>
+                  <TableHead className="text-right">
+                    <L>Requests</L>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <L>Failed</L>
+                  </TableHead>
+                  <TableHead>
+                    <L>Error rate</L>
+                  </TableHead>
+                  <TableHead>
+                    <L>Top status</L>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -292,7 +308,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
           </PanelBody>
           <div className={cn("flex justify-end pb-4 pt-2", PANEL_INSET_X)}>
             <Button variant="outline" size="sm" nativeButton={false} render={<Link href={uiHref("logs")} />}>
-              Inspect failed requests in Logs
+              <L>Inspect failed requests in Logs</L>
               <ArrowUpRight />
             </Button>
           </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import { useTerminology } from "@/contexts/TerminologyContext";
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -23,6 +25,7 @@ export default function PageVisibilitySettings({
   isUpdating,
   onUpdate,
 }: PageVisibilitySettingsProps) {
+  const t = useTranslation();
   const term = useTerminology();
   const isPageVisibilitySet = enabledPagesInternalUsers !== null && enabledPagesInternalUsers !== undefined;
   const availablePages = useMemo(() => getAvailablePages(), []);
@@ -59,28 +62,39 @@ export default function PageVisibilitySettings({
     <div className="space-y-4">
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-foreground">Internal User Page Visibility</p>
+          <p className="text-sm font-medium text-foreground">
+            <L>Internal User Page Visibility</L>
+          </p>
           <Badge variant={isPageVisibilitySet ? "secondary" : "outline"}>
-            {isPageVisibilitySet
-              ? `${selectedPages.length} page${selectedPages.length !== 1 ? "s" : ""} selected`
-              : "Not set (all pages visible)"}
+            {isPageVisibilitySet ? (
+              t("{count} page{plural} selected", {
+                count: selectedPages.length,
+                plural: selectedPages.length !== 1 ? "s" : "",
+              })
+            ) : (
+              <L>Not set (all pages visible)</L>
+            )}
           </Badge>
         </div>
         {enabledPagesPropertyDescription && (
-          <p className="text-sm text-muted-foreground">{enabledPagesPropertyDescription}</p>
+          <p className="text-sm text-muted-foreground">
+            <L>{enabledPagesPropertyDescription}</L>
+          </p>
         )}
         <p className="text-xs italic text-muted-foreground">
-          By default, all pages are visible to internal users. Select specific pages to restrict visibility.
+          <L>By default, all pages are visible to internal users. Select specific pages to restrict visibility.</L>
         </p>
         <p className="text-xs text-primary">
-          Note: Only pages accessible to internal user roles are shown here. Admin-only pages are excluded as they
-          cannot be made visible to internal users regardless of this setting.
+          <L>
+            Note: Only pages accessible to internal user roles are shown here. Admin-only pages are excluded as they
+            cannot be made visible to internal users regardless of this setting.
+          </L>
         </p>
       </div>
 
       <Collapsible className="rounded-lg border border-border">
         <CollapsibleTrigger className="group flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium hover:bg-muted">
-          Configure Page Visibility
+          <L>Configure Page Visibility</L>
           <ChevronDown className="size-4 transition-transform group-data-[panel-open]:rotate-180" />
         </CollapsibleTrigger>
         <CollapsibleContent className="border-t border-border p-4">
@@ -113,11 +127,11 @@ export default function PageVisibilitySettings({
 
             <div className="flex flex-wrap gap-2">
               <Button type="button" onClick={handleSavePageVisibility} disabled={isUpdating}>
-                Save Page Visibility Settings
+                <L>Save Page Visibility Settings</L>
               </Button>
               {isPageVisibilitySet && (
                 <Button type="button" variant="outline" onClick={handleResetToDefault} disabled={isUpdating}>
-                  Reset to Default (All Pages)
+                  <L>Reset to Default (All Pages)</L>
                 </Button>
               )}
             </div>

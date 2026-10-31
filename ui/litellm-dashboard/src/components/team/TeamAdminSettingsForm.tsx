@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { Save } from "lucide-react";
 import { useState } from "react";
 import { useWatch } from "react-hook-form";
@@ -138,7 +140,7 @@ function TeamAdminSettingsFormFields({
     <form onSubmit={(event) => void submit(event)}>
       <FieldGroup>
         <p className="text-sm text-muted-foreground">
-          A proxy admin chose which settings team admins can change. Ask a proxy admin to change anything else.
+          <L>A proxy admin chose which settings team admins can change. Ask a proxy admin to change anything else.</L>
         </p>
         {TEAM_ADMIN_SETTINGS_FIELDS.filter((name) => editableFields.has(name)).map((name) => (
           <FormField
@@ -191,11 +193,11 @@ function TeamAdminSettingsFormFields({
 
       <div className="mt-6 flex items-center justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSaving}>
-          Cancel
+          <L>Cancel</L>
         </Button>
         <Button type="submit" disabled={isSaving || !hasChanges}>
           {isSaving ? <UiLoadingSpinner className="size-4" /> : <Save className="size-4" />}
-          Save Changes
+          <L>Save Changes</L>
         </Button>
       </div>
     </form>

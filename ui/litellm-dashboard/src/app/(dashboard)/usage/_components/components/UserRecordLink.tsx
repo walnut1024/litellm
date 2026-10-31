@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 
@@ -9,7 +11,7 @@ export default function UserRecordLink({ userId }: { userId: string }) {
       href={userRecordHref(userId)}
       className="inline-flex shrink-0 items-center gap-1 text-sm text-primary underline underline-offset-2"
     >
-      View user record
+      <L>View user record</L>
       <SquareArrowOutUpRight className="size-3.5" />
     </Link>
   );

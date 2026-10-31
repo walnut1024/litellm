@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { Inbox, ShieldAlert } from "lucide-react";
 import React, { useMemo, useState } from "react";
 
@@ -184,7 +186,7 @@ function BudgetFilterFields({ get, set }: FilterDraft) {
             onCheckedChange={(checked) => set("max_budget", normalizeMaxBudget({ unlimitedOnly: checked === true }))}
             data-testid="budget-filter-max-budget-unlimited"
           />
-          Unlimited only
+          <L>Unlimited only</L>
         </Label>
       </DataTableFilterField>
       <DataTableFilterField label="Created">

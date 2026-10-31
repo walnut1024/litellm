@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import { CircleHelp } from "lucide-react";
 import { useLiteUi } from "@/contexts/LiteUiContext";
 import { Fragment, type ReactNode } from "react";
@@ -55,6 +57,7 @@ const toggleEditableField = (
 };
 
 export default function TeamAdminEditableFieldsSettings() {
+  const t = useTranslation();
   const { accessToken } = useAuthorized();
   const { data, isLoading } = useUISettings();
   const { mutate: saveSettings, isPending } = useUpdateUISettings(accessToken);
@@ -66,11 +69,18 @@ export default function TeamAdminEditableFieldsSettings() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <CardTitle>Team admin editable fields</CardTitle>
+          <CardTitle>
+            <L>Team admin editable fields</L>
+          </CardTitle>
           <Badge variant={enabledFields.length > 0 ? "secondary" : "outline"}>
-            {enabledFields.length > 0
-              ? `${enabledFields.length} field${enabledFields.length !== 1 ? "s" : ""} enabled`
-              : "Team admins cannot edit team settings"}
+            {enabledFields.length > 0 ? (
+              t("{count} field{plural} enabled", {
+                count: enabledFields.length,
+                plural: enabledFields.length !== 1 ? "s" : "",
+              })
+            ) : (
+              <L>Team admins cannot edit team settings</L>
+            )}
           </Badge>
         </div>
         <CardDescription>
@@ -126,7 +136,7 @@ function TeamAdminEditableFieldsForm({
   if (supportedFields.length === 0) {
     return (
       <p className="text-sm italic text-muted-foreground">
-        This proxy version does not support enabling any team settings fields for team admins yet.
+        <L>This proxy version does not support enabling any team settings fields for team admins yet.</L>
       </p>
     );
   }
@@ -175,7 +185,7 @@ function TeamAdminEditableFieldsForm({
       />
       <div className="flex justify-end">
         <Button type="submit" disabled={isPending || !form.formState.isDirty}>
-          {isPending ? "Saving..." : "Save"}
+          <L>{isPending ? "Saving..." : "Save"}</L>
         </Button>
       </div>
     </form>
@@ -206,7 +216,9 @@ function EditableFieldCheckbox({
     <div className={cn("flex items-center gap-2", className)}>
       <label htmlFor={checkboxId} className="flex cursor-pointer items-center gap-2">
         <Checkbox id={checkboxId} checked={checked} disabled={disabled} onCheckedChange={onCheckedChange} />
-        <span className="text-sm text-foreground">{teamAdminFieldLabel(name)}</span>
+        <span className="text-sm text-foreground">
+          <L>{teamAdminFieldLabel(name)}</L>
+        </span>
       </label>
       {help}
     </div>
@@ -231,9 +243,9 @@ function FieldHelp({ label, text }: FieldHelpProps) {
         </TooltipTrigger>
         <TooltipContent>
           <span>
-            {text}{" "}
+            <L>{text}</L>{" "}
             <a href={TEAM_ADMIN_FIELDS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
-              Learn more
+              <L>Learn more</L>
             </a>
           </span>
         </TooltipContent>

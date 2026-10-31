@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Download, Users } from "lucide-react";
@@ -93,12 +95,12 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
           onClick={() => data && downloadCsv(buildTeamUserSpendCsv(data), teamUserSpendCsvFileName(data))}
         >
           <Download />
-          Download CSV
+          <L>Download CSV</L>
         </Button>
       }
     >
       <p className="mb-3 text-xs text-muted-foreground">
-        Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key
+        <L>Attributed per request from spend logs, so it includes JWT/SSO traffic that does not use a virtual key</L>
       </p>
       <DataTable
         columns={columns}

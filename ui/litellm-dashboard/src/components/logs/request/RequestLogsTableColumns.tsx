@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import type { ColumnDef } from "@tanstack/react-table";
 import { Copy } from "lucide-react";
 
@@ -179,7 +181,9 @@ export const getRequestLogsTableColumns = ({
         return (
           <div className="flex flex-col">
             <IdCell value={batchId} variant="plain" copyable tooltip={`Batch ${batchId} (row: ${log.request_id})`} />
-            <span className="text-[10px] text-muted-foreground">batch cost</span>
+            <span className="text-[10px] text-muted-foreground">
+              <L>batch cost</L>
+            </span>
           </div>
         );
       }
@@ -216,10 +220,17 @@ export const getRequestLogsTableColumns = ({
       return (
         <div className="flex flex-col items-end">
           {spend ? <CellTooltip content={`$${String(spend)}`} trigger={money} /> : money}
-          {sessionTotalSpend != null && <span className="text-[10px] text-muted-foreground">session total</span>}
+          {sessionTotalSpend != null && (
+            <span className="text-[10px] text-muted-foreground">
+              <L>session total</L>
+            </span>
+          )}
           {mcpCount > 0 && mcpSpend > 0 && (
             <span className="text-[10px] text-warning">
-              incl. {getSpendString(mcpSpend)} from {mcpCount} MCP
+              <L>incl. </L>
+              {getSpendString(mcpSpend)}
+              <L> from </L>
+              {mcpCount} MCP
             </span>
           )}
         </div>
@@ -244,7 +255,11 @@ export const getRequestLogsTableColumns = ({
             content={`${ms}ms`}
             trigger={<span className="max-w-[15ch] truncate inline-block">{(ms / 1000).toFixed(2)}</span>}
           />
-          {sessionTotalMs != null && <span className="text-[10px] text-muted-foreground">session total</span>}
+          {sessionTotalMs != null && (
+            <span className="text-[10px] text-muted-foreground">
+              <L>session total</L>
+            </span>
+          )}
         </div>
       );
     },
@@ -351,7 +366,11 @@ export const getRequestLogsTableColumns = ({
               ({String(prompt || "0")}+{String(completion || "0")})
             </span>
           </span>
-          {showSessionTotal && <span className="text-[10px] text-muted-foreground">session total</span>}
+          {showSessionTotal && (
+            <span className="text-[10px] text-muted-foreground">
+              <L>session total</L>
+            </span>
+          )}
         </div>
       );
     },

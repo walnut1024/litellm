@@ -2,6 +2,8 @@
  * Allow proxy admin to add other people to view global spend
  * Use this to avoid sharing master key with others
  */
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
 import { Button } from "@/components/ui/button";
@@ -300,7 +302,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
                         <TableCell className="text-right">
                           {ip !== all_ip_address_allowed && (
                             <Button onClick={() => handleDeleteIP(ip)} variant="destructive" size="sm">
-                              Delete
+                              <L>Delete</L>
                             </Button>
                           )}
                         </TableCell>
@@ -312,7 +314,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
                   <Button className="mx-1" onClick={() => setIsAddIPModalVisible(true)}>
                     Add IP Address
                   </Button>
-                  <Button onClick={() => setIsAllowedIPModalVisible(false)}>Close</Button>
+                  <Button onClick={() => setIsAllowedIPModalVisible(false)}>
+                    <L>Close</L>
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -329,16 +333,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
             <Dialog open={isDeleteIPModalVisible} onOpenChange={(open) => !open && setIsDeleteIPModalVisible(false)}>
               <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Confirm Delete</DialogTitle>
+                  <DialogTitle>
+                    <L>Confirm Delete</L>
+                  </DialogTitle>
                 </DialogHeader>
                 <span className="text-sm text-foreground">
                   Are you sure you want to delete the IP address: {ipToDelete}?
                 </span>
                 <DialogFooter>
                   <Button className="mx-1" onClick={() => confirmDeleteIP()}>
-                    Yes
+                    <L>Yes</L>
                   </Button>
-                  <Button onClick={() => setIsDeleteIPModalVisible(false)}>Close</Button>
+                  <Button onClick={() => setIsDeleteIPModalVisible(false)}>
+                    <L>Close</L>
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -420,8 +428,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
 
   return (
     <div className="w-full m-2 mt-2 p-8">
-      <h2 className="mb-2 text-base font-semibold text-foreground">Admin Access</h2>
-      <p className="mb-4 text-sm text-foreground">Go to &apos;Internal Users&apos; page to add other admins.</p>
+      <h2 className="mb-2 text-base font-semibold text-foreground">
+        <L>Admin Access</L>
+      </h2>
+      <p className="mb-4 text-sm text-foreground">
+        <L>Go to &apos;Internal Users&apos; page to add other admins.</L>
+      </p>
       <Tabs defaultValue={lite ? "ui-settings" : tabItems[0].key}>
         <TabsList variant="line" className="mb-4 h-auto flex-wrap">
           {tabItems.map((item) => (

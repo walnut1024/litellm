@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale, useTranslation } from "@/contexts/LocaleContext";
+
 import { CellTooltip } from "./cell_tooltip";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as const;
@@ -27,15 +29,35 @@ export const formatFullTimestamp = (date: Date): string => {
 };
 
 export function DateCell({ value, precision = "datetime", fallback = "-" }: DateCellProps) {
+  const { locale } = useLocale();
+  const t = useTranslation();
   const date = value ? new Date(value) : null;
   if (!date || Number.isNaN(date.getTime())) {
-    return <span className="text-muted-foreground">{fallback}</span>;
+    return <span className="text-muted-foreground">{t(fallback)}</span>;
   }
 
   return (
     <CellTooltip
-      content={formatFullTimestamp(date)}
-      trigger={<span className="whitespace-nowrap">{formatCellDate(date, precision)}</span>}
+      content={locale === "en" ? formatFullTimestamp(date) : date.toLocaleString(locale, { timeZoneName: "short" })}
+      trigger={
+        <span className="whitespace-nowrap">
+          {locale === "en"
+            ? formatCellDate(date, precision)
+            : date.toLocaleString(
+                locale,
+                precision === "date"
+                  ? { year: "numeric", month: "2-digit", day: "2-digit" }
+                  : {
+                      month: "2-digit",
+                      day: "2-digit",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      second: "2-digit",
+                      hour12: false,
+                    },
+              )}
+        </span>
+      }
     />
   );
 }

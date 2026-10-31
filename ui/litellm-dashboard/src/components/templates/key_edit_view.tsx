@@ -1,3 +1,4 @@
+import { useTranslation } from "@/contexts/LocaleContext";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { canDetachKeyProject, KeyProjectField } from "./KeyProjectField";
 import GuardrailSelector from "@/components/guardrails/GuardrailSelector";
@@ -105,6 +106,7 @@ function KeyEditSession({
   userRole,
   premiumUser = false,
 }: KeyEditViewProps) {
+  const t = useTranslation();
   const canEditGuardrails = premiumUser || (userRole != null && rolesWithWriteAccess.includes(userRole));
   const canViewPolicies = hasCapability(userRole, "viewPolicies");
   const canViewPrompts = hasCapability(userRole, "viewPrompts");
@@ -345,13 +347,10 @@ function KeyEditSession({
     form.setValue("disabled_callbacks", internalValues, { shouldDirty: true });
   };
 
+  const allModelsSelected = hasAllModelsSentinel(selectedModels);
   const modelOptions = [
-    ...modelSentinelOptions(keyData.team_id, team != null),
-    ...availableModels.map((model) => ({
-      value: model,
-      label: model,
-      disabled: hasAllModelsSentinel(selectedModels),
-    })),
+    ...modelSentinelOptions(keyData.team_id, team != null).map((option) => ({ ...option, label: t(option.label) })),
+    ...availableModels.map((model) => ({ value: model, label: model, disabled: allModelsSelected })),
   ];
 
   const visibleTeams =
@@ -412,7 +411,7 @@ function KeyEditSession({
           </FormField>
 
           <Field>
-            <FieldLabel htmlFor={keyTypeFieldId}>Key Type</FieldLabel>
+            <FieldLabel htmlFor={keyTypeFieldId}>{t("Key Type")}</FieldLabel>
             <KeyTypeSelect
               id={keyTypeFieldId}
               value={keyTypeFromRoutes(allowedRoutes)}
@@ -827,7 +826,7 @@ function KeyEditSession({
             )}
 
             <Field>
-              <FieldLabel>Router Settings</FieldLabel>
+              <FieldLabel>{t("Router Settings")}</FieldLabel>
               <RouterSettingsAccordion
                 ref={routerSettingsRef}
                 accessToken={accessToken || ""}
@@ -872,11 +871,11 @@ function KeyEditSession({
         <div className="sticky z-chrome bg-background p-4 border-t border-border -bottom-6 -inset-x-6">
           <div className="flex justify-end items-center gap-2">
             <Button type="button" variant="secondary" onClick={onCancel} disabled={isKeySaving}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button type="submit" disabled={isKeySaving} aria-busy={isKeySaving}>
               {isKeySaving && <UiLoadingSpinner className="size-4" />}
-              Save Changes
+              {t("Save Changes")}
             </Button>
           </div>
         </div>

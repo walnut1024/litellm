@@ -1,3 +1,4 @@
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 import { Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/cva.config";
@@ -7,6 +8,14 @@ import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { relativeTimeOptions, type RelativeTimeOption } from "./date_range_presets";
 export { relativeTimeOptions, type RelativeTimeOption } from "./date_range_presets";
+
+const dateDisplayOptions: Intl.DateTimeFormatOptions = {
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+};
 
 interface AdvancedDatePickerProps {
   value: DateRangePickerValue;
@@ -41,6 +50,8 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
   align = "right",
   compact = false,
 }) => {
+  const { locale } = useLocale();
+  const t = useTranslation();
   const inputId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [tempValue, setTempValue] = useState<DateRangePickerValue>(value);
@@ -115,15 +126,18 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
     };
   }, [isOpen]);
 
-  const formatDisplayRange = useCallback((from: Date | undefined, to: Date | undefined) => {
-    if (!from || !to) return "Select date range";
+  const formatDisplayRange = useCallback(
+    (from: Date | undefined, to: Date | undefined) => {
+      if (!from || !to) return t("Select date range");
 
-    const formatDateTime = (date: Date) => {
-      return moment(date).format("D MMM, HH:mm");
-    };
+      const formatDateTime = (date: Date) => {
+        return locale === "en" ? moment(date).format("D MMM, HH:mm") : date.toLocaleString(locale, dateDisplayOptions);
+      };
 
-    return `${formatDateTime(from)} - ${formatDateTime(to)}`;
-  }, []);
+      return `${formatDateTime(from)} - ${formatDateTime(to)}`;
+    },
+    [locale, t],
+  );
 
   // CRITICAL: Apply the same date adjustment logic as the original component
   const adjustDateRange = useCallback((newValue: DateRangePickerValue): DateRangePickerValue => {
@@ -239,7 +253,11 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
     <div
       className={cn("flex items-center gap-3", compact && "w-full min-w-0 flex-col items-stretch gap-1.5", className)}
     >
-      {label && <p className="text-sm font-medium text-foreground whitespace-nowrap">{label}</p>}
+      {label && (
+        <p className="text-sm font-medium text-foreground whitespace-nowrap">
+          <L>{label}</L>
+        </p>
+      )}
       <div className={cn("relative", compact && "w-full min-w-0")} ref={dropdownRef}>
         {/* Main input display */}
         <button
@@ -285,7 +303,9 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
               {/* Left side - Relative time options */}
               <div className={cn("border-border", compact ? "w-full border-b" : "w-1/2 border-r")}>
                 <div className="p-3 border-b border-border">
-                  <span className="text-sm font-semibold text-foreground">Relative time</span>
+                  <span className="text-sm font-semibold text-foreground">
+                    <L>Relative time</L>
+                  </span>
                 </div>
                 <div className={cn("overflow-y-auto", compact ? "grid h-auto grid-cols-2" : "h-[350px]")}>
                   {relativeTimeOptions.map((option) => {
@@ -304,7 +324,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                         onClick={() => handleRelativeTimeSelect(option)}
                       >
                         <span className={`text-sm ${isSelected ? "text-info font-medium" : "text-foreground"}`}>
-                          {option.label}
+                          <L>{option.label}</L>
                         </span>
                         <span
                           className={`text-xs px-2 py-1 rounded capitalize ${
@@ -332,7 +352,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                   {/* Start date */}
                   <div className={compact ? "min-w-0" : undefined}>
                     <label htmlFor={`${inputId}-start`} className="text-sm text-foreground mb-1 block">
-                      Start date
+                      <L>Start date</L>
                     </label>
                     <input
                       id={`${inputId}-start`}
@@ -355,7 +375,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                   {/* End date */}
                   <div className={compact ? "min-w-0" : undefined}>
                     <label htmlFor={`${inputId}-end`} className="text-sm text-foreground mb-1 block">
-                      End date
+                      <L>End date</L>
                     </label>
                     <input
                       id={`${inputId}-end`}
@@ -392,7 +412,9 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
                           />
                         </svg>
-                        <span className="text-sm text-destructive font-medium">{validation.error}</span>
+                        <span className="text-sm text-destructive font-medium">
+                          <L>{validation.error}</L>
+                        </span>
                       </div>
                     </div>
                   )}
@@ -415,10 +437,10 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                 <div className={compact ? "flex justify-end px-3 pb-3" : "absolute bottom-4 right-4"}>
                   <div className="flex gap-2">
                     <Button variant="secondary" onClick={handleCancel}>
-                      Cancel
+                      <L>Cancel</L>
                     </Button>
                     <Button onClick={handleApply} disabled={!tempValue.from || !tempValue.to || !validation.isValid}>
-                      Apply
+                      <L>Apply</L>
                     </Button>
                   </div>
                 </div>

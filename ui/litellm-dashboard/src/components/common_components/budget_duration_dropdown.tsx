@@ -1,3 +1,5 @@
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -30,18 +32,23 @@ const BudgetDurationDropdown: React.FC<BudgetDurationDropdownProps> = ({
   placeholder = "Never resets",
   showNeverResets = false,
 }) => {
+  const t = useTranslation();
   return (
-    <Select items={DURATION_LABELS} value={value || null} onValueChange={onChange}>
+    <Select
+      items={Object.fromEntries(Object.entries(DURATION_LABELS).map(([value, label]) => [value, t(label)]))}
+      value={value || null}
+      onValueChange={onChange}
+    >
       <SelectTrigger id={id} className={`w-full ${className}`} style={style}>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={t(placeholder)} />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value={null}>{placeholder}</SelectItem>
-        {showNeverResets ? <SelectItem value={NEVER_RESETS_BUDGET_DURATION}>Never resets</SelectItem> : null}
-        <SelectItem value="1h">hourly</SelectItem>
-        <SelectItem value="24h">daily</SelectItem>
-        <SelectItem value="7d">weekly</SelectItem>
-        <SelectItem value="30d">monthly</SelectItem>
+        <SelectItem value={null}>{t(placeholder)}</SelectItem>
+        {showNeverResets ? <SelectItem value={NEVER_RESETS_BUDGET_DURATION}>{t("Never resets")}</SelectItem> : null}
+        <SelectItem value="1h">{t("hourly")}</SelectItem>
+        <SelectItem value="24h">{t("daily")}</SelectItem>
+        <SelectItem value="7d">{t("weekly")}</SelectItem>
+        <SelectItem value="30d">{t("monthly")}</SelectItem>
       </SelectContent>
     </Select>
   );

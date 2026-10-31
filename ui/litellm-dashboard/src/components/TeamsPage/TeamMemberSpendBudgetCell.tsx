@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { Meter, MeterIndicator, MeterTrack } from "@/components/shared/Meter";
 import { getSpendBudgetMeterTone } from "@/components/shared/table_cells/spend_budget_cell";
 import type { components } from "@/lib/http/schema";
@@ -44,7 +46,12 @@ function BudgetLine({ label, spend, maxBudget, resetAt }: BudgetLineProps) {
           </MeterTrack>
         </Meter>
       )}
-      {resetText && <div className="text-[10px] text-muted-foreground">Resets {resetText} UTC</div>}
+      {resetText && (
+        <div className="text-[10px] text-muted-foreground">
+          <L>Resets </L>
+          {resetText} UTC
+        </div>
+      )}
     </div>
   );
 }

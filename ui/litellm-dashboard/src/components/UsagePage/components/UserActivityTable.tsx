@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React from "react";
 
 import { formatCompact } from "@/app/(dashboard)/usage/_components/components/overview/overviewData";
@@ -47,13 +49,17 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
         <p className="px-4 py-8 text-center text-sm text-muted-foreground">
           Could not load users for this range.{" "}
           <button type="button" className="font-medium text-foreground underline" onClick={onRetryFirstPage}>
-            Retry
+            <L>Retry</L>
           </button>
         </p>
       );
     }
     if (loading) {
-      return <p className="px-4 py-8 text-center text-sm text-muted-foreground">Loading users...</p>;
+      return (
+        <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+          <L>Loading users...</L>
+        </p>
+      );
     }
     if (rows.length === 0) {
       return <p className="px-4 py-8 text-center text-sm text-muted-foreground">No user activity in this date range</p>;
@@ -65,12 +71,22 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
             aria-hidden="true"
             className={`${USER_ROW_GRID} border-y bg-muted/40 py-2 pl-10 pr-4 text-xs font-medium text-muted-foreground`}
           >
-            <span>User</span>
-            <span className="text-right">Spend</span>
-            <span className="text-right">Requests</span>
+            <span>
+              <L>User</L>
+            </span>
+            <span className="text-right">
+              <L>Spend</L>
+            </span>
+            <span className="text-right">
+              <L>Requests</L>
+            </span>
             <span className="text-right">Successful</span>
-            <span className="text-right">Failed</span>
-            <span className="text-right">Total tokens</span>
+            <span className="text-right">
+              <L>Failed</L>
+            </span>
+            <span className="text-right">
+              <L>Total tokens</L>
+            </span>
           </div>
           <ul>
             {rows.map((row) => (
@@ -118,7 +134,7 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
             <p>
               Could not load more users.{" "}
               <button type="button" className="font-medium text-foreground underline" onClick={onRetryNextPage}>
-                Retry
+                <L>Retry</L>
               </button>
             </p>
           )}

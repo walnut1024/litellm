@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { SortingState } from "@tanstack/react-table";
 import { Users } from "lucide-react";
 import React, { useMemo, useState } from "react";
@@ -22,16 +24,18 @@ function EmptyState() {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Users className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No available teams to join</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>No available teams to join</L>
+      </div>
       <div className="text-sm text-muted-foreground">
-        See how to set available teams{" "}
+        <L>See how to set available teams</L>{" "}
         <a
           href="https://docs.litellm.ai/docs/proxy/self_serve#all-settings-for-self-serve--sso-flow"
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary underline-offset-4 hover:underline"
         >
-          here
+          <L>here</L>
         </a>
       </div>
     </div>

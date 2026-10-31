@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText } from "@/contexts/LocaleContext";
+
 import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -48,7 +50,7 @@ function TabsList({
   );
 }
 
-function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
+function TabsTrigger({ className, children, ...props }: TabsPrimitive.Tab.Props) {
   const lite = useLiteUi();
   if (lite && !liteTabAllowed(lite.route, String(props.value), lite.admin)) return null;
   return (
@@ -62,7 +64,9 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
         className,
       )}
       {...props}
-    />
+    >
+      <LocalizedText>{children}</LocalizedText>
+    </TabsPrimitive.Tab>
   );
 }
 

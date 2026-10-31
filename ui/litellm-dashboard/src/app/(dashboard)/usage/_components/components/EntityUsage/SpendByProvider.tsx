@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { STACKED_USAGE_PALETTE } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
 import { MoneyCell } from "@/components/shared/table_cells";
@@ -86,7 +88,9 @@ export function ProviderSpendBreakdown({ rows }: { rows: readonly ProviderSpendD
       {visible.length > 0 && (
         <div className="grid gap-2.5">
           <div className="flex items-baseline justify-between gap-3">
-            <span className="text-xs text-muted-foreground">Total provider spend</span>
+            <span className="text-xs text-muted-foreground">
+              <L>Total provider spend</L>
+            </span>
             <span data-testid="provider-spend-total" className="text-sm font-semibold tabular-nums">
               ${formatNumberWithCommas(total, 2)}
             </span>
@@ -140,7 +144,7 @@ function ToggleField({
     <div className="flex items-center gap-1.5">
       <Switch id={id} size="sm" checked={checked} onCheckedChange={onCheckedChange} />
       <label htmlFor={id} className="text-xs text-muted-foreground">
-        {label}
+        <L>{label}</L>
       </label>
       {hint && (
         <Tooltip>

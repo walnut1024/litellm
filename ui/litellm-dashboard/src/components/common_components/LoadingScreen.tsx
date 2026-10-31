@@ -1,14 +1,18 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { cx } from "@/lib/cva.config";
 import { UiLoadingSpinner } from "../ui/ui-loading-spinner";
 
 export default function LoadingScreen() {
   return (
     <div className={cx("h-screen", "flex items-center justify-center gap-4")}>
-      <div className="text-lg font-medium py-2 pr-4 border-r border-r-gray-200">🚅 LiteLLM</div>
+      <div className="text-lg font-medium py-2 pr-4 border-r border-r-gray-200">MoMA 轻量版</div>
 
       <div className="flex items-center justify-center gap-2">
         <UiLoadingSpinner className="size-4" />
-        <span className="text-muted-foreground text-sm">Loading...</span>
+        <span className="text-muted-foreground text-sm">
+          <L>Loading...</L>
+        </span>
       </div>
     </div>
   );

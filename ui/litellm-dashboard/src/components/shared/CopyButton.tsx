@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/cva.config";
@@ -39,6 +41,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   iconOnly = false,
   copiedLabel = "Copied",
 }) => {
+  const t = useTranslation();
   const [copied, setCopied] = useState(false);
   const isAction = variant === "action";
   const showLabel = isAction && !iconOnly;
@@ -54,7 +57,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
   if (value == null || (!value && !isAction)) return null;
 
   const handleCopy = async () => {
-    setCopied(await copyToClipboard(value, copiedLabel));
+    setCopied(await copyToClipboard(value, t(copiedLabel)));
   };
 
   const button = (
@@ -68,7 +71,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
       className={cn(variantClassName, showLabel && "gap-1.5", className)}
     >
       {copied ? <Check className={iconSize} /> : <Copy className={iconSize} />}
-      {showLabel && <span>{copied ? copiedLabel : label}</span>}
+      {showLabel && <span>{t(copied ? copiedLabel : label)}</span>}
     </Button>
   );
 

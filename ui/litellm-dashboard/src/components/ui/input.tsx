@@ -1,9 +1,14 @@
+"use client";
+
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 
 import { cn } from "@/lib/cva.config";
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
+    const t = useTranslation();
     return (
       <input
         type={type}
@@ -16,6 +21,8 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         )}
         ref={ref}
         {...props}
+        placeholder={props.placeholder ? t(props.placeholder) : undefined}
+        aria-label={props["aria-label"] ? t(props["aria-label"]) : undefined}
       />
     );
   },

@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useState } from "react";
 import { useFormState } from "react-hook-form";
 
@@ -87,10 +89,10 @@ function AccessGroupEditForm({ accessGroup, onCancel, onSuccess }: Omit<AccessGr
 
       <div className="mt-6 flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={editMutation.isPending}>
-          Cancel
+          <L>Cancel</L>
         </Button>
         <Button type="button" onClick={() => void handleOk()} disabled={editMutation.isPending}>
-          Save Changes
+          <L>Save Changes</L>
         </Button>
       </div>
     </form>
@@ -102,7 +104,9 @@ export function AccessGroupEditModal({ visible, accessGroup, onCancel, onSuccess
     <Dialog open={visible} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>Edit Access Group</DialogTitle>
+          <DialogTitle>
+            <L>Edit Access Group</L>
+          </DialogTitle>
         </DialogHeader>
         <AccessGroupEditForm
           key={accessGroup.access_group_id}

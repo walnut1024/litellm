@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useGuardrails } from "@/app/(dashboard)/hooks/guardrails/useGuardrails";
@@ -214,7 +216,9 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
 
   return (
     <>
-      <h2 className="mb-4 text-2xl font-semibold text-foreground">Add Model</h2>
+      <h2 className="mb-4 text-2xl font-semibold text-foreground">
+        <L>Add Model</L>
+      </h2>
 
       <Card>
         <CardContent>
@@ -253,9 +257,11 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {!teamAdminSelectedTeam && (
                         <Alert variant="info" className="mb-4">
                           <Info />
-                          <AlertTitle>Team Selection Required</AlertTitle>
+                          <AlertTitle>
+                            <L>Team Selection Required</L>
+                          </AlertTitle>
                           <AlertDescription>
-                            As a team admin, you need to select your team first before adding models.
+                            <L>As a team admin, you need to select your team first before adding models.</L>
                           </AlertDescription>
                         </Alert>
                       )}
@@ -322,14 +328,17 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         <div className="col-span-5" />
                         <div className="col-span-5">
                           <p className="text-sm mb-5 mt-1">
-                            <strong>Optional</strong> - LiteLLM endpoint to use when health checking this model{" "}
+                            <strong>
+                              <L>Optional</L>
+                            </strong>
+                            <L> - LiteLLM endpoint to use when health checking this model</L>{" "}
                             <a
                               href="https://docs.litellm.ai/docs/proxy/health#health"
                               target="_blank"
                               rel="noreferrer"
                               className="text-primary hover:underline"
                             >
-                              Learn more
+                              <L>Learn more</L>
                             </a>
                           </p>
                         </div>
@@ -338,7 +347,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       {/* Credentials */}
                       <div className="mb-4">
                         <span className="text-sm text-muted-foreground">
-                          Either select existing credentials OR enter new provider credentials below
+                          <L>Either select existing credentials OR enter new provider credentials below</L>
                         </span>
                       </div>
 
@@ -364,7 +373,9 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         <>
                           <div className="flex items-center my-4">
                             <div className="grow border-t border-border"></div>
-                            <span className="px-4 text-muted-foreground text-sm">OR</span>
+                            <span className="px-4 text-muted-foreground text-sm">
+                              <L>OR</L>
+                            </span>
                             <div className="grow border-t border-border"></div>
                           </div>
                           <ProviderSpecificFields
@@ -376,14 +387,16 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                           {canCreateFederatedCredential && (
                             <div className="mb-4 flex flex-col items-start gap-2">
                               <span className="text-sm text-muted-foreground">
-                                Workload identity federation is saved as a credential, then attached to this model.
+                                <L>
+                                  Workload identity federation is saved as a credential, then attached to this model.
+                                </L>
                               </span>
                               <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => setIsFederatedCredentialModalOpen(true)}
                               >
-                                Use workload identity federation
+                                <L>Use workload identity federation</L>
                               </Button>
                             </div>
                           )}
@@ -392,7 +405,9 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
 
                       <div className="flex items-center my-4">
                         <div className="grow border-t border-border"></div>
-                        <span className="px-4 text-muted-foreground text-sm">Additional Model Info Settings</span>
+                        <span className="px-4 text-muted-foreground text-sm">
+                          <L>Additional Model Info Settings</L>
+                        </span>
                         <div className="grow border-t border-border"></div>
                       </div>
                       {/* Team-only Model Switch - Only show for proxy admins, not team admins */}
@@ -495,7 +510,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         href="https://github.com/BerriAI/litellm/issues"
                         className="text-sm text-primary hover:underline"
                       >
-                        Need Help?
+                        <L>Need Help?</L>
                       </a>
                     </SimpleTooltip>
                     <div className="space-x-2">
@@ -506,10 +521,10 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         disabled={isTestingConnection}
                         aria-busy={isTestingConnection}
                       >
-                        Test Connect
+                        <L>Test Connect</L>
                       </Button>
                       <Button data-testid="add-model-btn" type="submit">
-                        Add Model
+                        <L>Add Model</L>
                       </Button>
                     </div>
                   </div>
@@ -554,7 +569,9 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
       >
         <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[700px]">
           <DialogHeader>
-            <DialogTitle>Connection Test Results</DialogTitle>
+            <DialogTitle>
+              <L>Connection Test Results</L>
+            </DialogTitle>
           </DialogHeader>
           {/* Only render the ConnectionErrorDisplay when modal is visible and we have a test ID */}
           {isResultModalVisible && (
@@ -580,7 +597,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                 setIsTestingConnection(false);
               }}
             >
-              Close
+              <L>Close</L>
             </Button>
           </DialogFooter>
         </DialogContent>

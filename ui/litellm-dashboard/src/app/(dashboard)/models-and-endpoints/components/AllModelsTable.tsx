@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { ROUTING_STATUS_FILTER_ID } from "../utils/routingStatus";
 
@@ -99,9 +101,11 @@ function EmptyState() {
       <div className="mb-1 flex size-11 items-center justify-center rounded-xl bg-muted">
         <Search className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-base font-semibold text-foreground">No models found</div>
+      <div className="text-base font-semibold text-foreground">
+        <L>No models found</L>
+      </div>
       <div className="max-w-80 text-sm text-muted-foreground">
-        No models match your search or filters. Try resetting them.
+        <L>No models match your search or filters. Try resetting them.</L>
       </div>
     </div>
   );
@@ -249,8 +253,12 @@ export function AllModelsTable({
                     selectedTeamValue === PERSONAL_TEAM_VALUE ? "bg-info" : "bg-success",
                   )}
                 />
-                <span className="text-muted-foreground">Team</span>
-                <span className="truncate font-semibold">{selectedTeamLabel}</span>
+                <span className="text-muted-foreground">
+                  <L>Team</L>
+                </span>
+                <span className="truncate font-semibold">
+                  {selectedTeamValue === PERSONAL_TEAM_VALUE ? <L>Personal</L> : selectedTeamLabel}
+                </span>
               </SelectTrigger>
               <SelectContent>
                 {teamOptions.map((option) => (
@@ -261,7 +269,7 @@ export function AllModelsTable({
                     className="[&>div]:min-w-0"
                   >
                     <span data-slot="select-item-label" className="min-w-0 truncate" title={option.label}>
-                      {option.label}
+                      {option.value === PERSONAL_TEAM_VALUE ? <L>Personal</L> : option.label}
                     </span>
                   </SelectItem>
                 ))}
@@ -270,12 +278,20 @@ export function AllModelsTable({
 
             <Select value={viewMode} onValueChange={(value) => onViewModeChange(value as ModelViewMode)}>
               <SelectTrigger size="sm" aria-label="View" data-testid="models-view-select" className="gap-2">
-                <span className="text-muted-foreground">View</span>
-                <span className="truncate">{VIEW_MODE_LABELS[viewMode]}</span>
+                <span className="text-muted-foreground">
+                  <L>View</L>
+                </span>
+                <span className="truncate">
+                  <L>{VIEW_MODE_LABELS[viewMode]}</L>
+                </span>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="current_team">{VIEW_MODE_LABELS.current_team}</SelectItem>
-                <SelectItem value="all">{VIEW_MODE_LABELS.all}</SelectItem>
+                <SelectItem value="current_team">
+                  <L>{VIEW_MODE_LABELS.current_team}</L>
+                </SelectItem>
+                <SelectItem value="all">
+                  <L>{VIEW_MODE_LABELS.all}</L>
+                </SelectItem>
               </SelectContent>
             </Select>
 

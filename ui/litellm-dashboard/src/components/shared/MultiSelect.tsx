@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useState } from "react";
 import {
   Combobox,
@@ -131,7 +133,9 @@ export function MultiSelect({
         </ComboboxValue>
       </ComboboxChips>
       <ComboboxContent anchor={anchor} className={contentClassName}>
-        <ComboboxEmpty>{emptyText}</ComboboxEmpty>
+        <ComboboxEmpty>
+          <L>{emptyText}</L>
+        </ComboboxEmpty>
         <ComboboxList>
           {(option: MultiSelectOption) => (
             <ComboboxItem key={option.value} value={option} disabled={option.disabled}>

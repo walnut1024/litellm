@@ -1,4 +1,6 @@
 "use client";
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { useTeamMemberBudgets } from "@/app/(dashboard)/hooks/teams/useTeamMemberBudgets";
 import { teamMemberBudgetGate } from "@/components/shared/InheritedBudgetHint";
@@ -325,7 +327,9 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
           return memberGate ? (
             <span className="block w-full whitespace-nowrap text-right tabular-nums">
               ${formatNumberWithCommas(memberGate.maxBudget, 0)}{" "}
-              <span className="text-muted-foreground">(team member)</span>
+              <span className="text-muted-foreground">
+                <L>(team member)</L>
+              </span>
             </span>
           ) : (
             <MoneyCell value={info.getValue() as number | null} decimals={0} emptyText="Unlimited" showZero />
@@ -354,12 +358,12 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
           const emptyModelsBadge = !scope.hasModelAccess ? (
             <SimpleTooltip content={`Scoped to ${scope.label} routes; this key cannot call any models`}>
               <Badge variant="secondary" className="mb-1">
-                No model access
+                <L>No model access</L>
               </Badge>
             </SimpleTooltip>
           ) : (
             <Badge variant="destructive" className="mb-1">
-              All Proxy Models
+              <L>All Proxy Models</L>
             </Badge>
           );
           return (
@@ -394,7 +398,7 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
                           {models.slice(0, 3).map((model, index) =>
                             model === "all-proxy-models" ? (
                               <Badge key={index} variant="destructive">
-                                All Proxy Models
+                                <L>All Proxy Models</L>
                               </Badge>
                             ) : (
                               <Badge key={index}>
@@ -414,7 +418,7 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
                               {models.slice(3).map((model, index) =>
                                 model === "all-proxy-models" ? (
                                   <Badge key={index + 3} variant="destructive">
-                                    All Proxy Models
+                                    <L>All Proxy Models</L>
                                   </Badge>
                                 ) : (
                                   <Badge key={index + 3}>
@@ -446,8 +450,14 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
           const key = row.original;
           return (
             <div>
-              <div>TPM: {key.tpm_limit !== null ? key.tpm_limit : "Unlimited"}</div>
-              <div>RPM: {key.rpm_limit !== null ? key.rpm_limit : "Unlimited"}</div>
+              <div>
+                <L>TPM: </L>
+                {key.tpm_limit !== null ? key.tpm_limit : "Unlimited"}
+              </div>
+              <div>
+                <L>RPM: </L>
+                {key.rpm_limit !== null ? key.rpm_limit : "Unlimited"}
+              </div>
             </div>
           );
         },

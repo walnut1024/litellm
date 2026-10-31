@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { CircleHelp } from "lucide-react";
 import React from "react";
 import { z } from "zod";
@@ -57,12 +59,18 @@ const AccessGroupBudgetModal: React.FC<AccessGroupBudgetModalProps> = ({
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[560px]">
         <DialogHeader>
           <DialogTitle>
-            {budget ? "Edit" : "Set"} budget for &quot;{accessGroup?.access_group}&quot;
+            <L>{budget ? "Edit" : "Set"}</L>
+            <L> budget for &quot;</L>
+            {accessGroup?.access_group}&quot;
           </DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
-          Every key granted this access group by name draws from this one budget. A key that reaches the group&apos;s
-          models through a wildcard or <code>all-proxy-models</code> is not charged against it.
+          <L>
+            Every key granted this access group by name draws from this one budget. A key that reaches the group&apos;s
+            models through a wildcard or{" "}
+          </L>
+          <code>all-proxy-models</code>
+          <L> is not charged against it.</L>
         </p>
         <form onSubmit={form.handleSubmit((values) => onSubmit(buildAccessGroupBudgetBody(values)))} noValidate>
           <TooltipProvider>
@@ -109,15 +117,17 @@ const AccessGroupBudgetModal: React.FC<AccessGroupBudgetModalProps> = ({
             </FieldGroup>
 
             <p className="mt-3 text-xs text-muted-foreground">
-              A field left blank keeps whatever the budget already has. Use Clear budget to remove the budget itself.
+              <L>
+                A field left blank keeps whatever the budget already has. Use Clear budget to remove the budget itself.
+              </L>
             </p>
 
             <div className="mt-6 flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
+                <L>Cancel</L>
               </Button>
               <Button type="submit" disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save Budget"}
+                <L>{isSaving ? "Saving..." : "Save Budget"}</L>
               </Button>
             </div>
           </TooltipProvider>

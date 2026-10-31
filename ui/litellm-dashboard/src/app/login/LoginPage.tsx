@@ -1,5 +1,8 @@
 "use client";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useLogin } from "@/app/(dashboard)/hooks/login/useLogin";
 import { useUIConfig } from "@/app/(dashboard)/hooks/uiConfig/useUIConfig";
 import LoadingScreen from "@/components/common_components/LoadingScreen";
@@ -48,10 +51,12 @@ function SsoEnabledNotice() {
     <Alert variant="info" className="mt-4">
       <Info />
       <AlertTitle>
-        Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon loading
-        this page. To re-enable auto-redirect-to-SSO, set{" "}
-        <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">AUTO_REDIRECT_UI_LOGIN_TO_SSO=true</code> in your
-        environment configuration.
+        <L>
+          Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon loading
+          this page. To re-enable auto-redirect-to-SSO, set
+        </L>{" "}
+        <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">AUTO_REDIRECT_UI_LOGIN_TO_SSO=true</code>
+        <L> in your environment configuration.</L>
       </AlertTitle>
       <AlertAction>
         <Button variant="ghost" size="icon-sm" aria-label="Close" onClick={() => setDismissed(true)}>
@@ -193,21 +198,28 @@ function LoginPageContent() {
   // Show disabled message if admin UI is disabled
   if (uiConfig && uiConfig.admin_ui_disabled) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="absolute right-6 top-6">
+          <LanguageSwitcher />
+        </div>
         <Card className="w-full max-w-lg shadow-md">
           <CardContent>
             <div className="flex w-full flex-col gap-4">
               <div className="text-center">
-                <h2 className="text-3xl font-semibold text-foreground">🚅 LiteLLM</h2>
+                <h2 className="text-3xl font-semibold text-foreground">MoMA 轻量版</h2>
               </div>
 
               <Alert variant="warning">
                 <TriangleAlert />
-                <AlertTitle>Admin UI Disabled</AlertTitle>
+                <AlertTitle>
+                  <L>Admin UI Disabled</L>
+                </AlertTitle>
                 <AlertDescription>
                   <p className="text-sm">
-                    The Admin UI has been disabled by the administrator. To re-enable it, please update the following
-                    environment variable:
+                    <L>
+                      The Admin UI has been disabled by the administrator. To re-enable it, please update the following
+                      environment variable:
+                    </L>
                   </p>
                   <p className="mt-2 text-sm">
                     <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">DISABLE_ADMIN_UI=False</code>
@@ -222,34 +234,44 @@ function LoginPageContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="absolute right-6 top-6">
+        <LanguageSwitcher />
+      </div>
       <Card className="w-full max-w-lg shadow-md">
         <CardContent>
           <TooltipProvider>
             <div className="flex w-full flex-col gap-4">
               <div className="text-center">
-                <h2 className="text-3xl font-semibold text-foreground">🚅 LiteLLM</h2>
+                <h2 className="text-3xl font-semibold text-foreground">MoMA 轻量版</h2>
               </div>
 
               <div className="text-center">
-                <h3 className="text-2xl font-semibold text-foreground">Login</h3>
-                <p className="text-sm text-muted-foreground">Access your LiteLLM Admin UI.</p>
+                <h3 className="text-2xl font-semibold text-foreground">
+                  <L>Login</L>
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  <L>Sign in to MoMA 轻量版</L>
+                </p>
               </div>
 
               {!uiConfig?.hide_default_credentials_hint && (
                 <Alert variant="info">
                   <Info />
-                  <AlertTitle>Default Credentials</AlertTitle>
+                  <AlertTitle>
+                    <L>Default Credentials</L>
+                  </AlertTitle>
                   <AlertDescription>
                     <p className="text-sm">
-                      By default, Username is <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">admin</code> and
-                      Password is your set LiteLLM Proxy
+                      <L>By default, Username is </L>
+                      <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">admin</code>
+                      <L> and Password is your set LiteLLM Proxy</L>
                       <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">MASTER_KEY</code>.
                     </p>
                     <p className="mt-2 text-sm">
-                      Need to set UI credentials or SSO?{" "}
+                      <L>Need to set UI credentials or SSO?</L>{" "}
                       <a href="https://docs.litellm.ai/docs/proxy/ui" target="_blank" rel="noopener noreferrer">
-                        Check the documentation
+                        <L>Check the documentation</L>
                       </a>
                       .
                     </p>
@@ -268,7 +290,9 @@ function LoginPageContent() {
                 <FieldGroup>
                   {uiConfig?.is_control_plane && workers.length > 0 && (
                     <Field>
-                      <FieldLabel htmlFor={workerFieldId}>Worker</FieldLabel>
+                      <FieldLabel htmlFor={workerFieldId}>
+                        <L>Worker</L>
+                      </FieldLabel>
                       <Select
                         items={workers.map((worker) => ({ label: worker.name, value: worker.worker_id }))}
                         value={selectedWorkerId}
@@ -316,17 +340,19 @@ function LoginPageContent() {
 
                   <Button type="submit" size="lg" disabled={isLoginLoading} className="w-full">
                     {isLoginLoading && <UiLoadingSpinner className="size-4" role="img" aria-label="loading" />}
-                    {isLoginLoading ? "Logging in..." : "Login"}
+                    <L>{isLoginLoading ? "Logging in..." : "Login"}</L>
                   </Button>
 
                   {!uiConfig?.sso_configured ? (
                     <Tooltip>
                       <TooltipTrigger render={<span className="block w-full" />}>
                         <Button type="button" variant="outline" size="lg" disabled className="w-full">
-                          Login with SSO
+                          <L>Login with SSO</L>
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Please configure SSO to log in with SSO.</TooltipContent>
+                      <TooltipContent>
+                        <L>Please configure SSO to log in with SSO.</L>
+                      </TooltipContent>
                     </Tooltip>
                   ) : (
                     <Button
@@ -349,7 +375,7 @@ function LoginPageContent() {
                       }}
                       className="w-full"
                     >
-                      Login with SSO
+                      <L>Login with SSO</L>
                     </Button>
                   )}
                 </FieldGroup>

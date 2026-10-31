@@ -1,4 +1,3 @@
-import { LiteUiMask } from "@/contexts/LiteUiContext";
 import React, { useMemo, useState } from "react";
 import { z } from "zod";
 import { all_admin_roles } from "@/utils/roles";
@@ -379,17 +378,15 @@ export function UserEditView({
           {/* Bulk edit forwards a fixed field list and has no single stored budget to
               diff against, so the editor would silently discard whatever was typed. */}
           {!isBulkEdit && (
-            <LiteUiMask>
-              <ModelMaxBudgetField
-                key={userData.user_id}
-                premiumUser={premiumUser}
-                value={modelMaxBudget}
-                onChange={setModelMaxBudget}
-                availableModels={userModels}
-                usage={userData.user_info?.model_max_budget_usage}
-                hint="Cap this user's spend on individual models, each with its own reset window. Applies across every key the user holds."
-              />
-            </LiteUiMask>
+            <ModelMaxBudgetField
+              key={userData.user_id}
+              premiumUser={premiumUser}
+              value={modelMaxBudget}
+              onChange={setModelMaxBudget}
+              availableModels={userModels}
+              usage={userData.user_info?.model_max_budget_usage}
+              hint="Cap this user's spend on individual models, each with its own reset window. Applies across every key the user holds."
+            />
           )}
 
           <FormField control={form.control} name="metadata" label="Metadata">

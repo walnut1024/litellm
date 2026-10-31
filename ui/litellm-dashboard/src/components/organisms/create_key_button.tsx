@@ -790,15 +790,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                       <RadioGroupItem value="you" />
                       You
                     </label>
-                    <label
-                      hidden={!!lite}
-                      style={lite ? { display: "none" } : undefined}
-                      className={KEY_OWNER_LABEL_CLASS}
-                    >
+                    <label className={KEY_OWNER_LABEL_CLASS}>
                       <RadioGroupItem value="service_account" />
                       Service Account
                     </label>
-                    {(!lite || lite.admin) && ownerScope !== "none" && (
+                    {ownerScope !== "none" && (
                       <label className={KEY_OWNER_LABEL_CLASS}>
                         <RadioGroupItem value="another_user" />
                         Another User

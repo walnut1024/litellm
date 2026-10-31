@@ -236,52 +236,50 @@ export function AllModelsTable({
             filterLabels={FILTER_LABELS}
             formatFilterValue={formatFilterValue}
           >
-            <LiteUiMask>
-              <Select value={selectedTeamValue} onValueChange={(value) => onTeamChange(String(value))}>
-                <SelectTrigger
-                  size="sm"
-                  aria-label="Current team"
-                  data-testid="models-team-select"
-                  className="gap-2 bg-secondary"
-                >
-                  <span
-                    className={cn(
-                      "size-2 shrink-0 rounded-full",
-                      selectedTeamValue === PERSONAL_TEAM_VALUE ? "bg-info" : "bg-success",
-                    )}
-                  />
-                  <span className="text-muted-foreground">Team</span>
-                  <span className="truncate font-semibold">{selectedTeamLabel}</span>
-                </SelectTrigger>
-                <SelectContent>
-                  {teamOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      disabled={isLoadingTeams}
-                      className="[&>div]:min-w-0"
-                    >
-                      <span data-slot="select-item-label" className="min-w-0 truncate" title={option.label}>
-                        {option.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <Select value={selectedTeamValue} onValueChange={(value) => onTeamChange(String(value))}>
+              <SelectTrigger
+                size="sm"
+                aria-label="Current team"
+                data-testid="models-team-select"
+                className="gap-2 bg-secondary"
+              >
+                <span
+                  className={cn(
+                    "size-2 shrink-0 rounded-full",
+                    selectedTeamValue === PERSONAL_TEAM_VALUE ? "bg-info" : "bg-success",
+                  )}
+                />
+                <span className="text-muted-foreground">Team</span>
+                <span className="truncate font-semibold">{selectedTeamLabel}</span>
+              </SelectTrigger>
+              <SelectContent>
+                {teamOptions.map((option) => (
+                  <SelectItem
+                    key={option.value}
+                    value={option.value}
+                    disabled={isLoadingTeams}
+                    className="[&>div]:min-w-0"
+                  >
+                    <span data-slot="select-item-label" className="min-w-0 truncate" title={option.label}>
+                      {option.label}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-              <Select value={viewMode} onValueChange={(value) => onViewModeChange(value as ModelViewMode)}>
-                <SelectTrigger size="sm" aria-label="View" data-testid="models-view-select" className="gap-2">
-                  <span className="text-muted-foreground">View</span>
-                  <span className="truncate">{VIEW_MODE_LABELS[viewMode]}</span>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="current_team">{VIEW_MODE_LABELS.current_team}</SelectItem>
-                  <SelectItem value="all">{VIEW_MODE_LABELS.all}</SelectItem>
-                </SelectContent>
-              </Select>
+            <Select value={viewMode} onValueChange={(value) => onViewModeChange(value as ModelViewMode)}>
+              <SelectTrigger size="sm" aria-label="View" data-testid="models-view-select" className="gap-2">
+                <span className="text-muted-foreground">View</span>
+                <span className="truncate">{VIEW_MODE_LABELS[viewMode]}</span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="current_team">{VIEW_MODE_LABELS.current_team}</SelectItem>
+                <SelectItem value="all">{VIEW_MODE_LABELS.all}</SelectItem>
+              </SelectContent>
+            </Select>
 
-              <ToolbarSeparator className="mx-0.5" />
-            </LiteUiMask>
+            <ToolbarSeparator className="mx-0.5" />
 
             <LiteUiMask adminOnly>
               <Button

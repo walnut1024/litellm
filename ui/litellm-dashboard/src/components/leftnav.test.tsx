@@ -238,8 +238,20 @@ describe("Sidebar (leftnav)", () => {
   });
 
   it("keeps the administrator pages and the original Settings children", () => {
-    renderWithProviders(<Sidebar {...defaultProps} />);
-    for (const label of ["Home", "Virtual Keys", "Models + Endpoints", "Usage", "Logs", "Internal Users"]) {
+    renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
+    for (const label of [
+      "Home",
+      "Virtual Keys",
+      "Models + Endpoints",
+      "Usage",
+      "Logs",
+      "Internal Users",
+      "Teams",
+      "Projects Beta",
+      "Organizations",
+      "Access Groups",
+      "Budgets",
+    ]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     fireEvent.click(screen.getByRole("button", { name: "Settings" }));
@@ -247,8 +259,6 @@ describe("Sidebar (leftnav)", () => {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     for (const label of [
-      "Teams",
-      "Organizations",
       "MCP Servers",
       "Guardrails",
       "AI Hub",
@@ -261,13 +271,23 @@ describe("Sidebar (leftnav)", () => {
     }
   });
 
-  it("keeps the four employee pages even when team features are enabled", () => {
+  it("restores employee access-control menus under the original role checks", () => {
     mockUseAuthorized.mockReturnValue(teamMemberAuthorization);
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
-    for (const label of ["Home", "Virtual Keys", "Models + Endpoints", "Usage"]) {
+    for (const label of ["Home", "Virtual Keys", "Models + Endpoints", "Usage", "Teams"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
-    for (const label of ["Logs", "Internal Users", "Projects", "Teams", "MCP Servers", "Playground", "API Reference"]) {
+    for (const label of [
+      "Logs",
+      "Internal Users",
+      "Organizations",
+      "Access Groups",
+      "Budgets",
+      "Projects",
+      "MCP Servers",
+      "Playground",
+      "API Reference",
+    ]) {
       expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
     }
     expect(screen.queryByRole("button", { name: "Settings" })).not.toBeInTheDocument();
@@ -279,7 +299,7 @@ describe("Sidebar (leftnav)", () => {
     expect(screen.getByRole("link", { name: "Virtual Keys" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Usage" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Agents" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Teams" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Teams" })).toBeInTheDocument();
   });
 
   it("keeps view-only administrators out of the cost-incurring Playground", () => {

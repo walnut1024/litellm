@@ -26,7 +26,7 @@ function SavedFields({ onSave }: { onSave: (values: MountedFormValues) => void }
         <MountedFormField name="tags" label="Tags">
           {({ value, ...props }) => <input {...props} value={String(value)} />}
         </MountedFormField>
-        <MountedFormField name="team_id" label="Required Team" required rules={{ required: "Choose a team" }}>
+        <MountedFormField name="team_id" label="Team">
           {({ value, ...props }) => <input {...props} value={String(value)} />}
         </MountedFormField>
         <button type="submit">Save</button>
@@ -36,7 +36,7 @@ function SavedFields({ onSave }: { onSave: (values: MountedFormValues) => void }
 }
 
 describe("lightweight UI rendering", () => {
-  it("keeps hidden stored values in submission and leaves required controls accessible", async () => {
+  it("keeps hidden stored values in submission and restores optional team assignment", async () => {
     const onSave = vi.fn();
     render(
       <LiteUiContext.Provider value={{ route: "api-keys", admin: false }}>
@@ -44,9 +44,9 @@ describe("lightweight UI rendering", () => {
       </LiteUiContext.Provider>,
     );
     expect(screen.getByLabelText("Tags")).not.toBeVisible();
-    expect(screen.getByRole("textbox", { name: "Required Team" })).toBeVisible();
+    expect(screen.getByRole("textbox", { name: "Team" })).toBeVisible();
     fireEvent.change(screen.getByRole("textbox", { name: "Key Name" }), { target: { value: "renamed" } });
-    fireEvent.change(screen.getByRole("textbox", { name: "Required Team" }), { target: { value: "assigned-team" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Team" }), { target: { value: "assigned-team" } });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() =>
       expect(onSave).toHaveBeenCalledWith({ key_alias: "renamed", tags: "existing-tag", team_id: "assigned-team" }),
@@ -70,11 +70,11 @@ describe("lightweight UI rendering", () => {
     expect(screen.queryByText("Comparison controls")).not.toBeInTheDocument();
   });
 
-  it("removes blocked columns from the table and the column selector", () => {
+  it("restores team columns while keeping masked columns out of the table and column selector", async () => {
     render(
       <LiteUiContext.Provider value={{ route: "api-keys", admin: false }}>
         <DataTable
-          data={[{ key_alias: "editor", team_alias: "private-team", user: "other-user" }]}
+          data={[{ key_alias: "editor", team_alias: "assigned-team", user: "other-user" }]}
           columns={[
             { accessorKey: "key_alias", header: "Key" },
             { accessorKey: "team_alias", header: "Team" },
@@ -85,9 +85,10 @@ describe("lightweight UI rendering", () => {
       </LiteUiContext.Provider>,
     );
     expect(screen.getByRole("columnheader", { name: "Key" })).toBeVisible();
-    expect(screen.queryByRole("columnheader", { name: "Team" })).not.toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Team" })).toBeVisible();
+    expect(screen.queryByRole("columnheader", { name: "User" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByTestId("view-options-trigger"));
-    expect(screen.queryByRole("menuitemcheckbox", { name: "team_alias" })).not.toBeInTheDocument();
-    expect(screen.queryByText("private-team")).not.toBeInTheDocument();
+    expect(await screen.findByRole("menuitemcheckbox", { name: "Team" })).toBeVisible();
+    expect(screen.queryByText("other-user")).not.toBeInTheDocument();
   });
 });

@@ -49,7 +49,7 @@ describe("Page Utils - LeftNav Sync", () => {
       getAvailablePages()
         .map((page) => page.page)
         .sort(),
-    ).toEqual(["home", "api-keys", "models", "new_usage"].sort());
+    ).toEqual(["home", "api-keys", "models", "new_usage", "teams", "projects"].sort());
   });
 
   it("should not include parent container pages (tools, experimental, settings)", () => {
@@ -170,8 +170,8 @@ describe("Page Utils - LeftNav Sync", () => {
     expect(pageKeys.length, "All page keys should be unique (no duplicates)").toBe(uniquePageKeys.size);
   });
 
-  it("does not offer masked Projects in page visibility settings", () => {
-    expect(getAvailablePages().find((page) => page.page === "projects")).toBeUndefined();
+  it("offers Projects in page visibility settings", () => {
+    expect(getAvailablePages().find((page) => page.page === "projects")).toBeDefined();
   });
 
   it("should match the structure expected by PageVisibilitySettings component", () => {

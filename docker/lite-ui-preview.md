@@ -41,7 +41,11 @@ For UI-only updates, rebuild the dashboard and run the same Compose command. The
 
 Stop this stack with the same project name and environment file. Do not use volume deletion unless you intend to discard the preview database
 
-The dashboard keeps the existing page names, layout, form defaults, validation, and backend APIs. The employee view exposes Home, Virtual Keys, Models + Endpoints, and Usage. Administrators additionally retain Logs, Internal Users, Router Settings, Logging & Alerts, and Admin Settings. Playground and the deprecated API Reference page are hidden for both roles, including navigation, search, and direct page URLs
+The dashboard keeps the existing page names, layout, form defaults, validation, and backend APIs. Home, Virtual Keys, Models + Endpoints, and Usage remain available. The complete Access Control section is restored, including Teams, Projects, Internal Users, Organizations, Access Groups, and Budgets. The original roles, Projects UI setting, and license restrictions still apply. Team, organization, project, and access-group assignment fields and filters are restored, together with team and organization usage views
+
+Administrators additionally retain Logs, Router Settings, Logging & Alerts, and Admin Settings. Playground and the deprecated API Reference page remain hidden for both roles, including navigation, search, and direct page URLs
+
+The current local preview has the original Projects UI setting enabled through `/update/ui_settings`. A fresh preview can enable it in Admin Settings when the build supports it. Organizations still displays its original Enterprise-license requirement when no valid license is configured
 
 Browser verification covered both roles signing in, employee key creation, administrator visibility of that key, and blocked page URLs. Mock chat and hidden-tab fallback were verified before Playground was fully hidden. The static dashboard build, scoped frontend lint gates, and focused tests passed
 

@@ -57,12 +57,12 @@ describe("visibleMenuGroups", () => {
     expect(flattenNavItems(visible).map(({ route }) => route)).toEqual(["api-keys"]);
   });
 
-  it("keeps masked Projects hidden regardless of its UI setting", () => {
+  it("applies the original Projects UI setting", () => {
     const projectAdminContext = { ...context, userRole: "Admin", isTeamAdmin: true };
     const visibleWithFlag = visibleMenuGroups(menuGroups, { ...projectAdminContext, enableProjectsUI: true });
     const visibleWithoutFlag = visibleMenuGroups(menuGroups, { ...projectAdminContext, enableProjectsUI: false });
 
-    expect(flattenNavItems(visibleWithFlag).some(({ route }) => route === "projects")).toBe(false);
+    expect(flattenNavItems(visibleWithFlag).some(({ route }) => route === "projects")).toBe(true);
     expect(flattenNavItems(visibleWithoutFlag).some(({ route }) => route === "projects")).toBe(false);
   });
 
@@ -74,7 +74,7 @@ describe("visibleMenuGroups", () => {
     });
 
     expect(flattenNavItems(visible).some(({ route }) => route === "users")).toBe(true);
-    expect(flattenNavItems(visible).some(({ route }) => route === "organizations")).toBe(false);
+    expect(flattenNavItems(visible).some(({ route }) => route === "organizations")).toBe(true);
   });
 
   it.each(["Internal User", "Admin"])("omits masked developer pages from search results for %s", (userRole) => {

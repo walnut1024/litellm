@@ -371,16 +371,16 @@ export default function UISettings() {
               label="Disable model add for internal users"
               description={property?.description}
             />
-            <LiteUiMask>
-              <SettingRow
-                checked={isDisabledTeamAdminDeleteTeamUser}
-                disabled={isUpdating}
-                onCheckedChange={handleToggleTeamAdminDelete}
-                ariaLabel={disableTeamAdminDeleteProperty?.description ?? "Disable team admin delete team user"}
-                label="Disable team admin delete team user"
-                description={disableTeamAdminDeleteProperty?.description}
-              />
-            </LiteUiMask>
+
+            <SettingRow
+              checked={isDisabledTeamAdminDeleteTeamUser}
+              disabled={isUpdating}
+              onCheckedChange={handleToggleTeamAdminDelete}
+              ariaLabel={disableTeamAdminDeleteProperty?.description ?? "Disable team admin delete team user"}
+              label="Disable team admin delete team user"
+              description={disableTeamAdminDeleteProperty?.description}
+            />
+
             <SettingRow
               checked={Boolean(values.require_auth_for_public_ai_hub)}
               disabled={isUpdating}
@@ -420,19 +420,17 @@ export default function UISettings() {
               />
             </LiteUiMask>
             {enableProjectsUIProperty && (
-              <LiteUiMask>
-                <SettingRow
-                  checked={Boolean(values.enable_projects_ui)}
-                  disabled={isUpdating}
-                  onCheckedChange={handleToggleEnableProjectsUI}
-                  ariaLabel={enableProjectsUIProperty.description ?? "Enable Projects UI"}
-                  label="[BETA] Enable Projects (page will refresh)"
-                  description={
-                    enableProjectsUIProperty.description ??
-                    "If enabled, shows the Projects feature in the UI sidebar and the project field in key management."
-                  }
-                />
-              </LiteUiMask>
+              <SettingRow
+                checked={Boolean(values.enable_projects_ui)}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleEnableProjectsUI}
+                ariaLabel={enableProjectsUIProperty.description ?? "Enable Projects UI"}
+                label="[BETA] Enable Projects (page will refresh)"
+                description={
+                  enableProjectsUIProperty.description ??
+                  "If enabled, shows the Projects feature in the UI sidebar and the project field in key management."
+                }
+              />
             )}
             <LiteUiMask>
               <SettingRow
@@ -518,19 +516,18 @@ export default function UISettings() {
             </LiteUiMask>
 
             <Separator />
-            <LiteUiMask>
-              <SettingRow
-                checked={Boolean(values.scope_user_search_to_org)}
-                disabled={isUpdating}
-                onCheckedChange={handleToggleScopeUserSearch}
-                ariaLabel={scopeUserSearchProperty?.description ?? "Scope user search to organization"}
-                label="Scope user search to organization"
-                description={
-                  scopeUserSearchProperty?.description ??
-                  "If enabled, the user search endpoint restricts results by organization. When off, any authenticated user can search all users."
-                }
-              />
-            </LiteUiMask>
+
+            <SettingRow
+              checked={Boolean(values.scope_user_search_to_org)}
+              disabled={isUpdating}
+              onCheckedChange={handleToggleScopeUserSearch}
+              ariaLabel={scopeUserSearchProperty?.description ?? "Scope user search to organization"}
+              label="Scope user search to organization"
+              description={
+                scopeUserSearchProperty?.description ??
+                "If enabled, the user search endpoint restricts results by organization. When off, any authenticated user can search all users."
+              }
+            />
 
             <Separator />
             <SettingRow

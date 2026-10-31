@@ -110,7 +110,8 @@ export function DataTableFilterDrawer<TData>({
 export function DataTableFilterField({ label, children }: { label: string; children: React.ReactNode }) {
   const lite = useLiteUi();
   const hidden =
-    lite !== null && /^(Team|Organization|Project|End User|Tags|Cache|Credential|Span Type|Request Type)/i.test(label);
+    ["api-keys", "models-and-endpoints", "logs"].includes(lite?.route ?? "") &&
+    /^(End User|Tags|Cache|Credential|Span Type|Request Type)/i.test(label);
   return (
     <div hidden={hidden} style={hidden ? { display: "none" } : undefined} className="flex flex-col gap-1.5">
       <Label>{label}</Label>

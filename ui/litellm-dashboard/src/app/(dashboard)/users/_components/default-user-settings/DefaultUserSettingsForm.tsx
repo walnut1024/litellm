@@ -1,7 +1,5 @@
 "use client";
 
-import { LiteUiMask } from "@/contexts/LiteUiContext";
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
 import { useFieldArray, type Control } from "react-hook-form";
@@ -119,14 +117,12 @@ const TeamsField = ({ control }: { control: SettingsControl }) => {
 
   return (
     <div className="flex w-full flex-col gap-3">
-      <LiteUiMask>
-        <div>
-          <p className="text-sm font-medium">Default Teams</p>
-          <p className="text-sm text-muted-foreground">
-            New users are added to these teams. Only teams that already exist can be selected.
-          </p>
-        </div>
-      </LiteUiMask>
+      <div>
+        <p className="text-sm font-medium">Default Teams</p>
+        <p className="text-sm text-muted-foreground">
+          New users are added to these teams. Only teams that already exist can be selected.
+        </p>
+      </div>
 
       {fields.map((field, index) => (
         <div key={field.id} className="rounded-lg border border-border p-4">
@@ -210,22 +206,20 @@ const SettingsView = ({ values, roleOptions }: SettingsViewProps) => {
           ? "Not set"
           : values.models.map((model) => MODEL_SENTINEL_LABELS.get(model) ?? model).join(", ")}
       </ViewRow>
-      <LiteUiMask>
-        <div>
-          <p className="text-sm font-medium">Default Teams</p>
-          {values.teams.length === 0 ? (
-            <p className="text-sm text-muted-foreground">None</p>
-          ) : (
-            values.teams.map((team) => (
-              <p key={team.team_id} className="text-sm text-muted-foreground">
-                {team.team_id}
-                {team.max_budget_in_team !== "" && <> · ${team.max_budget_in_team} max budget</>}
-                <> · {team.user_role}</>
-              </p>
-            ))
-          )}
-        </div>
-      </LiteUiMask>
+      <div>
+        <p className="text-sm font-medium">Default Teams</p>
+        {values.teams.length === 0 ? (
+          <p className="text-sm text-muted-foreground">None</p>
+        ) : (
+          values.teams.map((team) => (
+            <p key={team.team_id} className="text-sm text-muted-foreground">
+              {team.team_id}
+              {team.max_budget_in_team !== "" && <> · ${team.max_budget_in_team} max budget</>}
+              <> · {team.user_role}</>
+            </p>
+          ))
+        )}
+      </div>
     </div>
   );
 };
@@ -340,9 +334,7 @@ const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, on
           )}
         </FormField>
 
-        <LiteUiMask>
-          <TeamsField control={form.control} />
-        </LiteUiMask>
+        <TeamsField control={form.control} />
       </FieldGroup>
 
       <div className="mt-6 flex items-center justify-end gap-2">

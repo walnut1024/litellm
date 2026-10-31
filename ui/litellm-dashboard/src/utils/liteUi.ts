@@ -1,7 +1,8 @@
 import { isAdminRole } from "./roles";
 
 const employeePages = ["home", "api-keys", "models", "new_usage"];
-const adminPages = ["logs", "users", "settings", "router-settings", "logging-and-alerts", "admin-panel"];
+const accessControlPages = ["teams", "projects", "users", "organizations", "access-groups", "budgets"];
+const adminPages = ["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel"];
 
 const routePages: Readonly<Record<string, string>> = {
   "": "home",
@@ -11,13 +12,20 @@ const routePages: Readonly<Record<string, string>> = {
   usage: "new_usage",
   logs: "logs",
   users: "users",
+  teams: "teams",
+  projects: "projects",
+  organizations: "organizations",
+  "access-groups": "access-groups",
+  budgets: "budgets",
   "router-settings": "router-settings",
   "logging-and-alerts": "logging-and-alerts",
   "admin-panel": "admin-panel",
 };
 
 export const litePageAllowed = (page: string, userRole: string): boolean =>
-  employeePages.includes(page) || (isAdminRole(userRole) && adminPages.includes(page));
+  accessControlPages.includes(page) ||
+  employeePages.includes(page) ||
+  (isAdminRole(userRole) && adminPages.includes(page));
 
 export const liteRouteAllowed = (route: string, userRole: string): boolean =>
   ["login", "onboarding", "change-password", "mcp"].includes(route) ||
@@ -25,11 +33,10 @@ export const liteRouteAllowed = (route: string, userRole: string): boolean =>
 
 const hiddenTabs: Readonly<Record<string, readonly string[]>> = {
   playground: ["compare", "compliance", "system-one", "agent-builder"],
-  "models-and-endpoints": ["auto-routers", "pass-through", "model-group-alias", "access-group-budgets", "price-data"],
+  "models-and-endpoints": ["auto-routers", "pass-through", "model-group-alias", "price-data"],
   "api-keys": ["savings", "auto-router-usage"],
-  users: ["savings", "auto-router-usage"],
   usage: ["mcp", "endpoints"],
-  logs: ["deleted keys", "deleted teams"],
+  logs: ["deleted keys"],
   "logging-and-alerts": ["logging-callbacks", "cloudzero-cost-tracking"],
   "admin-panel": ["scim", "hashicorp-vault", "cyberark", "plugins", "web-search-interception"],
 };
@@ -43,12 +50,6 @@ export const liteTabAllowed = (route: string, tab: string, admin: boolean): bool
 };
 
 const hiddenFields = [
-  "organization_id",
-  "organization_ids",
-  "team_id",
-  "project_id",
-  "access_group_ids",
-  "model_access_group",
   "metadata",
   "tags",
   "guardrails",
@@ -93,29 +94,11 @@ const hiddenFields = [
 ];
 
 export const liteFieldHidden = (route: string, name: string): boolean =>
-  ["api-keys", "models-and-endpoints", "users"].includes(route) &&
-  (hiddenFields.includes(name) || name.startsWith("teams."));
+  ["api-keys", "models-and-endpoints"].includes(route) && hiddenFields.includes(name);
 
 export const liteColumnAllowed = (route: string, column: string, admin: boolean): boolean => {
   if (["api-keys", "models-and-endpoints", "logs"].includes(route)) {
-    if (
-      [
-        "team_id",
-        "team",
-        "team_alias",
-        "team_name",
-        "organization_id",
-        "organization_alias",
-        "org_id",
-        "project_id",
-        "request_tags",
-        "tags",
-        "end_user",
-        "model_info_team_id",
-        "model_info_access_groups",
-      ].includes(column)
-    )
-      return false;
+    if (["request_tags", "tags", "end_user"].includes(column)) return false;
   }
   if (!admin && route === "api-keys" && ["user_id", "user", "user_email"].includes(column)) return false;
   if (!admin && route === "models-and-endpoints") {

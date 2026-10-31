@@ -491,9 +491,7 @@ function KeyEditSession({
               onChange={setBudgetFallbacks}
               availableModels={availableModels}
             />
-          </LiteUiMask>
-          {keyOffersEndUserBudget(keyData.metadata) && (
-            <LiteUiMask>
+            {keyOffersEndUserBudget(keyData.metadata) && (
               <Field>
                 <FieldLabel htmlFor={endUserBudgetFieldId}>
                   {labelWithHint("Default Customer Budget", END_USER_BUDGET_HINT)}
@@ -506,8 +504,8 @@ function KeyEditSession({
                   canEdit={userRole != null && isProxyAdminRole(userRole)}
                 />
               </Field>
-            </LiteUiMask>
-          )}
+            )}
+          </LiteUiMask>
           <KeyRateLimitFields control={form.control} />
           <FormField
             control={form.control}
@@ -691,24 +689,25 @@ function KeyEditSession({
                 )}
               </FormField>
             )}
+          </LiteUiMask>
+          <FormField
+            control={form.control}
+            name="access_group_ids"
+            label={labelWithHint(
+              "Access Groups",
+              "Assign access groups to this key. Access groups control which models, MCP servers, and agents this key can use",
+            )}
+          >
+            {({ value, onChange }) => (
+              <AccessGroupSelector
+                value={value as string[] | undefined}
+                onChange={onChange}
+                placeholder="Select access groups (optional)"
+              />
+            )}
+          </FormField>
 
-            <FormField
-              control={form.control}
-              name="access_group_ids"
-              label={labelWithHint(
-                "Access Groups",
-                "Assign access groups to this key. Access groups control which models, MCP servers, and agents this key can use",
-              )}
-            >
-              {({ value, onChange }) => (
-                <AccessGroupSelector
-                  value={value as string[] | undefined}
-                  onChange={onChange}
-                  placeholder="Select access groups (optional)"
-                />
-              )}
-            </FormField>
-
+          <LiteUiMask>
             <FormField
               control={form.control}
               name="allowed_passthrough_routes"
@@ -773,59 +772,60 @@ function KeyEditSession({
             </div>
 
             <KeyAgentAndSkillFields control={form.control} accessToken={accessToken || ""} />
-
-            <FormField
-              control={form.control}
-              name="organization_id"
-              label={labelWithHint(
-                "Organization",
-                "The organization this key belongs to. Selecting an organization filters the available teams.",
-              )}
-              description={hasProject ? "Organization is locked because this key belongs to a project" : undefined}
-            >
-              {({ value, onChange, id }) => (
-                <OrganizationDropdown
-                  id={id}
-                  value={value}
-                  organizations={organizations}
-                  loading={isOrganizationsLoading}
-                  disabled={!canChangeOrganization}
-                  onChange={(orgId) => handleOrganizationChange(onChange, orgId)}
-                />
-              )}
-            </FormField>
-
-            <FormField
-              control={form.control}
-              name="team_id"
-              label="Team"
-              description={hasProject ? "Team is locked because this key belongs to a project" : undefined}
-            >
-              {({ value, onChange, id }) => (
-                <SearchSelect
-                  options={teamOptionsFor((value as string | null) ?? null)}
-                  value={(value as string | null) ?? null}
-                  onValueChange={(teamId) => handleTeamChange(onChange, teamId)}
-                  disabled={hasProject}
-                  inputId={id}
-                  placeholder="Select team"
-                  emptyText="No teams found"
-                />
-              )}
-            </FormField>
-
-            {enableProjectsUI && hasProject && (
-              <KeyProjectField
-                projectId={keyData.project_id}
-                canDetach={canDetachProject}
-                pending={detachProject}
-                disabled={isKeySaving}
-                onToggle={() =>
-                  form.setValue("project_id", detachProject ? keyData.project_id : null, { shouldDirty: true })
-                }
+          </LiteUiMask>
+          <FormField
+            control={form.control}
+            name="organization_id"
+            label={labelWithHint(
+              "Organization",
+              "The organization this key belongs to. Selecting an organization filters the available teams.",
+            )}
+            description={hasProject ? "Organization is locked because this key belongs to a project" : undefined}
+          >
+            {({ value, onChange, id }) => (
+              <OrganizationDropdown
+                id={id}
+                value={value}
+                organizations={organizations}
+                loading={isOrganizationsLoading}
+                disabled={!canChangeOrganization}
+                onChange={(orgId) => handleOrganizationChange(onChange, orgId)}
               />
             )}
+          </FormField>
 
+          <FormField
+            control={form.control}
+            name="team_id"
+            label="Team"
+            description={hasProject ? "Team is locked because this key belongs to a project" : undefined}
+          >
+            {({ value, onChange, id }) => (
+              <SearchSelect
+                options={teamOptionsFor((value as string | null) ?? null)}
+                value={(value as string | null) ?? null}
+                onValueChange={(teamId) => handleTeamChange(onChange, teamId)}
+                disabled={hasProject}
+                inputId={id}
+                placeholder="Select team"
+                emptyText="No teams found"
+              />
+            )}
+          </FormField>
+
+          {enableProjectsUI && hasProject && (
+            <KeyProjectField
+              projectId={keyData.project_id}
+              canDetach={canDetachProject}
+              pending={detachProject}
+              disabled={isKeySaving}
+              onToggle={() =>
+                form.setValue("project_id", detachProject ? keyData.project_id : null, { shouldDirty: true })
+              }
+            />
+          )}
+
+          <LiteUiMask>
             <Field>
               <FieldLabel>Router Settings</FieldLabel>
               <RouterSettingsAccordion

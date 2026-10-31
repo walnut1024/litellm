@@ -59,7 +59,7 @@ describe("UsageViewSelect", () => {
     expect(offers(container, "Tag Usage")).toBe(false);
   });
 
-  it.each(["Organization Usage", "Agent Usage (A2A)"])("masks %s for administrators", async (optionName) => {
+  it.each(["Agent Usage (A2A)"])("masks %s for administrators", async (optionName) => {
     const user = userEvent.setup();
     const { container } = render(<UsageViewSelect value="global" onChange={mockOnChange} userRole="Admin" />);
 
@@ -83,7 +83,7 @@ describe("UsageViewSelect", () => {
   // the proxy serves them /organization/daily/activity scoped to the orgs they
   // administer, but still refuses the agent usage route.
   it.each([
-    ["Organization Usage", false],
+    ["Organization Usage", true],
     ["Agent Usage (A2A)", false],
   ] as const)("should offer %s to an org admin: %s", async (optionName, expected) => {
     const user = userEvent.setup();
@@ -95,13 +95,16 @@ describe("UsageViewSelect", () => {
     expect(offers(container, optionName)).toBe(expected);
   });
 
-  it.each(["Team Usage", "Tag Usage"])("keeps %s masked for employees", async (optionName) => {
+  it.each([
+    ["Team Usage", true],
+    ["Tag Usage", false],
+  ] as const)("offers %s to employees: %s", async (optionName, expected) => {
     const user = userEvent.setup();
     const { container } = render(
       <UsageViewSelect value="global" onChange={mockOnChange} userRole="Internal User" canViewTagUsage={true} />,
     );
 
     await openMenu(user);
-    expect(offers(container, optionName)).toBe(false);
+    expect(offers(container, optionName)).toBe(expected);
   });
 });

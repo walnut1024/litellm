@@ -1,4 +1,5 @@
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useGuardrails } from "@/app/(dashboard)/hooks/guardrails/useGuardrails";
 import { useTags } from "@/app/(dashboard)/hooks/tags/useTags";
 import { all_admin_roles, isUserTeamAdminForAnyTeam } from "@/utils/roles";
@@ -388,45 +389,46 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                           )}
                         </>
                       )}
-                      <div className="flex items-center my-4">
-                        <div className="grow border-t border-border"></div>
-                        <span className="px-4 text-muted-foreground text-sm">Additional Model Info Settings</span>
-                        <div className="grow border-t border-border"></div>
-                      </div>
-                      {/* Team-only Model Switch - Only show for proxy admins, not team admins */}
-                      {(isAdmin || !isTeamAdmin) && (
-                        <Field className="mb-4">
-                          <FieldLabel>
-                            {labelWithHint(
-                              "Team-BYOK Model",
-                              "Only use this model + credential combination for this team. Useful when teams want to onboard their own OpenAI keys.",
-                            )}
-                          </FieldLabel>
-                          <SimpleTooltip
-                            content={
-                              !premiumUser
-                                ? "This is an enterprise-only feature. Upgrade to premium to restrict model+credential combinations to a specific team."
-                                : ""
-                            }
-                            side="top"
-                          >
-                            <span className="inline-flex">
-                              <Switch
-                                checked={isTeamOnly}
-                                onCheckedChange={(checked) => {
-                                  setIsTeamOnly(checked);
-                                  if (!checked) {
-                                    form.setValue("team_id", undefined);
-                                  }
-                                }}
-                                disabled={!premiumUser}
-                                aria-label="Team-BYOK Model"
-                              />
-                            </span>
-                          </SimpleTooltip>
-                        </Field>
-                      )}
-
+                      <LiteUiMask>
+                        <div className="flex items-center my-4">
+                          <div className="grow border-t border-border"></div>
+                          <span className="px-4 text-muted-foreground text-sm">Additional Model Info Settings</span>
+                          <div className="grow border-t border-border"></div>
+                        </div>
+                        {/* Team-only Model Switch - Only show for proxy admins, not team admins */}
+                        {(isAdmin || !isTeamAdmin) && (
+                          <Field className="mb-4">
+                            <FieldLabel>
+                              {labelWithHint(
+                                "Team-BYOK Model",
+                                "Only use this model + credential combination for this team. Useful when teams want to onboard their own OpenAI keys.",
+                              )}
+                            </FieldLabel>
+                            <SimpleTooltip
+                              content={
+                                !premiumUser
+                                  ? "This is an enterprise-only feature. Upgrade to premium to restrict model+credential combinations to a specific team."
+                                  : ""
+                              }
+                              side="top"
+                            >
+                              <span className="inline-flex">
+                                <Switch
+                                  checked={isTeamOnly}
+                                  onCheckedChange={(checked) => {
+                                    setIsTeamOnly(checked);
+                                    if (!checked) {
+                                      form.setValue("team_id", undefined);
+                                    }
+                                  }}
+                                  disabled={!premiumUser}
+                                  aria-label="Team-BYOK Model"
+                                />
+                              </span>
+                            </SimpleTooltip>
+                          </Field>
+                        )}
+                      </LiteUiMask>
                       {/* Conditional Team Selection */}
                       {isTeamOnly && !requiresTeamScope && (
                         <MountedFormField

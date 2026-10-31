@@ -1,5 +1,6 @@
 "use client";
 
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useMemo, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { parseAsString, useQueryStates } from "nuqs";
@@ -200,7 +201,11 @@ export default function ModelsAndEndpointsPage() {
           </div>
         </div>
 
-        {!isViewOnly && <DecisionModelsBanner />}
+        {!isViewOnly && (
+          <LiteUiMask>
+            <DecisionModelsBanner />
+          </LiteUiMask>
+        )}
 
         {modelId ? (
           <ModelInfoView

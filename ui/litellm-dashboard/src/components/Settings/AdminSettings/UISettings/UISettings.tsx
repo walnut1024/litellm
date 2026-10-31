@@ -1,5 +1,7 @@
 "use client";
 
+import { LiteUiMask } from "@/contexts/LiteUiContext";
+
 import { useTerminology } from "@/contexts/TerminologyContext";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
 import { useUpdateUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUpdateUISettings";
@@ -369,14 +371,16 @@ export default function UISettings() {
               label="Disable model add for internal users"
               description={property?.description}
             />
-            <SettingRow
-              checked={isDisabledTeamAdminDeleteTeamUser}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleTeamAdminDelete}
-              ariaLabel={disableTeamAdminDeleteProperty?.description ?? "Disable team admin delete team user"}
-              label="Disable team admin delete team user"
-              description={disableTeamAdminDeleteProperty?.description}
-            />
+            <LiteUiMask>
+              <SettingRow
+                checked={isDisabledTeamAdminDeleteTeamUser}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleTeamAdminDelete}
+                ariaLabel={disableTeamAdminDeleteProperty?.description ?? "Disable team admin delete team user"}
+                label="Disable team admin delete team user"
+                description={disableTeamAdminDeleteProperty?.description}
+              />
+            </LiteUiMask>
             <SettingRow
               checked={Boolean(values.require_auth_for_public_ai_hub)}
               disabled={isUpdating}
@@ -389,61 +393,71 @@ export default function UISettings() {
                 requireAuthForPublicAIHubProperty?.description && term(requireAuthForPublicAIHubProperty.description)
               }
             />
-            <SettingRow
-              checked={Boolean(values.forward_client_headers_to_llm_api)}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleForwardClientHeaders}
-              ariaLabel={forwardClientHeadersProperty?.description ?? "Forward client headers to LLM API"}
-              label="Forward client headers to LLM API"
-              description={
-                forwardClientHeadersProperty?.description ??
-                "Forwards client headers (Authorization, anthropic-beta, and x-* custom headers) to the upstream LLM. Enable for Claude Code with a Max subscription (forwards the OAuth token) or to pass custom/tracing headers through to the provider. Independent of the BYOK toggle — enable only the one(s) you need."
-              }
-            />
-            <SettingRow
-              checked={Boolean(values.forward_llm_provider_auth_headers)}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleForwardLLMProviderAuthHeaders}
-              ariaLabel={forwardLLMProviderAuthHeadersProperty?.description ?? "Forward LLM provider auth headers"}
-              label="Forward LLM provider auth headers"
-              description={
-                forwardLLMProviderAuthHeadersProperty?.description ??
-                "Forwards provider auth headers (x-api-key, x-goog-api-key, api-key, ocp-apim-subscription-key) to the upstream LLM, overriding any deployment-configured key for that request. Enable for Claude Code BYOK (clients bring their own API key). Independent of the client-headers toggle — enable only the one(s) you need."
-              }
-            />
-            {enableProjectsUIProperty && (
+            <LiteUiMask>
               <SettingRow
-                checked={Boolean(values.enable_projects_ui)}
+                checked={Boolean(values.forward_client_headers_to_llm_api)}
                 disabled={isUpdating}
-                onCheckedChange={handleToggleEnableProjectsUI}
-                ariaLabel={enableProjectsUIProperty.description ?? "Enable Projects UI"}
-                label="[BETA] Enable Projects (page will refresh)"
+                onCheckedChange={handleToggleForwardClientHeaders}
+                ariaLabel={forwardClientHeadersProperty?.description ?? "Forward client headers to LLM API"}
+                label="Forward client headers to LLM API"
                 description={
-                  enableProjectsUIProperty.description ??
-                  "If enabled, shows the Projects feature in the UI sidebar and the project field in key management."
+                  forwardClientHeadersProperty?.description ??
+                  "Forwards client headers (Authorization, anthropic-beta, and x-* custom headers) to the upstream LLM. Enable for Claude Code with a Max subscription (forwards the OAuth token) or to pass custom/tracing headers through to the provider. Independent of the BYOK toggle — enable only the one(s) you need."
                 }
               />
+            </LiteUiMask>
+            <LiteUiMask>
+              <SettingRow
+                checked={Boolean(values.forward_llm_provider_auth_headers)}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleForwardLLMProviderAuthHeaders}
+                ariaLabel={forwardLLMProviderAuthHeadersProperty?.description ?? "Forward LLM provider auth headers"}
+                label="Forward LLM provider auth headers"
+                description={
+                  forwardLLMProviderAuthHeadersProperty?.description ??
+                  "Forwards provider auth headers (x-api-key, x-goog-api-key, api-key, ocp-apim-subscription-key) to the upstream LLM, overriding any deployment-configured key for that request. Enable for Claude Code BYOK (clients bring their own API key). Independent of the client-headers toggle — enable only the one(s) you need."
+                }
+              />
+            </LiteUiMask>
+            {enableProjectsUIProperty && (
+              <LiteUiMask>
+                <SettingRow
+                  checked={Boolean(values.enable_projects_ui)}
+                  disabled={isUpdating}
+                  onCheckedChange={handleToggleEnableProjectsUI}
+                  ariaLabel={enableProjectsUIProperty.description ?? "Enable Projects UI"}
+                  label="[BETA] Enable Projects (page will refresh)"
+                  description={
+                    enableProjectsUIProperty.description ??
+                    "If enabled, shows the Projects feature in the UI sidebar and the project field in key management."
+                  }
+                />
+              </LiteUiMask>
             )}
-            <SettingRow
-              checked={Boolean(values.enable_chat_ui)}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleEnableChatUI}
-              ariaLabel={enableChatUIProperty?.description ?? "Enable Chat page"}
-              label="[BETA] Enable Chat page (page will refresh)"
-              description={
-                enableChatUIProperty?.description ??
-                "If enabled, shows the Chat page in the UI sidebar, letting users chat with an LLM and connect their own MCP server credentials via OAuth."
-              }
-            />
+            <LiteUiMask>
+              <SettingRow
+                checked={Boolean(values.enable_chat_ui)}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleEnableChatUI}
+                ariaLabel={enableChatUIProperty?.description ?? "Enable Chat page"}
+                label="[BETA] Enable Chat page (page will refresh)"
+                description={
+                  enableChatUIProperty?.description ??
+                  "If enabled, shows the Chat page in the UI sidebar, letting users chat with an LLM and connect their own MCP server credentials via OAuth."
+                }
+              />
+            </LiteUiMask>
 
             <Separator />
             <div className="flex items-start justify-between gap-3">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-foreground">Moyai</p>
-                <p className="text-sm text-muted-foreground">
-                  {moyaiUrl ? `Connected to ${moyaiUrl}` : "Not connected"}
-                </p>
-              </div>
+              <LiteUiMask>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-foreground">Moyai</p>
+                  <p className="text-sm text-muted-foreground">
+                    {moyaiUrl ? `Connected to ${moyaiUrl}` : "Not connected"}
+                  </p>
+                </div>
+              </LiteUiMask>
               {moyaiUrl ? (
                 <Button variant="outline" size="sm" disabled={isUpdating} onClick={handleDisconnectMoyai}>
                   Disconnect
@@ -456,57 +470,67 @@ export default function UISettings() {
             </div>
 
             <Separator />
-            <SettingRow
-              checked={isAgentsDisabled}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleDisableAgents}
-              ariaLabel={disableAgentsProperty?.description ?? "Disable agents for internal users"}
-              label="Disable agents for internal users"
-              description={disableAgentsProperty?.description}
-            />
-            <SettingRow
-              checked={Boolean(values.allow_agents_for_team_admins)}
-              disabled={isUpdating || !isAgentsDisabled}
-              onCheckedChange={handleToggleAllowAgentsTeamAdmins}
-              ariaLabel={allowAgentsTeamAdminsProperty?.description ?? "Allow agents for team admins"}
-              label="Allow agents for team admins"
-              description={allowAgentsTeamAdminsProperty?.description}
-              indented
-              muted={!isAgentsDisabled}
-            />
+            <LiteUiMask>
+              <SettingRow
+                checked={isAgentsDisabled}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleDisableAgents}
+                ariaLabel={disableAgentsProperty?.description ?? "Disable agents for internal users"}
+                label="Disable agents for internal users"
+                description={disableAgentsProperty?.description}
+              />
+            </LiteUiMask>
+            <LiteUiMask>
+              <SettingRow
+                checked={Boolean(values.allow_agents_for_team_admins)}
+                disabled={isUpdating || !isAgentsDisabled}
+                onCheckedChange={handleToggleAllowAgentsTeamAdmins}
+                ariaLabel={allowAgentsTeamAdminsProperty?.description ?? "Allow agents for team admins"}
+                label="Allow agents for team admins"
+                description={allowAgentsTeamAdminsProperty?.description}
+                indented
+                muted={!isAgentsDisabled}
+              />
+            </LiteUiMask>
 
             <Separator />
-            <SettingRow
-              checked={isVectorStoresDisabled}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleDisableVectorStores}
-              ariaLabel={disableVectorStoresProperty?.description ?? "Disable vector stores for internal users"}
-              label="Disable vector stores for internal users"
-              description={disableVectorStoresProperty?.description}
-            />
-            <SettingRow
-              checked={Boolean(values.allow_vector_stores_for_team_admins)}
-              disabled={isUpdating || !isVectorStoresDisabled}
-              onCheckedChange={handleToggleAllowVectorStoresTeamAdmins}
-              ariaLabel={allowVectorStoresTeamAdminsProperty?.description ?? "Allow vector stores for team admins"}
-              label="Allow vector stores for team admins"
-              description={allowVectorStoresTeamAdminsProperty?.description}
-              indented
-              muted={!isVectorStoresDisabled}
-            />
+            <LiteUiMask>
+              <SettingRow
+                checked={isVectorStoresDisabled}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleDisableVectorStores}
+                ariaLabel={disableVectorStoresProperty?.description ?? "Disable vector stores for internal users"}
+                label="Disable vector stores for internal users"
+                description={disableVectorStoresProperty?.description}
+              />
+            </LiteUiMask>
+            <LiteUiMask>
+              <SettingRow
+                checked={Boolean(values.allow_vector_stores_for_team_admins)}
+                disabled={isUpdating || !isVectorStoresDisabled}
+                onCheckedChange={handleToggleAllowVectorStoresTeamAdmins}
+                ariaLabel={allowVectorStoresTeamAdminsProperty?.description ?? "Allow vector stores for team admins"}
+                label="Allow vector stores for team admins"
+                description={allowVectorStoresTeamAdminsProperty?.description}
+                indented
+                muted={!isVectorStoresDisabled}
+              />
+            </LiteUiMask>
 
             <Separator />
-            <SettingRow
-              checked={Boolean(values.scope_user_search_to_org)}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleScopeUserSearch}
-              ariaLabel={scopeUserSearchProperty?.description ?? "Scope user search to organization"}
-              label="Scope user search to organization"
-              description={
-                scopeUserSearchProperty?.description ??
-                "If enabled, the user search endpoint restricts results by organization. When off, any authenticated user can search all users."
-              }
-            />
+            <LiteUiMask>
+              <SettingRow
+                checked={Boolean(values.scope_user_search_to_org)}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleScopeUserSearch}
+                ariaLabel={scopeUserSearchProperty?.description ?? "Scope user search to organization"}
+                label="Scope user search to organization"
+                description={
+                  scopeUserSearchProperty?.description ??
+                  "If enabled, the user search endpoint restricts results by organization. When off, any authenticated user can search all users."
+                }
+              />
+            </LiteUiMask>
 
             <Separator />
             <SettingRow

@@ -108,6 +108,7 @@ const OPTIONS: OptionConfig[] = [
 const visibleOptions = (userRole: string | null, canViewTagUsage: boolean, isOrgAdmin: boolean): OptionConfig[] => {
   const isAdmin = all_admin_roles.includes(userRole ?? "");
   return OPTIONS.filter((option) => {
+    if (!["global", "my-usage", "user"].includes(option.value)) return false;
     if (option.capability) {
       return hasCapability(userRole, option.capability, isOrgAdmin);
     }

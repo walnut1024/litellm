@@ -1,0 +1,9 @@
+model_list:
+  - model_name: preview-text
+    litellm_params:
+      model: openai/preview-text
+      api_key: preview-only
+      mock_response: "Local UI preview response"
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  store_model_in_db: true

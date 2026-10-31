@@ -10,6 +10,8 @@ import {
 } from "react-hook-form";
 
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import { useLiteUi } from "@/contexts/LiteUiContext";
+import { liteFieldHidden } from "@/utils/liteUi";
 
 export type FormFieldControlProps<
   TFieldValues extends FieldValues,
@@ -40,6 +42,7 @@ export const FormField = <TFieldValues extends FieldValues, TName extends FieldP
   children,
 }: FormFieldProps<TFieldValues, TName>) => {
   const reactId = React.useId();
+  const lite = useLiteUi();
   const controlId = `${reactId}-control`;
   const descriptionId = `${reactId}-description`;
   const errorId = `${reactId}-error`;
@@ -50,6 +53,7 @@ export const FormField = <TFieldValues extends FieldValues, TName extends FieldP
       name={name}
       render={({ field, fieldState }) => {
         const invalid = fieldState.error !== undefined;
+        const hidden = lite !== null && liteFieldHidden(lite.route, name) && !invalid;
         const describedBy =
           [description !== undefined ? descriptionId : undefined, invalid ? errorId : undefined]
             .filter((id): id is string => id !== undefined)
@@ -62,7 +66,13 @@ export const FormField = <TFieldValues extends FieldValues, TName extends FieldP
         };
 
         return (
-          <Field orientation={orientation} data-invalid={invalid || undefined} className={className}>
+          <Field
+            orientation={orientation}
+            data-invalid={invalid || undefined}
+            className={className}
+            hidden={hidden}
+            style={hidden ? { display: "none" } : undefined}
+          >
             {label !== undefined && <FieldLabel htmlFor={controlId}>{label}</FieldLabel>}
             {children(controlProps)}
             {description !== undefined && <FieldDescription id={descriptionId}>{description}</FieldDescription>}

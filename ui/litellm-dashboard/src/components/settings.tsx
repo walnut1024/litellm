@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import { Controller, FormProvider, useForm, useFormContext } from "react-hook-form";
 
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -293,6 +294,7 @@ const buildCallbackPayload = (formValues: Record<string, any>, callbackName: str
 };
 
 const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, premiumUser }) => {
+  const lite = useLiteUi();
   const [callbacks, setCallbacks] = useState<AlertingObject[]>([]);
   const [isLoadingCallbacks, setIsLoadingCallbacks] = useState(true);
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -570,7 +572,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
   return (
     <div className="mx-4">
       <div className="grid grid-cols-1 gap-2 p-8 w-full mt-2">
-        <Tabs defaultValue="logging-callbacks">
+        <Tabs defaultValue={lite ? "alerting-types" : "logging-callbacks"}>
           <TabsList variant="line">
             <TabsTrigger value="logging-callbacks">Logging Callbacks</TabsTrigger>
             <TabsTrigger value="cloudzero-cost-tracking">CloudZero Cost Tracking</TabsTrigger>

@@ -1,0 +1,36 @@
+services:
+  litellm:
+    image: litellm-lite-ui:local
+    build:
+      context: ../ui/litellm-dashboard/out
+      dockerfile: ../../../docker/Dockerfile.lite-ui
+    ports:
+      - "127.0.0.1:${LITELLM_PREVIEW_PORT:-4001}:4000"
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_PREVIEW_MASTER_KEY:?set LITELLM_PREVIEW_MASTER_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_PREVIEW_SALT_KEY:?set LITELLM_PREVIEW_SALT_KEY}
+      UI_USERNAME: admin
+      UI_PASSWORD: ${LITELLM_PREVIEW_PASSWORD:?set LITELLM_PREVIEW_PASSWORD}
+      DATABASE_URL: postgresql://litellm:${LITELLM_PREVIEW_DB_PASSWORD:?set LITELLM_PREVIEW_DB_PASSWORD}@db:5432/litellm
+      STORE_MODEL_IN_DB: "True"
+    volumes:
+      - ./lite-ui-preview.yaml:/app/lite-ui-preview.yaml:ro
+    command: ["--config", "/app/lite-ui-preview.yaml", "--port", "4000"]
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres:16-alpine@sha256:f4610795587492cd4fb887c2dc3de301b813278bb6f616992061141b5f15ac36
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${LITELLM_PREVIEW_DB_PASSWORD:?set LITELLM_PREVIEW_DB_PASSWORD}
+      POSTGRES_DB: litellm
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - preview_db:/var/lib/postgresql/data
+volumes:
+  preview_db:

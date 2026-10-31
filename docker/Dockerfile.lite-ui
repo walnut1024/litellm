@@ -1,0 +1,5 @@
+FROM litellm-lite-runtime:local
+
+COPY . /tmp/litellm-lite-ui
+
+RUN python -c 'import shutil, sysconfig; from pathlib import Path; destination = Path(sysconfig.get_path("purelib")) / "litellm/proxy/_experimental/out"; shutil.rmtree(destination); shutil.copytree("/tmp/litellm-lite-ui", destination); shutil.rmtree("/tmp/litellm-lite-ui")'

@@ -1,5 +1,7 @@
 "use client";
 
+import { LiteUiMask } from "@/contexts/LiteUiContext";
+
 import { useRef, useState } from "react";
 import { ChevronDown, PanelRight, RotateCcw, SquarePen } from "lucide-react";
 import useCan from "@/app/(dashboard)/hooks/useCan";
@@ -305,7 +307,9 @@ export function PlaygroundChat({
             emptyText="No MCP servers available for this key"
           />
           {directByok?.is_byok && (
-            <ByokKeyButton server={directByok} name={serverName(directByok)} onConnected={mcp.refreshCredentials} />
+            <LiteUiMask>
+              <ByokKeyButton server={directByok} name={serverName(directByok)} onConnected={mcp.refreshCredentials} />
+            </LiteUiMask>
           )}
           {directSelection && (
             <TargetPicker
@@ -329,11 +333,17 @@ export function PlaygroundChat({
           )}
         </>
       )}
-      <EndpointMenu
-        value={settings.endpoint}
-        onValueChange={(endpoint) => update((current) => withEndpoint(current, endpoint))}
-      />
-      {capabilities.voice && <VoiceMenu value={settings.voice} onValueChange={(voice) => update({ voice })} />}
+      <LiteUiMask>
+        <EndpointMenu
+          value={settings.endpoint}
+          onValueChange={(endpoint) => update((current) => withEndpoint(current, endpoint))}
+        />
+      </LiteUiMask>
+      {capabilities.voice && (
+        <LiteUiMask>
+          <VoiceMenu value={settings.voice} onValueChange={(voice) => update({ voice })} />
+        </LiteUiMask>
+      )}
     </>
   );
 

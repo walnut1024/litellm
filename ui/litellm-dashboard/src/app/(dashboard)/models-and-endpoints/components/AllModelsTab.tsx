@@ -1,5 +1,6 @@
 "use client";
 
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import { useCredentials } from "@/app/(dashboard)/hooks/credentials/useCredentials";
@@ -348,26 +349,28 @@ const AllModelsTab = ({
         />
 
         {modelViewMode === "current_team" && (
-          <div className="flex items-start gap-2 px-1 text-xs text-muted-foreground">
-            <Info className="mt-0.5 size-3.5 shrink-0" />
-            {selectedTeamValue === PERSONAL_TEAM_VALUE ? (
-              <span>
-                To access these models, create a Virtual Key without selecting a team on the{" "}
-                <a href={uiHref("api-keys")} className="font-medium text-info hover:underline">
-                  Virtual Keys page
-                </a>
-                .
-              </span>
-            ) : (
-              <span>
-                To access these models, create a Virtual Key and select Team as &quot;{teamAccessLabel}&quot; on the{" "}
-                <a href={uiHref("api-keys")} className="font-medium text-info hover:underline">
-                  Virtual Keys page
-                </a>
-                .
-              </span>
-            )}
-          </div>
+          <LiteUiMask>
+            <div className="flex items-start gap-2 px-1 text-xs text-muted-foreground">
+              <Info className="mt-0.5 size-3.5 shrink-0" />
+              {selectedTeamValue === PERSONAL_TEAM_VALUE ? (
+                <span>
+                  To access these models, create a Virtual Key without selecting a team on the{" "}
+                  <a href={uiHref("api-keys")} className="font-medium text-info hover:underline">
+                    Virtual Keys page
+                  </a>
+                  .
+                </span>
+              ) : (
+                <span>
+                  To access these models, create a Virtual Key and select Team as &quot;{teamAccessLabel}&quot; on the{" "}
+                  <a href={uiHref("api-keys")} className="font-medium text-info hover:underline">
+                    Virtual Keys page
+                  </a>
+                  .
+                </span>
+              )}
+            </div>
+          </LiteUiMask>
         )}
       </div>
 

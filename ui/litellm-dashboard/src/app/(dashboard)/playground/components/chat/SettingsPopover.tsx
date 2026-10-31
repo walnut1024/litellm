@@ -1,5 +1,7 @@
 "use client";
 
+import { LiteUiMask } from "@/contexts/LiteUiContext";
+
 import { useState } from "react";
 import { ChevronRight, Minus, Plus, SlidersHorizontal } from "lucide-react";
 import type { KeyValuePair } from "@/components/key_value_input";
@@ -307,10 +309,12 @@ export function SettingsPopover({
               <FieldDescription>Pick a virtual key to test what it can access</FieldDescription>
             )}
           </Field>
-          <Field>
-            <FieldLabel htmlFor="playground-tags">Tags</FieldLabel>
-            <TagField value={settings.tags} options={tagOptions} onChange={(tags) => update({ tags })} />
-          </Field>
+          <LiteUiMask>
+            <Field>
+              <FieldLabel htmlFor="playground-tags">Tags</FieldLabel>
+              <TagField value={settings.tags} options={tagOptions} onChange={(tags) => update({ tags })} />
+            </Field>
+          </LiteUiMask>
           {hasToggles && (
             <FieldSet className="gap-3">
               {capabilities.stream && (
@@ -326,27 +330,31 @@ export function SettingsPopover({
                 </Field>
               )}
               {capabilities.simulateFallback && (
-                <Field orientation="horizontal">
-                  <FieldLabel htmlFor="playground-fallback" className="font-normal">
-                    Simulate a fallback
-                  </FieldLabel>
-                  <Switch
-                    id="playground-fallback"
-                    checked={settings.simulateFallback}
-                    onCheckedChange={(simulateFallback) => update({ simulateFallback })}
-                  />
-                </Field>
+                <LiteUiMask>
+                  <Field orientation="horizontal">
+                    <FieldLabel htmlFor="playground-fallback" className="font-normal">
+                      Simulate a fallback
+                    </FieldLabel>
+                    <Switch
+                      id="playground-fallback"
+                      checked={settings.simulateFallback}
+                      onCheckedChange={(simulateFallback) => update({ simulateFallback })}
+                    />
+                  </Field>
+                </LiteUiMask>
               )}
               {capabilities.sessions && (
-                <Field orientation="horizontal">
-                  <FieldLabel htmlFor="playground-sessions" className="flex-col items-start gap-0.5 font-normal">
-                    Keep context on the gateway
-                    <span className="text-xs text-muted-foreground">
-                      Sends previous_response_id instead of the whole history
-                    </span>
-                  </FieldLabel>
-                  <Switch id="playground-sessions" checked={sessions.enabled} onCheckedChange={sessions.onToggle} />
-                </Field>
+                <LiteUiMask>
+                  <Field orientation="horizontal">
+                    <FieldLabel htmlFor="playground-sessions" className="flex-col items-start gap-0.5 font-normal">
+                      Keep context on the gateway
+                      <span className="text-xs text-muted-foreground">
+                        Sends previous_response_id instead of the whole history
+                      </span>
+                    </FieldLabel>
+                    <Switch id="playground-sessions" checked={sessions.enabled} onCheckedChange={sessions.onToggle} />
+                  </Field>
+                </LiteUiMask>
               )}
               {lastResponseId && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -373,17 +381,21 @@ export function SettingsPopover({
             <CollapsibleContent>
               <FieldGroup className="gap-5 pt-3">
                 {capabilities.customHeaders && (
-                  <Field>
-                    <FieldLabel>Custom headers</FieldLabel>
-                    <HeaderEditor pairs={settings.headerPairs} onChange={(headerPairs) => update({ headerPairs })} />
-                    <FieldDescription>Sent with every request, like anthropic-beta</FieldDescription>
-                  </Field>
+                  <LiteUiMask>
+                    <Field>
+                      <FieldLabel>Custom headers</FieldLabel>
+                      <HeaderEditor pairs={settings.headerPairs} onChange={(headerPairs) => update({ headerPairs })} />
+                      <FieldDescription>Sent with every request, like anthropic-beta</FieldDescription>
+                    </Field>
+                  </LiteUiMask>
                 )}
-                <ProxyBaseUrlField
-                  value={settings.proxyBaseUrl}
-                  suggested={suggestedBaseUrl}
-                  onChange={(proxyBaseUrl) => update({ proxyBaseUrl })}
-                />
+                <LiteUiMask>
+                  <ProxyBaseUrlField
+                    value={settings.proxyBaseUrl}
+                    suggested={suggestedBaseUrl}
+                    onChange={(proxyBaseUrl) => update({ proxyBaseUrl })}
+                  />
+                </LiteUiMask>
                 {capabilities.sampling && <SamplingFields settings={settings} update={update} />}
               </FieldGroup>
             </CollapsibleContent>

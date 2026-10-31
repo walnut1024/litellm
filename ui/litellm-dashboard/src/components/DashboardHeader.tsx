@@ -1,5 +1,7 @@
 "use client";
 
+import { LiteUiMask } from "@/contexts/LiteUiContext";
+
 import { useTerminology } from "@/contexts/TerminologyContext";
 import {
   Breadcrumb,
@@ -64,7 +66,9 @@ export function DashboardHeader({
       <Breadcrumb className="min-w-0 max-md:flex-1">
         <BreadcrumbList className="flex-nowrap">
           <BreadcrumbItem className="flex-none max-md:hidden">
-            <ViewSwitcher />
+            <LiteUiMask>
+              <ViewSwitcher />
+            </LiteUiMask>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="max-md:hidden" />
           <BreadcrumbItem className="min-w-0">
@@ -76,7 +80,9 @@ export function DashboardHeader({
       <CommandPaletteTrigger />
 
       <div className="flex shrink-0 items-center gap-1">
-        <LiteAdmin />
+        <LiteUiMask>
+          <LiteAdmin />
+        </LiteUiMask>
         <div className="flex flex-none items-center gap-1 max-md:hidden">
           {showWorkerSwitch && (
             <>
@@ -84,9 +90,17 @@ export function DashboardHeader({
               <ToolbarSeparator />
             </>
           )}
-          <DocsLink />
-          <BlogDropdown />
-          {!hideCommunityLinks && <CommunityEngagementButtons />}
+          <LiteUiMask>
+            <DocsLink />
+          </LiteUiMask>
+          <LiteUiMask>
+            <BlogDropdown />
+          </LiteUiMask>
+          {!hideCommunityLinks && (
+            <LiteUiMask>
+              <CommunityEngagementButtons />
+            </LiteUiMask>
+          )}
           <ToolbarSeparator />
           <ThemeToggle />
           {deploymentHealth}
@@ -108,9 +122,17 @@ export function DashboardHeader({
               {showWorkerSwitch && <WorkerDropdown onWorkerSwitch={handleWorkerSwitch} />}
               <div className="flex flex-wrap items-center gap-2">
                 <ThemeToggle />
-                <DocsLink />
-                <BlogDropdown />
-                {!hideCommunityLinks && <CommunityEngagementButtons />}
+                <LiteUiMask>
+                  <DocsLink />
+                </LiteUiMask>
+                <LiteUiMask>
+                  <BlogDropdown />
+                </LiteUiMask>
+                {!hideCommunityLinks && (
+                  <LiteUiMask>
+                    <CommunityEngagementButtons />
+                  </LiteUiMask>
+                )}
               </div>
             </PopoverContent>
           </Popover>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useLiteUi } from "@/contexts/LiteUiContext";
+
 import type { ColumnFiltersState, Table } from "@tanstack/react-table";
 import * as React from "react";
 
@@ -106,8 +108,11 @@ export function DataTableFilterDrawer<TData>({
 }
 
 export function DataTableFilterField({ label, children }: { label: string; children: React.ReactNode }) {
+  const lite = useLiteUi();
+  const hidden =
+    lite !== null && /^(Team|Organization|Project|End User|Tags|Cache|Credential|Span Type|Request Type)/i.test(label);
   return (
-    <div className="flex flex-col gap-1.5">
+    <div hidden={hidden} style={hidden ? { display: "none" } : undefined} className="flex flex-col gap-1.5">
       <Label>{label}</Label>
       {children}
     </div>

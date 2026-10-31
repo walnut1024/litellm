@@ -35,20 +35,20 @@ describe("UsageViewSelect", () => {
     const user = userEvent.setup();
     render(<UsageViewSelect value="global" onChange={mockOnChange} userRole="Admin" />);
 
-    await chooseSelectOption(user, screen.getByRole("combobox"), /^Team Usage/);
+    await chooseSelectOption(user, screen.getByRole("combobox"), /^User Usage/);
 
     expect(mockOnChange).toHaveBeenCalled();
-    expect(mockOnChange.mock.calls[0][0]).toBe("team");
+    expect(mockOnChange.mock.calls[0][0]).toBe("user");
   });
 
-  it("should show Tag Usage for non-admin users with tag usage permission", async () => {
+  it("keeps Tag Usage masked even for employees with tag permission", async () => {
     const user = userEvent.setup();
     const { container } = render(
       <UsageViewSelect value="global" onChange={mockOnChange} userRole="Internal User" canViewTagUsage={true} />,
     );
 
     await openMenu(user);
-    expect(offers(container, "Tag Usage")).toBe(true);
+    expect(offers(container, "Tag Usage")).toBe(false);
   });
 
   it("should hide Tag Usage for non-admin users without tag usage permission", async () => {
@@ -59,12 +59,12 @@ describe("UsageViewSelect", () => {
     expect(offers(container, "Tag Usage")).toBe(false);
   });
 
-  it.each(["Organization Usage", "Agent Usage (A2A)"])("should show %s to an admin", async (optionName) => {
+  it.each(["Organization Usage", "Agent Usage (A2A)"])("masks %s for administrators", async (optionName) => {
     const user = userEvent.setup();
     const { container } = render(<UsageViewSelect value="global" onChange={mockOnChange} userRole="Admin" />);
 
     await openMenu(user);
-    expect(offers(container, optionName)).toBe(true);
+    expect(offers(container, optionName)).toBe(false);
   });
 
   it.each(["Organization Usage", "Agent Usage (A2A)"])("should hide %s from an internal user", async (optionName) => {
@@ -83,7 +83,7 @@ describe("UsageViewSelect", () => {
   // the proxy serves them /organization/daily/activity scoped to the orgs they
   // administer, but still refuses the agent usage route.
   it.each([
-    ["Organization Usage", true],
+    ["Organization Usage", false],
     ["Agent Usage (A2A)", false],
   ] as const)("should offer %s to an org admin: %s", async (optionName, expected) => {
     const user = userEvent.setup();
@@ -95,13 +95,13 @@ describe("UsageViewSelect", () => {
     expect(offers(container, optionName)).toBe(expected);
   });
 
-  it.each(["Team Usage", "Tag Usage"])("should keep %s available to an internal user", async (optionName) => {
+  it.each(["Team Usage", "Tag Usage"])("keeps %s masked for employees", async (optionName) => {
     const user = userEvent.setup();
     const { container } = render(
       <UsageViewSelect value="global" onChange={mockOnChange} userRole="Internal User" canViewTagUsage={true} />,
     );
 
     await openMenu(user);
-    expect(offers(container, optionName)).toBe(true);
+    expect(offers(container, optionName)).toBe(false);
   });
 });

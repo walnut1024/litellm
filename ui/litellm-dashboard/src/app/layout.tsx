@@ -6,6 +6,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ThemeProvider } from "next-themes";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LiteUiBoundary } from "@/contexts/LiteUiContext";
 import ReactQueryProvider from "@/contexts/ReactQueryProvider";
 import HotkeysProvider from "@/contexts/HotkeysProvider";
 import { TerminologyProvider } from "@/contexts/TerminologyContext";
@@ -34,7 +35,9 @@ export default function RootLayout({
             <ReactQueryProvider>
               <TerminologyProvider>
                 <HotkeysProvider>
-                  <AuthProvider>{children}</AuthProvider>
+                  <AuthProvider>
+                    <LiteUiBoundary>{children}</LiteUiBoundary>
+                  </AuthProvider>
                 </HotkeysProvider>
               </TerminologyProvider>
               <Toaster />

@@ -1,3 +1,4 @@
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { canDetachKeyProject, KeyProjectField } from "./KeyProjectField";
 import GuardrailSelector from "@/components/guardrails/GuardrailSelector";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
@@ -474,57 +475,40 @@ function KeyEditSession({
             )}
           </FormField>
 
-          <Field>
-            <FieldLabel>
-              {labelWithHint(
-                "Budget Windows",
-                "Set multiple independent budget windows (e.g., hourly $10 AND monthly $200). Each window tracks spend separately and resets on its own schedule.",
-              )}
-            </FieldLabel>
+          <LiteUiMask>
             <BudgetWindowsEditor value={budgetLimits} onChange={setBudgetLimits} />
-          </Field>
-
-          <ModelMaxBudgetField
-            key={keyData.token}
-            premiumUser={premiumUser}
-            value={modelBudget.value}
-            onChange={modelBudget.setValue}
-            availableModels={availableModels}
-            usage={keyData.model_max_budget_usage}
-            hint="Cap spend on individual models, each with its own reset window. Enforced across every request this key makes."
-          />
-
-          <Field>
-            <FieldLabel>
-              {labelWithHint(
-                "Budget Fallbacks",
-                "When a model exceeds its per-model budget, requests automatically reroute to fallback models instead of failing",
-              )}
-            </FieldLabel>
+            <ModelMaxBudgetField
+              key={keyData.token}
+              premiumUser={premiumUser}
+              value={modelBudget.value}
+              onChange={modelBudget.setValue}
+              availableModels={availableModels}
+              usage={keyData.model_max_budget_usage}
+              hint="Cap spend on individual models, each with its own reset window. Enforced across every request this key makes."
+            />
             <BudgetFallbacksEditor
               value={budgetFallbacks}
               onChange={setBudgetFallbacks}
               availableModels={availableModels}
             />
-          </Field>
-
+          </LiteUiMask>
           {keyOffersEndUserBudget(keyData.metadata) && (
-            <Field>
-              <FieldLabel htmlFor={endUserBudgetFieldId}>
-                {labelWithHint("Default Customer Budget", END_USER_BUDGET_HINT)}
-              </FieldLabel>
-              <EndUserBudgetSelect
-                id={endUserBudgetFieldId}
-                accessToken={accessToken}
-                value={endUserBudgetId}
-                onChange={setEndUserBudgetId}
-                canEdit={userRole != null && isProxyAdminRole(userRole)}
-              />
-            </Field>
+            <LiteUiMask>
+              <Field>
+                <FieldLabel htmlFor={endUserBudgetFieldId}>
+                  {labelWithHint("Default Customer Budget", END_USER_BUDGET_HINT)}
+                </FieldLabel>
+                <EndUserBudgetSelect
+                  id={endUserBudgetFieldId}
+                  accessToken={accessToken}
+                  value={endUserBudgetId}
+                  onChange={setEndUserBudgetId}
+                  canEdit={userRole != null && isProxyAdminRole(userRole)}
+                />
+              </Field>
+            </LiteUiMask>
           )}
-
           <KeyRateLimitFields control={form.control} />
-
           <FormField
             control={form.control}
             name="throttle_on_budget_exceeded"
@@ -555,307 +539,316 @@ function KeyEditSession({
             {({ ref: _ref, ...field }) => <NumericalInput {...field} value={field.value ?? ""} min={0} />}
           </FormField>
 
-          <FormField control={form.control} name="model_tpm_limit" label="Model TPM Limit">
-            {(field) => (
-              <Textarea
-                {...field}
-                value={(field.value as string | undefined) ?? ""}
-                rows={4}
-                placeholder='{"gpt-4": 100, "claude-v1": 200}'
-              />
-            )}
-          </FormField>
-
-          <FormField control={form.control} name="model_rpm_limit" label="Model RPM Limit">
-            {(field) => (
-              <Textarea
-                {...field}
-                value={(field.value as string | undefined) ?? ""}
-                rows={4}
-                placeholder='{"gpt-4": 100, "claude-v1": 200}'
-              />
-            )}
-          </FormField>
-
-          <FormField
-            control={form.control}
-            name="default_estimated_output_tokens"
-            label={labelWithHint("Estimated Output Tokens", estimateTooltip.estimate)}
-          >
-            {({ ref: _ref, ...field }) => (
-              <NumericalInput {...field} value={field.value ?? ""} min={1} step={1} disabled={!canEditEstimates} />
-            )}
-          </FormField>
-
-          <FormField
-            control={form.control}
-            name="default_estimated_output_tokens_per_model"
-            label={labelWithHint("Estimated Output Tokens Per Model", estimateTooltip.perModel)}
-          >
-            {(field) => (
-              <Textarea
-                {...field}
-                value={(field.value as string | undefined) ?? ""}
-                rows={4}
-                placeholder='{"gpt-4": 4096}'
-                disabled={!canEditEstimates}
-              />
-            )}
-          </FormField>
-
-          <Field>
-            <FieldLabel>
-              {labelWithHint(
-                "Per-Tag Rate Limits",
-                "Scope rate limits to a request tag so each tag (e.g. a cell or group) gets its own RPM counter. Requests without a matching tag fall back to the key-level limit.",
-              )}
-            </FieldLabel>
-            <TagRateLimitEditor value={tagRateLimits} onChange={setTagRateLimits} />
-          </Field>
-
-          <FormField control={form.control} name="guardrails" label="Guardrails">
-            {({ value, onChange }) =>
-              accessToken ? (
-                <GuardrailSelector
-                  onChange={onChange}
-                  value={value as string[] | undefined}
-                  accessToken={accessToken}
-                  disabled={!canEditGuardrails}
+          <LiteUiMask>
+            <FormField control={form.control} name="model_tpm_limit" label="Model TPM Limit">
+              {(field) => (
+                <Textarea
+                  {...field}
+                  value={(field.value as string | undefined) ?? ""}
+                  rows={4}
+                  placeholder='{"gpt-4": 100, "claude-v1": 200}'
                 />
-              ) : (
-                <div />
-              )
-            }
-          </FormField>
-
-          {userRole != null && isProxyAdminRole(userRole) && (
-            <FormField
-              control={form.control}
-              name="disable_global_guardrails"
-              label={labelWithHint(
-                "Disable Global Guardrails",
-                "When enabled, this key will bypass any guardrails configured to run on every request (global guardrails)",
-              )}
-            >
-              {({ value, onChange, ref: _ref, ...field }) => (
-                <Switch {...field} checked={Boolean(value)} onCheckedChange={onChange} disabled={!canEditGuardrails} />
               )}
             </FormField>
-          )}
 
-          {canViewPolicies && (
+            <FormField control={form.control} name="model_rpm_limit" label="Model RPM Limit">
+              {(field) => (
+                <Textarea
+                  {...field}
+                  value={(field.value as string | undefined) ?? ""}
+                  rows={4}
+                  placeholder='{"gpt-4": 100, "claude-v1": 200}'
+                />
+              )}
+            </FormField>
+
             <FormField
               control={form.control}
-              name="policies"
-              label={labelWithHint("Policies", "Apply policies to this key to control guardrails and other settings")}
+              name="default_estimated_output_tokens"
+              label={labelWithHint("Estimated Output Tokens", estimateTooltip.estimate)}
             >
+              {({ ref: _ref, ...field }) => (
+                <NumericalInput {...field} value={field.value ?? ""} min={1} step={1} disabled={!canEditEstimates} />
+              )}
+            </FormField>
+
+            <FormField
+              control={form.control}
+              name="default_estimated_output_tokens_per_model"
+              label={labelWithHint("Estimated Output Tokens Per Model", estimateTooltip.perModel)}
+            >
+              {(field) => (
+                <Textarea
+                  {...field}
+                  value={(field.value as string | undefined) ?? ""}
+                  rows={4}
+                  placeholder='{"gpt-4": 4096}'
+                  disabled={!canEditEstimates}
+                />
+              )}
+            </FormField>
+
+            <Field>
+              <FieldLabel>
+                {labelWithHint(
+                  "Per-Tag Rate Limits",
+                  "Scope rate limits to a request tag so each tag (e.g. a cell or group) gets its own RPM counter. Requests without a matching tag fall back to the key-level limit.",
+                )}
+              </FieldLabel>
+              <TagRateLimitEditor value={tagRateLimits} onChange={setTagRateLimits} />
+            </Field>
+
+            <FormField control={form.control} name="guardrails" label="Guardrails">
               {({ value, onChange }) =>
                 accessToken ? (
-                  <PolicySelector
+                  <GuardrailSelector
                     onChange={onChange}
                     value={value as string[] | undefined}
                     accessToken={accessToken}
-                    disabled={!premiumUser}
+                    disabled={!canEditGuardrails}
                   />
                 ) : (
                   <div />
                 )
               }
             </FormField>
-          )}
 
-          <FormField control={form.control} name="tags" label="Tags">
-            {({ value, onChange, id }) => (
-              <TagsInput
-                id={id}
-                value={(value as string[] | undefined) ?? []}
-                onValueChange={onChange}
-                options={Object.values(tagsList).map((tag) => ({ value: tag.name, label: tag.name }))}
-                placeholder="Select or enter tags"
-              />
+            {userRole != null && isProxyAdminRole(userRole) && (
+              <FormField
+                control={form.control}
+                name="disable_global_guardrails"
+                label={labelWithHint(
+                  "Disable Global Guardrails",
+                  "When enabled, this key will bypass any guardrails configured to run on every request (global guardrails)",
+                )}
+              >
+                {({ value, onChange, ref: _ref, ...field }) => (
+                  <Switch
+                    {...field}
+                    checked={Boolean(value)}
+                    onCheckedChange={onChange}
+                    disabled={!canEditGuardrails}
+                  />
+                )}
+              </FormField>
             )}
-          </FormField>
 
-          {canViewPrompts && (
-            <FormField
-              control={form.control}
-              name="prompts"
-              label={premiumUser ? "Prompts" : labelWithHint("Prompts", "Setting prompts by key is a premium feature")}
-            >
+            {canViewPolicies && (
+              <FormField
+                control={form.control}
+                name="policies"
+                label={labelWithHint("Policies", "Apply policies to this key to control guardrails and other settings")}
+              >
+                {({ value, onChange }) =>
+                  accessToken ? (
+                    <PolicySelector
+                      onChange={onChange}
+                      value={value as string[] | undefined}
+                      accessToken={accessToken}
+                      disabled={!premiumUser}
+                    />
+                  ) : (
+                    <div />
+                  )
+                }
+              </FormField>
+            )}
+
+            <FormField control={form.control} name="tags" label="Tags">
               {({ value, onChange, id }) => (
                 <TagsInput
                   id={id}
                   value={(value as string[] | undefined) ?? []}
                   onValueChange={onChange}
-                  options={promptsList.map((name) => ({ value: name, label: name }))}
-                  disabled={!premiumUser}
-                  placeholder={currentValuePlaceholder(
-                    premiumUser,
-                    keyData.metadata?.prompts,
-                    "Premium feature - Upgrade to set prompts by key",
-                    "Select or enter prompts",
-                  )}
+                  options={Object.values(tagsList).map((tag) => ({ value: tag.name, label: tag.name }))}
+                  placeholder="Select or enter tags"
                 />
               )}
             </FormField>
-          )}
 
-          <FormField
-            control={form.control}
-            name="access_group_ids"
-            label={labelWithHint(
-              "Access Groups",
-              "Assign access groups to this key. Access groups control which models, MCP servers, and agents this key can use",
-            )}
-          >
-            {({ value, onChange }) => (
-              <AccessGroupSelector
-                value={value as string[] | undefined}
-                onChange={onChange}
-                placeholder="Select access groups (optional)"
-              />
-            )}
-          </FormField>
-
-          <FormField
-            control={form.control}
-            name="allowed_passthrough_routes"
-            label={
-              premiumUser
-                ? "Allowed Pass Through Routes"
-                : labelWithHint(
-                    "Allowed Pass Through Routes",
-                    "Setting allowed pass through routes by key is a premium feature",
-                  )
-            }
-          >
-            {({ value, onChange }) => (
-              <PassThroughRoutesSelector
-                value={value as string[] | undefined}
-                onChange={onChange}
-                accessToken={accessToken || ""}
-                placeholder={currentValuePlaceholder(
-                  premiumUser,
-                  keyData.metadata?.allowed_passthrough_routes,
-                  "Premium feature - Upgrade to set allowed pass through routes by key",
-                  "Select or enter allowed pass through routes",
+            {canViewPrompts && (
+              <FormField
+                control={form.control}
+                name="prompts"
+                label={
+                  premiumUser ? "Prompts" : labelWithHint("Prompts", "Setting prompts by key is a premium feature")
+                }
+              >
+                {({ value, onChange, id }) => (
+                  <TagsInput
+                    id={id}
+                    value={(value as string[] | undefined) ?? []}
+                    onValueChange={onChange}
+                    options={promptsList.map((name) => ({ value: name, label: name }))}
+                    disabled={!premiumUser}
+                    placeholder={currentValuePlaceholder(
+                      premiumUser,
+                      keyData.metadata?.prompts,
+                      "Premium feature - Upgrade to set prompts by key",
+                      "Select or enter prompts",
+                    )}
+                  />
                 )}
-                disabled={!premiumUser}
-              />
+              </FormField>
             )}
-          </FormField>
 
-          <FormField control={form.control} name="vector_stores" label="Vector Stores">
-            {({ value, onChange }) => (
-              <VectorStoreSelector
-                onChange={onChange}
-                value={value as string[] | undefined}
-                accessToken={accessToken || ""}
-                placeholder="Select vector stores"
-              />
-            )}
-          </FormField>
+            <FormField
+              control={form.control}
+              name="access_group_ids"
+              label={labelWithHint(
+                "Access Groups",
+                "Assign access groups to this key. Access groups control which models, MCP servers, and agents this key can use",
+              )}
+            >
+              {({ value, onChange }) => (
+                <AccessGroupSelector
+                  value={value as string[] | undefined}
+                  onChange={onChange}
+                  placeholder="Select access groups (optional)"
+                />
+              )}
+            </FormField>
 
-          <FormField control={form.control} name="mcp_servers_and_groups" label="MCP Servers / Access Groups">
-            {({ value, onChange }) => (
-              <MCPServerSelector
-                onChange={onChange}
-                value={value as McpServersAndGroups | undefined}
-                accessToken={accessToken || ""}
-                {...mcpScope}
-                placeholder="Select MCP servers or access groups (optional)"
-                allowNoMcpServers
-              />
-            )}
-          </FormField>
-
-          <div className="mb-6">
-            <MCPToolPermissions
-              accessToken={accessToken || ""}
-              selectedServers={mcpSelection?.servers || []}
-              selectedAccessGroups={mcpSelection?.accessGroups || []}
-              selectedToolsets={mcpSelection?.toolsets || []}
-              toolPermissions={(mcpToolPermissions as Record<string, string[]> | undefined) || {}}
-              onChange={writeMcpToolPermissions(form)}
-            />
-          </div>
-
-          <KeyAgentAndSkillFields control={form.control} accessToken={accessToken || ""} />
-
-          <FormField
-            control={form.control}
-            name="organization_id"
-            label={labelWithHint(
-              "Organization",
-              "The organization this key belongs to. Selecting an organization filters the available teams.",
-            )}
-            description={hasProject ? "Organization is locked because this key belongs to a project" : undefined}
-          >
-            {({ value, onChange, id }) => (
-              <OrganizationDropdown
-                id={id}
-                value={value}
-                organizations={organizations}
-                loading={isOrganizationsLoading}
-                disabled={!canChangeOrganization}
-                onChange={(orgId) => handleOrganizationChange(onChange, orgId)}
-              />
-            )}
-          </FormField>
-
-          <FormField
-            control={form.control}
-            name="team_id"
-            label="Team"
-            description={hasProject ? "Team is locked because this key belongs to a project" : undefined}
-          >
-            {({ value, onChange, id }) => (
-              <SearchSelect
-                options={teamOptionsFor((value as string | null) ?? null)}
-                value={(value as string | null) ?? null}
-                onValueChange={(teamId) => handleTeamChange(onChange, teamId)}
-                disabled={hasProject}
-                inputId={id}
-                placeholder="Select team"
-                emptyText="No teams found"
-              />
-            )}
-          </FormField>
-
-          {enableProjectsUI && hasProject && (
-            <KeyProjectField
-              projectId={keyData.project_id}
-              canDetach={canDetachProject}
-              pending={detachProject}
-              disabled={isKeySaving}
-              onToggle={() =>
-                form.setValue("project_id", detachProject ? keyData.project_id : null, { shouldDirty: true })
+            <FormField
+              control={form.control}
+              name="allowed_passthrough_routes"
+              label={
+                premiumUser
+                  ? "Allowed Pass Through Routes"
+                  : labelWithHint(
+                      "Allowed Pass Through Routes",
+                      "Setting allowed pass through routes by key is a premium feature",
+                    )
               }
-            />
-          )}
+            >
+              {({ value, onChange }) => (
+                <PassThroughRoutesSelector
+                  value={value as string[] | undefined}
+                  onChange={onChange}
+                  accessToken={accessToken || ""}
+                  placeholder={currentValuePlaceholder(
+                    premiumUser,
+                    keyData.metadata?.allowed_passthrough_routes,
+                    "Premium feature - Upgrade to set allowed pass through routes by key",
+                    "Select or enter allowed pass through routes",
+                  )}
+                  disabled={!premiumUser}
+                />
+              )}
+            </FormField>
 
-          <Field>
-            <FieldLabel>Router Settings</FieldLabel>
-            <RouterSettingsAccordion
-              ref={routerSettingsRef}
-              accessToken={accessToken || ""}
-              teamId={keyData.team_id}
-              value={routerSettingsEditorValue(keyData.router_settings)}
-            />
-          </Field>
+            <FormField control={form.control} name="vector_stores" label="Vector Stores">
+              {({ value, onChange }) => (
+                <VectorStoreSelector
+                  onChange={onChange}
+                  value={value as string[] | undefined}
+                  accessToken={accessToken || ""}
+                  placeholder="Select vector stores"
+                />
+              )}
+            </FormField>
 
-          <FormField control={form.control} name="logging_settings" label="Logging Settings">
-            {({ value, onChange }) => (
-              <EditLoggingSettings
-                value={(value as unknown[] | undefined) ?? []}
-                onChange={onChange}
-                disabledCallbacks={disabledCallbacks}
-                onDisabledCallbacksChange={handleDisabledCallbacksChange}
+            <FormField control={form.control} name="mcp_servers_and_groups" label="MCP Servers / Access Groups">
+              {({ value, onChange }) => (
+                <MCPServerSelector
+                  onChange={onChange}
+                  value={value as McpServersAndGroups | undefined}
+                  accessToken={accessToken || ""}
+                  {...mcpScope}
+                  placeholder="Select MCP servers or access groups (optional)"
+                  allowNoMcpServers
+                />
+              )}
+            </FormField>
+
+            <div className="mb-6">
+              <MCPToolPermissions
+                accessToken={accessToken || ""}
+                selectedServers={mcpSelection?.servers || []}
+                selectedAccessGroups={mcpSelection?.accessGroups || []}
+                selectedToolsets={mcpSelection?.toolsets || []}
+                toolPermissions={(mcpToolPermissions as Record<string, string[]> | undefined) || {}}
+                onChange={writeMcpToolPermissions(form)}
+              />
+            </div>
+
+            <KeyAgentAndSkillFields control={form.control} accessToken={accessToken || ""} />
+
+            <FormField
+              control={form.control}
+              name="organization_id"
+              label={labelWithHint(
+                "Organization",
+                "The organization this key belongs to. Selecting an organization filters the available teams.",
+              )}
+              description={hasProject ? "Organization is locked because this key belongs to a project" : undefined}
+            >
+              {({ value, onChange, id }) => (
+                <OrganizationDropdown
+                  id={id}
+                  value={value}
+                  organizations={organizations}
+                  loading={isOrganizationsLoading}
+                  disabled={!canChangeOrganization}
+                  onChange={(orgId) => handleOrganizationChange(onChange, orgId)}
+                />
+              )}
+            </FormField>
+
+            <FormField
+              control={form.control}
+              name="team_id"
+              label="Team"
+              description={hasProject ? "Team is locked because this key belongs to a project" : undefined}
+            >
+              {({ value, onChange, id }) => (
+                <SearchSelect
+                  options={teamOptionsFor((value as string | null) ?? null)}
+                  value={(value as string | null) ?? null}
+                  onValueChange={(teamId) => handleTeamChange(onChange, teamId)}
+                  disabled={hasProject}
+                  inputId={id}
+                  placeholder="Select team"
+                  emptyText="No teams found"
+                />
+              )}
+            </FormField>
+
+            {enableProjectsUI && hasProject && (
+              <KeyProjectField
+                projectId={keyData.project_id}
+                canDetach={canDetachProject}
+                pending={detachProject}
+                disabled={isKeySaving}
+                onToggle={() =>
+                  form.setValue("project_id", detachProject ? keyData.project_id : null, { shouldDirty: true })
+                }
               />
             )}
-          </FormField>
 
-          <KeyMetadataField form={form} />
+            <Field>
+              <FieldLabel>Router Settings</FieldLabel>
+              <RouterSettingsAccordion
+                ref={routerSettingsRef}
+                accessToken={accessToken || ""}
+                teamId={keyData.team_id}
+                value={routerSettingsEditorValue(keyData.router_settings)}
+              />
+            </Field>
+
+            <FormField control={form.control} name="logging_settings" label="Logging Settings">
+              {({ value, onChange }) => (
+                <EditLoggingSettings
+                  value={(value as unknown[] | undefined) ?? []}
+                  onChange={onChange}
+                  disabledCallbacks={disabledCallbacks}
+                  onDisabledCallbacksChange={handleDisabledCallbacksChange}
+                />
+              )}
+            </FormField>
+
+            <KeyMetadataField form={form} />
+          </LiteUiMask>
 
           <div className="mb-4">
             <FormField control={form.control} name="duration">

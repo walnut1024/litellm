@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import { CredentialIdentity } from "@/components/shared/CredentialIdentity";
 import { Copy, Info, Loader2, Pencil, RefreshCw, Trash2 } from "lucide-react";
 
@@ -56,6 +57,8 @@ const formatShortDate = (value: string | null | undefined): string | null => {
 };
 
 function ModelInformationCell({ model, displayName }: { model: ModelData; displayName: string }) {
+  const lite = useLiteUi();
+  const hideUpstream = lite !== null && !lite.admin;
   const litellmModelName = model.litellm_model_name || "-";
 
   return (
@@ -76,7 +79,12 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
           <span className="max-w-60 truncate text-sm font-medium text-foreground" title={displayName}>
             {displayName}
           </span>
-          <span className="max-w-60 truncate font-mono text-xs text-muted-foreground" title={litellmModelName}>
+          <span
+            hidden={hideUpstream}
+            style={hideUpstream ? { display: "none" } : undefined}
+            className="max-w-60 truncate font-mono text-xs text-muted-foreground"
+            title={litellmModelName}
+          >
             {litellmModelName}
           </span>
         </span>
@@ -93,7 +101,11 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
               {displayName}
             </span>
           </div>
-          <div className="flex flex-col gap-0.5">
+          <div
+            hidden={hideUpstream}
+            style={hideUpstream ? { display: "none" } : undefined}
+            className="flex flex-col gap-0.5"
+          >
             <span className="text-xs text-muted-foreground">LiteLLM Model Name</span>
             <span className="flex min-w-0 items-center gap-1.5">
               <span className="truncate font-mono text-sm text-foreground" title={litellmModelName}>

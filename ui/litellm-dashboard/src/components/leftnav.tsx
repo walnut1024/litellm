@@ -70,6 +70,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/cva.config";
+import { litePageAllowed } from "@/utils/liteUi";
 import { rolesWithCapability } from "../utils/capabilities";
 import {
   all_admin_roles,
@@ -178,6 +179,7 @@ const pageIsEnabledForInternalUser = (item: MenuItem, context: MenuVisibilityCon
 };
 
 const menuItemIsVisible = (item: MenuItem, context: MenuVisibilityContext, isAdmin: boolean): boolean => {
+  if (!litePageAllowed(item.page, context.userRole)) return false;
   if (item.children && item.children.length === 0) return false;
   if (item.key === "llm-playground" && context.isViewOnly) return false;
   const adminVisibility = adminPageVisibility(item, context, isAdmin);

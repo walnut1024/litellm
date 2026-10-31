@@ -1,3 +1,4 @@
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 /**
  * New Usage Page
  *
@@ -270,7 +271,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
   });
   // Tag data is deployment-wide with no per-user dimension, so Top agents only appears where the
   // rest of the page is deployment-wide too: an admin's global view with no user selected.
-  const showTopAgents = isAdmin && usageView === "global" && effectiveUserId === null;
+  const showTopAgents = false;
   const globalClientScope = clientUserId === null && clientTeamId === null && !clientScope.error;
   const globalClientSelected = isAdmin && selectedClient !== null && globalClientScope;
   const needsAgentSummary = showTopAgents || globalClientSelected;
@@ -491,7 +492,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
           </div>
         </div>
       </header>
-      <AriaUsageComposer />
+      <LiteUiMask>
+        <AriaUsageComposer />
+      </LiteUiMask>
       {aggregatedFailed && (
         <ErrorState title="Failed to load spend data" message={aggregatedError} onRetry={reloadAggregated} />
       )}
@@ -532,7 +535,9 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                     )}
                   </TabsList>
                   <div className="flex items-center gap-2">
-                    <AriaUsageTrigger />
+                    <LiteUiMask>
+                      <AriaUsageTrigger />
+                    </LiteUiMask>
                     <Button variant="outline" size="sm" onClick={() => setIsGlobalExportModalOpen(true)}>
                       <Download />
                       Export Data

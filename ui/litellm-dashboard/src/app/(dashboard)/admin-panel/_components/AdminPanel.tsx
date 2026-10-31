@@ -1,3 +1,4 @@
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 /**
  * Allow proxy admin to add other people to view global spend
  * Use this to avoid sharing master key with others
@@ -384,7 +385,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
       children: (
         <div className="flex flex-col gap-4">
           <UISettings />
-          <TeamAdminEditableFieldsSettings />
+          <LiteUiMask>
+            <TeamAdminEditableFieldsSettings />
+          </LiteUiMask>
           <UserBannerSettings />
         </div>
       ),

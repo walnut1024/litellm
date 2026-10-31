@@ -4,6 +4,7 @@
 
 import { labelText, menuGroups } from "./leftnav";
 import { pageDescriptions, PageMetadata } from "./page_metadata";
+import { litePageAllowed } from "@/utils/liteUi";
 import { internalUserRoles } from "@/utils/roles";
 
 /**
@@ -41,7 +42,8 @@ export const getAvailablePages = (): PageMetadata[] => {
         item.page !== "tools" &&
         item.page !== "experimental" &&
         item.page !== "settings" &&
-        isPageAccessibleToInternalUsers(item.roles)
+        isPageAccessibleToInternalUsers(item.roles) &&
+        litePageAllowed(item.page, "Internal User")
       ) {
         pages.push({
           page: item.page,
@@ -56,7 +58,7 @@ export const getAvailablePages = (): PageMetadata[] => {
         const parentLabel = labelText(item);
         item.children.forEach((child) => {
           // Include if internal users can access
-          if (isPageAccessibleToInternalUsers(child.roles)) {
+          if (isPageAccessibleToInternalUsers(child.roles) && litePageAllowed(child.page, "Internal User")) {
             pages.push({
               page: child.page,
               label: labelText(child),

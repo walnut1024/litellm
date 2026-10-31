@@ -1,4 +1,6 @@
 "use client";
+
+import { LiteUiMask, useLiteUi } from "@/contexts/LiteUiContext";
 import { useTerminology } from "@/contexts/TerminologyContext";
 import { keyKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
@@ -229,7 +231,8 @@ export const fetchUserModels = async (
 const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOpenCreate, prefillData }) => {
   const { accessToken, userId: userID, userRole, premiumUser } = useAuthorized();
   const term = useTerminology();
-  const keyTypeOptions = KEY_TYPE_OPTIONS.map((option) => ({
+  const lite = useLiteUi();
+  const keyTypeOptions = KEY_TYPE_OPTIONS.filter((option) => !lite || option.value === "llm_api").map((option) => ({
     ...option,
     label: term(option.label),
     hint: term(option.hint),
@@ -787,17 +790,25 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                       <RadioGroupItem value="you" />
                       You
                     </label>
-                    <label className={KEY_OWNER_LABEL_CLASS}>
+                    <label
+                      hidden={!!lite}
+                      style={lite ? { display: "none" } : undefined}
+                      className={KEY_OWNER_LABEL_CLASS}
+                    >
                       <RadioGroupItem value="service_account" />
                       Service Account
                     </label>
-                    {ownerScope !== "none" && (
+                    {(!lite || lite.admin) && ownerScope !== "none" && (
                       <label className={KEY_OWNER_LABEL_CLASS}>
                         <RadioGroupItem value="another_user" />
                         Another User
                       </label>
                     )}
-                    <label className={KEY_OWNER_LABEL_CLASS}>
+                    <label
+                      hidden={!!lite}
+                      style={lite ? { display: "none" } : undefined}
+                      className={KEY_OWNER_LABEL_CLASS}
+                    >
                       <RadioGroupItem value="agent" />
                       Agent <Badge>New</Badge>
                     </label>
@@ -862,7 +873,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                   }
                   name="team_id"
                   className="mt-4"
-                  required={ownerRequiresTeam}
+                  required={ownerRequiresTeam || isTeamSelectionRequired}
                   rules={requiredRule(
                     ownerRequiresTeam,
                     ownerLimitedToTeamMembers
@@ -1053,7 +1064,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           </span>
                         }
                         name="max_budget"
-                        help={`Budget cannot exceed team max budget: $${team?.max_budget !== null && team?.max_budget !== undefined ? team?.max_budget : "unlimited"}`}
+                        help={
+                          lite && !team
+                            ? undefined
+                            : `Budget cannot exceed team max budget: $${team?.max_budget !== null && team?.max_budget !== undefined ? team?.max_budget : "unlimited"}`
+                        }
                         rules={ceilingRule(
                           team?.max_budget,
                           (limit) => `Budget cannot exceed team max budget: $${formatNumberWithCommas(limit, 4)}`,
@@ -1080,7 +1095,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           </span>
                         }
                         name="budget_duration"
-                        help={`Team Reset Budget: ${team?.budget_duration !== null && team?.budget_duration !== undefined ? team?.budget_duration : "None"}`}
+                        help={
+                          lite && !team
+                            ? undefined
+                            : `Team Reset Budget: ${team?.budget_duration !== null && team?.budget_duration !== undefined ? team?.budget_duration : "None"}`
+                        }
                       >
                         {(control) => (
                           <BudgetDurationDropdown
@@ -1092,49 +1111,55 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           />
                         )}
                       </MountedFormField>
-                      <Field className="mt-4">
-                        <FieldLabel>
-                          <span>
-                            Budget Windows{" "}
-                            <SimpleTooltip content="Set multiple independent budget windows (e.g., hourly $10 AND monthly $200). Each window tracks spend separately and resets on its own schedule.">
-                              <Info className="ml-1 inline size-3.5 align-text-bottom" />
-                            </SimpleTooltip>
-                          </span>
-                        </FieldLabel>
-                        <BudgetWindowsEditor value={budgetLimits} onChange={setBudgetLimits} />
-                      </Field>
-                      <Field className="mt-4">
-                        <FieldLabel>
-                          <span>
-                            Per-Model Budgets{" "}
-                            <SimpleTooltip content="Cap spend on individual models, each with its own reset window. Enforced across every request this key makes; usage is reported on the key's info page.">
-                              <Info className="ml-1 inline size-3.5 align-text-bottom" />
-                            </SimpleTooltip>
-                          </span>
-                        </FieldLabel>
-                        <ModelMaxBudgetEditor
-                          value={modelMaxBudget}
-                          onChange={setModelMaxBudget}
-                          availableModels={modelsToPick}
-                          premiumUser={premiumUser === true}
-                        />
-                      </Field>
-                      <Field className="mt-4">
-                        <FieldLabel>
-                          <span>
-                            Budget Fallbacks{" "}
-                            <SimpleTooltip content="When a model exceeds its per-model budget (model_max_budget), requests automatically reroute to fallback models instead of failing. Configure per-model budgets in Advanced Settings.">
-                              <Info className="ml-1 inline size-3.5 align-text-bottom" />
-                            </SimpleTooltip>
-                          </span>
-                        </FieldLabel>
-                        <BudgetFallbacksEditor
-                          key={budgetFallbacksKey}
-                          value={budgetFallbacks}
-                          onChange={setBudgetFallbacks}
-                          availableModels={modelsToPick}
-                        />
-                      </Field>
+                      <LiteUiMask>
+                        <Field className="mt-4">
+                          <FieldLabel>
+                            <span>
+                              Budget Windows{" "}
+                              <SimpleTooltip content="Set multiple independent budget windows (e.g., hourly $10 AND monthly $200). Each window tracks spend separately and resets on its own schedule.">
+                                <Info className="ml-1 inline size-3.5 align-text-bottom" />
+                              </SimpleTooltip>
+                            </span>
+                          </FieldLabel>
+                          <BudgetWindowsEditor value={budgetLimits} onChange={setBudgetLimits} />
+                        </Field>
+                      </LiteUiMask>
+                      <LiteUiMask>
+                        <Field className="mt-4">
+                          <FieldLabel>
+                            <span>
+                              Per-Model Budgets{" "}
+                              <SimpleTooltip content="Cap spend on individual models, each with its own reset window. Enforced across every request this key makes; usage is reported on the key's info page.">
+                                <Info className="ml-1 inline size-3.5 align-text-bottom" />
+                              </SimpleTooltip>
+                            </span>
+                          </FieldLabel>
+                          <ModelMaxBudgetEditor
+                            value={modelMaxBudget}
+                            onChange={setModelMaxBudget}
+                            availableModels={modelsToPick}
+                            premiumUser={premiumUser === true}
+                          />
+                        </Field>
+                      </LiteUiMask>
+                      <LiteUiMask>
+                        <Field className="mt-4">
+                          <FieldLabel>
+                            <span>
+                              Budget Fallbacks{" "}
+                              <SimpleTooltip content="When a model exceeds its per-model budget (model_max_budget), requests automatically reroute to fallback models instead of failing. Configure per-model budgets in Advanced Settings.">
+                                <Info className="ml-1 inline size-3.5 align-text-bottom" />
+                              </SimpleTooltip>
+                            </span>
+                          </FieldLabel>
+                          <BudgetFallbacksEditor
+                            key={budgetFallbacksKey}
+                            value={budgetFallbacks}
+                            onChange={setBudgetFallbacks}
+                            availableModels={modelsToPick}
+                          />
+                        </Field>
+                      </LiteUiMask>
                       {keyOwner === "service_account" && isProxyAdminRole(userRole ?? "") && (
                         <MountedFormField
                           className="mt-4"
@@ -1170,7 +1195,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           </span>
                         }
                         name="tpm_limit"
-                        help={`TPM cannot exceed team TPM limit: ${team?.tpm_limit !== null && team?.tpm_limit !== undefined ? team?.tpm_limit : "unlimited"}`}
+                        help={
+                          lite && !team
+                            ? undefined
+                            : `TPM cannot exceed team TPM limit: ${team?.tpm_limit !== null && team?.tpm_limit !== undefined ? team?.tpm_limit : "unlimited"}`
+                        }
                         rules={ceilingRule(
                           team?.tpm_limit,
                           (limit) => `TPM limit cannot exceed team TPM limit: ${limit}`,
@@ -1211,7 +1240,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           </span>
                         }
                         name="rpm_limit"
-                        help={`RPM cannot exceed team RPM limit: ${team?.rpm_limit !== null && team?.rpm_limit !== undefined ? team?.rpm_limit : "unlimited"}`}
+                        help={
+                          lite && !team
+                            ? undefined
+                            : `RPM cannot exceed team RPM limit: ${team?.rpm_limit !== null && team?.rpm_limit !== undefined ? team?.rpm_limit : "unlimited"}`
+                        }
                         rules={ceilingRule(
                           team?.rpm_limit,
                           (limit) => `RPM limit cannot exceed team RPM limit: ${limit}`,
@@ -1252,7 +1285,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           </span>
                         }
                         name="tpd_limit"
-                        help={`TPD cannot exceed team TPD limit: ${team?.tpd_limit !== null && team?.tpd_limit !== undefined ? team?.tpd_limit : "unlimited"}`}
+                        help={
+                          lite && !team
+                            ? undefined
+                            : `TPD cannot exceed team TPD limit: ${team?.tpd_limit !== null && team?.tpd_limit !== undefined ? team?.tpd_limit : "unlimited"}`
+                        }
                         rules={ceilingRule(
                           team?.tpd_limit,
                           (limit) => `TPD limit cannot exceed team TPD limit: ${limit}`,
@@ -1267,17 +1304,19 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           />
                         )}
                       </MountedFormField>
-                      <Field className="mt-4">
-                        <FieldLabel>
-                          <span>
-                            Per-Tag Rate Limits{" "}
-                            <SimpleTooltip content="Scope rate limits to a request tag so each tag (e.g. a cell or group) gets its own RPM counter. Requests without a matching tag fall back to the key-level limit.">
-                              <Info className="ml-1 inline size-3.5 align-text-bottom" />
-                            </SimpleTooltip>
-                          </span>
-                        </FieldLabel>
-                        <TagRateLimitEditor value={tagRateLimits} onChange={setTagRateLimits} />
-                      </Field>
+                      <LiteUiMask>
+                        <Field className="mt-4">
+                          <FieldLabel>
+                            <span>
+                              Per-Tag Rate Limits{" "}
+                              <SimpleTooltip content="Scope rate limits to a request tag so each tag (e.g. a cell or group) gets its own RPM counter. Requests without a matching tag fall back to the key-level limit.">
+                                <Info className="ml-1 inline size-3.5 align-text-bottom" />
+                              </SimpleTooltip>
+                            </span>
+                          </FieldLabel>
+                          <TagRateLimitEditor value={tagRateLimits} onChange={setTagRateLimits} />
+                        </Field>
+                      </LiteUiMask>
                       <MountedFormField
                         className="mt-4"
                         label={
@@ -1604,7 +1643,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           />
                         )}
                       </MountedFormField>
-                      <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
+                      <Collapsible
+                        hidden={!!lite}
+                        style={lite ? { display: "none" } : undefined}
+                        className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                      >
                         <CollapsibleTrigger className={SECTION_HEADER_CLASS}>
                           <b>MCP Settings</b>
                           <ChevronDown className={SECTION_CHEVRON_CLASS} />
@@ -1648,7 +1691,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                         </CollapsibleContent>
                       </Collapsible>
 
-                      <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
+                      <Collapsible
+                        hidden={!!lite}
+                        style={lite ? { display: "none" } : undefined}
+                        className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                      >
                         <CollapsibleTrigger className={SECTION_HEADER_CLASS}>
                           <b>Agent Settings</b>
                           <ChevronDown className={SECTION_CHEVRON_CLASS} />
@@ -1678,7 +1725,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                         </CollapsibleContent>
                       </Collapsible>
 
-                      <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
+                      <Collapsible
+                        hidden={!!lite}
+                        style={lite ? { display: "none" } : undefined}
+                        className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                      >
                         <CollapsibleTrigger className={SECTION_HEADER_CLASS}>
                           <b>Skill Settings</b>
                           <ChevronDown className={SECTION_CHEVRON_CLASS} />
@@ -1709,7 +1760,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                       </Collapsible>
 
                       {premiumUser ? (
-                        <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
+                        <Collapsible
+                          hidden={!!lite}
+                          style={lite ? { display: "none" } : undefined}
+                          className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                        >
                           <CollapsibleTrigger className={SECTION_HEADER_CLASS}>
                             <b>Logging Settings</b>
                             <ChevronDown className={SECTION_CHEVRON_CLASS} />
@@ -1741,7 +1796,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                         >
                           <div style={{ position: "relative" }}>
                             <div style={{ opacity: 0.5 }}>
-                              <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
+                              <Collapsible
+                                hidden={!!lite}
+                                style={lite ? { display: "none" } : undefined}
+                                className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                              >
                                 <CollapsibleTrigger className={SECTION_HEADER_CLASS}>
                                   <b>Logging Settings</b>
                                   <ChevronDown className={SECTION_CHEVRON_CLASS} />
@@ -1766,6 +1825,8 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
 
                       <Collapsible
                         key={`router-settings-accordion-${routerSettingsKey}`}
+                        hidden={!!lite}
+                        style={lite ? { display: "none" } : undefined}
                         className="mt-4 mb-4 overflow-hidden rounded-lg border"
                       >
                         <CollapsibleTrigger className={SECTION_HEADER_CLASS}>
@@ -1790,7 +1851,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                         </CollapsibleContent>
                       </Collapsible>
 
-                      <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
+                      <Collapsible
+                        hidden={!!lite}
+                        style={lite ? { display: "none" } : undefined}
+                        className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                      >
                         <CollapsibleTrigger className={SECTION_HEADER_CLASS}>
                           <b>Model Aliases</b>
                           <ChevronDown className={SECTION_CHEVRON_CLASS} />
@@ -1835,7 +1900,11 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
                           </div>
                         </CollapsibleContent>
                       </Collapsible>
-                      <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
+                      <Collapsible
+                        hidden={!!lite}
+                        style={lite ? { display: "none" } : undefined}
+                        className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                      >
                         <CollapsibleTrigger className={SECTION_HEADER_CLASS}>
                           <div className="flex items-center gap-2">
                             <b>Advanced Settings</b>

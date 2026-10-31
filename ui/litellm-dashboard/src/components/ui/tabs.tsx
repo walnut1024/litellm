@@ -4,6 +4,8 @@ import { Tabs as TabsPrimitive } from "@base-ui/react/tabs";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/cva.config";
+import { useLiteUi } from "@/contexts/LiteUiContext";
+import { liteTabAllowed } from "@/utils/liteUi";
 
 function Tabs({ className, orientation = "horizontal", ...props }: TabsPrimitive.Root.Props) {
   return (
@@ -47,6 +49,8 @@ function TabsList({
 }
 
 function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
+  const lite = useLiteUi();
+  if (lite && !liteTabAllowed(lite.route, String(props.value), lite.admin)) return null;
   return (
     <TabsPrimitive.Tab
       data-slot="tabs-trigger"
@@ -63,6 +67,8 @@ function TabsTrigger({ className, ...props }: TabsPrimitive.Tab.Props) {
 }
 
 function TabsContent({ className, ...props }: TabsPrimitive.Panel.Props) {
+  const lite = useLiteUi();
+  if (lite && !liteTabAllowed(lite.route, String(props.value), lite.admin)) return null;
   return (
     <TabsPrimitive.Panel data-slot="tabs-content" className={cn("flex-1 text-sm outline-none", className)} {...props} />
   );

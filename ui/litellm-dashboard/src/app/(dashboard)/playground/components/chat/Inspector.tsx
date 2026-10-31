@@ -1,5 +1,6 @@
 "use client";
 
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useState, type ReactNode } from "react";
 import {
   ArrowDownToLine,
@@ -98,26 +99,30 @@ function Routing({ message }: { message: MessageType }) {
         </TraceRow>
       )}
       {trace?.providerModel && (
-        <TraceRow title="Provider model">
-          <LongValue
-            value={trace.providerModel}
-            detail={trace.deploymentId ? `Deployment ID ${trace.deploymentId}` : "Model sent to the provider"}
-            copyLabel="provider model"
-            className="text-xs"
-            align="end"
-          />
-        </TraceRow>
+        <LiteUiMask adminOnly>
+          <TraceRow title="Provider model">
+            <LongValue
+              value={trace.providerModel}
+              detail={trace.deploymentId ? `Deployment ID ${trace.deploymentId}` : "Model sent to the provider"}
+              copyLabel="provider model"
+              className="text-xs"
+              align="end"
+            />
+          </TraceRow>
+        </LiteUiMask>
       )}
       {trace?.apiBase && (
-        <TraceRow title="API base">
-          <LongValue
-            value={trace.apiBase}
-            detail="Provider endpoint"
-            copyLabel="API base"
-            className="text-xs"
-            align="end"
-          />
-        </TraceRow>
+        <LiteUiMask adminOnly>
+          <TraceRow title="API base">
+            <LongValue
+              value={trace.apiBase}
+              detail="Provider endpoint"
+              copyLabel="API base"
+              className="text-xs"
+              align="end"
+            />
+          </TraceRow>
+        </LiteUiMask>
       )}
       {trace?.callId && (
         <TraceRow title="Call ID">

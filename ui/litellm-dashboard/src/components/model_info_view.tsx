@@ -1,3 +1,4 @@
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
 import { useModelHub, useModelsInfo } from "@/app/(dashboard)/hooks/models/useModels";
 import { useQueryClient } from "@tanstack/react-query";
@@ -551,55 +552,57 @@ export default function ModelInfoView({
             </Button>
           </div>
         </div>
-        <div className="flex gap-2">
-          {(!isAnyAutoRouter || isComplexityRouterModel) && (
+        <LiteUiMask adminOnly>
+          <div className="flex gap-2">
+            {(!isAnyAutoRouter || isComplexityRouterModel) && (
+              <Button
+                variant="outline"
+                onClick={handleTestConnection}
+                className="flex items-center gap-2"
+                data-testid="test-connection-button"
+              >
+                <RefreshIcon className="h-4 w-4" />
+                Test Connection
+              </Button>
+            )}
+
+            {!isAnyAutoRouter && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsUpdateCredentialsModalOpen(true)}
+                  className="flex items-center"
+                  disabled={!canEditModel}
+                  data-testid="update-api-key-button"
+                >
+                  <KeyIcon className="h-4 w-4" />
+                  Update API Key
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCredentialModalOpen(true)}
+                  className="flex items-center"
+                  disabled={!isAdmin}
+                  data-testid="reuse-credentials-button"
+                >
+                  <KeyIcon className="h-4 w-4" />
+                  Re-use Credentials
+                </Button>
+              </>
+            )}
             <Button
-              variant="outline"
-              onClick={handleTestConnection}
-              className="flex items-center gap-2"
-              data-testid="test-connection-button"
+              variant="destructive"
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="flex items-center"
+              disabled={!canEditModel}
+              data-testid="delete-model-button"
             >
-              <RefreshIcon className="h-4 w-4" />
-              Test Connection
+              <TrashIcon className="h-4 w-4" />
+              {deleteLabel}
             </Button>
-          )}
-
-          {!isAnyAutoRouter && (
-            <>
-              <Button
-                variant="outline"
-                onClick={() => setIsUpdateCredentialsModalOpen(true)}
-                className="flex items-center"
-                disabled={!canEditModel}
-                data-testid="update-api-key-button"
-              >
-                <KeyIcon className="h-4 w-4" />
-                Update API Key
-              </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => setIsCredentialModalOpen(true)}
-                className="flex items-center"
-                disabled={!isAdmin}
-                data-testid="reuse-credentials-button"
-              >
-                <KeyIcon className="h-4 w-4" />
-                Re-use Credentials
-              </Button>
-            </>
-          )}
-          <Button
-            variant="destructive"
-            onClick={() => setIsDeleteModalOpen(true)}
-            className="flex items-center"
-            disabled={!canEditModel}
-            data-testid="delete-model-button"
-          >
-            <TrashIcon className="h-4 w-4" />
-            {deleteLabel}
-          </Button>
-        </div>
+          </div>
+        </LiteUiMask>
       </div>
 
       <Tabs defaultValue="overview">
@@ -623,20 +626,24 @@ export default function ModelInfoView({
                   <h3 className="text-lg font-medium">{modelData.provider || "Not Set"}</h3>
                 </div>
               </Card>
-              <Card className="block p-6">
-                <p className="text-sm">LiteLLM Model</p>
-                <div className="mt-2 overflow-hidden">
-                  <SimpleTooltip content={modelData.litellm_model_name || "Not Set"} className="w-full min-w-0">
-                    <div className="break-all text-sm font-medium leading-relaxed cursor-pointer">
-                      {modelData.litellm_model_name || "Not Set"}
-                    </div>
-                  </SimpleTooltip>
-                </div>
-              </Card>
-              <Card className="block p-6">
-                <p className="text-sm">Pricing</p>
-                <ModelPricingSummary model={modelData} />
-              </Card>
+              <LiteUiMask adminOnly>
+                <Card className="block p-6">
+                  <p className="text-sm">LiteLLM Model</p>
+                  <div className="mt-2 overflow-hidden">
+                    <SimpleTooltip content={modelData.litellm_model_name || "Not Set"} className="w-full min-w-0">
+                      <div className="break-all text-sm font-medium leading-relaxed cursor-pointer">
+                        {modelData.litellm_model_name || "Not Set"}
+                      </div>
+                    </SimpleTooltip>
+                  </div>
+                </Card>
+              </LiteUiMask>
+              <LiteUiMask adminOnly>
+                <Card className="block p-6">
+                  <p className="text-sm">Pricing</p>
+                  <ModelPricingSummary model={modelData} />
+                </Card>
+              </LiteUiMask>
             </div>
 
             {/* Audit info shown as a subtle banner below the overview */}
@@ -679,54 +686,56 @@ export default function ModelInfoView({
             )}
 
             {/* Settings Card */}
-            <Card className="block p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Model Settings</h3>
-                <div className="flex gap-2">
-                  {isAutoRouterModel && canEditRouter && !isEditing && (
-                    <Button onClick={() => setIsAutoRouterModalOpen(true)} className="flex items-center">
-                      Edit Auto Router
-                    </Button>
-                  )}
-                  {canEditModel ? (
-                    !isEditing && (
-                      <Button onClick={() => setIsEditing(true)} className="flex items-center">
-                        Edit Settings
+            <LiteUiMask adminOnly>
+              <Card className="block p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-medium">Model Settings</h3>
+                  <div className="flex gap-2">
+                    {isAutoRouterModel && canEditRouter && !isEditing && (
+                      <Button onClick={() => setIsAutoRouterModalOpen(true)} className="flex items-center">
+                        Edit Auto Router
                       </Button>
-                    )
-                  ) : (
-                    <SimpleTooltip content="Only DB models can be edited. You must be an admin or the creator of the model to edit it.">
-                      <Info className="size-4 text-muted-foreground" />
-                    </SimpleTooltip>
-                  )}
+                    )}
+                    {canEditModel ? (
+                      !isEditing && (
+                        <Button onClick={() => setIsEditing(true)} className="flex items-center">
+                          Edit Settings
+                        </Button>
+                      )
+                    ) : (
+                      <SimpleTooltip content="Only DB models can be edited. You must be an admin or the creator of the model to edit it.">
+                        <Info className="size-4 text-muted-foreground" />
+                      </SimpleTooltip>
+                    )}
+                  </div>
                 </div>
-              </div>
-              {localModelData ? (
-                <ModelInfoEditForm
-                  key={localModelData.model_info?.id}
-                  localModelData={localModelData}
-                  modelData={modelData}
-                  teamAlias={aliasForTeam(localModelData.model_info?.team_id)}
-                  accessToken={accessToken}
-                  isEditing={isEditing}
-                  isSaving={isSaving}
-                  isWildcardModel={isWildcardModel}
-                  ptuCostAttributionEnabled={ptuCostAttributionEnabled}
-                  showCacheControl={showCacheControl}
-                  setShowCacheControl={setShowCacheControl}
-                  onCancel={() => setIsEditing(false)}
-                  onSubmit={handleModelUpdate}
-                  modelAccessGroups={modelAccessGroups}
-                  guardrailsList={guardrailsList}
-                  tagsList={tagsList}
-                  credentialsList={credentialsList}
-                  healthCheckModelOptions={healthCheckModelOptions}
-                  teams={assignableTeams}
-                />
-              ) : (
-                <p className="text-sm">Loading...</p>
-              )}
-            </Card>
+                {localModelData ? (
+                  <ModelInfoEditForm
+                    key={localModelData.model_info?.id}
+                    localModelData={localModelData}
+                    modelData={modelData}
+                    teamAlias={aliasForTeam(localModelData.model_info?.team_id)}
+                    accessToken={accessToken}
+                    isEditing={isEditing}
+                    isSaving={isSaving}
+                    isWildcardModel={isWildcardModel}
+                    ptuCostAttributionEnabled={ptuCostAttributionEnabled}
+                    showCacheControl={showCacheControl}
+                    setShowCacheControl={setShowCacheControl}
+                    onCancel={() => setIsEditing(false)}
+                    onSubmit={handleModelUpdate}
+                    modelAccessGroups={modelAccessGroups}
+                    guardrailsList={guardrailsList}
+                    tagsList={tagsList}
+                    credentialsList={credentialsList}
+                    healthCheckModelOptions={healthCheckModelOptions}
+                    teams={assignableTeams}
+                  />
+                ) : (
+                  <p className="text-sm">Loading...</p>
+                )}
+              </Card>
+            </LiteUiMask>
           </TabsContent>
 
           <TabsContent value="raw" keepMounted>

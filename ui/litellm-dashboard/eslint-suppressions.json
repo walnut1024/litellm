@@ -1791,7 +1791,7 @@
   },
   "src/components/page_utils.test.ts": {
     "max-nested-callbacks": {
-      "count": 3
+      "count": 2
     }
   },
   "src/components/pass_through_info.tsx": {

@@ -10,6 +10,8 @@ import {
 } from "react-hook-form";
 
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import { useLiteUi } from "@/contexts/LiteUiContext";
+import { liteFieldHidden } from "@/utils/liteUi";
 
 export type MountedFormValues = Record<string, unknown>;
 
@@ -138,6 +140,7 @@ export const MountedFormField: React.FC<MountedFormFieldProps> = ({
 }) => {
   const { control } = React.useContext(MountedFormContext);
   const path = fieldKey(name);
+  const lite = useLiteUi();
   useMountedName(name);
 
   const helpId = `${path}_help`;
@@ -145,6 +148,7 @@ export const MountedFormField: React.FC<MountedFormFieldProps> = ({
 
   const renderField: ControllerProps<MountedFormValues, string>["render"] = ({ field, fieldState }) => {
     const invalid = fieldState.error !== undefined;
+    const hidden = lite !== null && liteFieldHidden(lite.route, path) && !required && !rules?.required && !invalid;
     const controlProps: MountedFieldControlProps = {
       id: path,
       name: field.name,
@@ -157,11 +161,22 @@ export const MountedFormField: React.FC<MountedFormFieldProps> = ({
     };
 
     if (bare) {
-      return <>{children(controlProps)}</>;
+      return hidden ? (
+        <span hidden style={{ display: "none" }}>
+          {children(controlProps)}
+        </span>
+      ) : (
+        <>{children(controlProps)}</>
+      );
     }
 
     return (
-      <Field data-invalid={invalid || undefined} className={className}>
+      <Field
+        data-invalid={invalid || undefined}
+        className={className}
+        hidden={hidden}
+        style={hidden ? { display: "none" } : undefined}
+      >
         {label !== undefined && <FieldLabel htmlFor={path}>{label}</FieldLabel>}
         {children(controlProps)}
         {hasHelp ? (

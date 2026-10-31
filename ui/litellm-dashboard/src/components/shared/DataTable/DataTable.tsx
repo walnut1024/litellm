@@ -42,6 +42,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, cva } from "@/lib/cva.config";
+import { useLiteUi } from "@/contexts/LiteUiContext";
+import { liteColumnAllowed } from "@/utils/liteUi";
 
 import "./columnMeta";
 import { DataTablePagination, DEFAULT_PAGE_SIZE_OPTIONS } from "./DataTablePagination";
@@ -505,6 +507,12 @@ function useDataTableInstance<TData extends RowData, TValue>(
     onRowSelectionChange,
   } = props;
 
+  const lite = useLiteUi();
+  const visibleColumns = React.useMemo(
+    () =>
+      lite ? columns.filter((column) => liteColumnAllowed(lite.route, columnDefId(column) ?? "", lite.admin)) : columns,
+    [columns, lite],
+  );
   const sortingState = useControllable(sorting, onSortingChange, defaultSorting ?? []);
   const paginationState = useControllable(pagination, onPaginationChange, {
     pageIndex: 0,
@@ -524,12 +532,12 @@ function useDataTableInstance<TData extends RowData, TValue>(
     defaultColumnVisibility ?? {},
   );
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
-  const columnPinning = React.useMemo(() => derivePinning(columns), [columns]);
+  const columnPinning = React.useMemo(() => derivePinning(visibleColumns), [visibleColumns]);
   const expansionGuard = renderSubComponent !== undefined ? getRowCanExpand : undefined;
 
   const tableOptions: TableOptions<TData> = {
     data,
-    columns,
+    columns: visibleColumns,
     state: {
       sorting: sortingState.value,
       pagination: paginationState.value,

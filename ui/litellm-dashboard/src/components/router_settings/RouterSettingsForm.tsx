@@ -1,3 +1,4 @@
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import React from "react";
 import LatencyBasedConfiguration from "./LatencyBasedConfiguration";
 import { RouterSettingsSource, isOwnedByConfig } from "./ConfigOwned";
@@ -53,23 +54,27 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
 
         {/* Routing Strategy */}
         {availableRoutingStrategies.length > 0 && (
-          <RoutingStrategySelector
-            selectedStrategy={value.selectedStrategy || value.routerSettings.routing_strategy || null}
-            availableStrategies={availableRoutingStrategies}
-            routingStrategyDescriptions={routingStrategyDescriptions}
-            routerFieldsMetadata={routerFieldsMetadata}
-            onStrategyChange={handleStrategyChange}
-            ownedByConfig={isOwnedByConfig(routerSettingsSource, "routing_strategy")}
-          />
+          <LiteUiMask>
+            <RoutingStrategySelector
+              selectedStrategy={value.selectedStrategy || value.routerSettings.routing_strategy || null}
+              availableStrategies={availableRoutingStrategies}
+              routingStrategyDescriptions={routingStrategyDescriptions}
+              routerFieldsMetadata={routerFieldsMetadata}
+              onStrategyChange={handleStrategyChange}
+              ownedByConfig={isOwnedByConfig(routerSettingsSource, "routing_strategy")}
+            />
+          </LiteUiMask>
         )}
 
         {/* Tag Filtering */}
-        <TagFilteringToggle
-          enabled={value.enableTagFiltering}
-          routerFieldsMetadata={routerFieldsMetadata}
-          onToggle={handleTagFilteringToggle}
-          ownedByConfig={isOwnedByConfig(routerSettingsSource, "enable_tag_filtering")}
-        />
+        <LiteUiMask>
+          <TagFilteringToggle
+            enabled={value.enableTagFiltering}
+            routerFieldsMetadata={routerFieldsMetadata}
+            onToggle={handleTagFilteringToggle}
+            ownedByConfig={isOwnedByConfig(routerSettingsSource, "enable_tag_filtering")}
+          />
+        </LiteUiMask>
       </div>
 
       {/* Divider */}
@@ -77,10 +82,12 @@ const RouterSettingsForm: React.FC<RouterSettingsFormProps> = ({
 
       {/* Strategy-Specific Args - Show immediately after strategy if latency-based */}
       {value.selectedStrategy === "latency-based-routing" && (
-        <LatencyBasedConfiguration
-          routingStrategyArgs={value.routerSettings["routing_strategy_args"]}
-          ownedByConfig={isOwnedByConfig(routerSettingsSource, "routing_strategy_args")}
-        />
+        <LiteUiMask>
+          <LatencyBasedConfiguration
+            routingStrategyArgs={value.routerSettings["routing_strategy_args"]}
+            ownedByConfig={isOwnedByConfig(routerSettingsSource, "routing_strategy_args")}
+          />
+        </LiteUiMask>
       )}
 
       {/* Other Settings */}

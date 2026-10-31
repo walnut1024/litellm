@@ -1,3 +1,4 @@
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import React, { useId, useState } from "react";
 import { userBulkUpdateUserCall, teamBulkMemberAddCall, Member } from "@/components/networking";
 import { UserEditView } from "./user_edit_view";
@@ -228,17 +229,19 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
         </DialogHeader>
         {allowAllUsers && (
           <div className="mb-4">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id={updateAllUsersId}
-                checked={updateAllUsers}
-                onCheckedChange={(checked) => setUpdateAllUsers(checked === true)}
-                aria-label="Update ALL users in the system"
-              />
-              <label htmlFor={updateAllUsersId} className="cursor-pointer text-sm font-medium text-foreground">
-                Update ALL users in the system
-              </label>
-            </div>
+            <LiteUiMask>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={updateAllUsersId}
+                  checked={updateAllUsers}
+                  onCheckedChange={(checked) => setUpdateAllUsers(checked === true)}
+                  aria-label="Update ALL users in the system"
+                />
+                <label htmlFor={updateAllUsersId} className="cursor-pointer text-sm font-medium text-foreground">
+                  Update ALL users in the system
+                </label>
+              </div>
+            </LiteUiMask>
             {updateAllUsers && (
               <div className="mt-2">
                 <span className="text-xs text-warning">

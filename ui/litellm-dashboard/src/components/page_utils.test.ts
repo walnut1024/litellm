@@ -44,37 +44,12 @@ describe("Page Utils - LeftNav Sync", () => {
     });
   });
 
-  it("should include all navigable pages from menuGroups", () => {
-    const availablePages = getAvailablePages();
-    const availablePageKeys = availablePages.map((p) => p.page);
-
-    // Collect all page keys from menuGroups (excluding parent containers and pages not accessible to internal users)
-    const menuPageKeys: string[] = [];
-    const excludedParents = ["tools", "experimental", "settings"];
-
-    menuGroups.forEach((group) => {
-      group.items.forEach((item) => {
-        if (item.page && !excludedParents.includes(item.page) && isPageAccessibleToInternalUsers(item.roles)) {
-          menuPageKeys.push(item.page);
-        }
-
-        // Add children (only if accessible to internal users)
-        if (item.children) {
-          item.children.forEach((child) => {
-            if (isPageAccessibleToInternalUsers(child.roles)) {
-              menuPageKeys.push(child.page);
-            }
-          });
-        }
-      });
-    });
-
-    // Every menu page accessible to internal users should be in available pages
-    menuPageKeys.forEach((pageKey) => {
-      expect(availablePageKeys, `Page "${pageKey}" from menuGroups should be in getAvailablePages() output`).toContain(
-        pageKey,
-      );
-    });
+  it("offers only the retained employee pages in page visibility settings", () => {
+    expect(
+      getAvailablePages()
+        .map((page) => page.page)
+        .sort(),
+    ).toEqual(["home", "api-keys", "llm-playground", "models", "new_usage", "api_ref"].sort());
   });
 
   it("should not include parent container pages (tools, experimental, settings)", () => {
@@ -195,11 +170,8 @@ describe("Page Utils - LeftNav Sync", () => {
     expect(pageKeys.length, "All page keys should be unique (no duplicates)").toBe(uniquePageKeys.size);
   });
 
-  it("offers Projects in the internal-user page picker so team admins can be granted it", () => {
-    expect(getAvailablePages().find((page) => page.page === "projects")).toMatchObject({
-      label: "Projects",
-      group: "ACCESS CONTROL",
-    });
+  it("does not offer masked Projects in page visibility settings", () => {
+    expect(getAvailablePages().find((page) => page.page === "projects")).toBeUndefined();
   });
 
   it("should match the structure expected by PageVisibilitySettings component", () => {

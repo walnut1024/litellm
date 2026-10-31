@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
@@ -33,6 +34,7 @@ const PREMIUM_ONLY_FIELDS = ["EMAIL_LOGO_URL", "EMAIL_SUPPORT_CONTACT"];
 const SENSITIVE_FIELD_PATTERN = /(PASSWORD|SECRET|KEY|TOKEN)/i;
 
 const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser, alerts }) => {
+  const lite = useLiteUi();
   const [visibleFields, setVisibleFields] = useState<Record<string, boolean>>({});
 
   const toggleFieldVisibility = (key: string) => {
@@ -110,6 +112,7 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
             .map((alert, index) => (
               <div key={index} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {Object.entries(alert.variables ?? {}).map(([key, value]) => {
+                  if (lite && PREMIUM_ONLY_FIELDS.includes(key)) return null;
                   const isLocked = !premiumUser && PREMIUM_ONLY_FIELDS.includes(key);
                   const isSensitive = SENSITIVE_FIELD_PATTERN.test(key);
                   const isVisible = visibleFields[key] || false;

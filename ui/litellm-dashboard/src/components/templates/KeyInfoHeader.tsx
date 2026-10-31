@@ -1,4 +1,5 @@
 import React from "react";
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import {
   ArrowLeft,
   ArrowLeftRight,
@@ -221,16 +222,18 @@ export function KeyInfoHeader({
         </div>
         {canModifyKey && (
           <div className="flex items-center gap-2">
-            {regenerateTooltip ? (
-              <TooltipProvider delay={300}>
-                <Tooltip>
-                  <TooltipTrigger render={regenerateButton} />
-                  <TooltipContent>{regenerateTooltip}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              regenerateButton
-            )}
+            <LiteUiMask>
+              {regenerateTooltip ? (
+                <TooltipProvider delay={300}>
+                  <Tooltip>
+                    <TooltipTrigger render={regenerateButton} />
+                    <TooltipContent>{regenerateTooltip}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                regenerateButton
+              )}
+            </LiteUiMask>
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="More key actions" />}>
                 <MoreVertical className="size-3.5" />
@@ -302,13 +305,15 @@ export function KeyInfoHeader({
             href={data.teamId ? teamDetailHref(data.teamId) : undefined}
             truncate
           />
-          <LabeledField
-            label="Organization"
-            value={data.orgAlias || data.orgId}
-            icon={<Building2 className="size-3.5" />}
-            href={data.orgId ? orgDetailHref(data.orgId) : undefined}
-            truncate
-          />
+          <LiteUiMask>
+            <LabeledField
+              label="Organization"
+              value={data.orgAlias || data.orgId}
+              icon={<Building2 className="size-3.5" />}
+              href={data.orgId ? orgDetailHref(data.orgId) : undefined}
+              truncate
+            />
+          </LiteUiMask>
         </div>
       </div>
     </div>

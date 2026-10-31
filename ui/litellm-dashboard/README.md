@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+For lightweight dashboard changes and the upstream merge checklist, see [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md)
+
 ## Getting Started
 
 First, run the development server:

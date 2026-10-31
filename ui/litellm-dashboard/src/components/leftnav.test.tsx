@@ -247,7 +247,6 @@ describe("Sidebar (leftnav)", () => {
       "Logs",
       "Internal Users",
       "Teams",
-      "Organizations",
       "Access Groups",
       "Budgets",
     ]) {
@@ -266,6 +265,7 @@ describe("Sidebar (leftnav)", () => {
       "Playground",
       "Projects Beta",
       "API Reference",
+      "Organizations",
     ]) {
       expect(screen.queryByRole("link", { name: label })).not.toBeInTheDocument();
     }

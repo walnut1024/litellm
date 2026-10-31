@@ -5,6 +5,7 @@ import { fireEvent, renderWithProviders, screen, waitFor } from "@/../tests/test
 import { toast } from "@/lib/toast";
 
 import TeamAdminEditableFieldsSettings from "./TeamAdminEditableFieldsSettings";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 const mockUseUISettings = vi.hoisted(() => vi.fn());
 const mockUseUpdateUISettings = vi.hoisted(() => vi.fn());
@@ -67,6 +68,25 @@ const raiseMaxBudgetCheckbox = () => screen.getByRole("checkbox", { name: RAISE_
 describe("TeamAdminEditableFieldsSettings", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("masks project permission without clearing its saved value when another permission changes", async () => {
+    mockSettings(["projects", "max_budget"], ["projects"]);
+    const mutate = mockSave({});
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "admin-panel", admin: true }}>
+        <TeamAdminEditableFieldsSettings />
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.queryByRole("checkbox", { name: "Create and update projects" })).not.toBeInTheDocument();
+    fireEvent.click(maxBudgetCheckbox());
+    fireEvent.click(saveButton());
+    await waitFor(() =>
+      expect(mutate).toHaveBeenCalledWith(
+        { team_admin_editable_team_fields: ["projects", "max_budget"] },
+        expect.anything(),
+      ),
+    );
   });
 
   it("explains that nothing can be enabled when the proxy supports no fields", () => {

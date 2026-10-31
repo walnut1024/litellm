@@ -14,15 +14,22 @@ describe("lightweight UI visibility", () => {
     },
   );
 
-  it.each(["projects", "api-reference", "playground", "agents", "mcp-servers", "guardrails", "chat", "moyai"])(
-    "blocks direct access to %s for both roles",
-    (route) => {
-      expect(liteRouteAllowed(route, "Internal User")).toBe(false);
-      expect(liteRouteAllowed(route, "Admin")).toBe(false);
-    },
-  );
+  it.each([
+    "organizations",
+    "projects",
+    "api-reference",
+    "playground",
+    "agents",
+    "mcp-servers",
+    "guardrails",
+    "chat",
+    "moyai",
+  ])("blocks direct access to %s for both roles", (route) => {
+    expect(liteRouteAllowed(route, "Internal User")).toBe(false);
+    expect(liteRouteAllowed(route, "Admin")).toBe(false);
+  });
 
-  it.each(["teams", "users", "organizations", "access-groups", "budgets"])(
+  it.each(["teams", "users", "access-groups", "budgets"])(
     "leaves %s available to the original role and feature checks",
     (page) => {
       expect(litePageAllowed(page, "Admin")).toBe(true);
@@ -45,8 +52,6 @@ describe("lightweight UI visibility", () => {
     expect(liteTabAllowed("models-and-endpoints", "add", false)).toBe(false);
     expect(liteTabAllowed("models-and-endpoints", "add", true)).toBe(true);
     expect(liteTabAllowed("models-and-endpoints", "auto-routers", true)).toBe(false);
-    expect(liteTabAllowed("playground", "chat", false)).toBe(true);
-    expect(liteTabAllowed("playground", "compare", true)).toBe(false);
   });
 
   it("hides advanced fields while preserving provider authentication and basic budgets", () => {
@@ -65,13 +70,25 @@ describe("lightweight UI visibility", () => {
     expect(liteColumnAllowed("models-and-endpoints", "litellm_credential_name", true)).toBe(true);
   });
 
-  it.each(["organization_id", "team_id", "access_group_ids", "model_access_group"])(
-    "restores the access-control field %s",
-    (name) => expect(liteFieldHidden("api-keys", name)).toBe(false),
+  it.each(["team_id", "access_group_ids", "model_access_group"])("restores the access-control field %s", (name) =>
+    expect(liteFieldHidden("api-keys", name)).toBe(false),
   );
 
   it("masks project fields and columns", () => {
     expect(liteFieldHidden("api-keys", "project_id")).toBe(true);
     expect(liteColumnAllowed("api-keys", "project_id", true)).toBe(false);
   });
+
+  it.each(["api-keys", "models-and-endpoints", "teams", "users"])(
+    "masks enterprise fields in %s without masking basic controls",
+    (route) => {
+      expect(liteFieldHidden(route, "organization_id")).toBe(true);
+      expect(liteFieldHidden(route, "model_max_budget")).toBe(true);
+      expect(liteFieldHidden(route, "secret_manager_settings")).toBe(true);
+      expect(liteFieldHidden(route, "logging_settings")).toBe(true);
+      expect(liteFieldHidden(route, "max_budget")).toBe(false);
+      expect(liteFieldHidden(route, "tpm_limit")).toBe(false);
+      expect(liteFieldHidden(route, "rpm_limit")).toBe(false);
+    },
+  );
 });

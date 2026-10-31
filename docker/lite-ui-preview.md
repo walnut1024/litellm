@@ -41,11 +41,13 @@ For UI-only updates, rebuild the dashboard and run the same Compose command. The
 
 Stop this stack with the same project name and environment file. Do not use volume deletion unless you intend to discard the preview database
 
-The dashboard keeps the existing page names, layout, form defaults, validation, and backend APIs. Home, Virtual Keys, Models + Endpoints, and Usage remain available. Access Control retains Teams, Internal Users, Organizations, Access Groups, and Budgets. The original roles and license restrictions still apply. Team, organization, and access-group assignment fields and filters are restored, together with team and organization usage views
+The dashboard keeps the existing page names, layout, validation, and backend APIs. Home, Virtual Keys, Models + Endpoints, and Usage remain available. Access Control retains Teams, Internal Users, Access Groups, and Budgets. The original role and API restrictions still apply. Team and access-group assignments and team usage remain available
 
 Administrators additionally retain Logs, Router Settings, Logging & Alerts, and Admin Settings. Playground and the deprecated API Reference page remain hidden for both roles, including navigation, search, and direct page URLs
 
-The beta Projects feature is masked in navigation, search, direct page access, key fields, and its UI setting. The local preview's Projects UI setting is disabled. Existing project ownership is preserved when editing keys. Organizations still displays its original Enterprise-license requirement when no valid license is configured
+The beta Projects feature and Enterprise Organizations page are masked in navigation, search, direct page access, and related fields. The local preview's Projects UI setting is disabled. Existing ownership is preserved when editing keys. Audit Logs, deleted-resource history, SSO and security configuration tabs, key regeneration, per-model budget controls, per-key/team logging, secret manager settings, and paid alert controls are also masked
+
+The complete employee and administrator inventory, source baseline, changed-file map, and upstream merge checklist are recorded in [LITE_UI_CUSTOMIZATIONS.md](../ui/litellm-dashboard/LITE_UI_CUSTOMIZATIONS.md). The source baseline is version 1.109.0, while the separate original container on port 4002 is version 1.106.6
 
 Browser verification covered both roles signing in, employee key creation, administrator visibility of that key, and blocked page URLs. Mock chat and hidden-tab fallback were verified before Playground was fully hidden. The static dashboard build, scoped frontend lint gates, and focused tests passed
 

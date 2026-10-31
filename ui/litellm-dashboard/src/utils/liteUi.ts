@@ -1,7 +1,7 @@
 import { isAdminRole } from "./roles";
 
 const employeePages = ["home", "api-keys", "models", "new_usage"];
-const accessControlPages = ["teams", "users", "organizations", "access-groups", "budgets"];
+const accessControlPages = ["teams", "users", "access-groups", "budgets"];
 const adminPages = ["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel"];
 
 const routePages: Readonly<Record<string, string>> = {
@@ -31,13 +31,21 @@ export const liteRouteAllowed = (route: string, userRole: string): boolean =>
   (routePages[route] !== undefined && litePageAllowed(routePages[route], userRole));
 
 const hiddenTabs: Readonly<Record<string, readonly string[]>> = {
-  playground: ["compare", "compliance", "system-one", "agent-builder"],
   "models-and-endpoints": ["auto-routers", "pass-through", "model-group-alias", "price-data"],
   "api-keys": ["savings", "auto-router-usage"],
   usage: ["mcp", "endpoints"],
-  logs: ["deleted keys"],
+  logs: ["audit logs", "deleted keys", "deleted teams"],
+  teams: ["default-settings"],
   "logging-and-alerts": ["logging-callbacks", "cloudzero-cost-tracking"],
-  "admin-panel": ["scim", "hashicorp-vault", "cyberark", "plugins", "web-search-interception"],
+  "admin-panel": [
+    "sso-settings",
+    "security-settings",
+    "scim",
+    "hashicorp-vault",
+    "cyberark",
+    "plugins",
+    "web-search-interception",
+  ],
 };
 
 export const liteTabAllowed = (route: string, tab: string, admin: boolean): boolean => {
@@ -47,6 +55,16 @@ export const liteTabAllowed = (route: string, tab: string, admin: boolean): bool
   }
   return true;
 };
+
+const enterpriseFields = [
+  "organization_id",
+  "secret_manager_settings",
+  "model_max_budget",
+  "team_member_model_max_budget",
+  "allowed_passthrough_routes",
+  "logging_settings",
+  "disable_global_guardrails",
+];
 
 const hiddenFields = [
   "project_id",
@@ -94,9 +112,11 @@ const hiddenFields = [
 ];
 
 export const liteFieldHidden = (route: string, name: string): boolean =>
-  ["api-keys", "models-and-endpoints"].includes(route) && hiddenFields.includes(name);
+  enterpriseFields.includes(name) ||
+  (["api-keys", "models-and-endpoints"].includes(route) && hiddenFields.includes(name));
 
 export const liteColumnAllowed = (route: string, column: string, admin: boolean): boolean => {
+  if (["organization_id", "organization_alias"].includes(column)) return false;
   if (["api-keys", "models-and-endpoints", "logs"].includes(route)) {
     if (["project_id", "request_tags", "tags", "end_user"].includes(column)) return false;
   }

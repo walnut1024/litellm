@@ -1,4 +1,5 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import type { components } from "@/lib/http/schema";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import { organizationKeys, useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
@@ -2388,17 +2389,19 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     : "No Limit"}
                 </div>
                 <div>Budget Reset: {info.budget_duration || "Never"}</div>
-                {modelMaxBudgetToEntries(info.model_max_budget as ModelMaxBudget | null | undefined).map(
-                  ({ model, budgetLimit, timePeriod }) => {
-                    const spent = model === null ? undefined : info.model_max_budget_usage?.[model]?.current_spend;
-                    return (
-                      <div key={model}>
-                        Per-Model Budget ({model}): ${budgetLimit ?? "?"} per {timePeriod}
-                        {spent !== undefined && `, spent $${spent}`}
-                      </div>
-                    );
-                  },
-                )}
+                <LiteUiMask>
+                  {modelMaxBudgetToEntries(info.model_max_budget as ModelMaxBudget | null | undefined).map(
+                    ({ model, budgetLimit, timePeriod }) => {
+                      const spent = model === null ? undefined : info.model_max_budget_usage?.[model]?.current_spend;
+                      return (
+                        <div key={model}>
+                          Per-Model Budget ({model}): ${budgetLimit ?? "?"} per {timePeriod}
+                          {spent !== undefined && `, spent $${spent}`}
+                        </div>
+                      );
+                    },
+                  )}
+                </LiteUiMask>
                 {info.metadata?.soft_budget_alerting_emails &&
                   Array.isArray(info.metadata.soft_budget_alerting_emails) &&
                   info.metadata.soft_budget_alerting_emails.length > 0 && (
@@ -2414,14 +2417,17 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 </p>
                 <div>Max Budget: {info.team_member_budget_table?.max_budget ?? "No Limit"}</div>
                 <div>Budget Duration: {info.team_member_budget_table?.budget_duration || "No Limit"}</div>
-                {modelMaxBudgetToEntries(
-                  info.team_member_budget_table?.model_max_budget as ModelMaxBudget | null | undefined,
-                ).map(({ model, budgetLimit, timePeriod }) => (
-                  <div key={model}>
-                    Default Per-Model Budget ({model}):{" "}
-                    {budgetLimit !== null ? `$${formatNumberWithCommas(budgetLimit, 4)}` : "No Limit"} per {timePeriod}
-                  </div>
-                ))}
+                <LiteUiMask>
+                  {modelMaxBudgetToEntries(
+                    info.team_member_budget_table?.model_max_budget as ModelMaxBudget | null | undefined,
+                  ).map(({ model, budgetLimit, timePeriod }) => (
+                    <div key={model}>
+                      Default Per-Model Budget ({model}):{" "}
+                      {budgetLimit !== null ? `$${formatNumberWithCommas(budgetLimit, 4)}` : "No Limit"} per{" "}
+                      {timePeriod}
+                    </div>
+                  ))}
+                </LiteUiMask>
                 <div>Key Duration: {info.metadata?.team_member_key_duration || "No Limit"}</div>
                 <div>TPM Limit: {info.team_member_budget_table?.tpm_limit ?? "No Limit"}</div>
                 <div>RPM Limit: {info.team_member_budget_table?.rpm_limit ?? "No Limit"}</div>
@@ -2463,10 +2469,12 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                   <div className="text-muted-foreground">No router settings configured</div>
                 )}
               </div>
-              <div>
-                <p className="font-medium">Organization ID</p>
-                <div>{info.organization_id}</div>
-              </div>
+              <LiteUiMask>
+                <div>
+                  <p className="font-medium">Organization ID</p>
+                  <div>{info.organization_id}</div>
+                </div>
+              </LiteUiMask>
               <div>
                 <p className="font-medium">Status</p>
                 <Badge variant={info.blocked ? "destructive" : "secondary"}>
@@ -2498,21 +2506,23 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 className="pt-4 border-t border-border"
               />
 
-              <LoggingSettingsView
-                loggingConfigs={info.metadata?.logging || []}
-                disabledCallbacks={[]}
-                variant="inline"
-                className="pt-4 border-t border-border"
-              />
+              <LiteUiMask>
+                <LoggingSettingsView
+                  loggingConfigs={info.metadata?.logging || []}
+                  disabledCallbacks={[]}
+                  variant="inline"
+                  className="pt-4 border-t border-border"
+                />
 
-              {info.metadata?.secret_manager_settings && (
-                <div className="pt-4 border-t border-border">
-                  <p className="font-medium">Secret Manager Settings</p>
-                  <pre className="mt-2 bg-muted p-3 rounded-sm text-xs overflow-x-auto">
-                    {JSON.stringify(info.metadata.secret_manager_settings, null, 2)}
-                  </pre>
-                </div>
-              )}
+                {info.metadata?.secret_manager_settings && (
+                  <div className="pt-4 border-t border-border">
+                    <p className="font-medium">Secret Manager Settings</p>
+                    <pre className="mt-2 bg-muted p-3 rounded-sm text-xs overflow-x-auto">
+                      {JSON.stringify(info.metadata.secret_manager_settings, null, 2)}
+                    </pre>
+                  </div>
+                )}
+              </LiteUiMask>
             </div>
           )}
         </Card>

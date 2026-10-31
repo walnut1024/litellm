@@ -381,18 +381,20 @@ export default function UISettings() {
               description={disableTeamAdminDeleteProperty?.description}
             />
 
-            <SettingRow
-              checked={Boolean(values.require_auth_for_public_ai_hub)}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleRequireAuthForPublicAIHub}
-              ariaLabel={term(
-                requireAuthForPublicAIHubProperty?.description ?? "Require authentication for public AI Hub",
-              )}
-              label={term("Require authentication for public AI Hub")}
-              description={
-                requireAuthForPublicAIHubProperty?.description && term(requireAuthForPublicAIHubProperty.description)
-              }
-            />
+            <LiteUiMask>
+              <SettingRow
+                checked={Boolean(values.require_auth_for_public_ai_hub)}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleRequireAuthForPublicAIHub}
+                ariaLabel={term(
+                  requireAuthForPublicAIHubProperty?.description ?? "Require authentication for public AI Hub",
+                )}
+                label={term("Require authentication for public AI Hub")}
+                description={
+                  requireAuthForPublicAIHubProperty?.description && term(requireAuthForPublicAIHubProperty.description)
+                }
+              />
+            </LiteUiMask>
             <LiteUiMask>
               <SettingRow
                 checked={Boolean(values.forward_client_headers_to_llm_api)}
@@ -449,25 +451,25 @@ export default function UISettings() {
             </LiteUiMask>
 
             <Separator />
-            <div className="flex items-start justify-between gap-3">
-              <LiteUiMask>
+            <LiteUiMask>
+              <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-foreground">Moyai</p>
                   <p className="text-sm text-muted-foreground">
                     {moyaiUrl ? `Connected to ${moyaiUrl}` : "Not connected"}
                   </p>
                 </div>
-              </LiteUiMask>
-              {moyaiUrl ? (
-                <Button variant="outline" size="sm" disabled={isUpdating} onClick={handleDisconnectMoyai}>
-                  Disconnect
-                </Button>
-              ) : (
-                <a href={uiHref("moyai")} className="text-sm text-primary underline underline-offset-4">
-                  Connect from the Moyai page
-                </a>
-              )}
-            </div>
+                {moyaiUrl ? (
+                  <Button variant="outline" size="sm" disabled={isUpdating} onClick={handleDisconnectMoyai}>
+                    Disconnect
+                  </Button>
+                ) : (
+                  <a href={uiHref("moyai")} className="text-sm text-primary underline underline-offset-4">
+                    Connect from the Moyai page
+                  </a>
+                )}
+              </div>
+            </LiteUiMask>
 
             <Separator />
             <LiteUiMask>
@@ -519,18 +521,19 @@ export default function UISettings() {
 
             <Separator />
 
-            <SettingRow
-              checked={Boolean(values.scope_user_search_to_org)}
-              disabled={isUpdating}
-              onCheckedChange={handleToggleScopeUserSearch}
-              ariaLabel={scopeUserSearchProperty?.description ?? "Scope user search to organization"}
-              label="Scope user search to organization"
-              description={
-                scopeUserSearchProperty?.description ??
-                "If enabled, the user search endpoint restricts results by organization. When off, any authenticated user can search all users."
-              }
-            />
-
+            <LiteUiMask>
+              <SettingRow
+                checked={Boolean(values.scope_user_search_to_org)}
+                disabled={isUpdating}
+                onCheckedChange={handleToggleScopeUserSearch}
+                ariaLabel={scopeUserSearchProperty?.description ?? "Scope user search to organization"}
+                label="Scope user search to organization"
+                description={
+                  scopeUserSearchProperty?.description ??
+                  "If enabled, the user search endpoint restricts results by organization. When off, any authenticated user can search all users."
+                }
+              />
+            </LiteUiMask>
             <Separator />
             <SettingRow
               checked={Boolean(values.disable_custom_api_keys)}

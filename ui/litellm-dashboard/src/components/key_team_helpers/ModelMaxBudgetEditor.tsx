@@ -1,5 +1,6 @@
 import { SearchSelect } from "@/components/shared/SearchSelect";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { Button } from "@/components/ui/button";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -232,11 +233,13 @@ interface ModelMaxBudgetFieldProps extends ModelMaxBudgetEditorProps {
 /** The editor with its label, so every form that offers it presents it the same way. */
 export function ModelMaxBudgetField({ hint, label = "Per-Model Budgets", ...editorProps }: ModelMaxBudgetFieldProps) {
   return (
-    <Field>
-      <FieldLabel>
-        <span title={hint}>{label}</span>
-      </FieldLabel>
-      <ModelMaxBudgetEditor {...editorProps} />
-    </Field>
+    <LiteUiMask>
+      <Field>
+        <FieldLabel>
+          <span title={hint}>{label}</span>
+        </FieldLabel>
+        <ModelMaxBudgetEditor {...editorProps} />
+      </Field>
+    </LiteUiMask>
   );
 }

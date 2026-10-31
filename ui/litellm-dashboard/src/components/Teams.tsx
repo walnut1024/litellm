@@ -1,4 +1,5 @@
 import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import AvailableTeamsPanel from "@/components/team/AvailableTeamsPanel";
@@ -1276,21 +1277,23 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     </CollapsibleContent>
                   </Collapsible>
 
-                  <Collapsible className="mt-8 mb-8 overflow-hidden rounded-lg border">
-                    <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>Logging Settings</b>
-                      <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-3">
-                      <div className="mt-4">
-                        <PremiumLoggingSettings
-                          value={loggingSettings}
-                          onChange={setLoggingSettings}
-                          premiumUser={premiumUser}
-                        />
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                  <LiteUiMask>
+                    <Collapsible className="mt-8 mb-8 overflow-hidden rounded-lg border">
+                      <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
+                        <b>Logging Settings</b>
+                        <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-4 pb-3">
+                        <div className="mt-4">
+                          <PremiumLoggingSettings
+                            value={loggingSettings}
+                            onChange={setLoggingSettings}
+                            premiumUser={premiumUser}
+                          />
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </LiteUiMask>
 
                   <Collapsible
                     key={`router-settings-accordion-${routerSettingsKey}`}

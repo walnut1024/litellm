@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../tests/test-utils";
 import EditMembership from "./EditMembership";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 const onSubmit = vi.fn();
 
@@ -74,6 +75,57 @@ const submitted = (): Record<string, unknown> => onSubmit.mock.calls[0][0] as Re
 describe("EditMembership submit payload", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("keeps member budgets editable and stored paid limits intact while masking team-admin assignment", async () => {
+    const user = userEvent.setup();
+    const storedBudget = { "preview-text": { budget_limit: 5, time_period: "1d" } };
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "teams", admin: true }}>
+        <EditMembership
+          visible
+          onCancel={vi.fn()}
+          onSubmit={onSubmit}
+          mode="edit"
+          initialData={{ ...cappedMember, model_max_budget: storedBudget }}
+          config={{
+            ...teamMemberConfig,
+            additionalFields: [
+              ...additionalFields,
+              { name: "model_max_budget", label: "Per-Model Budgets", type: "model-max-budget", premiumUser: true },
+            ],
+          }}
+        />
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.getByText("Per-Model Budgets")).not.toBeVisible();
+    await user.click(screen.getByRole("combobox", { name: /Role/ }));
+    expect(screen.queryByRole("option", { name: "Admin" })).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Team Member Budget (USD)" }), { target: { value: "20" } });
+    save();
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
+    expect(submitted()).toEqual(
+      expect.objectContaining({ role: "user", max_budget_in_team: "20", model_max_budget: storedBudget }),
+    );
+  });
+
+  it("defaults new lightweight team members to an available role", async () => {
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "teams", admin: true }}>
+        <EditMembership
+          visible
+          onCancel={vi.fn()}
+          onSubmit={onSubmit}
+          mode="add"
+          config={{ ...teamMemberConfig, defaultRole: "admin" }}
+        />
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.getByRole("combobox", { name: "Role" })).toHaveTextContent("User");
+    fireEvent.click(screen.getByRole("button", { name: "Add Member" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
+    expect(submitted()).toEqual(expect.objectContaining({ role: "user" }));
   });
 
   it("submits only the fields the config renders, never the rest of the member record", async () => {

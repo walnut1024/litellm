@@ -74,7 +74,7 @@ describe("visibleMenuGroups", () => {
     });
 
     expect(flattenNavItems(visible).some(({ route }) => route === "users")).toBe(true);
-    expect(flattenNavItems(visible).some(({ route }) => route === "organizations")).toBe(true);
+    expect(flattenNavItems(visible).some(({ route }) => route === "organizations")).toBe(false);
   });
 
   it.each(["Internal User", "Admin"])("omits masked developer pages from search results for %s", (userRole) => {

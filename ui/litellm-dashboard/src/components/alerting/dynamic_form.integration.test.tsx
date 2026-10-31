@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import DynamicForm from "./dynamic_form";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 interface Setting {
   field_name: string;
@@ -47,6 +48,25 @@ const SETTINGS: Setting[] = [
     premium_field: false,
   },
 ];
+
+it.each([false, true])("masks paid settings and preserves reset indices with premiumUser=%s", async (premiumUser) => {
+  const user = userEvent.setup();
+  const onReset = vi.fn();
+  render(
+    <LiteUiContext.Provider value={{ route: "logging-and-alerts", admin: true }}>
+      <DynamicForm
+        alertingSettings={[{ ...SETTINGS[0], premium_field: true }, SETTINGS[1]]}
+        premiumUser={premiumUser}
+        handleInputChange={vi.fn()}
+        handleResetField={onReset}
+        handleSubmit={vi.fn()}
+      />
+    </LiteUiContext.Provider>,
+  );
+  expect(screen.queryByRole("button", { name: "Reset daily_report_frequency" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Reset region_name" }));
+  expect(onReset).toHaveBeenCalledWith("region_name", 1);
+});
 
 const renderForm = (
   overrides: {

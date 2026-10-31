@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Info, TriangleAlert } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import { useBaseUrl } from "@/components/constants";
 import { toast } from "@/lib/toast";
 import { addAllowedIP, deleteAllowedIP, getAllowedIPs, getSSOSettings } from "@/components/networking";
@@ -66,6 +67,7 @@ interface AdminPanelProps {
 
 const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
   const { premiumUser, accessToken, userId: userID } = useAuthorized();
+  const lite = useLiteUi();
   const form = useSSOSettingsForm("admin-panel");
   const [isAddSSOModalVisible, setIsAddSSOModalVisible] = useState(false);
   const [isInstructionsModalVisible, setIsInstructionsModalVisible] = useState(false);
@@ -420,7 +422,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
     <div className="w-full m-2 mt-2 p-8">
       <h2 className="mb-2 text-base font-semibold text-foreground">Admin Access</h2>
       <p className="mb-4 text-sm text-foreground">Go to &apos;Internal Users&apos; page to add other admins.</p>
-      <Tabs defaultValue={tabItems[0].key}>
+      <Tabs defaultValue={lite ? "ui-settings" : tabItems[0].key}>
         <TabsList variant="line" className="mb-4 h-auto flex-wrap">
           {tabItems.map((item) => (
             <TabsTrigger key={item.key} value={item.key} className="flex-none">

@@ -11,6 +11,7 @@ import {
 } from "@/components/common_components/MountedFormField";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable, DataTableToolbar } from "@/components/shared/DataTable";
+import { ModelMaxBudgetField } from "@/components/key_team_helpers/ModelMaxBudgetEditor";
 
 function SavedFields({ onSave }: { onSave: (values: MountedFormValues) => void }) {
   const form = useForm<MountedFormValues>({
@@ -39,6 +40,24 @@ function SavedFields({ onSave }: { onSave: (values: MountedFormValues) => void }
 }
 
 describe("lightweight UI rendering", () => {
+  it.each([false, true])("masks per-model budget controls regardless of license status %s", (premiumUser) => {
+    const onChange = vi.fn();
+    render(
+      <LiteUiContext.Provider value={{ route: "teams", admin: true }}>
+        <ModelMaxBudgetField
+          hint="Per-model spending cap"
+          premiumUser={premiumUser}
+          value={{ "preview-text": { budget_limit: 5, time_period: "1d" } }}
+          availableModels={["preview-text"]}
+          onChange={onChange}
+        />
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.getByText("Per-Model Budgets")).not.toBeVisible();
+    expect(screen.queryByRole("button", { name: "Add Model Budget" })).not.toBeInTheDocument();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it("keeps hidden stored values in submission and restores optional team assignment", async () => {
     const onSave = vi.fn();
     render(
@@ -64,19 +83,21 @@ describe("lightweight UI rendering", () => {
 
   it("does not render a blocked tab panel even when its value is selected", () => {
     render(
-      <LiteUiContext.Provider value={{ route: "playground", admin: true }}>
-        <Tabs value="compare">
+      <LiteUiContext.Provider value={{ route: "logs", admin: true }}>
+        <Tabs value="audit logs">
           <TabsList>
-            <TabsTrigger value="chat">Chat</TabsTrigger>
-            <TabsTrigger value="compare">Compare</TabsTrigger>
+            <TabsTrigger value="request logs">Request Logs</TabsTrigger>
+            <TabsTrigger value="audit logs">Audit Logs</TabsTrigger>
           </TabsList>
-          <TabsContent value="compare">Comparison controls</TabsContent>
+          <TabsContent value="audit logs" keepMounted>
+            Enterprise audit preview
+          </TabsContent>
         </Tabs>
       </LiteUiContext.Provider>,
     );
-    expect(screen.getByRole("tab", { name: "Chat" })).toBeVisible();
-    expect(screen.queryByRole("tab", { name: "Compare" })).not.toBeInTheDocument();
-    expect(screen.queryByText("Comparison controls")).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Request Logs" })).toBeVisible();
+    expect(screen.queryByRole("tab", { name: "Audit Logs" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Enterprise audit preview")).not.toBeInTheDocument();
   });
 
   it("restores team columns while keeping masked columns out of the table and column selector", async () => {

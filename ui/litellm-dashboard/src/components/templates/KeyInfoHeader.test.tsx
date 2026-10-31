@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { KeyInfoHeader, KeyInfoData } from "./KeyInfoHeader";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
@@ -22,6 +23,17 @@ const MOCK_DATA: KeyInfoData = {
   lastActive: "Oct 29, 2025 at 2:00 AM",
   expires: "Never",
 };
+
+it.each([false, true])("masks key regeneration and organization details with disabled=%s", (disabled) => {
+  render(
+    <LiteUiContext.Provider value={{ route: "api-keys", admin: true }}>
+      <KeyInfoHeader data={MOCK_DATA} regenerateDisabled={disabled} />
+    </LiteUiContext.Provider>,
+  );
+  expect(screen.queryByRole("button", { name: "Regenerate Key" })).not.toBeInTheDocument();
+  expect(screen.getByText("Organization")).not.toBeVisible();
+  expect(screen.getByRole("button", { name: "More key actions" })).toBeVisible();
+});
 
 describe("KeyInfoHeader", () => {
   it("should render", () => {

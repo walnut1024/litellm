@@ -1,6 +1,7 @@
 "use client";
 
 import { CircleHelp } from "lucide-react";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import { Fragment, type ReactNode } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -198,6 +199,8 @@ function EditableFieldCheckbox({
   className,
   help,
 }: EditableFieldCheckboxProps) {
+  const lite = useLiteUi();
+  if (lite && name === "projects") return null;
   const checkboxId = `team-admin-editable-${name}`;
   return (
     <div className={cn("flex items-center gap-2", className)}>

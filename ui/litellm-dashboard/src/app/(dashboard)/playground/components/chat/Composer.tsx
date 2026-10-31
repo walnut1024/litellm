@@ -1,7 +1,5 @@
 "use client";
 
-import { LiteUiMask } from "@/contexts/LiteUiContext";
-
 import { useRef, type DragEvent, type KeyboardEvent, type MouseEvent, type ReactNode, type RefObject } from "react";
 import { ArrowUp, Code2, Database, Paperclip, Shield, Square } from "lucide-react";
 import { EndpointType } from "@/components/chat_ui/mode_endpoint_mapping";
@@ -163,48 +161,33 @@ export function Composer({
       </InputGroupAddon>
       {draft.files.length > 0 && (
         <InputGroupAddon align="block-start" className="pt-2" onClick={focusMessage}>
-          <LiteUiMask>
-            <DraftAttachments files={draft.files} onRemove={draft.removeFile} />
-          </LiteUiMask>
+          <DraftAttachments files={draft.files} onRemove={draft.removeFile} />
         </InputGroupAddon>
       )}
       {!isRealtime && (isDirectCall ? directCallBody : textBody)}
       <InputGroupAddon align="block-end" className="gap-1" onClick={focusMessage}>
-        <LiteUiMask>{capabilities.mcp && mcpControl}</LiteUiMask>
+        {capabilities.mcp && mcpControl}
         {capabilities.vectorStores && (
-          <LiteUiMask>
-            <ChecklistMenu
-              label="Vector stores"
-              icon={<Database />}
-              emptyText="No vector stores yet"
-              {...vectorStores}
-            />
-          </LiteUiMask>
+          <ChecklistMenu label="Vector stores" icon={<Database />} emptyText="No vector stores yet" {...vectorStores} />
         )}
         {capabilities.guardrails && (
-          <LiteUiMask>
-            <ChecklistMenu label="Guardrails" icon={<Shield />} emptyText="No guardrails yet" {...guardrails} />
-          </LiteUiMask>
+          <ChecklistMenu label="Guardrails" icon={<Shield />} emptyText="No guardrails yet" {...guardrails} />
         )}
         {capabilities.codeInterpreter && (
-          <LiteUiMask>
-            <Toggle
-              size="sm"
-              pressed={codeInterpreter.enabled}
-              onPressedChange={codeInterpreter.onToggle}
-              aria-label="Code interpreter"
-              className="h-6 gap-1 px-1.5 text-xs"
-            >
-              <Code2 />
-              Code interpreter
-            </Toggle>
-          </LiteUiMask>
+          <Toggle
+            size="sm"
+            pressed={codeInterpreter.enabled}
+            onPressedChange={codeInterpreter.onToggle}
+            aria-label="Code interpreter"
+            className="h-6 gap-1 px-1.5 text-xs"
+          >
+            <Code2 />
+            Code interpreter
+          </Toggle>
         )}
         <span className="ml-auto flex items-center gap-1">
           {settingsControl}
-          <LiteUiMask>
-            <AttachButton capabilities={capabilities} attach={draft.attach} />
-          </LiteUiMask>
+          <AttachButton capabilities={capabilities} attach={draft.attach} />
           {!isRealtime && <SendButton draft={draft} disabled={sendDisabled} />}
         </span>
       </InputGroupAddon>

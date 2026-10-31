@@ -1,4 +1,5 @@
 import React from "react";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import { Badge } from "@/components/ui/badge";
 import LoggingSettings from "../team/LoggingSettings";
 
@@ -17,6 +18,8 @@ export function PremiumLoggingSettings({
   disabledCallbacks = [],
   onDisabledCallbacksChange,
 }: PremiumLoggingSettingsProps) {
+  const lite = useLiteUi();
+  if (lite) return null;
   if (!premiumUser) {
     return (
       <div>

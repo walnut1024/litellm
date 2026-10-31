@@ -1,4 +1,5 @@
 import React from "react";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import { useForm } from "react-hook-form";
 import { CircleCheck, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   handleSubmit,
   premiumUser,
 }) => {
+  const lite = useLiteUi();
   const form = useForm<AlertingFormValues>({ defaultValues: {} });
 
   const onFinish = (formData: AlertingFormValues) => {
@@ -88,7 +90,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   return (
     <form onSubmit={form.handleSubmit(onFinish)} noValidate>
       {alertingSettings.map((value, index) => (
-        <TableRow key={index}>
+        <TableRow key={index} hidden={Boolean(lite && value.premium_field)}>
           <TableCell>
             <p className="text-sm">{value.field_name}</p>
             <p className="mt-1 text-[0.65rem] italic text-muted-foreground">{value.field_description}</p>

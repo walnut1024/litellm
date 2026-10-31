@@ -1,4 +1,5 @@
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
+import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useGuardrails } from "@/app/(dashboard)/hooks/guardrails/useGuardrails";
 import { useTags } from "@/app/(dashboard)/hooks/tags/useTags";
 import { all_admin_roles, isUserTeamAdminForAnyTeam } from "@/utils/roles";
@@ -395,64 +396,66 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                         <div className="grow border-t border-border"></div>
                       </div>
                       {/* Team-only Model Switch - Only show for proxy admins, not team admins */}
-                      {(isAdmin || !isTeamAdmin) && (
-                        <Field className="mb-4">
-                          <FieldLabel>
-                            {labelWithHint(
-                              "Team-BYOK Model",
-                              "Only use this model + credential combination for this team. Useful when teams want to onboard their own OpenAI keys.",
-                            )}
-                          </FieldLabel>
-                          <SimpleTooltip
-                            content={
-                              !premiumUser
-                                ? "This is an enterprise-only feature. Upgrade to premium to restrict model+credential combinations to a specific team."
-                                : ""
-                            }
-                            side="top"
-                          >
-                            <span className="inline-flex">
-                              <Switch
-                                checked={isTeamOnly}
-                                onCheckedChange={(checked) => {
-                                  setIsTeamOnly(checked);
-                                  if (!checked) {
-                                    form.setValue("team_id", undefined);
-                                  }
-                                }}
-                                disabled={!premiumUser}
-                                aria-label="Team-BYOK Model"
-                              />
-                            </span>
-                          </SimpleTooltip>
-                        </Field>
-                      )}
+                      <LiteUiMask>
+                        {(isAdmin || !isTeamAdmin) && (
+                          <Field className="mb-4">
+                            <FieldLabel>
+                              {labelWithHint(
+                                "Team-BYOK Model",
+                                "Only use this model + credential combination for this team. Useful when teams want to onboard their own OpenAI keys.",
+                              )}
+                            </FieldLabel>
+                            <SimpleTooltip
+                              content={
+                                !premiumUser
+                                  ? "This is an enterprise-only feature. Upgrade to premium to restrict model+credential combinations to a specific team."
+                                  : ""
+                              }
+                              side="top"
+                            >
+                              <span className="inline-flex">
+                                <Switch
+                                  checked={isTeamOnly}
+                                  onCheckedChange={(checked) => {
+                                    setIsTeamOnly(checked);
+                                    if (!checked) {
+                                      form.setValue("team_id", undefined);
+                                    }
+                                  }}
+                                  disabled={!premiumUser}
+                                  aria-label="Team-BYOK Model"
+                                />
+                              </span>
+                            </SimpleTooltip>
+                          </Field>
+                        )}
 
-                      {/* Conditional Team Selection */}
-                      {isTeamOnly && !requiresTeamScope && (
-                        <MountedFormField
-                          label={labelWithHint(
-                            "Select Team",
-                            "Only keys for this team will be able to call this model.",
-                          )}
-                          name="team_id"
-                          className="mb-4"
-                          required={isTeamOnly && !isAdmin}
-                          rules={
-                            isTeamOnly && !isAdmin
-                              ? { validate: { required: requiredRule("Please select a team.") } }
-                              : undefined
-                          }
-                        >
-                          {(control) => (
-                            <TeamDropdown
-                              value={control.value as string | undefined}
-                              onChange={control.onChange}
-                              disabled={!premiumUser}
-                            />
-                          )}
-                        </MountedFormField>
-                      )}
+                        {/* Conditional Team Selection */}
+                        {isTeamOnly && !requiresTeamScope && (
+                          <MountedFormField
+                            label={labelWithHint(
+                              "Select Team",
+                              "Only keys for this team will be able to call this model.",
+                            )}
+                            name="team_id"
+                            className="mb-4"
+                            required={isTeamOnly && !isAdmin}
+                            rules={
+                              isTeamOnly && !isAdmin
+                                ? { validate: { required: requiredRule("Please select a team.") } }
+                                : undefined
+                            }
+                          >
+                            {(control) => (
+                              <TeamDropdown
+                                value={control.value as string | undefined}
+                                onChange={control.onChange}
+                                disabled={!premiumUser}
+                              />
+                            )}
+                          </MountedFormField>
+                        )}
+                      </LiteUiMask>
                       {isAdmin && (
                         <>
                           <MountedFormField

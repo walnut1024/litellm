@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { z } from "zod";
@@ -79,8 +80,20 @@ const MemberModal = <T extends BaseMember>({
   onSubmit,
   initialData,
   mode,
-  config,
+  config: originalConfig,
 }: MemberModalProps<T>) => {
+  const lite = useLiteUi() !== null;
+  const preservesExistingAdmin = mode === "edit" && initialData?.role === "admin";
+  const config = useMemo(
+    () => ({
+      ...originalConfig,
+      defaultRole: lite && originalConfig.defaultRole === "admin" ? undefined : originalConfig.defaultRole,
+      roleOptions: originalConfig.roleOptions.filter(
+        (option) => !lite || option.value !== "admin" || preservesExistingAdmin,
+      ),
+    }),
+    [originalConfig, lite, preservesExistingAdmin],
+  );
   const schema = useMemo(() => buildMemberSchema(config), [config]);
   const form = useZodForm(schema, { defaultValues: emptyMemberFormValues(config) });
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -1,5 +1,5 @@
 :root {
-  --moma-text-caption: 0.75rem;
+  --moma-text-caption: 0.875rem;
   --moma-text-body: calc(var(--moma-text-caption) * 1.5);
   --moma-text-section: calc(var(--moma-text-body) * 1.5);
   --moma-text-page: calc(var(--moma-text-section) * 1.5);

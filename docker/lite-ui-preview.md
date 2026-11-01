@@ -86,3 +86,7 @@ After rebuilding and recreating the 4001 service, health and model inventory ret
 ## Navigation groups
 
 The subsequent navigation update is tagged `litellm-moma:navigation-20261101`, with image ID `sha256:46e969e3b85a299eea35cdb197bae3788dcd74fecb511a83c1ccf8032c8e3a57`. It separates Access Control and System Settings using the original menu groups and permissions. The 4001 service was rebuilt with this image and returned HTTP 200 for its health check. Nineteen focused tests, the production build, and the frontend lint gates passed. Browser checks covered both roles, Chinese and English labels, and phone drawers. This update did not change model records, keys, budgets, or backend APIs
+
+## Minimum font size
+
+The font update is tagged `litellm-moma:font14-20261101`, with image ID `sha256:b93cdfbda20dc5953a86f1e4adf807f471b0d4e0e1ed2d8cf81c6528f15ac629`. The theme base size is now `0.875rem`, giving a 14, 21, 31.5, and 47.25px scale at the default 16px root size. Only the base font token changed. The production build, TypeScript, static export, and frontend lint gates passed. The 4001 service was rebuilt and its health check returned HTTP 200. Browser checks covered both roles, model cards and tables, key forms, usage charts, and phone navigation. No unit tests or provider calls were repeated for this style change

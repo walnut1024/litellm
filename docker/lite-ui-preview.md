@@ -71,7 +71,7 @@ After a container restart, health returned HTTP 200 and both real model records 
 
 ## Administrator model inventory
 
-The next administrator configuration pass covered a requested list of 42 models. Forty-one have verified upstream IDs and saved deployments, including forty new records and reuse of the existing Qwen 397B deployment. The original twelve records remain, for a current total of fifty-two. The unresolved hy3 entry was not replaced with a guessed ID or a mock
+The administrator model list contains forty-one models after the user excluded hy3. All forty-one have verified upstream IDs and saved deployments, including forty new records and reuse of the existing Qwen 397B deployment. The original twelve records remain, for a current total of fifty-two. No hy3 deployment was created and it is no longer a pending item
 
 Five requested Qwen models are enabled and passed both upstream and local gateway checks. Twenty-four chat models returned HTTP 402 with `subscription_required` and remain paused. Twelve image, video, and realtime records also remain paused because generation and subscription were not verified, with specific adapter limitations recorded for several protocols. No provider subscription, employee authorization change, application code change, or image rebuild was performed in this pass
 

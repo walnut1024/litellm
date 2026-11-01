@@ -4,6 +4,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/../tests/test-utils";
 import EmailEventSettings from "./email_event_settings";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 const { getEmailEventSettings, updateEmailEventSettings, resetEmailEventSettings } = vi.hoisted(() => ({
   getEmailEventSettings: vi.fn(),
@@ -77,6 +78,29 @@ describe("EmailEventSettings", () => {
         ],
       });
     });
+  });
+
+  it("shows Chinese events while preserving the API event identifiers when saving", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocaleProvider>
+        <EmailEventSettings accessToken="sk-test" />
+      </LocaleProvider>,
+    );
+    expect(await screen.findByText("邮件通知")).toBeVisible();
+    expect(await screen.findByText("为用户创建新的 API 密钥时，向该用户发送邮件")).toBeVisible();
+    await user.click(screen.getByRole("checkbox", { name: "新用户邀请" }));
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
+    await waitFor(() =>
+      expect(updateEmailEventSettings).toHaveBeenCalledWith("sk-test", {
+        settings: [
+          { event: "Virtual Key Created", enabled: true },
+          { event: "New User Invitation", enabled: true },
+        ],
+      }),
+    );
+    localStorage.clear();
   });
 
   it("unchecking an enabled event is persisted as disabled", async () => {

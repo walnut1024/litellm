@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,6 +15,7 @@ interface EmailEventSettingsProps {
 }
 
 const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) => {
+  const t = useTranslation();
   const [loading, setLoading] = useState(true);
   const [eventSettings, setEventSettings] = useState<EmailEventSetting[]>([]);
 
@@ -90,8 +92,12 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Email Notifications</CardTitle>
-        <p className="text-sm text-muted-foreground">Select which events should trigger email notifications.</p>
+        <CardTitle className="text-base">
+          <L>Email Notifications</L>
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          <L>Select which events should trigger email notifications.</L>
+        </p>
       </CardHeader>
 
       <CardContent>
@@ -107,13 +113,18 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
             {eventSettings.map((setting) => (
               <div key={setting.event} className="flex items-start">
                 <Checkbox
+                  aria-label={t(setting.event)}
                   checked={setting.enabled}
                   onCheckedChange={(checked) => handleCheckboxChange(setting.event, checked === true)}
                   className="mt-1"
                 />
                 <div className="ml-3">
-                  <p className="text-sm">{setting.event}</p>
-                  <div className="block text-sm text-muted-foreground">{getEventDescription(setting.event)}</div>
+                  <p className="text-sm">
+                    <L>{setting.event}</L>
+                  </p>
+                  <div className="block text-sm text-muted-foreground">
+                    <L>{getEventDescription(setting.event)}</L>
+                  </div>
                 </div>
               </div>
             ))}
@@ -122,10 +133,10 @@ const EmailEventSettings: React.FC<EmailEventSettingsProps> = ({ accessToken }) 
 
         <div className="mt-6 flex gap-4">
           <Button onClick={handleSaveSettings} disabled={loading}>
-            Save Changes
+            <L>Save Changes</L>
           </Button>
           <Button variant="secondary" onClick={handleResetSettings} disabled={loading}>
-            Reset to Defaults
+            <L>Reset to Defaults</L>
           </Button>
         </div>
       </CardContent>

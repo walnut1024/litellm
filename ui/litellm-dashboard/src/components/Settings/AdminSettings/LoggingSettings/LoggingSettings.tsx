@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import {
   ConfigType,
   GeneralSettingsFieldName,
@@ -137,10 +139,12 @@ const omittedFieldNames = (
 
 const labelWithHint = (label: string, hint: string): React.ReactNode => (
   <>
-    {label}
+    <L>{label}</L>
     <Tooltip>
       <TooltipTrigger render={<CircleHelp className="size-3.5 shrink-0 cursor-help text-muted-foreground" />} />
-      <TooltipContent>{hint}</TooltipContent>
+      <TooltipContent>
+        <L>{hint}</L>
+      </TooltipContent>
     </Tooltip>
   </>
 );
@@ -221,7 +225,7 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
 
         <Button type="submit" className="mt-6" disabled={isSaving}>
           {isSaving && <UiLoadingSpinner role="img" aria-label="loading" className="size-4" />}
-          {isSaving ? "Saving..." : "Save Settings"}
+          <L>{isSaving ? "Saving..." : "Save Settings"}</L>
         </Button>
       </form>
     </TooltipProvider>
@@ -229,6 +233,7 @@ const LoggingSettingsForm: React.FC<LoggingSettingsFormProps> = ({
 };
 
 const LoggingSettings: React.FC = () => {
+  const t = useTranslation();
   const { mutate, isPending } = useStoreRequestInSpendLogs();
   const { mutate: deleteField, isPending: isDeletingField } = useDeleteProxyConfigField();
   const { data: proxyConfigData, isLoading: isLoadingConfig } = useProxyConfig(ConfigType.GENERAL_SETTINGS);
@@ -296,7 +301,8 @@ const LoggingSettings: React.FC = () => {
     const submitUpdate = () =>
       mutate(updateParams, {
         onSuccess: () => toast.success("Spend logs settings updated successfully"),
-        onError: (error) => toast.fromError("Failed to save spend logs settings: " + parseErrorMessage(error)),
+        onError: (error) =>
+          toast.fromError(t("Failed to save spend logs settings: {error}", { error: parseErrorMessage(error) })),
       });
 
     const fieldsToClear = omittedFieldNames(updateParams, isStored);
@@ -309,7 +315,7 @@ const LoggingSettings: React.FC = () => {
       if (failed.length > 0) {
         // Reporting an unqualified success here would tell the admin a setting
         // was reset to its default while the old value is still in force.
-        toast.fromError(`Failed to clear saved value for: ${failed.join(", ")}`);
+        toast.fromError(t("Failed to clear saved value for: {fields}", { fields: failed.join(", ") }));
         return;
       }
       submitUpdate();
@@ -319,12 +325,14 @@ const LoggingSettings: React.FC = () => {
   return (
     <Card>
       <CardHeader className="border-b">
-        <CardTitle>Logging Settings</CardTitle>
+        <CardTitle>
+          <L>Logging Settings</L>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex w-full flex-col gap-6">
           <p className="mb-0 text-muted-foreground">
-            Proxy-wide settings that control how request and response data are written to spend logs.
+            <L>Proxy-wide settings that control how request and response data are written to spend logs.</L>
           </p>
 
           {isLoadingConfig ? (

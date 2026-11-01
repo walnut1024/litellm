@@ -66,6 +66,7 @@ const SENSITIVE_FIELD_PATTERN = /(PASSWORD|SECRET|KEY|TOKEN)/i;
 
 const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser, alerts }) => {
   const lite = useLiteUi();
+  const fieldIdPrefix = React.useId();
   const [visibleFields, setVisibleFields] = useState<Record<string, boolean>>({});
 
   const toggleFieldVisibility = (key: string) => {
@@ -161,10 +162,13 @@ const EmailSettings: React.FC<EmailSettingsProps> = ({ accessToken, premiumUser,
                           ✨ {key}
                         </a>
                       ) : (
-                        <p className="text-sm">{key}</p>
+                        <label htmlFor={`${fieldIdPrefix}-${key}`} className="block text-sm">
+                          <L>{key}</L>
+                        </label>
                       )}
                       <InputGroup className="max-w-100">
                         <InputGroupInput
+                          id={`${fieldIdPrefix}-${key}`}
                           name={key}
                           defaultValue={value as string}
                           type={isSensitive && !isVisible ? "password" : "text"}

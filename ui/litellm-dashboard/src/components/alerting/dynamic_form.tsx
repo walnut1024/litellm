@@ -1,4 +1,5 @@
 import React from "react";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { useLiteUi } from "@/contexts/LiteUiContext";
 import { useForm } from "react-hook-form";
 import { CircleCheck, Trash2 } from "lucide-react";
@@ -35,6 +36,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
   premiumUser,
 }) => {
   const lite = useLiteUi();
+  const t = useTranslation();
   const form = useForm<AlertingFormValues>({ defaultValues: {} });
 
   const onFinish = (formData: AlertingFormValues) => {
@@ -68,6 +70,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     if (setting.field_type === "Integer" || setting.field_type === "Float") {
       return (
         <Input
+          aria-label={t(setting.field_name)}
           type="number"
           step={setting.field_type === "Integer" ? 1 : "any"}
           value={setting.field_value ?? ""}
@@ -78,22 +81,32 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
     if (setting.field_type === "Boolean") {
       return (
         <Switch
-          aria-label={setting.field_name}
+          aria-label={t(setting.field_name)}
           checked={setting.field_value}
           onCheckedChange={(checked) => handleToggle(setting, checked)}
         />
       );
     }
-    return <Input value={setting.field_value ?? ""} onChange={(event) => handleTextChange(setting, event)} />;
+    return (
+      <Input
+        aria-label={t(setting.field_name)}
+        value={setting.field_value ?? ""}
+        onChange={(event) => handleTextChange(setting, event)}
+      />
+    );
   };
 
   return (
     <form onSubmit={form.handleSubmit(onFinish)} noValidate>
       {alertingSettings.map((value, index) => (
         <TableRow key={index} hidden={Boolean(lite && value.premium_field)}>
-          <TableCell>
-            <p className="text-sm">{value.field_name}</p>
-            <p className="mt-1 text-[0.65rem] italic text-muted-foreground">{value.field_description}</p>
+          <TableCell className="max-w-xl whitespace-normal">
+            <p className="break-words text-sm">
+              <L>{value.field_name}</L>
+            </p>
+            <p className="mt-1 text-xs italic text-muted-foreground">
+              <L>{value.field_description}</L>
+            </p>
           </TableCell>
           {value.premium_field && !premiumUser ? (
             <TableCell>
@@ -110,12 +123,16 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
             {value.stored_in_db == true ? (
               <Badge variant="secondary">
                 <CircleCheck />
-                In DB
+                <L>In DB</L>
               </Badge>
             ) : value.stored_in_db == false ? (
-              <Badge variant="outline">In Config</Badge>
+              <Badge variant="outline">
+                <L>In Config</L>
+              </Badge>
             ) : (
-              <Badge variant="outline">Not Set</Badge>
+              <Badge variant="outline">
+                <L>Not Set</L>
+              </Badge>
             )}
           </TableCell>
           <TableCell>
@@ -123,7 +140,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
               type="button"
               variant="ghost"
               size="icon-sm"
-              aria-label={`Reset ${value.field_name}`}
+              aria-label={t("Reset {field}", { field: t(value.field_name) })}
               onClick={() => handleResetField(value.field_name, index)}
               className="text-destructive"
             >
@@ -133,7 +150,9 @@ const DynamicForm: React.FC<DynamicFormProps> = ({
         </TableRow>
       ))}
       <div>
-        <Button type="submit">Update Settings</Button>
+        <Button type="submit">
+          <L>Update Settings</L>
+        </Button>
       </div>
     </form>
   );

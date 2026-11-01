@@ -1,9 +1,10 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import DynamicForm from "./dynamic_form";
 import { LiteUiContext } from "@/contexts/LiteUiContext";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 interface Setting {
   field_name: string;
@@ -260,5 +261,36 @@ describe("DynamicForm presentation", () => {
     expect(screen.getAllByText("In DB")).toHaveLength(2);
     expect(screen.getByText("In Config")).toBeInTheDocument();
     expect(screen.getByText("Not Set")).toBeInTheDocument();
+  });
+
+  it("localizes parameter names and descriptions while submitting the original field key", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const onSubmit = vi.fn();
+    render(
+      <LocaleProvider>
+        <DynamicForm
+          alertingSettings={[
+            {
+              ...SETTINGS[0],
+              field_description:
+                "Frequency of receiving deployment latency/failure reports. Default is 12hours. Value is in seconds.",
+            },
+          ]}
+          handleInputChange={vi.fn()}
+          handleResetField={vi.fn()}
+          handleSubmit={onSubmit}
+          premiumUser={false}
+        />
+      </LocaleProvider>,
+    );
+    expect(screen.getByText("部署报告发送间隔（daily_report_frequency）")).toBeVisible();
+    expect(screen.getByText("部署延迟和失败报告的发送间隔，单位为秒，默认 12 小时")).toBeVisible();
+    expect(screen.getByText("已存入数据库")).toBeVisible();
+    fireEvent.change(screen.getByRole("spinbutton", { name: "部署报告发送间隔（daily_report_frequency）" }), {
+      target: { value: "24" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "更新设置" }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ daily_report_frequency: "24" }));
+    localStorage.clear();
   });
 });

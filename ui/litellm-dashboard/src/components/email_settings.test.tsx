@@ -4,6 +4,8 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/../tests/test-utils";
 import EmailSettings from "./email_settings";
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const { serviceHealthCheck, setCallbacksCall } = vi.hoisted(() => ({
   serviceHealthCheck: vi.fn(),
@@ -81,6 +83,30 @@ describe("EmailSettings", () => {
         environment_variables: { SMTP_HOST: "smtp.changed.com" },
       });
     });
+  });
+
+  it("localizes parameter labels without changing values or submitted parameter names", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    renderWithProviders(
+      <LocaleProvider>
+        <LanguageSwitcher />
+        <EmailSettings accessToken="sk-test" premiumUser alerts={alerts} />
+      </LocaleProvider>,
+    );
+    const host = screen.getByLabelText("邮件服务器地址（SMTP_HOST）");
+    expect(host).toHaveValue("smtp.example.com");
+    expect(screen.getByLabelText("邮件服务器密码（SMTP_PASSWORD）")).toHaveValue("********");
+    fireEvent.change(host, { target: { value: "smtp.changed.com" } });
+    fireEvent.click(screen.getByRole("button", { name: "语言" }));
+    expect(screen.getByLabelText("SMTP_HOST")).toHaveValue("smtp.changed.com");
+    fireEvent.click(screen.getByRole("button", { name: "Save Changes" }));
+    await waitFor(() =>
+      expect(setCallbacksCall).toHaveBeenCalledWith("sk-test", {
+        general_settings: { alerting: ["email"] },
+        environment_variables: { SMTP_HOST: "smtp.changed.com" },
+      }),
+    );
+    localStorage.clear();
   });
 
   it("does not resubmit an untouched masked value", async () => {

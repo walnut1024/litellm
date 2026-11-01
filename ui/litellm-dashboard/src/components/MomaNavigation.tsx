@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown } from "lucide-react";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useIsOrgAdmin from "@/app/(dashboard)/hooks/useIsOrgAdmin";
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
@@ -18,14 +17,8 @@ import {
 import { useTranslation } from "@/contexts/LocaleContext";
 import { isUserTeamAdminForAnyTeam } from "@/utils/roles";
 import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-const primaryPages = new Set(["home", "api-keys", "models", "new_usage", "teams"]);
+const servicePages = ["home", "models", "api-keys"];
+const usagePages = ["new_usage", "logs"];
 
 export function MomaNavigation() {
   const { userRole, userId, isViewOnly } = useAuthorized();
@@ -49,8 +42,14 @@ export function MomaNavigation() {
   };
   const groups = visibleMenuGroups(menuGroups, visibility);
   const items = groups.flatMap((group) => group.items);
-  const primary = items.filter((item) => primaryPages.has(item.page));
-  const management = items.filter((item) => !primaryPages.has(item.page)).flatMap((item) => item.children ?? [item]);
+  const sections = [
+    { label: "Model services", items: servicePages.flatMap((page) => items.filter((item) => item.page === page)) },
+    { label: "Usage and costs", items: items.filter((item) => usagePages.includes(item.page)) },
+    {
+      label: "Management",
+      items: items.filter((item) => ![...servicePages, ...usagePages].includes(item.page)),
+    },
+  ];
   const link = (item: MenuItem) => (
     <Link
       key={item.key}
@@ -59,31 +58,19 @@ export function MomaNavigation() {
       className="moma-nav-link"
     >
       {item.icon}
-      {t(labelText(item))}
+      {t(item.page === "models" ? "Model marketplace" : labelText(item))}
     </Link>
   );
   return (
     <nav aria-label={t("Navigation")} className="moma-navigation">
-      {primary.map(link)}
-      {management.length > 0 && (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            className="moma-nav-link"
-            data-active={management.some((item) => routeOf(item) === current) || undefined}
-          >
-            {t("Management")}
-            <ChevronDown className="size-3.5" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="min-w-44">
-            {management.map((item) => (
-              <DropdownMenuItem key={item.key} render={<Link href={uiHref(routeOf(item))} />}>
-                {item.icon}
-                {t(labelText(item))}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+      {sections
+        .filter((section) => section.items.length > 0)
+        .map((section) => (
+          <section key={section.label} aria-label={t(section.label)}>
+            <div className="moma-nav-section">{t(section.label)}</div>
+            {section.items.flatMap((item) => item.children ?? [item]).map(link)}
+          </section>
+        ))}
     </nav>
   );
 }

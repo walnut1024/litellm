@@ -1,63 +1,105 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
-
-import { LiteUiMask } from "@/contexts/LiteUiContext";
-
-import { ArrowRight, Plus, Rocket, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Boxes, KeyRound, Plus } from "lucide-react";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { useAllProxyModels } from "@/app/(dashboard)/hooks/models/useModels";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Page } from "@/components/shared/Page";
 import { PageHeader, PageHeaderControls, PageHeaderTitle } from "@/components/shared/PageHeader";
+import { LineChart } from "@/components/shared/charts/line_chart";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { uiHref } from "@/utils/uiHref";
-import { LiteAdminHome } from "@/components/liteadmin/LiteAdmin";
-import { Leaderboard, useBreakdown } from "@/app/(dashboard)/usage/_components/components/overview/BreakdownChart";
-import { Panel } from "@/app/(dashboard)/usage/_components/components/overview/Primitives";
 import UsageStatStrip from "@/app/(dashboard)/usage/_components/components/overview/UsageStatStrip";
-import { useBlogPosts } from "@/app/(dashboard)/hooks/blogPosts/useBlogPosts";
-import { cardProvider, cardSummary, cardTitle, formatPublishedOn, latestLaunches } from "./homeContent";
-import { Logo } from "@/components/molecules/logo/Logo";
-import UpdatesFeed from "./UpdatesFeed";
+import { dailyTotals, formatCompact } from "@/app/(dashboard)/usage/_components/components/overview/overviewData";
 import { HOME_USAGE_DAYS, useHomeUsage } from "./useHomeUsage";
-
-const LEADERBOARD = { metric: "tokens", dimension: "model_groups" } as const;
 
 export default function HomePage() {
   const { isViewOnly } = useAuthorized();
   const usage = useHomeUsage();
-  const blog = useBlogPosts();
-  const launches = latestLaunches(blog.data?.posts ?? []);
-  const { series, ranking } = useBreakdown(usage.results, LEADERBOARD, 8);
-
+  const models = useAllProxyModels();
+  const t = useTranslation();
+  const renderTrend = () => {
+    if (usage.failed)
+      return (
+        <p className="text-sm text-muted-foreground">
+          <L>Failed to load usage</L>
+        </p>
+      );
+    if (usage.loading)
+      return (
+        <p role="status">
+          <L>Loading…</L>
+        </p>
+      );
+    return (
+      <LineChart
+        data={dailyTotals(usage.results)}
+        index="date"
+        categories={["tokens"]}
+        colors={["indigo"]}
+        valueFormatter={formatCompact}
+        showLegend={false}
+        showDots
+        className="h-64"
+      />
+    );
+  };
+  const renderModels = () => {
+    if (models.isError)
+      return (
+        <p role="alert">
+          <L>Failed to load models</L>
+        </p>
+      );
+    if (models.isPending)
+      return (
+        <p role="status">
+          <L>Loading models…</L>
+        </p>
+      );
+    if (models.data?.data.length === 0)
+      return (
+        <p className="text-muted-foreground">
+          <L>No models available. Contact your administrator.</L>
+        </p>
+      );
+    return (
+      <div className="moma-model-grid">
+        {models.data?.data.slice(0, 3).map((model) => (
+          <Link key={model.id} className="moma-model-card hover:border-primary" href={uiHref("models-and-endpoints")}>
+            <Boxes className="size-7 text-primary" />
+            <h3>{model.id}</h3>
+            <span className="text-xs text-primary">
+              <L>View model and activate</L>
+            </span>
+          </Link>
+        ))}
+      </div>
+    );
+  };
   return (
     <Page>
-      <PageHeader>
+      <PageHeader className="flex flex-wrap items-center justify-between gap-4">
         <PageHeaderTitle>
-          <L>Home</L>
+          <L>Welcome to your workspace</L>
         </PageHeaderTitle>
         {!isViewOnly && (
-          <PageHeaderControls>
-            <Button render={<a href={uiHref("api-keys?create=true")} />}>
+          <PageHeaderControls className="mt-0">
+            <Button render={<Link href={uiHref("api-keys?create=true")} />}>
               <Plus />
               <L>Create New Virtual Key</L>
             </Button>
           </PageHeaderControls>
         )}
       </PageHeader>
-
-      <LiteUiMask>
-        <LiteAdminHome />
-      </LiteUiMask>
-
-      <section aria-label={`Usage, last ${HOME_USAGE_DAYS} days`}>
+      <section aria-label={t("Usage, last {days} days", { days: HOME_USAGE_DAYS })}>
         {usage.failed ? (
-          <div className="flex items-center justify-between gap-2 rounded-xl border bg-card px-4 py-3 text-sm">
+          <div role="alert" className="moma-panel flex items-center justify-between gap-2">
             <span className="text-destructive">
               <L>Failed to load usage</L>
             </span>
-            <Button variant="outline" size="sm" onClick={usage.retry}>
+            <Button variant="outline" onClick={usage.retry}>
               <L>Retry</L>
             </Button>
           </div>
@@ -71,64 +113,60 @@ export default function HomePage() {
           />
         )}
       </section>
-
-      <LiteUiMask>
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(16rem,1fr)]">
-          <div className="flex min-w-0 flex-col gap-6">
-            {(blog.isLoading || launches.length > 0) && (
-              <section aria-labelledby="home-whats-new" data-testid="home-whats-new" className="flex flex-col gap-3">
-                <div>
-                  <h2 id="home-whats-new" className="flex items-center gap-2 text-lg font-semibold">
-                    <Sparkles className="size-4 text-muted-foreground" />
-                    What&apos;s new in LiteLLM?
-                  </h2>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  {blog.isLoading &&
-                    [0, 1, 2].map((i) => (
-                      <Skeleton key={i} className="h-40 rounded-xl" data-testid="home-whats-new-loading" />
-                    ))}
-                  {launches.map((post) => {
-                    const provider = cardProvider(post);
-                    return (
-                      <a key={post.url} href={post.url} target="_blank" rel="noopener noreferrer" className="group">
-                        <Card className="h-full gap-3 px-4 py-4 transition-colors hover:bg-muted/40">
-                          <div className="flex size-9 items-center justify-center rounded-md bg-muted">
-                            {provider ? <Logo provider={provider} className="size-5" /> : <Rocket className="size-4" />}
-                          </div>
-                          <div className="line-clamp-2 text-base font-semibold leading-tight">{cardTitle(post)}</div>
-                          <p className="m-0 line-clamp-3 text-sm text-muted-foreground">{cardSummary(post)}</p>
-                          <div className="mt-auto flex items-center justify-between pt-1 text-xs text-muted-foreground">
-                            <span>{formatPublishedOn(post.date)}</span>
-                            <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                          </div>
-                        </Card>
-                      </a>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-
-            <Panel
-              title="Leaderboard"
-              subtitle={`Share of tokens over the last ${HOME_USAGE_DAYS} days, with the change between the first and second half of the period`}
-              testId="home-leaderboard"
-            >
-              <Leaderboard
-                ranking={ranking}
-                series={series}
-                metric={LEADERBOARD.metric}
-                dimension={LEADERBOARD.dimension}
-                columns={2}
-                limit={10}
-              />
-            </Panel>
+      <div className="grid gap-6 min-[1100px]:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
+        <section className="moma-panel" aria-labelledby="home-usage-trend">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <h2 id="home-usage-trend" className="moma-panel-title">
+              <L>Token usage trend</L>
+            </h2>
+            <span className="text-xs text-muted-foreground">{t("Last {days} days", { days: HOME_USAGE_DAYS })}</span>
           </div>
-
-          <UpdatesFeed className="self-start" />
+          {renderTrend()}
+        </section>
+        <section className="moma-panel flex flex-col gap-6" aria-labelledby="home-start">
+          <h2 id="home-start" className="moma-panel-title">
+            <L>Start using models</L>
+          </h2>
+          <div className="flex gap-4">
+            <Boxes className="size-6 shrink-0 text-primary" />
+            <div>
+              <h3 className="font-medium">
+                <L>Activate a model</L>
+              </h3>
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                <L>Choose an available model and activate access without an order or approval.</L>
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <KeyRound className="size-6 shrink-0 text-primary" />
+            <div>
+              <h3 className="font-medium">
+                <L>Call with an API key</L>
+              </h3>
+              <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                <L>Use the model name and your API key in an OpenAI-compatible client.</L>
+              </p>
+            </div>
+          </div>
+          <Button className="mt-auto" render={<Link href={uiHref("models-and-endpoints")} />}>
+            <L>Browse models</L>
+            <ArrowUpRight />
+          </Button>
+        </section>
+      </div>
+      <section className="moma-panel" aria-labelledby="home-models">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <h2 id="home-models" className="moma-panel-title">
+            <L>Available models</L>
+          </h2>
+          <Button variant="ghost" size="sm" render={<Link href={uiHref("models-and-endpoints")} />}>
+            <L>View all</L>
+            <ArrowUpRight />
+          </Button>
         </div>
-      </LiteUiMask>
+        {renderModels()}
+      </section>
     </Page>
   );
 }

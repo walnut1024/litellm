@@ -188,20 +188,20 @@ export default function ModelsAndEndpointsPage() {
   }
 
   return (
-    <div className="mx-4">
-      <div className="mt-2 flex w-full flex-col gap-2 p-8">
+    <div className="moma-model-page">
+      <div className="flex w-full flex-col gap-2">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold">
-              <L>Model Management</L>
-            </h2>
+            <h1 className="text-2xl font-semibold">
+              <L>Model marketplace</L>
+            </h1>
             {isAdmin ? (
               <p className="text-sm text-muted-foreground">
                 <L>Add and manage models for the proxy</L>
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">
-                <L>View your models and manage routers for teams that allow it.</L>
+                <L>Activate a model and start calling it with an API key.</L>
               </p>
             )}
           </div>

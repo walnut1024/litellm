@@ -11,7 +11,7 @@ import DeleteResourceModal from "@/components/common_components/DeleteResourceMo
 import ModelSettingsModal from "@/components/model_dashboard/ModelSettingsModal/ModelSettingsModal";
 import { ModelData } from "@/components/model_dashboard/types";
 import { toast } from "@/lib/toast";
-import { isProxyAdminRole } from "@/utils/roles";
+import { isProxyAdminRole, isAdminRole } from "@/utils/roles";
 import { uiHref } from "@/utils/uiHref";
 import { modelDeleteCall, modelPatchUpdateCall } from "@/components/networking";
 import { useQueryClient } from "@tanstack/react-query";
@@ -315,6 +315,7 @@ const AllModelsTab = ({
     <div className="w-full">
       <div className="flex flex-col gap-3">
         <AllModelsTable
+          initialLayout={isAdminRole(userRole) ? "table" : "cards"}
           data={modelData.data}
           rowCount={rawModelData?.total_count ?? 0}
           isLoading={isLoading}

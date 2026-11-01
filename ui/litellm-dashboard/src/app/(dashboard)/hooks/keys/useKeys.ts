@@ -123,13 +123,11 @@ export const useKeys = (
   });
 };
 
-const infiniteKeyKeys = createQueryKeys("infiniteKeys");
-
 export const useInfiniteKeys = (pageSize: number, options: KeyListCallOptions = {}) => {
   const { accessToken } = useAuthorized();
 
   const infiniteKeyListOptions = {
-    queryKey: infiniteKeyKeys.list({ limit: pageSize, ...options }),
+    queryKey: [...keyKeys.list({ limit: pageSize, ...options }), "infinite"] as const,
     queryFn: async ({ pageParam }: { pageParam: number }) => {
       if (!accessToken) throw new Error("Access token required");
       return await keyListCall(accessToken, pageParam, pageSize, options);

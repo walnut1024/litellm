@@ -7,7 +7,6 @@ import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { ToolbarSeparator } from "@/components/shared/ToolbarSeparator";
 import Link from "next/link";
 import { uiHref } from "@/utils/uiHref";
-import { MomaNavigation } from "@/components/MomaNavigation";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import SidebarAccountMenu from "@/components/SidebarAccountMenu/SidebarAccountMenu";
 import { useLogout } from "@/app/(dashboard)/hooks/useLogout";
@@ -61,7 +60,6 @@ export function DashboardHeader({
       <Link href={uiHref("home")} className="moma-brand">
         MoMA 轻量版
       </Link>
-      <MomaNavigation />
 
       <div className="ml-auto flex shrink-0 items-center gap-1">
         <LanguageSwitcher />

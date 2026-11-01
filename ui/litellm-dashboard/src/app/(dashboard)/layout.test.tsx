@@ -42,12 +42,11 @@ vi.mock("@/components/DashboardHeader", () => ({
   ),
 }));
 
-vi.mock("@/app/(dashboard)/components/SidebarProvider", () => ({
-  default: ({ sidebarCollapsed, onToggleCollapsed }: { sidebarCollapsed: boolean; onToggleCollapsed: () => void }) => (
-    <div data-testid="sidebar" data-collapsed={String(sidebarCollapsed)}>
-      <button onClick={onToggleCollapsed}>Close navigation</button>
+vi.mock("@/components/MomaNavigation", () => ({
+  MomaNavigation: () => (
+    <nav aria-label="Navigation">
       <a href="#settings">Settings</a>
-    </div>
+    </nav>
   ),
 }));
 
@@ -118,7 +117,6 @@ describe("(dashboard) Layout", () => {
 
     fireEvent.click(trigger);
     const navigation = await screen.findByRole("dialog", { name: "Navigation" });
-    expect(within(navigation).getByRole("button", { name: "Close navigation" })).toBeInTheDocument();
     fireEvent.click(within(navigation).getByRole("link", { name: "Settings" }));
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument());
   });
@@ -170,7 +168,7 @@ describe("(dashboard) Layout", () => {
     expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
   });
 
-  it("collapses the sidebar on Logs for a full-screen view and expands it again after leaving", async () => {
+  it("keeps the compact drawer closed across route changes", async () => {
     const dashboard = () => (
       <AuthProvider>
         <Layout>
@@ -180,15 +178,12 @@ describe("(dashboard) Layout", () => {
     );
     const { rerender } = render(dashboard());
     pendingUiConfig.resolve();
-    expect(await screen.findByTestId("sidebar")).toHaveAttribute("data-collapsed", "false");
-
+    await screen.findByTestId("page-content");
+    expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
     vi.mocked(usePathname).mockReturnValue("/ui/logs");
     rerender(dashboard());
-    expect(screen.getByTestId("sidebar")).toHaveAttribute("data-collapsed", "true");
-
-    vi.mocked(usePathname).mockReturnValue("/ui/api-keys");
-    rerender(dashboard());
-    expect(screen.getByTestId("sidebar")).toHaveAttribute("data-collapsed", "false");
+    expect(screen.getByTestId("page-content")).toBeVisible();
+    expect(screen.queryByRole("dialog", { name: "Navigation" })).not.toBeInTheDocument();
   });
 
   it("does not mount route content until getUiConfig has resolved", async () => {
@@ -229,7 +224,7 @@ describe("(dashboard) Layout", () => {
     );
     expect(screen.queryByTestId("page-content")).not.toBeInTheDocument();
     expect(screen.queryByTestId("dashboard-header")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("sidebar")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("dashboard-header")).not.toBeInTheDocument();
   });
 
   describe("forced password reset routing", () => {
@@ -308,13 +303,13 @@ describe("(dashboard) Layout", () => {
         ]),
       );
       expect(screen.getByTestId("loading-screen")).toBeInTheDocument();
-      expect(screen.queryByTestId("sidebar")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("dashboard-header")).not.toBeInTheDocument();
       expect(screen.queryByTestId("page-content")).not.toBeInTheDocument();
 
       resolveCurrentUser(Response.json({ user_id: "normal-user", user_role: "internal_user", user_email: null }));
 
       expect(await screen.findByTestId("page-content")).toBeInTheDocument();
-      expect(screen.getByTestId("sidebar")).toBeInTheDocument();
+      expect(screen.getByTestId("dashboard-header")).toBeInTheDocument();
     });
 
     it("signs out instead of mounting the shell when the current user cannot be loaded", async () => {
@@ -342,7 +337,7 @@ describe("(dashboard) Layout", () => {
         });
         expect(document.cookie).not.toContain("token=");
         expect(document.cookie).toContain("litellm_return_url=");
-        expect(screen.queryByTestId("sidebar")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("dashboard-header")).not.toBeInTheDocument();
         expect(screen.queryByTestId("page-content")).not.toBeInTheDocument();
         expect(currentUserRequests()).toHaveLength(2);
       } finally {

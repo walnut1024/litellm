@@ -11,7 +11,7 @@ import { useCurrentUser } from "@/app/(dashboard)/hooks/currentUser/useCurrentUs
 import { redirectToLogin } from "@/app/(dashboard)/hooks/redirectToLogin";
 import { clearTokenCookies } from "@/utils/cookieUtils";
 import { decodeToken } from "@/utils/jwtUtils";
-import SidebarProvider from "@/app/(dashboard)/components/SidebarProvider";
+import { MomaNavigation } from "@/components/MomaNavigation";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   createDeploymentHealthHandle,
@@ -167,7 +167,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
           }}
         >
           <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <SidebarProvider sidebarCollapsed={false} onToggleCollapsed={() => setMobileNavigationKey(null)} />
+          <MomaNavigation />
         </SheetContent>
       </Sheet>
       <LiteAdminFrame>
@@ -195,10 +195,17 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             <DeploymentHealthBanner handle={deploymentHealthHandle} />
             <DeploymentHealthPanel handle={deploymentHealthHandle} />
             <UserBanner accessToken={accessToken} />
-            <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
-              <TelemetryEnvBanner />
-              <div className="moma-content">{children}</div>
-            </main>
+            <div className="moma-workspace flex min-h-0 flex-1">
+              {isDesktop && (
+                <aside className="moma-sidebar">
+                  <MomaNavigation />
+                </aside>
+              )}
+              <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
+                <TelemetryEnvBanner />
+                <div className="moma-content">{children}</div>
+              </main>
+            </div>
           </div>
         </CommandPaletteProvider>
       </LiteAdminFrame>

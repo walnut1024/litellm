@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import { MomaNavigation } from "./MomaNavigation";
@@ -34,17 +34,16 @@ describe("MomaNavigation", () => {
     expect(screen.getByRole("link", { name: "团队" })).toBeVisible();
   });
 
-  it("keeps the existing admin destinations in the management menu", async () => {
+  it("keeps the existing admin destinations in the management section", async () => {
     state.role = "proxy_admin";
     render(
       <LocaleProvider>
         <MomaNavigation />
       </LocaleProvider>,
     );
-    fireEvent.click(screen.getByRole("button", { name: "管理" }));
-    expect(await screen.findByRole("menuitem", { name: "用户管理" })).toHaveAttribute("href", "/ui/users");
-    expect(screen.getByRole("menuitem", { name: "访问组" })).toHaveAttribute("href", "/ui/access-groups");
-    expect(screen.queryByRole("menuitem", { name: /Projects|Organizations|Playground/ })).not.toBeInTheDocument();
+    expect(await screen.findByRole("link", { name: "用户管理" })).toHaveAttribute("href", "/ui/users");
+    expect(screen.getByRole("link", { name: "访问组" })).toHaveAttribute("href", "/ui/access-groups");
+    expect(screen.queryByRole("link", { name: /Projects|Organizations|Playground/ })).not.toBeInTheDocument();
   });
 
   it("honors the configured employee page visibility", () => {
@@ -54,7 +53,7 @@ describe("MomaNavigation", () => {
         <MomaNavigation />
       </LocaleProvider>,
     );
-    expect(screen.queryByRole("link", { name: "模型管理" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "模型广场" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "API 密钥" })).toBeVisible();
   });
 });

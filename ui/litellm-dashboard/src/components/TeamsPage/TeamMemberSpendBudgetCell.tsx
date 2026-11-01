@@ -26,8 +26,8 @@ interface BudgetLineProps {
 function BudgetLine({ label, spend, maxBudget, resetAt }: BudgetLineProps) {
   const spendValue = typeof spend === "number" && Number.isFinite(spend) ? spend : 0;
   const budget = typeof maxBudget === "number" && Number.isFinite(maxBudget) ? maxBudget : null;
-  const spendText = spendValue === 0 ? "$0.00" : getSpendString(spendValue, 2);
-  const budgetText = budget === null ? "Unlimited" : `$${formatNumberWithCommas(budget, 2)}`;
+  const spendText = spendValue === 0 ? "¥0.00" : getSpendString(spendValue, 2);
+  const budgetText = budget === null ? "Unlimited" : `¥${formatNumberWithCommas(budget, 2)}`;
   const resetText = formatBudgetResetUtc(resetAt);
 
   return (

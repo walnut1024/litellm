@@ -1397,10 +1397,10 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               />
             </p>
             <div className="mt-2">
-              <h3 className="text-lg font-medium">${formatNumberWithCommas(info.spend, 2)}</h3>
+              <h3 className="text-lg font-medium">¥{formatNumberWithCommas(info.spend, 2)}</h3>
               <p>
                 <L>of </L>
-                {info.max_budget === null ? "Unlimited" : `$${formatNumberWithCommas(info.max_budget, 2)}`}
+                {info.max_budget === null ? "Unlimited" : `¥${formatNumberWithCommas(info.max_budget, 2)}`}
               </p>
               {info.budget_duration && (
                 <p className="text-muted-foreground">
@@ -1411,7 +1411,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               <br />
               {info.team_member_budget_table && (
                 <p className="text-muted-foreground">
-                  <L>Team Member Budget: $</L>
+                  <L>Team Member Budget: ¥</L>
                   {formatNumberWithCommas(info.team_member_budget_table.max_budget, 2)}
                 </p>
               )}
@@ -1682,13 +1682,13 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     />
                   </Field>
 
-                  <FormField control={form.control} name="max_budget" label="Max Budget (USD)">
+                  <FormField control={form.control} name="max_budget" label="Max Budget (CNY)">
                     {({ ref, value, ...field }) => (
                       <NumericalInput {...field} ref={ref} value={value ?? ""} step={0.01} precision={2} />
                     )}
                   </FormField>
 
-                  <FormField control={form.control} name="soft_budget" label="Soft Budget (USD)">
+                  <FormField control={form.control} name="soft_budget" label="Soft Budget (CNY)">
                     {({ ref, value, ...field }) => (
                       <NumericalInput {...field} ref={ref} value={value ?? ""} step={0.01} precision={2} />
                     )}
@@ -1756,7 +1756,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                           control={form.control}
                           name="team_member_budget"
                           label={labelWithHint(
-                            "Default Budget (USD)",
+                            "Default Budget (CNY)",
                             "Default spend budget for each member in this team.",
                           )}
                         >
@@ -2477,12 +2477,12 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 </p>
                 <div>
                   <L>Max Budget: </L>
-                  {info.max_budget !== null ? `$${formatNumberWithCommas(info.max_budget, 4)}` : "No Limit"}
+                  {info.max_budget !== null ? `¥${formatNumberWithCommas(info.max_budget, 4)}` : "No Limit"}
                 </div>
                 <div>
                   <L>Soft Budget:</L>{" "}
                   {info.soft_budget !== null && info.soft_budget !== undefined
-                    ? `$${formatNumberWithCommas(info.soft_budget, 4)}`
+                    ? `¥${formatNumberWithCommas(info.soft_budget, 4)}`
                     : "No Limit"}
                 </div>
                 <div>
@@ -2495,10 +2495,10 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                       const spent = model === null ? undefined : info.model_max_budget_usage?.[model]?.current_spend;
                       return (
                         <div key={model}>
-                          Per-Model Budget ({model}): ${budgetLimit ?? "?"}
+                          Per-Model Budget ({model}): ¥{budgetLimit ?? "?"}
                           <L> per </L>
                           {timePeriod}
-                          {spent !== undefined && `, spent $${spent}`}
+                          {spent !== undefined && `, spent ¥${spent}`}
                         </div>
                       );
                     },
@@ -2534,7 +2534,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                   ).map(({ model, budgetLimit, timePeriod }) => (
                     <div key={model}>
                       Default Per-Model Budget ({model}):{" "}
-                      {budgetLimit !== null ? `$${formatNumberWithCommas(budgetLimit, 4)}` : "No Limit"}
+                      {budgetLimit !== null ? `¥${formatNumberWithCommas(budgetLimit, 4)}` : "No Limit"}
                       <L> per</L> {timePeriod}
                     </div>
                   ))}
@@ -2745,8 +2745,8 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "max_budget_in_team",
               label: (
                 <span>
-                  <L>Team Member Budget (USD)</L>{" "}
-                  <SimpleTooltip content="Maximum amount in USD this member can spend within this team. This is separate from any global user budget limits">
+                  <L>Team Member Budget (CNY)</L>{" "}
+                  <SimpleTooltip content="Maximum amount in CNY this member can spend within this team. This is separate from any global user budget limits">
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
                 </span>
@@ -2772,8 +2772,8 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               name: "temp_budget_increase",
               label: (
                 <span>
-                  <L>Temporary Budget Increase (USD)</L>{" "}
-                  <SimpleTooltip content="Extra USD added on top of the team member budget until the expiry below. The permanent budget is left unchanged and the increase stops applying at expiry.">
+                  <L>Temporary Budget Increase (CNY)</L>{" "}
+                  <SimpleTooltip content="Extra CNY added on top of the team member budget until the expiry below. The permanent budget is left unchanged and the increase stops applying at expiry.">
                     <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
                 </span>

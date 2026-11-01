@@ -50,7 +50,7 @@ describe("TopUsersView", () => {
     expect(fetchUserPage).toHaveBeenCalledWith(0, 10);
   });
 
-  it("shows column headers and renders sub-cent spend as < $0.01 while zero stays $0.00", async () => {
+  it("shows column headers and renders sub-cent spend as < ¥0.01 while zero stays ¥0.00", async () => {
     const fetchUserPage: FetchUserPage = vi
       .fn()
       .mockResolvedValue(pageOf([userRow({ user_id: "tiny", spend: 0.004 }), userRow({ user_id: "zero", spend: 0 })]));
@@ -61,8 +61,8 @@ describe("TopUsersView", () => {
     expect(screen.getByText("User")).toBeInTheDocument();
     expect(screen.getByText("Spend")).toBeInTheDocument();
     expect(screen.getByText("Requests")).toBeInTheDocument();
-    expect(screen.getByText("< $0.01")).toBeInTheDocument();
-    expect(screen.getByText("$0.00")).toBeInTheDocument();
+    expect(screen.getByText("< ¥0.01")).toBeInTheDocument();
+    expect(screen.getByText("¥0.00")).toBeInTheDocument();
   });
 
   it("falls back from email to alias to user_id to a placeholder", async () => {

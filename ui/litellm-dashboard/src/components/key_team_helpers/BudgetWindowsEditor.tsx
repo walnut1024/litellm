@@ -59,7 +59,7 @@ export function BudgetWindowsEditor({ value, onChange }: BudgetWindowsEditorProp
               </Select>
               <InputGroup className="w-40">
                 <InputGroupAddon>
-                  <InputGroupText>$</InputGroupText>
+                  <InputGroupText>¥</InputGroupText>
                 </InputGroupAddon>
                 <InputGroupInput
                   type="number"
@@ -76,7 +76,7 @@ export function BudgetWindowsEditor({ value, onChange }: BudgetWindowsEditorProp
                       updateWindow(idx, "max_budget", Number(typed.toFixed(2)));
                     }
                   }}
-                  placeholder="Max spend ($)"
+                  placeholder="Max spend (CNY)"
                 />
               </InputGroup>
               <Button

@@ -312,8 +312,8 @@ describe("KeyInfoView", () => {
       />,
     );
 
-    expect(await screen.findByText("$0.2500")).toBeInTheDocument();
-    expect(screen.getByTestId("key-lifetime-spend")).toHaveTextContent("Lifetime spend: $340.5000");
+    expect(await screen.findByText("¥0.2500")).toBeInTheDocument();
+    expect(screen.getByTestId("key-lifetime-spend")).toHaveTextContent("Lifetime spend: ¥340.5000");
   });
 
   it("shows a team-member budget for a key without its own budget", async () => {
@@ -344,12 +344,12 @@ describe("KeyInfoView", () => {
       />,
     );
 
-    expect(await screen.findByText("Team member spend $45.0000 of $50.00 (team member budget)")).toBeInTheDocument();
+    expect(await screen.findByText("Team member spend ¥45.0000 of ¥50.00 (team member budget)")).toBeInTheDocument();
     expect(screen.queryByText("of Unlimited")).not.toBeInTheDocument();
     expect(teamInfoCall).toHaveBeenCalledWith("test-token", "member-budget-info-team", { keyLimit: 1 });
 
     await userEvent.click(screen.getByRole("tab", { name: "Settings" }));
-    expect(await screen.findByText("$50.00 (team member budget)")).toBeInTheDocument();
+    expect(await screen.findByText("¥50.00 (team member budget)")).toBeInTheDocument();
   });
 
   it("keeps an own key budget in the Overview when a team-member budget exists", async () => {
@@ -372,7 +372,7 @@ describe("KeyInfoView", () => {
       />,
     );
 
-    expect(await screen.findByText("of $20.00")).toBeInTheDocument();
+    expect(await screen.findByText("of ¥20.00")).toBeInTheDocument();
     expect(teamInfoCall).not.toHaveBeenCalled();
   });
 
@@ -391,7 +391,7 @@ describe("KeyInfoView", () => {
 
     expect(await screen.findByTestId("key-lifetime-spend-backfill-hint")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /lifetime spend is below/i })).toBeInTheDocument();
-    expect(screen.getByTestId("key-lifetime-spend")).toHaveTextContent("Lifetime spend: $4.0000");
+    expect(screen.getByTestId("key-lifetime-spend")).toHaveTextContent("Lifetime spend: ¥4.0000");
   });
 
   it("hides the backfill hint when lifetime spend covers the period spend", async () => {

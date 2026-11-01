@@ -24,7 +24,7 @@ const columns: ColumnDef<TopModelData>[] = [
     cell: ({ row }) => row.original.model || "-",
   },
   {
-    header: "Spend (USD)",
+    header: "Spend (CNY)",
     accessorKey: "spend",
     meta: { numeric: true },
     cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={2} />,
@@ -88,7 +88,7 @@ const KeyModelUsageView: React.FC<KeyModelUsageViewProps> = ({ topModels }) => {
               index="key"
               categories={["spend"]}
               colors={["cyan"]}
-              valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
+              valueFormatter={(value) => `¥${formatNumberWithCommas(value, 2)}`}
               layout="vertical"
               yAxisWidth={180}
               tickGap={5}

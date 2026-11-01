@@ -107,12 +107,12 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card>
           <CardContent>
-            {labelWithTooltip("Current Period Spend (USD)", budgetReset.tooltip)}
+            {labelWithTooltip("Current Period Spend (CNY)", budgetReset.tooltip)}
             <div className="mt-2">
-              <h3 className="text-2xl font-semibold">${formatNumber(spend, 4)}</h3>
+              <h3 className="text-2xl font-semibold">¥{formatNumber(spend, 4)}</h3>
               <span className="text-muted-foreground">
                 <L>of </L>
-                {maxBudget === null ? "Unlimited" : `$${formatNumber(maxBudget, 4)}`}
+                {maxBudget === null ? "Unlimited" : `¥${formatNumber(maxBudget, 4)}`}
               </span>
             </div>
             <div className="mt-1 text-muted-foreground">{describePeriodLine(budgetReset)}</div>
@@ -139,10 +139,10 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
         <Card>
           <CardContent>
             {labelWithTooltip(
-              "Total Spend (USD)",
+              "Total Spend (CNY)",
               "Cumulative spend within this team across budget periods. This is a lower bound: lifetime tracking began 2026-04-21, so periods that reset before then are not included. It is never less than Current Period Spend.",
             )}
-            <h4 className="mt-2 text-xl font-semibold">${formatNumber(totalSpend, 4)}</h4>
+            <h4 className="mt-2 text-xl font-semibold">¥{formatNumber(totalSpend, 4)}</h4>
           </CardContent>
         </Card>
 

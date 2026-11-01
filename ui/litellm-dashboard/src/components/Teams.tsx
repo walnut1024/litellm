@@ -823,7 +823,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     )}
                   </FormField>
 
-                  <FormField control={form.control} name="max_budget" label="Max Budget (USD)">
+                  <FormField control={form.control} name="max_budget" label="Max Budget (CNY)">
                     {({ ref, value, ...field }) => (
                       <NumericalInput {...field} ref={ref} value={value ?? ""} step={0.01} precision={2} width={200} />
                     )}
@@ -911,7 +911,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           control={form.control}
                           name="team_member_budget"
                           label={labelWithHint(
-                            "Team Member Budget (USD)",
+                            "Team Member Budget (CNY)",
                             "This is the individual budget for a user in the team.",
                           )}
                         >

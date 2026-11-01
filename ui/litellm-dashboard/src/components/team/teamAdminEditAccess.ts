@@ -88,10 +88,10 @@ export const isTeamAdminDurationSettingsField = (
 const TEAM_ADMIN_FIELD_LABELS: ReadonlyMap<string, string> = new Map([
   ["tpm_limit", "Tokens per minute Limit (TPM)"],
   ["rpm_limit", "Requests per minute Limit (RPM)"],
-  ["max_budget", "Max Budget (USD)"],
+  ["max_budget", "Max Budget (CNY)"],
   [TEAM_ADMIN_METADATA_FIELD, "Team Metadata"],
-  ["soft_budget", "Soft Budget (USD)"],
-  ["team_member_budget", "Member Default Budget (USD)"],
+  ["soft_budget", "Soft Budget (CNY)"],
+  ["team_member_budget", "Member Default Budget (CNY)"],
   ["team_member_budget_duration", "Member Default Budget Duration"],
   ["team_member_tpm_limit", "Member Default TPM Limit"],
   ["team_member_rpm_limit", "Member Default RPM Limit"],

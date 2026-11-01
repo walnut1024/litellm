@@ -53,11 +53,11 @@ export const buildSummaryTiles = (
     showFlatCost
       ? {
           title: "Total Cost",
-          value: `$${formatNumberWithCommas(metadata.total_spend + flatCost, 2)}`,
+          value: `¥${formatNumberWithCommas(metadata.total_spend + flatCost, 2)}`,
           tooltip: TOTAL_COST_TOOLTIP,
           expandable: true,
         }
-      : { title: "Total Spend", value: `$${formatNumberWithCommas(metadata.total_spend, 2)}` },
+      : { title: "Total Spend", value: `¥${formatNumberWithCommas(metadata.total_spend, 2)}` },
     { title: "Total Requests", value: metadata.total_api_requests.toLocaleString() },
     {
       title: "Successful Requests",
@@ -73,13 +73,13 @@ export const buildSummaryTiles = (
 export const buildCostBreakdownTiles = (metadata: SpendSummaryMetadata): SummaryTile[] => [
   {
     title: "Request Cost",
-    value: `$${formatNumberWithCommas(metadata.total_spend, 2)}`,
+    value: `¥${formatNumberWithCommas(metadata.total_spend, 2)}`,
     className: "text-info",
     tooltip: REQUEST_COST_TOOLTIP,
   },
   {
     title: "Flat Cost",
-    value: `$${formatNumberWithCommas(metadata.total_flat_cost ?? 0, 2)}`,
+    value: `¥${formatNumberWithCommas(metadata.total_flat_cost ?? 0, 2)}`,
     className: "text-violet-600",
     tooltip: FLAT_COST_TOOLTIP,
   },

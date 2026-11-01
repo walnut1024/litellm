@@ -166,9 +166,30 @@ Playground 已整页屏蔽，早期添加到 `Composer`、`Inspector`、`Playgro
 
 英文源码文案作为词典键，中文词典位于一个 JSON 文件。`LocalizedText` 只翻译显式包裹的界面字符串，不扫描或改写 DOM，不递归翻译用户数据。字段的 name、选项 value、请求参数、模型 ID、用户邮箱和密钥值保持原样。模型通配选项、角色选项等只翻译显示标签，提交值保持原值
 
-语言偏好保存在浏览器 `moma.locale`，不发送到后端。支持 `zh-CN` 与 `en`，默认中文，刷新时恢复已保存语言。语言切换不重新挂载页面或表单。日期显示可以本地化，时间戳、时区语义、货币单位和接口数字保持原逻辑
+语言偏好保存在浏览器 `moma.locale`，不发送到后端。支持 `zh-CN` 与 `en`，默认中文，刷新时恢复已保存语言。语言切换不重新挂载页面或表单。日期显示可以本地化，时间戳和时区语义保持原逻辑。货币标识默认人民币，金额数值和接口提交值保持原样
 
 未知英文文案回退为英文。供应商返回的错误、接口原始 JSON、技术说明和代码示例可能继续显示英文。社区新增或修改界面文案时，需要同步补充词典和渲染位置，不能把中英文字符串用于权限、路由或筛选条件判断。已有组织等字段屏蔽仍以原始字段名和英文配置标签为依据，翻译发生在显示层之后
+
+## 人民币单位
+
+2026-11-01 按确认的要求，界面货币单位默认人民币。金额符号使用 `¥`，中文单位使用人民币，英文单位使用 `CNY`。语言切换不会改变币种，不新增汇率、换算、货币切换或金额迁移
+
+花费、预算、模型价格、单次成本、图表坐标与提示、表单单位和金额导出表头统一更新。输入 150.75 仍按 150.75 提交，现有预算 10 仍显示为 ¥10.00。零值、精度、小额阈值、负数、预算比率和上限校验保留原实现。用户输入、模型标识、API 字段名、原始 JSON 和外部数据不会被全局替换
+
+这是前端单位标识调整。数据库、成本计算、模型费率、供应商账单、后端 API 及其社区 USD 说明没有修改，历史数值也没有重新计价。使用内置美元费率时，本次不会将其数值换算成人民币，真实成本口径需要由实际配置的模型价格保证
+
+| 实现位置，相对 dashboard                                                                                                                                                                                                    | 修改内容                                                                                                 |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `src/utils/dataUtils.ts`、`src/components/UsagePage/utils/value_formatters.tsx`、`src/app/(dashboard)/cost-optimization/_components/costOptimizationUtils.ts`                                                               | 公共金额、小额阈值、每秒成本、图表和节省金额格式器使用人民币符号。最后一个模块也被用户详情等保留页面复用 |
+| `src/components/shared/table_cells/`、`BudgetPeriodTooltip.tsx`、`InheritedBudgetHint.tsx`、`shared/charts/chart_tooltip.tsx`                                                                                               | 表格、预算提示、继承预算和图表金额显示                                                                   |
+| `src/components/organisms/create_key_button.tsx`、`templates/key_info_view.tsx`、`key_edit_view.tsx`、`key_team_helpers/`                                                                                                   | 密钥创建与编辑的 CNY 标签、明细、预算输入占位与提示，提交逻辑不变                                        |
+| `src/components/Teams.tsx`、`TeamsPage/`、`team/`、`src/app/(dashboard)/users/_components/`、`budgets/_components/`                                                                                                         | 团队、成员、用户和预算的金额、表单标签、CSV 表头                                                         |
+| `src/app/(dashboard)/models-and-endpoints/components/`、`src/components/molecules/models/ModelPricingSummary.tsx`、`ModelInfoEditForm.tsx`、`add_model/advanced_settings.tsx`、`common_components/check_openapi_schema.tsx` | 模型价格显示、访问组预算、费率单位与预算占位                                                             |
+| `src/components/UsagePage/components/`、`activity_metrics.tsx`、`per_user_usage.tsx`、`src/app/(dashboard)/usage/_components/components/`、`router-settings/_components/general_settings.tsx`                               | 用量卡片、排名、图表、导出金额标签与配置金额符号                                                         |
+| `src/components/logs/`                                                                                                                                                                                                      | 请求费用、分类器费用与成本明细。既有审计抽屉的金额文字也同步，审计入口仍屏蔽                             |
+| `src/i18n/zh-CN.json`、`translate.test.ts` 与对应组件测试                                                                                                                                                                   | 人民币翻译、英文 CNY 标签，以及输入数据不被翻译的回归验证                                                |
+
+本轮父提交为 `d47c6c2af2`，源码改动涉及 54 个 TypeScript 生产文件，均未改变数值常量。完整路径可通过该提交至本轮提交的 Git 差异核对。后续合并时要检查新增的金额格式器、写死的美元符号、USD 单位、预算占位、图表提示和导出表头，保留对原始数据与代码示例的边界，不做全局字符串替换
 
 ## Docker 与演示数据
 
@@ -323,3 +344,15 @@ Docker 浏览器验收使用 4001 的独立演示环境。真实供应商调用�
 生产构建、TypeScript、静态导出与仓库前端检查通过，字体扫描未报告问题。实际浏览器检查覆盖管理员和员工密钥页、创建表单、用量页、员工模型列表及 360px、390px、1100px、1488px 和 1536px，所检查的可见文字字号均属于四档，没有页头溢出。最终表单帮助文字实测 12px，4001 使用最终静态资源重建且健康检查返回 200
 
 本轮为纯样式变更，没有新增或重复运行单元测试，也没有生成新的密钥。重建期间员工会话有两次 general_settings 请求 Failed to fetch，最终页面正常加载，未处理接口网络问题。真实供应商调用、计费和跨浏览器回归仍未验证。最新截图与前后比较见 [design-qa.md](design-qa.md#15-倍字号阶梯复核)
+
+### 人民币单位验证
+
+本轮最终定向测试运行 67 个文件，共 1978 项普通通过、7 项既有 `it.fails`、12 项失败。金额格式、非零与负数、小额阈值、预算输入与原值提交、模型价格、CSV 表头和中英文币种用例通过。自定义图表格式器的美元字符串保留并单独复核，8 项通过，不能与前一批重复相加
+
+剩余 12 项集中于 `UsagePageView.test.tsx`，涉及已裁剪的标签、组织、客户、Agent 和 User Agent 统计视图。将本轮源码与测试完整临时恢复到父提交 `d47c6c2af2` 后，同文件复跑为 62 项通过、13 项失败，当前 12 项全部属于该基线失败集合。工作内容随后完整恢复，没有调整既有屏蔽策略。本轮不能声称整批测试全部通过
+
+`npm run build`、TypeScript、静态导出和仓库 `./scripts/pre_commit_lint.sh` 通过，未提高规则预算。4001 复用既有数据库卷与账户，用本轮静态资源重建后健康检查返回 200。没有修改 Docker 文件、后端、数据库或依赖
+
+浏览器验证员工密钥金额为 ¥0.00，创建表单标注最大预算（人民币），输入 150.75 后仍显示 150.75，检查后清空并关闭，没有创建新密钥。英文表单显示 Max Budget (CNY)。用量页原预算 10 显示为 ¥10.00，坐标轴与平均花费使用人民币符号，管理员模型价格也使用 ¥。截图见 [design-qa.md](design-qa.md#人民币单位复核)
+
+真实供应商计费、价格口径校准和跨浏览器回归未验证。本次按要求不涉及汇率或历史金额换算

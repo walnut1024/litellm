@@ -82,7 +82,7 @@ function SpendLimitField({ form }: { form: BudgetForm }) {
           render={({ field }) => (
             <InputGroup>
               <InputGroupAddon>
-                <InputGroupText>$</InputGroupText>
+                <InputGroupText>¥</InputGroupText>
               </InputGroupAddon>
               <InputGroupInput {...numberProps(field)} id={amountId} step={0.01} />
             </InputGroup>

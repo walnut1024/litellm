@@ -26,9 +26,9 @@ describe("budgetPeriodLines", () => {
     process.env.TZ = "UTC";
     expect(budgetPeriodLines(scheduled)).toEqual([
       "Budget period: Mar 1, 2026 00:00 to Apr 1, 2026 00:00 (UTC)",
-      "Max budget: $100.00",
+      "Max budget: ¥100.00",
       "Reset interval: monthly",
-      "Spend this period: $12.5000",
+      "Spend this period: ¥12.5000",
     ]);
   });
 
@@ -36,34 +36,34 @@ describe("budgetPeriodLines", () => {
     process.env.TZ = "UTC";
     expect(budgetPeriodLines(unparseableDuration)).toEqual([
       "Next reset: Apr 1, 2026 00:00 (UTC)",
-      "Max budget: $100.00",
+      "Max budget: ¥100.00",
       "Reset interval: fortnight",
-      "Spend this period: $0.0000",
+      "Spend this period: ¥0.0000",
     ]);
   });
 
   it("omits the period line when no reset has been scheduled yet", () => {
     expect(budgetPeriodLines(unscheduled)).toEqual([
-      "Max budget: $100.00",
+      "Max budget: ¥100.00",
       "Reset interval: monthly",
-      "Spend this period: $0.0000",
+      "Spend this period: ¥0.0000",
     ]);
   });
 
   it("reports a lifetime budget when there is no duration", () => {
     expect(budgetPeriodLines(lifetime)).toEqual([
       "Lifetime budget, never resets",
-      "Max budget: $50.00",
-      "Spend so far: $3.0000",
+      "Max budget: ¥50.00",
+      "Spend so far: ¥3.0000",
     ]);
   });
 
   it("reports no budget when max budget is unset", () => {
-    expect(budgetPeriodLines(noBudget)).toEqual(["No budget set", "Spend this period: $0.0000"]);
+    expect(budgetPeriodLines(noBudget)).toEqual(["No budget set", "Spend this period: ¥0.0000"]);
   });
 
   it("uses lifetime wording when there is neither a budget nor a duration", () => {
-    expect(budgetPeriodLines(noBudgetNoDuration)).toEqual(["No budget set", "Spend so far: $2.0000"]);
+    expect(budgetPeriodLines(noBudgetNoDuration)).toEqual(["No budget set", "Spend so far: ¥2.0000"]);
   });
 });
 
@@ -75,9 +75,9 @@ describe("BudgetPeriodTooltip", () => {
     await user.hover(screen.getByLabelText("budget-period-details"));
 
     const tooltip = await screen.findByTestId("budget-period-tooltip");
-    expect(tooltip).toHaveTextContent("Max budget: $10.00");
+    expect(tooltip).toHaveTextContent("Max budget: ¥10.00");
     expect(tooltip).toHaveTextContent("Reset interval: 1d");
-    expect(tooltip).toHaveTextContent("Spend this period: $1.0000");
+    expect(tooltip).toHaveTextContent("Spend this period: ¥1.0000");
     expect(tooltip).not.toHaveTextContent("Invalid Date");
   });
 });

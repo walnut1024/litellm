@@ -161,7 +161,7 @@ describe("ClientUsagePanel", () => {
     const panel = screen.getByRole("dialog", { name: "Claude Desktop" });
     expect(within(panel).getByRole("img", { name: "Claude Desktop logo" })).toBeInTheDocument();
     expect(panel).toHaveTextContent("All users");
-    expect(panel).toHaveTextContent(/Spend\s*\$12\.50/);
+    expect(panel).toHaveTextContent(/Spend\s*¥12\.50/);
     expect(panel).toHaveTextContent(/Total tokens\s*9K/);
     expect(panel).toHaveTextContent(/Requests\s*3/);
     expect(screen.queryByRole("status", { name: "Loading client usage" })).not.toBeInTheDocument();
@@ -201,7 +201,7 @@ describe("ClientUsagePanel", () => {
       ),
     );
     const panel = screen.getByRole("dialog", { name: "Claude Desktop" });
-    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*\$3\.00/));
+    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*¥3\.00/));
     expect(panel).toHaveTextContent("Selected user");
     expect(panel).toHaveTextContent(/Cache reads\s*Unavailable/);
     expect(panel).toHaveTextContent(/Cache writes\s*Unavailable/);
@@ -211,7 +211,7 @@ describe("ClientUsagePanel", () => {
     await user.click(screen.getByRole("button", { name: "All users" }));
     expect(onUserChange).toHaveBeenLastCalledWith(null);
     expect(onClose).not.toHaveBeenCalled();
-    expect(screen.getByRole("dialog", { name: "Claude Desktop" })).toHaveTextContent(/Spend\s*\$12\.50/);
+    expect(screen.getByRole("dialog", { name: "Claude Desktop" })).toHaveTextContent(/Spend\s*¥12\.50/);
   });
 
   it.each(["Back to Usage", "Close"])("should return to the overview through %s", async (button) => {
@@ -228,7 +228,7 @@ describe("ClientUsagePanel", () => {
     renderWithProviders(<ClientUsagePanel {...defaultProps} agent={partialAgent} daily={daily} />);
 
     const panel = screen.getByRole("dialog", { name: "Claude Desktop" });
-    expect(panel).toHaveTextContent(/Spend\s*\$25\.00/);
+    expect(panel).toHaveTextContent(/Spend\s*¥25\.00/);
     expect(within(panel).getAllByText("Unavailable")).toHaveLength(4);
     expect(await screen.findByText(/Model usage does not match these client totals yet/)).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Daily usage" })).not.toBeInTheDocument();
@@ -239,7 +239,7 @@ describe("ClientUsagePanel", () => {
     renderWithProviders(<ClientUsagePanel {...defaultProps} canChooseUser={false} userId={null} daily={daily} />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Sign in to view your client usage");
-    expect(screen.queryByText("$12.50")).not.toBeInTheDocument();
+    expect(screen.queryByText("¥12.50")).not.toBeInTheDocument();
     expect(screen.queryByText("Total tokens")).not.toBeInTheDocument();
     expect(screen.queryByRole("combobox", { name: "Filter by person" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Daily usage" })).not.toBeInTheDocument();
@@ -254,7 +254,7 @@ describe("ClientUsagePanel", () => {
     renderWithProviders(<ClientUsagePanel {...defaultProps} summaryFailed onRetry={onRetry} onClose={onClose} />);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Could not load client totals");
-    expect(screen.queryByText("$12.50")).not.toBeInTheDocument();
+    expect(screen.queryByText("¥12.50")).not.toBeInTheDocument();
     expect(screen.queryByText("No Claude Desktop usage recorded in this date range.")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Try again" }));
     expect(onRetry).toHaveBeenCalledOnce();
@@ -289,7 +289,7 @@ describe("ClientUsagePanel", () => {
     renderWithProviders(<ClientUsagePanel {...defaultProps} userId="person-1" canChooseUser={false} />);
 
     const panel = screen.getByRole("dialog", { name: "Claude Desktop" });
-    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*\$3\.00/));
+    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*¥3\.00/));
     expect(panel).toHaveTextContent("My usage");
     expect(screen.queryByRole("combobox", { name: "Filter by person" })).not.toBeInTheDocument();
     expect(userListCall).not.toHaveBeenCalled();
@@ -347,7 +347,7 @@ describe("ClientUsagePanel", () => {
     await chooseSelectOption(user, screen.getByRole("combobox", { name: "Usage scope" }), "Engineering");
     expect(onTeamChange).toHaveBeenCalledWith("engineering");
     const panel = screen.getByRole("dialog", { name: "Claude Desktop" });
-    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*\$10\.00/));
+    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*¥10\.00/));
     expect(panel).toHaveTextContent("Engineering · All members");
     expect(uiSpendLogsCall).toHaveBeenLastCalledWith(
       expect.objectContaining({ params: expect.objectContaining({ team_id: "engineering" }) }),
@@ -360,7 +360,7 @@ describe("ClientUsagePanel", () => {
     expect(screen.queryByRole("option", { name: "Outside user" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("option", { name: "Maya" }));
     expect(onUserChange).toHaveBeenCalledWith("person-2");
-    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*\$7\.00/));
+    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*¥7\.00/));
     expect(panel).toHaveTextContent("Engineering · Maya");
     expect(uiSpendLogsCall).toHaveBeenLastCalledWith(
       expect.objectContaining({ params: expect.objectContaining({ team_id: "engineering", user_id: "person-2" }) }),
@@ -368,7 +368,7 @@ describe("ClientUsagePanel", () => {
 
     await chooseSelectOption(user, screen.getByRole("combobox", { name: "Team member" }), "All members");
     expect(onUserChange).toHaveBeenLastCalledWith(null);
-    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*\$10\.00/));
+    await waitFor(() => expect(panel).toHaveTextContent(/Spend\s*¥10\.00/));
     expect(onClose).not.toHaveBeenCalled();
     expect(userListCall).not.toHaveBeenCalled();
     expect(dailyActivityExportCall).not.toHaveBeenCalled();
@@ -390,7 +390,7 @@ describe("ClientUsagePanel", () => {
     );
 
     expect(screen.getByRole("alert")).toHaveTextContent(scopeError);
-    expect(screen.queryByText("$12.50")).not.toBeInTheDocument();
+    expect(screen.queryByText("¥12.50")).not.toBeInTheDocument();
     expect(screen.queryByText("Total tokens")).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Daily usage" })).not.toBeInTheDocument();
     expect(uiSpendLogsCall).not.toHaveBeenCalled();

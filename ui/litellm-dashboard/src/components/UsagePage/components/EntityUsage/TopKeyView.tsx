@@ -169,7 +169,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                     </div>
                     <div>
                       <span className="text-muted-foreground">Spend:</span>{" "}
-                      {tag.usage > 0 && tag.usage < 0.01 ? "<$0.01" : `$${formatNumberWithCommas(tag.usage, 2)}`}
+                      {tag.usage > 0 && tag.usage < 0.01 ? "<¥0.01" : `¥${formatNumberWithCommas(tag.usage, 2)}`}
                     </div>
                   </div>
                 }
@@ -199,7 +199,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
   };
 
   const spendColumn = {
-    header: "Spend (USD)",
+    header: "Spend (CNY)",
     accessorKey: "spend",
     meta: { ...QUIET_HEADER, numeric: true },
     cell: (info: any) => <MoneyCell value={info.getValue()} decimals={2} />,
@@ -237,7 +237,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
             tickGap={5}
             layout="vertical"
             showLegend={false}
-            valueFormatter={(value) => `$${formatNumberWithCommas(value, 2)}`}
+            valueFormatter={(value) => `¥${formatNumberWithCommas(value, 2)}`}
             onValueChange={(item) => handleKeyClick(item)}
             showTooltip={true}
             customTooltip={(props) => {
@@ -258,7 +258,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                     <div>
                       <span className="text-muted-foreground">Spend: </span>
                       <span className="font-medium tabular-nums text-foreground">
-                        ${formatNumberWithCommas(item?.spend, 2)}
+                        ¥{formatNumberWithCommas(item?.spend, 2)}
                       </span>
                     </div>
                   </div>

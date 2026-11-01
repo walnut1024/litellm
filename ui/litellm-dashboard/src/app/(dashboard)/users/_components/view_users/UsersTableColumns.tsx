@@ -182,8 +182,8 @@ export const getUsersTableColumns = ({
     {
       id: "spend",
       accessorKey: "spend",
-      meta: { title: "Spend (USD)", numeric: true },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Spend (USD)" variant="header-cycle" />,
+      meta: { title: "Spend (CNY)", numeric: true },
+      header: ({ column }) => <DataTableSortHeader column={column} title="Spend (CNY)" variant="header-cycle" />,
       size: 130,
       enableSorting: true,
       cell: ({ row }) => <MoneyCell value={row.original.spend} decimals={2} />,
@@ -191,8 +191,8 @@ export const getUsersTableColumns = ({
     {
       id: "max_budget",
       accessorKey: "max_budget",
-      meta: { title: "Budget (USD)", numeric: true },
-      header: ({ column }) => <DataTableSortHeader column={column} title="Budget (USD)" />,
+      meta: { title: "Budget (CNY)", numeric: true },
+      header: ({ column }) => <DataTableSortHeader column={column} title="Budget (CNY)" />,
       sortDescFirst: true,
       size: 130,
       enableSorting: true,

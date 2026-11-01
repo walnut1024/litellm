@@ -40,7 +40,7 @@ describe("UsageBreakdownChart", () => {
     expect(screen.getByRole("radio", { name: "Daily" })).toBeChecked();
     expect(screen.getByRole("radio", { name: "Linear" })).toBeChecked();
     expect(screen.getByText("claude-sonnet-4")).toBeInTheDocument();
-    expect(within(screen.getByRole("listitem")).getByText("$9.00")).toBeInTheDocument();
+    expect(within(screen.getByRole("listitem")).getByText("¥9.00")).toBeInTheDocument();
   });
 
   it("should keep metric, time bucket and scale controls working in the compact panel", async () => {
@@ -56,7 +56,7 @@ describe("UsageBreakdownChart", () => {
     await user.click(screen.getByRole("radio", { name: "Tokens" }));
     expect(screen.getByText("Daily tokens by model (top 8, rest grouped as Other)")).toBeInTheDocument();
     expect(within(screen.getByRole("listitem")).getByText("800")).toBeInTheDocument();
-    expect(screen.queryByText("$9.00")).not.toBeInTheDocument();
+    expect(screen.queryByText("¥9.00")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("radio", { name: "Weekly" }));
     expect(screen.getByRole("heading", { name: "Weekly usage" })).toBeInTheDocument();

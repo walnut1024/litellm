@@ -43,7 +43,7 @@ export default function ResetMemberBudgetsDialog({
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
           {memberCount} {pluralize(memberCount, "member has", "members have")}
-          <L> a custom budget, so the new team default of $</L>
+          <L> a custom budget, so the new team default of ¥</L>
           {formatNumberWithCommas(newBudget, 2)}
           <L> will not apply to </L>
           {pluralize(memberCount, "that member", "them")}
@@ -72,7 +72,7 @@ export default function ResetMemberBudgetsDialog({
               </Button>
               <Button onClick={onReset} disabled={busy}>
                 {pluralize(memberCount, "Reset", "Reset all")}
-                <L> to $</L>
+                <L> to ¥</L>
                 {formatNumberWithCommas(newBudget, 2)}
               </Button>
             </>

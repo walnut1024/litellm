@@ -48,7 +48,7 @@ export function SectionHeader({
 
       {tokens !== undefined && <span className="text-xs text-muted-foreground">Tokens: {tokens.toLocaleString()}</span>}
 
-      {cost !== undefined && <span className="text-xs text-muted-foreground">Cost: ${cost.toFixed(6)}</span>}
+      {cost !== undefined && <span className="text-xs text-muted-foreground">Cost: ¥{cost.toFixed(6)}</span>}
 
       {turnCount !== undefined && turnCount > 0 && (
         <span className="text-xs text-muted-foreground">Turns: {turnCount}</span>

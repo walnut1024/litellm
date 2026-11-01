@@ -40,7 +40,7 @@ describe("TeamAdminSettingsForm", () => {
 
     expect(screen.getByLabelText("Tokens per minute Limit (TPM)")).toHaveValue(1000);
     expect(screen.getByLabelText("Requests per minute Limit (RPM)")).toHaveValue(50);
-    expect(screen.getByLabelText("Max Budget (USD)")).toHaveValue(20);
+    expect(screen.getByLabelText("Max Budget (CNY)")).toHaveValue(20);
   });
 
   it("hides the fields the proxy has not enabled for team admins", () => {
@@ -48,7 +48,7 @@ describe("TeamAdminSettingsForm", () => {
 
     expect(screen.getByLabelText("Requests per minute Limit (RPM)")).toBeInTheDocument();
     expect(screen.queryByLabelText("Tokens per minute Limit (TPM)")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Max Budget (USD)")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Max Budget (CNY)")).not.toBeInTheDocument();
   });
 
   it("saves the new TPM limit and nothing else", async () => {
@@ -66,7 +66,7 @@ describe("TeamAdminSettingsForm", () => {
     const { onSave } = renderForm(new Set(["tpm_limit", "rpm_limit", "max_budget"]));
 
     fireEvent.change(screen.getByLabelText("Requests per minute Limit (RPM)"), { target: { value: "80" } });
-    fireEvent.change(screen.getByLabelText("Max Budget (USD)"), { target: { value: "12.5" } });
+    fireEvent.change(screen.getByLabelText("Max Budget (CNY)"), { target: { value: "12.5" } });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ rpm_limit: 80, max_budget: 12.5 }));
@@ -99,7 +99,7 @@ describe("TeamAdminSettingsForm", () => {
       new Set(["team_member_budget", "team_member_budget_duration", "team_member_tpm_limit", "team_member_rpm_limit"]),
     );
 
-    expect(screen.getByLabelText("Member Default Budget (USD)")).toHaveValue(10);
+    expect(screen.getByLabelText("Member Default Budget (CNY)")).toHaveValue(10);
     expect(screen.getByLabelText("Member Default Budget Duration")).toHaveTextContent("monthly");
     expect(screen.getByLabelText("Member Default TPM Limit")).toHaveValue(100);
     expect(screen.getByLabelText("Member Default RPM Limit")).toHaveValue(5);
@@ -111,7 +111,7 @@ describe("TeamAdminSettingsForm", () => {
       new Set(["team_member_budget", "team_member_budget_duration", "team_member_tpm_limit", "team_member_rpm_limit"]),
     );
 
-    fireEvent.change(screen.getByLabelText("Member Default Budget (USD)"), { target: { value: "25" } });
+    fireEvent.change(screen.getByLabelText("Member Default Budget (CNY)"), { target: { value: "25" } });
     await chooseSelectOption(user, screen.getByLabelText("Member Default Budget Duration"), "weekly");
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
@@ -148,14 +148,14 @@ describe("TeamAdminSettingsForm", () => {
   it("shows the soft budget when the proxy lets team admins edit it", () => {
     renderForm(new Set(["soft_budget"]));
 
-    expect(screen.getByLabelText("Soft Budget (USD)")).toHaveValue(15);
+    expect(screen.getByLabelText("Soft Budget (CNY)")).toHaveValue(15);
   });
 
   it("saves a lowered soft budget and nothing else", async () => {
     const user = userEvent.setup();
     const { onSave } = renderForm(new Set(["soft_budget", "max_budget"]));
 
-    fireEvent.change(screen.getByLabelText("Soft Budget (USD)"), { target: { value: "10.5" } });
+    fireEvent.change(screen.getByLabelText("Soft Budget (CNY)"), { target: { value: "10.5" } });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith({ soft_budget: 10.5 }));
@@ -185,7 +185,7 @@ describe("TeamAdminSettingsForm", () => {
   ])("when mayRaiseMaxBudget is %s, describes only the Max Budget input with: %s", (mayRaiseMaxBudget, hint) => {
     renderForm(new Set(["tpm_limit", "max_budget"]), { mayRaiseMaxBudget });
 
-    expect(screen.getByLabelText("Max Budget (USD)")).toHaveAccessibleDescription(hint);
+    expect(screen.getByLabelText("Max Budget (CNY)")).toHaveAccessibleDescription(hint);
     expect(screen.getByLabelText("Tokens per minute Limit (TPM)")).not.toHaveAccessibleDescription();
   });
 

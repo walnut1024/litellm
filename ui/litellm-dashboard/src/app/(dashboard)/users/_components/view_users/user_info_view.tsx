@@ -476,7 +476,7 @@ export default function UserInfoView({
             value: (userData.user_role && possibleUIRoles?.[userData.user_role]?.ui_label) || userData.user_role || "-",
           },
           {
-            label: "Total Spend (USD)",
+            label: "Total Spend (CNY)",
             value: userData.spend !== null && userData.spend !== undefined ? userData.spend.toFixed(2) : undefined,
           },
         ]}
@@ -523,10 +523,10 @@ export default function UserInfoView({
                 />
               </p>
               <div className="mt-2">
-                <h3 className="text-lg font-medium">${formatNumberWithCommas(userData.spend || 0, 2)}</h3>
+                <h3 className="text-lg font-medium">¥{formatNumberWithCommas(userData.spend || 0, 2)}</h3>
                 <p>
-                  {t("of")}
-                  {userData.max_budget !== null ? `$${formatNumberWithCommas(userData.max_budget, 2)}` : "Unlimited"}
+                  {t("of ")}
+                  {userData.max_budget !== null ? `¥${formatNumberWithCommas(userData.max_budget, 2)}` : "Unlimited"}
                 </p>
               </div>
             </Card>
@@ -696,7 +696,7 @@ export default function UserInfoView({
                   <p className="font-medium">{t("Max Budget")}</p>
                   <p>
                     {userData.max_budget !== null && userData.max_budget !== undefined
-                      ? `$${formatNumberWithCommas(userData.max_budget, 4)}`
+                      ? `¥${formatNumberWithCommas(userData.max_budget, 4)}`
                       : "Unlimited"}
                   </p>
                 </div>

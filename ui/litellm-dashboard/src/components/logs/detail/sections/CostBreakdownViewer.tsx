@@ -32,7 +32,7 @@ interface CostBreakdownViewerProps {
 
 const formatCost = (cost: number | undefined): string => {
   if (cost === undefined || cost === null) return "-";
-  return `$${formatNumberWithCommas(cost, 8)}`;
+  return `¥${formatNumberWithCommas(cost, 8)}`;
 };
 
 const formatPercent = (percent: number | undefined): string => {

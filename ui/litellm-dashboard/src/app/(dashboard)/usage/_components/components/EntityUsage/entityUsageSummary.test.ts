@@ -59,14 +59,14 @@ describe("buildSummaryTiles", () => {
   it("shows request-only spend under the original title when there is no flat cost", () => {
     const [first] = buildSummaryTiles(metadata, false);
     expect(first.title).toBe("Total Spend");
-    expect(first.value).toBe("$100.00");
+    expect(first.value).toBe("¥100.00");
     expect(first.expandable).toBeUndefined();
   });
 
   it("rolls flat cost into a single expandable Total Cost tile", () => {
     const [first] = buildSummaryTiles(metadata, true);
     expect(first.title).toBe("Total Cost");
-    expect(first.value).toBe("$140.00");
+    expect(first.value).toBe("¥140.00");
     expect(first.expandable).toBe(true);
     expect(first.tooltip).toBeTruthy();
   });
@@ -79,15 +79,15 @@ describe("buildSummaryTiles", () => {
 
   it("treats a missing flat cost as zero", () => {
     const { total_flat_cost, ...noFlat } = metadata;
-    expect(buildSummaryTiles(noFlat, true)[0].value).toBe("$100.00");
+    expect(buildSummaryTiles(noFlat, true)[0].value).toBe("¥100.00");
   });
 });
 
 describe("buildCostBreakdownTiles", () => {
   it("splits the total into request cost and flat cost", () => {
     const byTitle = Object.fromEntries(buildCostBreakdownTiles(metadata).map((t) => [t.title, t.value]));
-    expect(byTitle["Request Cost"]).toBe("$100.00");
-    expect(byTitle["Flat Cost"]).toBe("$40.00");
+    expect(byTitle["Request Cost"]).toBe("¥100.00");
+    expect(byTitle["Flat Cost"]).toBe("¥40.00");
   });
 
   it("adds up to the Total Cost tile so the expanded view reconciles", () => {
@@ -105,6 +105,6 @@ describe("buildCostBreakdownTiles", () => {
   it("treats a missing flat cost as zero", () => {
     const { total_flat_cost, ...noFlat } = metadata;
     const byTitle = Object.fromEntries(buildCostBreakdownTiles(noFlat).map((t) => [t.title, t.value]));
-    expect(byTitle["Flat Cost"]).toBe("$0.00");
+    expect(byTitle["Flat Cost"]).toBe("¥0.00");
   });
 });

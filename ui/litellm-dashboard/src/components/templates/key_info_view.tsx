@@ -522,7 +522,7 @@ export default function KeyInfoView({
         if (onKeyDataUpdate) {
           onKeyDataUpdate({ spend: 0 });
         }
-        toast.success("Key spend reset to $0");
+        toast.success("Key spend reset to ¥0");
         setIsResetSpendModalOpen(false);
       },
       onError: (error) => {
@@ -571,8 +571,8 @@ export default function KeyInfoView({
         currentKeyData.user?.user_email,
       );
   const budgetDisplay = (() => {
-    if (hasOwnBudget) return `$${formatNumberWithCommas(currentKeyData.max_budget, 2)}`;
-    if (memberGate) return `$${formatNumberWithCommas(memberGate.maxBudget, 2)} (team member budget)`;
+    if (hasOwnBudget) return `¥${formatNumberWithCommas(currentKeyData.max_budget, 2)}`;
+    if (memberGate) return `¥${formatNumberWithCommas(memberGate.maxBudget, 2)} (team member budget)`;
     return "Unlimited";
   })();
   const inheritedGates = hasOwnBudget ? [] : inheritedBudgetGates(parentTeam, parentOrg, ownerUser, memberGate);
@@ -647,7 +647,7 @@ export default function KeyInfoView({
           },
           {
             label: "Spend",
-            value: currentKeyData?.spend ? `$${formatNumberWithCommas(currentKeyData.spend, 4)}` : "$0.0000",
+            value: currentKeyData?.spend ? `¥${formatNumberWithCommas(currentKeyData.spend, 4)}` : "¥0.0000",
           },
         ]}
         onCancel={() => {
@@ -669,11 +669,11 @@ export default function KeyInfoView({
           <p>
             <L>Reset spend for </L>
             <strong>{currentKeyData?.key_alias || currentKeyData?.token_id || "this key"}</strong>
-            <L> to</L> <strong>$0</strong>?
+            <L> to</L> <strong>¥0</strong>?
           </p>
           <p style={{ color: "#666", fontSize: "0.875rem", marginTop: 8 }}>
             <L>Current spend: </L>
-            <strong>${formatNumberWithCommas(currentKeyData.spend, 4)}</strong>
+            <strong>¥{formatNumberWithCommas(currentKeyData.spend, 4)}</strong>
             <L>
               . Spend history is preserved in logs. This resets the current period spend counter, the same as an
               automatic budget reset.
@@ -754,10 +754,10 @@ export default function KeyInfoView({
                   />
                 </p>
                 <div className="mt-2">
-                  <h3 className="text-lg font-medium">${formatNumberWithCommas(currentKeyData.spend, 4)}</h3>
+                  <h3 className="text-lg font-medium">¥{formatNumberWithCommas(currentKeyData.spend, 4)}</h3>
                   <p className="text-sm">
                     {memberGate
-                      ? `Team member spend $${formatNumberWithCommas(memberGate.spend ?? 0, 4)} of $${formatNumberWithCommas(memberGate.maxBudget, 2)} (team member budget)`
+                      ? `Team member spend ¥${formatNumberWithCommas(memberGate.spend ?? 0, 4)} of ¥${formatNumberWithCommas(memberGate.maxBudget, 2)} (team member budget)`
                       : `of ${budgetDisplay}`}
                     <InheritedBudgetHint gates={inheritedGates} />
                   </p>
@@ -768,7 +768,7 @@ export default function KeyInfoView({
                     </p>
                   )}
                   <p className="text-sm mt-2" data-testid="key-lifetime-spend">
-                    <L>Lifetime spend: $</L>
+                    <L>Lifetime spend: ¥</L>
                     {formatNumberWithCommas(currentKeyData.total_spend ?? 0, 4)}
                     {needsLifetimeSpendBackfill(currentKeyData.spend, currentKeyData.total_spend) && (
                       <HoverCard>
@@ -1091,14 +1091,14 @@ export default function KeyInfoView({
                     <p className="text-sm font-medium">
                       <L>Spend</L>
                     </p>
-                    <p className="text-sm">${formatNumberWithCommas(currentKeyData.spend, 4)} USD</p>
+                    <p className="text-sm">¥{formatNumberWithCommas(currentKeyData.spend, 4)} CNY</p>
                   </div>
 
                   <div>
                     <p className="text-sm font-medium">
                       <L>Lifetime Spend</L>
                     </p>
-                    <p className="text-sm">${formatNumberWithCommas(currentKeyData.total_spend ?? 0, 4)} USD</p>
+                    <p className="text-sm">¥{formatNumberWithCommas(currentKeyData.total_spend ?? 0, 4)} CNY</p>
                   </div>
 
                   <div>

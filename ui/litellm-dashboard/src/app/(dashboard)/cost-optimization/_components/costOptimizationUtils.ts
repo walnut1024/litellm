@@ -5,16 +5,16 @@ import { formatNumberWithCommas } from "@/utils/dataUtils";
 
 export const usd = (value: number): string => {
   // Sized and signed off the magnitude: a driver can come out negative, and a small
-  // loss rendered at two decimals would read as "$-0.00"
+  // loss rendered at two decimals would read as "¥-0.00"
   const magnitude = Math.abs(value);
   const decimals = magnitude > 0 && magnitude < 1 ? 4 : 2;
-  return `${value < 0 ? "-" : ""}$${formatNumberWithCommas(magnitude, decimals)}`;
+  return `${value < 0 ? "-" : ""}¥${formatNumberWithCommas(magnitude, decimals)}`;
 };
 
 export const classificationRatePer1kTurns = (classifierCost: number, turns: number): string => {
   if (turns <= 0) return `(${usd(0)} / 1K turns)`;
   const rate = (classifierCost * 1000) / turns;
-  if (rate > 0 && rate < 0.0001) return "(<$0.0001 / 1K turns)";
+  if (rate > 0 && rate < 0.0001) return "(<¥0.0001 / 1K turns)";
   return `(${usd(rate)} / 1K turns)`;
 };
 

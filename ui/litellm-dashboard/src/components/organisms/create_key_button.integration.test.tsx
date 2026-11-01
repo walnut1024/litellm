@@ -364,7 +364,7 @@ describe("CreateKey", () => {
       await openModal();
       await nameTheKey();
       await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "150.75");
+      await userEvent.type(await screen.findByLabelText(/Max Budget \(CNY\)/), "150.75");
       await openSection(/Optional Settings/i);
       await submit();
 
@@ -377,11 +377,11 @@ describe("CreateKey", () => {
       await openModal();
       await nameTheKey();
       await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "150.75");
+      await userEvent.type(await screen.findByLabelText(/Max Budget \(CNY\)/), "150.75");
       await openSection(/Optional Settings/i);
       await openSection(/Optional Settings/i);
 
-      expect(await screen.findByLabelText(/Max Budget \(USD\)/)).toHaveValue(150.75);
+      expect(await screen.findByLabelText(/Max Budget \(CNY\)/)).toHaveValue(150.75);
 
       await submit();
 
@@ -392,7 +392,7 @@ describe("CreateKey", () => {
       await openModal();
       await nameTheKey();
       await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "150.75");
+      await userEvent.type(await screen.findByLabelText(/Max Budget \(CNY\)/), "150.75");
       await submit();
 
       const payload = await createdPayload();
@@ -809,11 +809,11 @@ describe("CreateKey", () => {
       await openModal({ team: { team_id: "team-1", max_budget: 10 } as unknown as Team });
       await nameTheKey();
       await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "50");
+      await userEvent.type(await screen.findByLabelText(/Max Budget \(CNY\)/), "50");
       await submit();
 
       await waitFor(() => {
-        expect(screen.getByLabelText(/Max Budget \(USD\)/)).toHaveAttribute("aria-invalid", "true");
+        expect(screen.getByLabelText(/Max Budget \(CNY\)/)).toHaveAttribute("aria-invalid", "true");
       });
       expect(vi.mocked(keyCreateCall)).not.toHaveBeenCalled();
     });
@@ -1344,7 +1344,7 @@ describe("CreateKey", () => {
       await openModal({ team: { team_id: "team-1", max_budget: 10 } as unknown as Team });
       await nameTheKey();
       await openSection(/Optional Settings/i);
-      await userEvent.type(await screen.findByLabelText(/Max Budget \(USD\)/), "50");
+      await userEvent.type(await screen.findByLabelText(/Max Budget \(CNY\)/), "50");
       await openSection(/Optional Settings/i);
       await submit();
 

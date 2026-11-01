@@ -13,12 +13,12 @@ describe("SpendBudgetCell", () => {
     expect(indicator(container)).toBeNull();
   });
 
-  it("shows $0.00 for zero or undefined spend, never a hyphen", () => {
+  it("shows ¥0.00 for zero or undefined spend, never a hyphen", () => {
     const { rerender } = render(<SpendBudgetCell spend={0} maxBudget={100} />);
-    expect(screen.getByText("$0.00")).toBeInTheDocument();
+    expect(screen.getByText("¥0.00")).toBeInTheDocument();
     expect(screen.queryByText("-")).not.toBeInTheDocument();
     rerender(<SpendBudgetCell spend={null} maxBudget={null} />);
-    expect(screen.getByText("$0.00")).toBeInTheDocument();
+    expect(screen.getByText("¥0.00")).toBeInTheDocument();
     expect(screen.queryByText("-")).not.toBeInTheDocument();
   });
 
@@ -27,15 +27,15 @@ describe("SpendBudgetCell", () => {
     const meter = screen.getByRole("meter");
     expect(meter).toHaveAttribute("aria-valuenow", "25");
     expect(meter).toHaveAttribute("aria-valuemax", "100");
-    expect(screen.getByText("of $100")).toBeInTheDocument();
+    expect(screen.getByText("of ¥100")).toBeInTheDocument();
   });
 
   it("supports matching spend and budget precision for summary views", () => {
     render(<SpendBudgetCell spend={98.854} maxBudget={3000} spendDecimals={2} budgetDecimals={2} />);
 
-    expect(screen.getByText("$98.85")).toBeInTheDocument();
-    expect(screen.getByText("of $3,000.00")).toBeInTheDocument();
-    expect(screen.getByRole("meter")).toHaveAttribute("aria-valuetext", "$98.85 of $3,000.00");
+    expect(screen.getByText("¥98.85")).toBeInTheDocument();
+    expect(screen.getByText("of ¥3,000.00")).toBeInTheDocument();
+    expect(screen.getByRole("meter")).toHaveAttribute("aria-valuetext", "¥98.85 of ¥3,000.00");
   });
 
   it("keeps the default tone below 80% usage", () => {
@@ -80,12 +80,12 @@ describe("SpendBudgetCell", () => {
       />,
     );
 
-    expect(screen.getByText("$5.00")).toBeInTheDocument();
-    expect(screen.getByText("· $45.00 of $50 (team member)")).toBeInTheDocument();
+    expect(screen.getByText("¥5.00")).toBeInTheDocument();
+    expect(screen.getByText("· ¥45.00 of ¥50 (team member)")).toBeInTheDocument();
     const meter = screen.getByRole("meter");
     expect(meter).toHaveAttribute("aria-valuenow", "45");
     expect(meter).toHaveAttribute("aria-valuemax", "50");
-    expect(meter).toHaveAttribute("aria-valuetext", "team member spend $45.00 of $50");
+    expect(meter).toHaveAttribute("aria-valuetext", "team member spend ¥45.00 of ¥50");
     expect(indicator(container)?.className).toContain("bg-warning");
     expect(screen.getByLabelText("question-circle")).toBeInTheDocument();
   });
@@ -99,7 +99,7 @@ describe("SpendBudgetCell", () => {
     };
     render(<SpendBudgetCell spend={10} maxBudget={100} teamMemberGate={teamMemberGate} />);
 
-    expect(screen.getByText("of $100")).toBeInTheDocument();
+    expect(screen.getByText("of ¥100")).toBeInTheDocument();
     expect(screen.queryByText(/team member/)).not.toBeInTheDocument();
     expect(screen.getByRole("meter")).toHaveAttribute("aria-valuemax", "100");
   });
@@ -112,7 +112,7 @@ describe("SpendBudgetCell", () => {
   it("shows no inherited-budget hint when the key has its own budget", () => {
     const gates = [{ scope: "Team" as const, alias: "Team A", maxBudget: 200, budgetDuration: null }];
     render(<SpendBudgetCell spend={10} maxBudget={50} inheritedGates={gates} />);
-    expect(screen.getByText("of $50")).toBeInTheDocument();
+    expect(screen.getByText("of ¥50")).toBeInTheDocument();
     expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
   });
 });

@@ -14,7 +14,7 @@ const roleOptions = [
 ];
 
 const additionalFields = [
-  { name: "max_budget_in_team", label: "Team Member Budget (USD)", type: "numerical" as const, step: 0.01, min: 0 },
+  { name: "max_budget_in_team", label: "Team Member Budget (CNY)", type: "numerical" as const, step: 0.01, min: 0 },
   { name: "budget_duration", label: "Budget Reset Period", type: "budget-duration" as const },
   { name: "tpm_limit", label: "Team Member TPM Limit", type: "numerical" as const, step: 1, min: 0 },
   { name: "rpm_limit", label: "Team Member RPM Limit", type: "numerical" as const, step: 1, min: 0 },
@@ -35,7 +35,7 @@ const tempBudgetConfig = {
   ...teamMemberConfig,
   additionalFields: [
     ...additionalFields,
-    { name: "temp_budget_increase", label: "Temporary Budget Increase (USD)", type: "numerical" as const, step: 0.01 },
+    { name: "temp_budget_increase", label: "Temporary Budget Increase (CNY)", type: "numerical" as const, step: 0.01 },
     { name: "temp_budget_expiry", label: "Temporary Budget Expiry (UTC)", type: "utc-datetime" as const },
   ],
 };
@@ -102,7 +102,7 @@ describe("EditMembership submit payload", () => {
     await user.click(screen.getByRole("combobox", { name: /Role/ }));
     expect(screen.queryByRole("option", { name: "Admin" })).not.toBeInTheDocument();
     await user.keyboard("{Escape}");
-    fireEvent.change(screen.getByRole("spinbutton", { name: "Team Member Budget (USD)" }), { target: { value: "20" } });
+    fireEvent.change(screen.getByRole("spinbutton", { name: "Team Member Budget (CNY)" }), { target: { value: "20" } });
     save();
     await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
     expect(submitted()).toEqual(
@@ -201,7 +201,7 @@ describe("EditMembership submit payload", () => {
     };
     renderEdit(modelBudgetConfig, member);
 
-    const cap = await screen.findByPlaceholderText("Max spend ($)");
+    const cap = await screen.findByPlaceholderText("Max spend (CNY)");
     expect(cap).toHaveValue(5);
     fireEvent.change(cap, { target: { value: "9" } });
     save();
@@ -308,7 +308,7 @@ describe("EditMembership submit payload", () => {
   it("submits a typed numeric field as the raw string and a cleared one as null", async () => {
     renderEdit(teamMemberConfig, { user_id: "u1", user_email: "a@b.com", role: "user", tpm_limit: 7 });
 
-    fireEvent.change(screen.getByLabelText("Team Member Budget (USD)"), { target: { value: "42.56" } });
+    fireEvent.change(screen.getByLabelText("Team Member Budget (CNY)"), { target: { value: "42.56" } });
     fireEvent.change(screen.getByLabelText("Team Member TPM Limit"), { target: { value: "" } });
 
     save();
@@ -380,7 +380,7 @@ describe("EditMembership submit payload", () => {
     async (user_email) => {
       renderEdit(teamMemberConfig, { ...cappedMember, user_email });
 
-      fireEvent.change(screen.getByLabelText("Team Member Budget (USD)"), { target: { value: "25" } });
+      fireEvent.change(screen.getByLabelText("Team Member Budget (CNY)"), { target: { value: "25" } });
       fireEvent.change(screen.getByLabelText("Team Member TPM Limit"), { target: { value: "100" } });
       fireEvent.change(screen.getByLabelText("Team Member RPM Limit"), { target: { value: "10" } });
       save();
@@ -420,9 +420,9 @@ describe("EditMembership submit payload", () => {
   });
 
   it.each([
-    ["Team Member Budget (USD)", "42.567", "stepMismatch"],
+    ["Team Member Budget (CNY)", "42.567", "stepMismatch"],
     ["Team Member TPM Limit", "12.7", "stepMismatch"],
-    ["Team Member Budget (USD)", "-5", "rangeUnderflow"],
+    ["Team Member Budget (CNY)", "-5", "rangeUnderflow"],
   ])("blocks submission when %s holds %s", async (label, value, violation) => {
     renderEdit(teamMemberConfig, { user_id: "u1", user_email: "a@b.com", role: "user" });
 
@@ -439,7 +439,7 @@ describe("EditMembership submit payload", () => {
   it("submits a typed temporary increase with its expiry as a UTC ISO timestamp", async () => {
     renderEdit(tempBudgetConfig, cappedMember);
 
-    fireEvent.change(screen.getByLabelText("Temporary Budget Increase (USD)"), { target: { value: "25" } });
+    fireEvent.change(screen.getByLabelText("Temporary Budget Increase (CNY)"), { target: { value: "25" } });
     fireEvent.change(screen.getByLabelText("Temporary Budget Expiry (UTC)"), { target: { value: "2030-01-02T03:04" } });
 
     save();
@@ -453,10 +453,10 @@ describe("EditMembership submit payload", () => {
   it("seeds a stored temporary budget into the controls and clears both to null when the operator blanks them", async () => {
     renderEdit(tempBudgetConfig, tempBudgetMember);
 
-    expect(screen.getByLabelText("Temporary Budget Increase (USD)")).toHaveValue(25);
+    expect(screen.getByLabelText("Temporary Budget Increase (CNY)")).toHaveValue(25);
     expect(screen.getByLabelText("Temporary Budget Expiry (UTC)")).toHaveValue("2030-01-02T03:04");
 
-    fireEvent.change(screen.getByLabelText("Temporary Budget Increase (USD)"), { target: { value: "" } });
+    fireEvent.change(screen.getByLabelText("Temporary Budget Increase (CNY)"), { target: { value: "" } });
     fireEvent.change(screen.getByLabelText("Temporary Budget Expiry (UTC)"), { target: { value: "" } });
 
     save();
@@ -467,7 +467,7 @@ describe("EditMembership submit payload", () => {
   });
 
   it.each([
-    ["Temporary Budget Increase (USD)", "25"],
+    ["Temporary Budget Increase (CNY)", "25"],
     ["Temporary Budget Expiry (UTC)", "2030-01-02T03:04"],
   ])("blocks submission when only %s is set", async (label, value) => {
     renderEdit(tempBudgetConfig, { user_id: "u1", user_email: "a@b.com", role: "user" });

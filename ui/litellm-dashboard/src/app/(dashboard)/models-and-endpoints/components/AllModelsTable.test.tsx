@@ -224,16 +224,16 @@ describe("AllModelsTable", () => {
 
   it("renders input and output costs and a dash when both are missing", () => {
     const { rerender } = render(<AllModelsTable {...baseProps} />);
-    expect(screen.getByText("$30")).toBeInTheDocument();
-    expect(screen.getByText("$60")).toBeInTheDocument();
-    expect(screen.getByRole("cell", { name: /\$30/ })).toHaveClass("text-right");
+    expect(screen.getByText("¥30")).toBeInTheDocument();
+    expect(screen.getByText("¥60")).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: /¥30/ })).toHaveClass("text-right");
     expect(screen.getByRole("columnheader", { name: /costs/i })).toHaveClass("text-right");
 
     rerender(<AllModelsTable {...baseProps} data={[makeModel({ input_cost: null, output_cost: null })]} />);
-    expect(screen.queryByText(/^\$/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^¥/)).not.toBeInTheDocument();
   });
 
-  it("renders the per-second rate instead of $0.00 token costs for a video model priced per second", () => {
+  it("renders the per-second rate instead of ¥0.00 token costs for a video model priced per second", () => {
     const { rerender } = render(
       <AllModelsTable
         {...baseProps}
@@ -246,8 +246,8 @@ describe("AllModelsTable", () => {
         ]}
       />,
     );
-    expect(screen.getByText("$0.40/s")).toBeInTheDocument();
-    expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
+    expect(screen.getByText("¥0.40/s")).toBeInTheDocument();
+    expect(screen.queryByText("¥0.00")).not.toBeInTheDocument();
 
     rerender(
       <AllModelsTable
@@ -261,9 +261,9 @@ describe("AllModelsTable", () => {
         ]}
       />,
     );
-    expect(screen.getByText("$0.60")).toBeInTheDocument();
-    expect(screen.getByText("$0.015/s")).toBeInTheDocument();
-    expect(screen.queryByText("$0.00")).not.toBeInTheDocument();
+    expect(screen.getByText("¥0.60")).toBeInTheDocument();
+    expect(screen.getByText("¥0.015/s")).toBeInTheDocument();
+    expect(screen.queryByText("¥0.00")).not.toBeInTheDocument();
   });
 
   it("collapses extra access groups behind a +N more badge", () => {

@@ -111,8 +111,8 @@ it("renders a team row with alias, organization, and spend/budget", async () => 
   await waitFor(() => {
     expect(screen.getByText("Acme Team")).toBeInTheDocument();
     expect(screen.getByText("Test Organization")).toBeInTheDocument();
-    expect(screen.getByText("$42.50")).toBeInTheDocument();
-    expect(screen.getByText("/ $100.00")).toBeInTheDocument();
+    expect(screen.getByText("¥42.50")).toBeInTheDocument();
+    expect(screen.getByText("/ ¥100.00")).toBeInTheDocument();
   });
 });
 
@@ -132,7 +132,7 @@ it("renders caller membership spend and budget in the team row", async () => {
   renderTable();
 
   expect(await screen.findByText("My Spend")).toBeInTheDocument();
-  expect(screen.getByText("$50.00")).toBeInTheDocument();
+  expect(screen.getByText("¥50.00")).toBeInTheDocument();
   expect(screen.getByText("Resets Oct 20, 2026 UTC")).toBeInTheDocument();
 });
 

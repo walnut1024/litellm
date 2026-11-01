@@ -173,7 +173,7 @@ export function ModelMaxBudgetEditor({
             <div className="flex gap-2 items-center">
               <InputGroup className="w-40">
                 <InputGroupAddon>
-                  <InputGroupText>$</InputGroupText>
+                  <InputGroupText>¥</InputGroupText>
                 </InputGroupAddon>
                 <InputGroupInput
                   type="number"
@@ -186,7 +186,7 @@ export function ModelMaxBudgetEditor({
                     const typed = event.target.valueAsNumber;
                     updateEntry(entry.id, { budgetLimit: Number.isNaN(typed) ? null : typed });
                   }}
-                  placeholder="Max spend ($)"
+                  placeholder="Max spend (CNY)"
                   disabled={!premiumUser}
                 />
               </InputGroup>
@@ -210,8 +210,8 @@ export function ModelMaxBudgetEditor({
 
             {spent !== undefined && (
               <div className="text-[11px] text-muted-foreground mt-2 ml-1">
-                Current window spend: ${spent}
-                {entry.budgetLimit !== null && ` of $${entry.budgetLimit}`}
+                Current window spend: ¥{spent}
+                {entry.budgetLimit !== null && ` of ¥${entry.budgetLimit}`}
               </div>
             )}
           </div>

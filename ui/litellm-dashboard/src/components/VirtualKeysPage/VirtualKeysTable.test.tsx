@@ -250,8 +250,8 @@ it("should display key information correctly", async () => {
   await waitFor(() => {
     expect(screen.getByText("Test Key Alias")).toBeInTheDocument();
     expect(screen.getByText("Test Team")).toBeInTheDocument();
-    expect(screen.getByText("$5.5000")).toBeInTheDocument();
-    expect(screen.getByText("of $100")).toBeInTheDocument();
+    expect(screen.getByText("¥5.5000")).toBeInTheDocument();
+    expect(screen.getByText("of ¥100")).toBeInTheDocument();
   });
 });
 
@@ -270,7 +270,7 @@ it("shows the team-member budget for a key without its own budget", async () => 
 
   renderWithProviders(<VirtualKeysTable />);
 
-  expect(await screen.findByText("· $0.00 of $50 (team member)")).toBeInTheDocument();
+  expect(await screen.findByText("· ¥0.00 of ¥50 (team member)")).toBeInTheDocument();
   expect(teamInfoCall).toHaveBeenCalledWith("test-token", "member-budget-table-team", { keyLimit: 1 });
 
   await act(async () => {
@@ -284,8 +284,8 @@ it("shows lifetime spend in its own column next to the period spend meter", asyn
   renderWithProviders(<VirtualKeysTable />);
 
   expect(await screen.findByText("Lifetime Spend")).toBeInTheDocument();
-  expect(screen.getByText("$42.2500")).toBeInTheDocument();
-  expect(screen.getByText("$5.5000")).toBeInTheDocument();
+  expect(screen.getByText("¥42.2500")).toBeInTheDocument();
+  expect(screen.getByText("¥5.5000")).toBeInTheDocument();
 });
 
 it("should display user email correctly", async () => {

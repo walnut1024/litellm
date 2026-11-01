@@ -294,8 +294,8 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
       {
         id: "spend",
         accessorKey: "spend",
-        meta: { title: "Spend (USD)", numeric: true },
-        header: ({ column }) => <DataTableSortHeader column={column} title="Spend (USD)" variant="header-cycle" />,
+        meta: { title: "Spend (CNY)", numeric: true },
+        header: ({ column }) => <DataTableSortHeader column={column} title="Spend (CNY)" variant="header-cycle" />,
         size: 100,
         enableSorting: true,
         cell: (info) => <MoneyCell value={info.getValue() as number | null} decimals={4} />,
@@ -313,8 +313,8 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
       {
         id: "max_budget",
         accessorKey: "max_budget",
-        meta: { title: "Budget (USD)", numeric: true },
-        header: ({ column }) => <DataTableSortHeader column={column} title="Budget (USD)" variant="header-cycle" />,
+        meta: { title: "Budget (CNY)", numeric: true },
+        header: ({ column }) => <DataTableSortHeader column={column} title="Budget (CNY)" variant="header-cycle" />,
         size: 160,
         enableSorting: true,
         cell: (info) => {
@@ -326,7 +326,7 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
 
           return memberGate ? (
             <span className="block w-full whitespace-nowrap text-right tabular-nums">
-              ${formatNumberWithCommas(memberGate.maxBudget, 0)}{" "}
+              ¥{formatNumberWithCommas(memberGate.maxBudget, 0)}{" "}
               <span className="text-muted-foreground">
                 <L>(team member)</L>
               </span>

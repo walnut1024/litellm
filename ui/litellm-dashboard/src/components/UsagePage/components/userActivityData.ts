@@ -31,6 +31,6 @@ export const mergeUserActivityPages = (
 };
 
 export const formatUserSpend = (value: number): string => {
-  if (value === 0) return "$0.00";
+  if (value === 0) return "¥0.00";
   return getSpendString(value, 2);
 };

@@ -452,14 +452,14 @@ function KeyEditSession({
           <KeyBudgetNumberField
             control={form.control}
             name="max_budget"
-            label="Max Budget (USD)"
+            label="Max Budget (CNY)"
             placeholder="Enter a numerical value"
           />
 
           <KeyBudgetNumberField
             control={form.control}
             name="soft_budget"
-            label="Soft Budget (USD)"
+            label="Soft Budget (CNY)"
             placeholder="Get alerts when spend crosses this value, without blocking requests"
           />
 

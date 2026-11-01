@@ -27,7 +27,7 @@ const BUDGET_SOURCE_LABELS: Record<Exclude<TeamMemberBudgetSource, "none">, stri
 };
 
 const formatBudget = (value: number | null): string =>
-  value === null ? "Unlimited" : `$${formatNumberWithCommas(value, 2)}`;
+  value === null ? "Unlimited" : `¥${formatNumberWithCommas(value, 2)}`;
 
 const hasModelBudgets = (budget: StoredModelMaxBudget | null | undefined): budget is StoredModelMaxBudget =>
   budget != null && Object.keys(budget).length > 0;
@@ -213,7 +213,7 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          <L>Current Period Spend (USD)</L>
+          <L>Current Period Spend (CNY)</L>
           <SimpleTooltip content="Spend in this member's current budget period, the value checked against their budget. The Budget Period column shows the dates that period covers, or Never resets. Spend above a rollover cap at reset carries into the next period.">
             <CircleHelp className="size-4" aria-label="Current period spend information" />
           </SimpleTooltip>
@@ -227,7 +227,7 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          <L>Total Spend (USD)</L>
+          <L>Total Spend (CNY)</L>
           <SimpleTooltip content="Cumulative spend by this member within this team, across budget periods. This is a lower bound: lifetime tracking began 2026-04-21, so periods that reset before then are not included. It is never less than Current Period Spend.">
             <CircleHelp className="size-4" aria-label="Total spend information" />
           </SimpleTooltip>
@@ -241,7 +241,7 @@ export default function TeamMemberTab({
     {
       title: (
         <span className="flex items-center gap-1">
-          <L>Team Member Budget (USD)</L>
+          <L>Team Member Budget (CNY)</L>
           <SimpleTooltip content="Team default follows the team's member budget, so changing it in team settings updates this member too. Custom is set on this member only and ignores later team changes.">
             <CircleHelp className="size-4" aria-label="Team member budget information" />
           </SimpleTooltip>
@@ -301,7 +301,7 @@ export default function TeamMemberTab({
       { teamId: teamData.team_id, userId: memberToResetSpend.user_id },
       {
         onSuccess: () => {
-          toast.success("Team member spend reset to $0");
+          toast.success("Team member spend reset to ¥0");
           setMemberToResetSpend(null);
           onMemberSpendReset();
         },
@@ -371,13 +371,13 @@ export default function TeamMemberTab({
           <p>
             <L>Reset current period spend for</L>{" "}
             <strong>{memberToResetSpend?.user_email || memberToResetSpend?.user_id}</strong>
-            <L> in this team to</L> <strong>$0</strong>?
+            <L> in this team to</L> <strong>¥0</strong>?
           </p>
           <p className="text-sm text-muted-foreground">
             <L>Current period spend</L>
             {resetSpendPeriod ? ` (${resetSpendPeriod})` : ""}:{" "}
             <strong>
-              ${formatNumberWithCommas(getUserCurrentPeriodSpend(memberToResetSpend?.user_id ?? null), 4)}
+              ¥{formatNumberWithCommas(getUserCurrentPeriodSpend(memberToResetSpend?.user_id ?? null), 4)}
             </strong>
             <L>. This is the value checked against the member&apos;s budget. Total spend and logs are preserved.</L>
           </p>

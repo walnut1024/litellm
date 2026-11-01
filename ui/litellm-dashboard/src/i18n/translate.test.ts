@@ -7,6 +7,12 @@ describe("translate", () => {
     expect(translate("Key Alias", "en")).toBe("Key Alias");
   });
 
+  it("uses renminbi labels in both languages and preserves interpolated values", () => {
+    expect(translate("Max Budget (CNY)", "zh-CN")).toBe("最大预算（人民币）");
+    expect(translate("Max Budget (CNY)", "en")).toBe("Max Budget (CNY)");
+    expect(translate("{name}", "zh-CN", { name: "budget-$USD" })).toBe("budget-$USD");
+  });
+
   it("keeps unknown text and interpolated data verbatim", () => {
     expect(translate("custom-model-42", "zh-CN")).toBe("custom-model-42");
     expect(translate("constructor", "zh-CN")).toBe("constructor");

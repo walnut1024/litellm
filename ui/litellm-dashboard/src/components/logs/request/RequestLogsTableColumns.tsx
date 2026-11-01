@@ -219,7 +219,7 @@ export const getRequestLogsTableColumns = ({
 
       return (
         <div className="flex flex-col items-end">
-          {spend ? <CellTooltip content={`$${String(spend)}`} trigger={money} /> : money}
+          {spend ? <CellTooltip content={`¥${String(spend)}`} trigger={money} /> : money}
           {sessionTotalSpend != null && (
             <span className="text-[10px] text-muted-foreground">
               <L>session total</L>

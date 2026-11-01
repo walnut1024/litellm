@@ -1,4 +1,21 @@
 :root {
+  --moma-text-caption: 0.75rem;
+  --moma-text-body: calc(var(--moma-text-caption) * 1.5);
+  --moma-text-section: calc(var(--moma-text-body) * 1.5);
+  --moma-text-page: calc(var(--moma-text-section) * 1.5);
+  --text-xs: var(--moma-text-caption);
+  --text-sm: var(--moma-text-body);
+  --text-base: var(--moma-text-body);
+  --text-lg: var(--moma-text-body);
+  --text-xl: var(--moma-text-section);
+  --text-2xl: var(--moma-text-section);
+  --text-3xl: var(--moma-text-page);
+  --text-4xl: var(--moma-text-page);
+  --text-5xl: var(--moma-text-page);
+  --text-6xl: var(--moma-text-page);
+  --text-7xl: var(--moma-text-page);
+  --text-8xl: var(--moma-text-page);
+  --text-9xl: var(--moma-text-page);
   --background: #fafaf7;
   --foreground: #17202b;
   --card: #ffffff;
@@ -47,6 +64,30 @@
 }
 body {
   font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  font-size: var(--moma-text-body);
+}
+[class~="text-[9px]"],
+[class~="text-[10px]"],
+[class~="text-[11px]"],
+[class~="text-[12px]"],
+[class~="text-[13px]"],
+[class~="text-[13.5px]"] {
+  font-size: var(--moma-text-caption);
+}
+[class~="text-[15px]"],
+[class~="text-[16px]"],
+[class~="text-[17px]"] {
+  font-size: var(--moma-text-body);
+}
+[class~="text-[22px]"],
+[class~="text-[28px]"] {
+  font-size: var(--moma-text-section);
+}
+[data-slot="field-description"],
+[data-slot="card-description"],
+[data-slot="dialog-description"],
+[data-slot="sheet-description"] {
+  font-size: var(--moma-text-caption);
 }
 .moma-header {
   height: 80px;
@@ -56,7 +97,7 @@ body {
 .moma-brand {
   flex-shrink: 0;
   white-space: nowrap;
-  font-size: 30.5px;
+  font-size: var(--moma-text-section);
   font-weight: 750;
   letter-spacing: -0.035em;
   color: var(--foreground);
@@ -74,7 +115,7 @@ body {
   gap: 14px;
   white-space: nowrap;
   color: var(--muted-foreground);
-  font-size: 18px;
+  font-size: var(--moma-text-body);
   font-weight: 500;
   border-bottom: 4px solid transparent;
   padding-inline: 14px;
@@ -111,7 +152,7 @@ body {
   color: var(--primary-foreground);
 }
 .moma-header-account span.block.text-\[13px\] {
-  font-size: 11px;
+  font-size: var(--moma-text-caption);
 }
 .moma-header-account span.block.text-\[11px\] {
   display: none;
@@ -124,7 +165,7 @@ body {
   height: 22px;
 }
 .moma-language {
-  font-size: 16px;
+  font-size: var(--moma-text-body);
 }
 .moma-language-short {
   display: none;
@@ -143,7 +184,7 @@ body {
   padding: 0;
 }
 .moma-content h1 {
-  font-size: 40px;
+  font-size: var(--moma-text-page);
   line-height: 56px;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -152,7 +193,7 @@ body {
   display: none;
 }
 .moma-content [data-slot="page-header"] > p {
-  font-size: 20px;
+  font-size: var(--moma-text-body);
   line-height: 28px;
 }
 .moma-content .moma-key-header {
@@ -174,7 +215,7 @@ body {
   height: 46px;
   padding-inline: 24px;
   gap: 14px;
-  font-size: 18px;
+  font-size: var(--moma-text-body);
 }
 .moma-content [data-slot="page-controls"] [data-slot="button"] svg {
   width: 22px;
@@ -197,7 +238,7 @@ body {
   width: min(416px, 65vw);
   height: 46px;
   padding-left: 52px;
-  font-size: 18px;
+  font-size: var(--moma-text-body);
   box-shadow: none;
   background: var(--card);
 }
@@ -211,7 +252,7 @@ body {
   height: 46px;
   padding-inline: 22px;
   gap: 14px;
-  font-size: 16px;
+  font-size: var(--moma-text-body);
   box-shadow: none;
   background: var(--card);
 }
@@ -235,7 +276,7 @@ body {
 }
 .moma-content [data-slot="table-head"] {
   height: 56px;
-  font-size: 16px;
+  font-size: var(--moma-text-body);
   font-weight: 500;
   background: var(--background);
 }
@@ -244,7 +285,7 @@ body {
 }
 .moma-content [data-slot="table-cell"] {
   padding-block: 14px;
-  font-size: 18px;
+  font-size: var(--moma-text-body);
   line-height: 26px;
 }
 .moma-content [data-slot="table-cell"] .text-xs,
@@ -254,13 +295,13 @@ body {
 }
 .moma-content [data-slot="table-cell"] [data-slot="badge"] {
   height: 28px;
-  font-size: 16px;
+  font-size: var(--moma-text-caption);
 }
 .moma-content [data-slot="table-cell"] .moma-status-badge {
   height: 28px;
   padding-inline: 12px;
   border: 0;
-  font-size: 16px;
+  font-size: var(--moma-text-caption);
 }
 .moma-content [data-column-id="models"] [data-slot="badge"][data-variant="secondary"] {
   padding: 0;
@@ -282,13 +323,13 @@ body {
   padding: 20px 0 0;
 }
 .moma-content [data-slot="table-pagination"] .text-sm {
-  font-size: 18px;
+  font-size: var(--moma-text-body);
 }
 .moma-content [data-slot="table-pagination"] [data-slot="select-trigger"] {
   width: 96px;
   height: 42px;
   margin-left: 18px;
-  font-size: 18px;
+  font-size: var(--moma-text-body);
   background: var(--card);
   box-shadow: none;
 }
@@ -308,7 +349,7 @@ body {
   border-radius: 6px;
   background: var(--accent);
   color: var(--primary);
-  font-size: 18px;
+  font-size: var(--moma-text-body);
 }
 .moma-console :focus-visible {
   outline-offset: 3px;
@@ -329,14 +370,14 @@ body {
     padding-inline: 24px;
   }
   .moma-header .moma-brand {
-    font-size: 23px;
+    font-size: var(--moma-text-section);
   }
   .moma-navigation {
     gap: 16px;
   }
   .moma-nav-link {
     gap: 8px;
-    font-size: 14px;
+    font-size: var(--moma-text-caption);
     padding-inline: 2px;
   }
   .moma-nav-link svg {
@@ -357,14 +398,14 @@ body {
     padding-inline: 20px;
   }
   html[lang="en"] .moma-header .moma-brand {
-    font-size: 20px;
+    font-size: var(--moma-text-body);
   }
   html[lang="en"] .moma-navigation {
     gap: 10px;
   }
   html[lang="en"] .moma-nav-link {
     gap: 6px;
-    font-size: 13px;
+    font-size: var(--moma-text-caption);
     padding-inline: 2px;
   }
   html[lang="en"] .moma-nav-link svg {
@@ -382,7 +423,7 @@ body {
     padding-inline: 32px;
   }
   html[lang="en"] .moma-header .moma-brand {
-    font-size: 26px;
+    font-size: var(--moma-text-section);
   }
   html[lang="en"] .moma-navigation {
     gap: 20px;
@@ -390,7 +431,7 @@ body {
   html[lang="en"] .moma-nav-link {
     gap: 10px;
     padding-inline: 10px;
-    font-size: 16px;
+    font-size: var(--moma-text-body);
   }
   html[lang="en"] .moma-nav-link svg {
     width: 20px;
@@ -407,7 +448,7 @@ body {
     gap: 20px;
   }
   .moma-brand {
-    font-size: 26px;
+    font-size: var(--moma-text-section);
   }
   .moma-header-account {
     max-width: 170px;
@@ -420,15 +461,15 @@ body {
     padding: 32px 24px 48px;
   }
   .moma-content h1 {
-    font-size: 32px;
+    font-size: var(--moma-text-section);
     line-height: 44px;
   }
   .moma-content [data-slot="page-header"] > p {
-    font-size: 16px;
+    font-size: var(--moma-text-body);
     line-height: 24px;
   }
   .moma-content [data-slot="table-cell"] {
-    font-size: 16px;
+    font-size: var(--moma-text-body);
   }
 }
 @media (max-width: 600px) {
@@ -440,7 +481,7 @@ body {
   }
   .moma-header .moma-brand {
     overflow: hidden;
-    font-size: 16px;
+    font-size: var(--moma-text-body);
     text-overflow: ellipsis;
   }
   .moma-header button {
@@ -456,7 +497,7 @@ body {
   }
   .moma-header .moma-language-short {
     display: inline;
-    font-size: 12px;
+    font-size: var(--moma-text-caption);
   }
   .moma-header-account [data-slot="avatar"] {
     width: 30px;
@@ -466,7 +507,7 @@ body {
     padding: 24px 16px 40px;
   }
   .moma-content h1 {
-    font-size: 28px;
+    font-size: var(--moma-text-section);
     line-height: 38px;
   }
   .moma-content .moma-key-header {
@@ -478,31 +519,31 @@ body {
   .moma-content [data-slot="page-controls"] [data-slot="button"] {
     height: 42px;
     padding-inline: 18px;
-    font-size: 16px;
+    font-size: var(--moma-text-body);
   }
   .moma-content [data-slot="data-table-toolbar"] input[data-slot="input"] {
     width: calc(100vw - 32px);
     height: 42px;
-    font-size: 16px;
+    font-size: var(--moma-text-body);
   }
   .moma-content [data-slot="data-table-toolbar"] [data-slot="button"] {
     min-width: 42px;
     height: 42px;
     padding-inline: 16px;
     gap: 8px;
-    font-size: 14px;
+    font-size: var(--moma-text-caption);
   }
   .moma-content [data-slot="data-table-toolbar"] [data-testid="view-options-trigger"],
   .moma-content [data-slot="data-table-toolbar"] [data-testid="datatable-filters-trigger"] {
     min-width: 0;
   }
   .moma-content [data-slot="table-pagination"] .text-sm {
-    font-size: 14px;
+    font-size: var(--moma-text-caption);
   }
   .moma-content [data-slot="table-pagination"] [data-slot="select-trigger"] {
     width: 72px;
     margin-left: 0;
-    font-size: 14px;
+    font-size: var(--moma-text-caption);
   }
   .moma-content [data-slot="table-pagination-summary"] {
     flex: 1;
@@ -511,7 +552,7 @@ body {
 }
 @media (max-width: 374px) {
   .moma-header .moma-brand {
-    font-size: 14px;
+    font-size: var(--moma-text-caption);
   }
   .moma-header .gap-1 {
     gap: 2px;

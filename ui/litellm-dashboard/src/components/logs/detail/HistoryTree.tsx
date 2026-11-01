@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 /**
  * HistoryTree - Collapsible tree view for message history
  * Shows arrow indicator and message count
@@ -29,7 +30,7 @@ export function HistoryTree({ messages }: HistoryTreeProps) {
           <ChevronRight className="size-3 shrink-0 text-muted-foreground" />
         )}
         <span className="text-[10px] uppercase tracking-[0.5px] text-muted-foreground">
-          HISTORY ({messages.length} message{messages.length !== 1 ? "s" : ""})
+          HISTORY ({messages.length} message<L>{messages.length !== 1 ? "s" : ""}</L>)
         </span>
       </CollapsibleTrigger>
 

@@ -25,7 +25,7 @@ export const UserCell: React.FC<{ row: UserActivityRow }> = ({ row }) => {
   const secondary = userSecondaryLabel(row);
   return (
     <div className="min-w-0">
-      <div className="truncate text-sm text-foreground">{userPrimaryLabel(row)}</div>
+      <div className="truncate text-sm text-foreground">{userPrimaryLabel(row) || <L>(no user)</L>}</div>
       {secondary && <div className="truncate text-xs text-muted-foreground">{secondary}</div>}
     </div>
   );

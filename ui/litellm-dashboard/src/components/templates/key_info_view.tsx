@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
@@ -106,6 +106,8 @@ export default function KeyInfoView({
   onDelete,
   backButtonText = "Back to Keys",
 }: KeyInfoViewProps) {
+  const { locale } = useLocale();
+  const t = useTranslation();
   const { accessToken, userId: userID, userRole, premiumUser } = useAuthorized();
   const accessGroupNames = useModelAccessGroupNames();
   const activityDateRange = useActivityDateRange();
@@ -399,7 +401,9 @@ export default function KeyInfoView({
         const trimmed = teamAdminMemberKeyPayload(formValues, dirtyFields);
         if (trimmed.kind === "blocked") {
           toast.error(
-            `Team admins can only change budget fields on other members' keys, not ${trimmed.fields.join(", ")}`,
+            t("Team admins can only change budget fields on other members' keys, not {fields}", {
+              fields: trimmed.fields.join(", "),
+            }),
           );
           return;
         }
@@ -478,19 +482,21 @@ export default function KeyInfoView({
   };
 
   // Update the formatTimestamp function to use the desired date format
-  const formatTimestamp = (timestamp: string | Date) => {
+  const formatTimestamp = (timestamp: string | Date): string => {
     const date = new Date(timestamp);
-    const dateStr = date.toLocaleDateString("en-US", {
+    if (Number.isNaN(date.getTime())) return t("Unknown date");
+    const dateLocale = locale === "zh-CN" ? "zh-CN" : "en-US";
+    const dateStr = date.toLocaleDateString(dateLocale, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
-    const timeStr = date.toLocaleTimeString("en-US", {
+    const timeStr = date.toLocaleTimeString(dateLocale, {
       hour: "numeric",
       minute: "2-digit",
-      hour12: true,
+      hour12: locale === "en",
     });
-    return `${dateStr} at ${timeStr}`;
+    return locale === "zh-CN" ? `${dateStr} ${timeStr}` : `${dateStr} at ${timeStr}`;
   };
 
   const canModifyKey =
@@ -1069,7 +1075,9 @@ export default function KeyInfoView({
                   <LiteUiMask>
                     {Boolean(currentKeyData.metadata?.enable_prompt_caching) && (
                       <div>
-                        <p className="text-sm font-medium">Prompt Caching</p>
+                        <p className="text-sm font-medium">
+                          <L>Prompt Caching</L>
+                        </p>
                         <p className="text-sm">
                           Enabled (auto-injects cache_control markers on Anthropic and Bedrock Claude requests)
                         </p>
@@ -1147,7 +1155,9 @@ export default function KeyInfoView({
                     )}
 
                     <div>
-                      <p className="text-sm font-medium">Tags</p>
+                      <p className="text-sm font-medium">
+                        <L>Tags</L>
+                      </p>
                       <div className="flex flex-wrap gap-2 mt-1">
                         {Array.isArray(currentKeyData.metadata?.tags) && currentKeyData.metadata.tags.length > 0
                           ? currentKeyData.metadata.tags.map((tag, index) => (

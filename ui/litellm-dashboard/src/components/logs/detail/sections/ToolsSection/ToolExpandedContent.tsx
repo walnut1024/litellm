@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 /**
  * Expanded content for a tool with view mode toggle
  */
@@ -27,7 +28,9 @@ export function ToolExpandedContent({ tool }: ToolExpandedContentProps) {
           marginBottom: 12,
         }}
       >
-        <span className="text-xs text-muted-foreground">Description</span>
+        <span className="text-xs text-muted-foreground">
+          <L>Description</L>
+        </span>
         <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
           <TabsList>
             <TabsTrigger value="formatted">Formatted</TabsTrigger>

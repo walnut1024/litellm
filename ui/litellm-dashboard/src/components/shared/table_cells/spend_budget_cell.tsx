@@ -22,26 +22,26 @@ export const getSpendBudgetMeterTone = (pct: number): "default" | "warning" | "o
 };
 
 const getBudgetLabel = (
-  budget: number | null,
+  formattedBudget: string | null,
   usesTeamMemberBudget: boolean,
   memberSpendText: string,
-  budgetDecimals: number,
+  t: ReturnType<typeof useTranslation>,
 ): string => {
-  if (budget === null) return "· Unlimited";
-  const formattedBudget = formatNumberWithCommas(budget, budgetDecimals);
-  if (usesTeamMemberBudget) return `· ${memberSpendText} of ¥${formattedBudget} (team member)`;
-  return `of ¥${formattedBudget}`;
+  if (formattedBudget === null) return t("· Unlimited");
+  if (usesTeamMemberBudget) {
+    return t("· {spend} of ¥{budget} (team member)", { spend: memberSpendText, budget: formattedBudget });
+  }
+  return t("of ¥{budget}", { budget: formattedBudget });
 };
 
 const getMeterValueText = (
   hasBudget: boolean,
-  budget: number | null,
+  formattedBudget: string | null,
   meterSpendText: string,
-  budgetDecimals: number,
+  t: ReturnType<typeof useTranslation>,
 ): string => {
-  if (!hasBudget || budget === null) return "";
-  const formattedBudget = formatNumberWithCommas(budget, budgetDecimals);
-  return `${meterSpendText} of ¥${formattedBudget}`;
+  if (!hasBudget || formattedBudget === null) return "";
+  return t("{spend} of ¥{budget}", { spend: meterSpendText, budget: formattedBudget });
 };
 
 export function SpendBudgetCell({
@@ -65,15 +65,16 @@ export function SpendBudgetCell({
 
   const spendText = spendValue > 0 ? getSpendString(spendValue, spendDecimals) : "¥0.00";
   const memberSpendText = memberSpendValue > 0 ? getSpendString(memberSpendValue, spendDecimals) : "¥0.00";
-  const budgetLabel = getBudgetLabel(budget, usesTeamMemberBudget, memberSpendText, budgetDecimals);
-  const meterSpendText = usesTeamMemberBudget ? `team member spend ${memberSpendText}` : spendText;
-  const meterValueText = getMeterValueText(hasBudget, budget, meterSpendText, budgetDecimals);
+  const formattedBudget = budget === null ? null : formatNumberWithCommas(budget, budgetDecimals);
+  const budgetLabel = getBudgetLabel(formattedBudget, usesTeamMemberBudget, memberSpendText, t);
+  const meterSpendText = usesTeamMemberBudget ? t("team member spend {spend}", { spend: memberSpendText }) : spendText;
+  const meterValueText = getMeterValueText(hasBudget, formattedBudget, meterSpendText, t);
 
   return (
     <div className="flex min-w-[130px] flex-col gap-1">
       <div className="whitespace-nowrap text-xs">
         <span className="font-medium tabular-nums text-foreground">{spendText}</span>{" "}
-        <span className="text-muted-foreground">{budget === null ? t("· Unlimited") : budgetLabel}</span>
+        <span className="text-muted-foreground">{budgetLabel}</span>
         {ownBudget === null && <InheritedBudgetHint gates={inheritedGates} />}
       </div>
       {hasBudget && (

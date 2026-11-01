@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { BotIcon, InfoIcon, LayersIcon, ServerIcon, SparklesIcon } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
@@ -82,6 +82,7 @@ export function AccessGroupBaseForm({
   onTabChange,
   initialServerIds,
 }: AccessGroupBaseFormProps) {
+  const t = useTranslation();
   const { accessToken } = useAuthorized();
   const { data: agentsData } = useAgents();
   const { data: mcpServersData } = useMCPServers();
@@ -149,7 +150,7 @@ export function AccessGroupBaseForm({
               value={value}
               onValueChange={onChange}
               options={mcpServerOptions}
-              placeholder="Select MCP servers"
+              placeholder={t("Select MCP servers")}
             />
           )}
         </FormField>
@@ -169,7 +170,7 @@ export function AccessGroupBaseForm({
               value={value}
               onValueChange={onChange}
               options={agentOptions}
-              placeholder="Select agents"
+              placeholder={t("Select agents")}
             />
           )}
         </FormField>
@@ -187,7 +188,7 @@ export function AccessGroupBaseForm({
               onChange={onChange}
               value={value}
               accessToken={accessToken || ""}
-              placeholder="Select skills (optional)"
+              placeholder={t("Select skills (optional)")}
             />
           )}
         </FormField>

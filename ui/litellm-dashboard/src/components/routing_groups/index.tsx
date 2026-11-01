@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,6 +20,7 @@ import { groupNameByModel } from "./modelOwnership";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const RoutingGroups: React.FC = () => {
+  const t = useTranslation();
   const { data, isLoading, refetch, isFetching } = useRoutingGroups();
   const { data: routerFields } = useRouterFields();
   const { data: modelHub } = useModelHub();
@@ -100,7 +103,7 @@ const RoutingGroups: React.FC = () => {
     const next = groups.filter((g) => g.group_name !== deletingGroup.group_name);
     try {
       await saveMutation.mutateAsync(next);
-      toast.success(`Deleted routing group "${deletingGroup.group_name}"`);
+      toast.success(t('Deleted routing group "{group}"', { group: deletingGroup.group_name }));
       setDeletingGroup(null);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to delete routing group");
@@ -137,14 +140,14 @@ const RoutingGroups: React.FC = () => {
                 aria-busy={isFetching && !isLoading}
               >
                 <RefreshCw />
-                Refresh
+                <L>Refresh</L>
               </Button>
               <Button onClick={openCreate}>
                 <Plus />
-                Create Group
+                <L>Create Group</L>
               </Button>
               <span className="text-sm whitespace-nowrap text-muted-foreground">
-                Showing {filteredGroups.length} {filteredGroups.length === 1 ? "result" : "results"}
+                {t("Showing {count} results", { count: filteredGroups.length })}
               </span>
             </div>
           </div>
@@ -193,7 +196,7 @@ const RoutingGroups: React.FC = () => {
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeletingGroup(null)}>
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button
               onClick={confirmDelete}
@@ -201,7 +204,7 @@ const RoutingGroups: React.FC = () => {
               disabled={saveMutation.isPending}
               aria-busy={saveMutation.isPending}
             >
-              Delete
+              <L>Delete</L>
             </Button>
           </DialogFooter>
         </DialogContent>

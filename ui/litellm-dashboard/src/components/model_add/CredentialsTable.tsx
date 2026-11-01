@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useTerminology } from "@/contexts/TerminologyContext";
 import { SortingState } from "@tanstack/react-table";
 import { KeyRound } from "lucide-react";
@@ -27,7 +29,9 @@ function EmptyState() {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <KeyRound className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No credentials configured</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>No credentials configured</L>
+      </div>
       <div className="text-sm text-muted-foreground">{term("Add a credential to connect an AI provider.")}</div>
     </div>
   );

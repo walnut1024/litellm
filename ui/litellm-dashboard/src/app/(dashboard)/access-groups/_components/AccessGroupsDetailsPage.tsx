@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { useAccessGroupDetails } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroupDetails";
 import {
@@ -15,6 +15,7 @@ import { useState } from "react";
 import DefaultProxyAdminTag from "@/components/common_components/DefaultProxyAdminTag";
 import { BadgeLink } from "@/components/shared/BadgeLink";
 import CopyButton from "@/components/shared/CopyButton";
+import { DateCell } from "@/components/shared/table_cells";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,13 +37,6 @@ const MAX_PREVIEW = 5;
 
 const shortId = (id: string) => (id.length > 20 ? `${id.slice(0, 10)}...${id.slice(-6)}` : id);
 
-const describeAllowedTools = (tools: readonly string[] | undefined): string => {
-  if (tools === undefined) {
-    return "All tools";
-  }
-  return tools.length === 0 ? "No tools" : tools.join(", ");
-};
-
 function MCPToolPermissionList({
   servers,
   toolPermissions,
@@ -50,16 +44,19 @@ function MCPToolPermissionList({
   servers: readonly AccessGroupResource[];
   toolPermissions: Readonly<Record<string, string[]>> | null;
 }) {
+  const t = useTranslation();
   if (toolPermissions === null || servers.length === 0) {
     return null;
   }
   return (
-    <section className="mt-6 space-y-2" aria-label="MCP tool permissions">
+    <section className="mt-6 space-y-2" aria-label={t("MCP tool permissions")}>
       {servers.map(({ id, name }) => {
+        const tools = toolPermissions[id];
+        const allowedTools = tools === undefined ? t("All tools") : tools.join(", ") || t("No tools");
         return (
           <div key={id} className="flex flex-wrap items-baseline gap-2 text-sm">
             <span className="font-medium">{name ?? id}</span>
-            <span className="text-muted-foreground">{describeAllowedTools(toolPermissions[id])}</span>
+            <span className="text-muted-foreground">{allowedTools}</span>
           </div>
         );
       })}
@@ -69,7 +66,11 @@ function MCPToolPermissionList({
 
 function ResourceList({ items, emptyMessage }: { items: readonly AccessGroupResource[]; emptyMessage: string }) {
   if (items.length === 0) {
-    return <p className="py-8 text-center text-sm text-muted-foreground">{emptyMessage}</p>;
+    return (
+      <p className="py-8 text-center text-sm text-muted-foreground">
+        <L>{emptyMessage}</L>
+      </p>
+    );
   }
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -108,6 +109,7 @@ function ResourceBadge({
 }
 
 export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailProps) {
+  const t = useTranslation();
   const { data: accessGroup, isLoading } = useAccessGroupDetails(accessGroupId);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [showAllKeys, setShowAllKeys] = useState(false);
@@ -186,7 +188,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
               <L>Created</L>
             </dt>
             <dd className="flex items-center gap-1 text-foreground">
-              {new Date(accessGroup.created_at).toLocaleString()}
+              <DateCell value={accessGroup.created_at} />
               {accessGroup.created_by && (
                 <>
                   <span>
@@ -200,7 +202,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
               <L>Last Updated</L>
             </dt>
             <dd className="flex items-center gap-1 text-foreground">
-              {new Date(accessGroup.updated_at).toLocaleString()}
+              <DateCell value={accessGroup.updated_at} />
               {accessGroup.updated_by && (
                 <>
                   <span>
@@ -225,7 +227,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
             {keys.length > MAX_PREVIEW && (
               <CardAction>
                 <Button variant="link" size="sm" onClick={() => setShowAllKeys(!showAllKeys)}>
-                  {showAllKeys ? "Show Less" : `View All (${keys.length})`}
+                  {showAllKeys ? t("Show Less") : t("View All ({count})", { count: keys.length })}
                 </Button>
               </CardAction>
             )}
@@ -255,7 +257,7 @@ export function AccessGroupDetail({ accessGroupId, onBack }: AccessGroupDetailPr
             {teams.length > MAX_PREVIEW && (
               <CardAction>
                 <Button variant="link" size="sm" onClick={() => setShowAllTeams(!showAllTeams)}>
-                  {showAllTeams ? "Show Less" : `View All (${teams.length})`}
+                  {showAllTeams ? t("Show Less") : t("View All ({count})", { count: teams.length })}
                 </Button>
               </CardAction>
             )}

@@ -90,3 +90,11 @@ The subsequent navigation update is tagged `litellm-moma:navigation-20261101`, w
 ## Minimum font size
 
 The font update is tagged `litellm-moma:font14-20261101`, with image ID `sha256:b93cdfbda20dc5953a86f1e4adf807f471b0d4e0e1ed2d8cf81c6528f15ac629`. The theme base size is now `0.875rem`, giving a 14, 21, 31.5, and 47.25px scale at the default 16px root size. Only the base font token changed. The production build, TypeScript, static export, and frontend lint gates passed. The 4001 service was rebuilt and its health check returned HTTP 200. Browser checks covered both roles, model cards and tables, key forms, usage charts, and phone navigation. No unit tests or provider calls were repeated for this style change
+
+## Chinese UI and Beta masking
+
+The subsequent UI update is tagged `litellm-moma:zh-beta-20261101`, with image ID `sha256:8f1fd746a1cee22875ad1bdc611492af2b8bbda979d8dc3dfc3b5c838d54733d`. It hides the Model Access Group Budgets Beta tab and the Auto Router notification promotion, preserves the ordinary Access Groups feature, and fills Chinese copy across the retained pages, forms, status labels, dates, notifications, and operation feedback. Model names, user data, API parameters, raw JSON, and technical error details retain their original values
+
+The production build, TypeScript, static export, focused tests, and frontend lint gates passed. The `make check` bootstrap could not read the current lockfile with the machine's older `uv`, so the applicable frontend gates were run directly through `scripts/pre_commit_lint.sh`. Five pre-existing expected-failure cases remain documented in the differences guide. No Python environment or lockfile was changed
+
+The rebuilt 4001 service returned HTTP 200 for liveliness. Browser checks covered administrator and employee Beta URL fallbacks, retained pages and forms, Chinese and English switching without changing an unsaved key name, and a 390px employee layout. The application container was recreated with existing database volumes and salt settings. Model records, upstream credentials, and employee permissions were preserved. No model inference, provider health probe, subscription, billing reconciliation, or full browser accessibility regression was repeated

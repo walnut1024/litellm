@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import React from "react";
 import { CircleCheck, CircleX, FlaskConical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -189,7 +190,7 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
                 <TableRow>
                   <TableCell>
                     <span className="font-semibold" style={{ fontSize: 12 }}>
-                      Total
+                      <L>Total</L>
                     </span>
                   </TableCell>
                   <TableCell />

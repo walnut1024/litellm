@@ -1,6 +1,8 @@
 "use client";
 
 import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import {
   type LatestReleaseInfo,
   useLatestReleaseInfo,
@@ -37,38 +39,47 @@ const AUTO_ROUTER_ANNOUNCEMENT: Announcement = {
   href: AUTO_ROUTER_DOCS_URL,
 };
 
-const plural = (count: number, singular: string, pluralForm: string): string =>
-  `${count} ${count === 1 ? singular : pluralForm}`;
-
-const describeRelease = ({ new_features, bug_fixes, other_updates }: LatestReleaseInfo): string =>
+const describeRelease = (
+  { new_features, bug_fixes, other_updates }: LatestReleaseInfo,
+  t: ReturnType<typeof useTranslation>,
+): string =>
   [
-    plural(new_features, "new feature", "new features"),
-    plural(bug_fixes, "fix", "fixes"),
-    `and ${plural(other_updates, "other update", "other updates")}`,
+    t(new_features === 1 ? "{count} new feature" : "{count} new features", { count: new_features }),
+    t(bug_fixes === 1 ? "{count} fix" : "{count} fixes", { count: bug_fixes }),
+    t(other_updates === 1 ? "and {count} other update" : "and {count} other updates", { count: other_updates }),
   ].join(", ");
 
 const upgradeAnnouncement = (
   currentVersion: string | null | undefined,
   latestRelease: LatestReleaseInfo | null | undefined,
+  t: ReturnType<typeof useTranslation>,
 ): Announcement | null => {
   if (!currentVersion || !latestRelease || !isNewerVersion(currentVersion, latestRelease.version)) {
     return null;
   }
   return {
     readKey: `litellm:upgradeBannerDismissed:${latestRelease.version}`,
-    title: `LiteLLM v${latestRelease.version} is available`,
-    description: `${describeRelease(latestRelease)}. Your current version is v${currentVersion}`,
+    title: t("LiteLLM v{version} is available", { version: latestRelease.version }),
+    description: t("{changes}. Your current version is v{version}", {
+      changes: describeRelease(latestRelease, t),
+      version: currentVersion,
+    }),
     linkLabel: "View release notes",
     href: latestRelease.release_url,
   };
 };
 
 const AnnouncementItem: React.FC<{ announcement: Announcement }> = ({ announcement }) => {
+  const t = useTranslation();
   const read = useAnnouncementRead(announcement.readKey);
   return (
-    <article aria-label={announcement.title} className="flex flex-col gap-2">
-      <p className="text-sm font-medium">{announcement.title}</p>
-      <p className="text-sm leading-snug text-muted-foreground">{announcement.description}</p>
+    <article aria-label={t(announcement.title)} className="flex flex-col gap-2">
+      <p className="text-sm font-medium">
+        <L>{announcement.title}</L>
+      </p>
+      <p className="text-sm leading-snug text-muted-foreground">
+        <L>{announcement.description}</L>
+      </p>
       <div className="flex flex-wrap items-center gap-2">
         <a
           className={cn(buttonVariants({ size: "sm" }))}
@@ -76,11 +87,11 @@ const AnnouncementItem: React.FC<{ announcement: Announcement }> = ({ announceme
           target="_blank"
           rel="noopener noreferrer"
         >
-          {announcement.linkLabel}
+          <L>{announcement.linkLabel}</L>
         </a>
         {read ? null : (
           <Button variant="link" size="sm" className="px-1!" onClick={() => markAnnouncementRead(announcement.readKey)}>
-            Mark as read
+            <L>Mark as read</L>
           </Button>
         )}
       </div>
@@ -94,22 +105,31 @@ interface NotificationsBellViewProps {
 }
 
 export const NotificationsBellView: React.FC<NotificationsBellViewProps> = ({ currentVersion, latestRelease }) => {
-  const upgrade = upgradeAnnouncement(currentVersion, latestRelease);
-  const announcements = upgrade ? [upgrade, AUTO_ROUTER_ANNOUNCEMENT] : [AUTO_ROUTER_ANNOUNCEMENT];
+  const t = useTranslation();
+  const lite = useLiteUi();
+  const upgrade = upgradeAnnouncement(currentVersion, latestRelease, t);
+  const announcements = [upgrade, lite === null ? AUTO_ROUTER_ANNOUNCEMENT : null].filter(
+    (item): item is Announcement => item !== null,
+  );
   const unreadCount = useUnreadAnnouncementCount(announcements.map((announcement) => announcement.readKey));
 
   return (
     <Popover>
       <PopoverTrigger
         className="flex! h-9! w-9! items-center justify-center rounded-md! text-muted-foreground transition-colors hover:bg-accent! hover:text-foreground!"
-        aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
+        aria-label={unreadCount > 0 ? t("Notifications, {count} unread", { count: unreadCount }) : t("Notifications")}
       >
         <span className="relative inline-flex">
           <Bell className="size-4" aria-hidden />
           {unreadCount > 0 ? <Badge className="absolute -top-0.5 -right-1 size-1.5 p-0" aria-hidden /> : null}
         </span>
       </PopoverTrigger>
-      <PopoverContent align="end" aria-label="Notifications">
+      <PopoverContent align="end" aria-label={t("Notifications")}>
+        {announcements.length === 0 && (
+          <p className="text-sm text-muted-foreground">
+            <L>No notifications</L>
+          </p>
+        )}
         {announcements.map((announcement, index) => (
           <Fragment key={announcement.readKey}>
             {index > 0 ? <Separator /> : null}

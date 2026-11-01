@@ -1,6 +1,7 @@
 "use client";
 
 import { formatNumberWithCommas, getSpendString } from "@/utils/dataUtils";
+import { LocalizedText } from "@/contexts/LocaleContext";
 
 interface MoneyCellProps {
   value: number | null | undefined;
@@ -14,7 +15,11 @@ const moneyClassName = "block w-full whitespace-nowrap text-right tabular-nums";
 
 export function MoneyCell({ value, decimals = 4, emptyText = "-", showZero = false }: MoneyCellProps) {
   if (value === null || value === undefined || !Number.isFinite(value)) {
-    return <span className={placeholderClassName}>{emptyText}</span>;
+    return (
+      <span className={placeholderClassName}>
+        <LocalizedText>{emptyText}</LocalizedText>
+      </span>
+    );
   }
   if (value === 0 && !showZero) {
     return <span className={placeholderClassName}>-</span>;

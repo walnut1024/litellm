@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Lock } from "lucide-react";
 import React from "react";
@@ -22,7 +23,9 @@ export function ConfigOwnedBadge(): React.ReactElement {
         <Lock aria-hidden />
         config.yaml
       </TooltipTrigger>
-      <TooltipContent>{CONFIG_OWNED_HINT}</TooltipContent>
+      <TooltipContent>
+        <L>{CONFIG_OWNED_HINT}</L>
+      </TooltipContent>
     </Tooltip>
   );
 }

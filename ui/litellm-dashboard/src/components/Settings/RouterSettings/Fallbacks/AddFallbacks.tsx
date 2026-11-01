@@ -1,3 +1,4 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 /**
  * Parent component for adding fallbacks to the proxy router config
  * Handles value/onChange logic and form submission
@@ -25,6 +26,7 @@ interface AddFallbacksProps {
 }
 
 export default function AddFallbacks({ accessToken, value = [], onChange, disabledReason }: AddFallbacksProps) {
+  const t = useTranslation();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modelInfo, setModelInfo] = useState<ModelGroup[]>([]);
   const [modalKey, setModalKey] = useState(0); // Key to force remount of form when modal opens
@@ -83,7 +85,11 @@ export default function AddFallbacks({ accessToken, value = [], onChange, disabl
     // Validation
     const invalidGroups = groups.filter((g) => !g.primaryModel || g.fallbackModels.length === 0);
     if (invalidGroups.length > 0) {
-      toast.error(`Please complete configuration for all groups. ${invalidGroups.length} group(s) incomplete.`);
+      toast.error(
+        t("Please complete configuration for all groups. {count} group(s) incomplete.", {
+          count: invalidGroups.length,
+        }),
+      );
       return;
     }
 
@@ -103,7 +109,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange, disabl
       setIsSaving(true);
       try {
         await onChange(updatedFallbacks);
-        toast.success(`${groups.length} fallback configuration(s) added successfully!`);
+        toast.success(t("{count} fallback configuration(s) added successfully!", { count: groups.length }));
         handleCancel();
       } catch (error) {
         // Error handling is done in handleFallbacksChange, so we don't need to show another notification here
@@ -147,7 +153,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange, disabl
         {groups.length > 0 && (
           <div className="flex items-center justify-end space-x-3 pt-6 mt-6 border-t border-border">
             <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button variant="outline" onClick={handleSaveAll} disabled={groups.length === 0 || isSaving}>
               {isSaving && <UiLoadingSpinner className="size-4" />}

@@ -264,7 +264,7 @@ export default function ModelInfoView({
 
       const parsedExtraParams = parseModelExtraParams(values.litellm_extra_params);
       if (parsedExtraParams === null) {
-        toast.fromError("LiteLLM Params must be a valid JSON object");
+        toast.error("LiteLLM Params must be a valid JSON object");
         return;
       }
 
@@ -353,7 +353,7 @@ export default function ModelInfoView({
         if (values.team_id) updatedModelInfo = { ...updatedModelInfo, team_id: values.team_id };
         updatedModelInfo = applyPtuModelInfo(updatedModelInfo, values, ptuCostAttributionEnabled);
       } catch (e) {
-        toast.fromError("Invalid JSON in Model Info");
+        toast.error("Invalid JSON in Model Info");
         return;
       }
 
@@ -401,7 +401,7 @@ export default function ModelInfoView({
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating model:", error);
-      toast.fromError("Failed to update model settings");
+      toast.fromError(error);
     } finally {
       setIsSaving(false);
     }
@@ -496,7 +496,7 @@ export default function ModelInfoView({
       onClose();
     } catch (error) {
       console.error("Error deleting the model:", error);
-      toast.fromError("Failed to delete model");
+      toast.fromError(error);
     } finally {
       setDeleteLoading(false);
       setIsDeleteModalOpen(false);

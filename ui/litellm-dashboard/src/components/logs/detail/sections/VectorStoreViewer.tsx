@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import React, { useState } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -84,7 +85,9 @@ export function VectorStoreViewer({ data }: VectorStoreViewerProps) {
                         <span className="font-mono">{request.vector_store_id}</span>
                       </div>
                       <div className="flex">
-                        <span className="font-medium w-1/3">Provider:</span>
+                        <span className="font-medium w-1/3">
+                          <L>Provider:</L>
+                        </span>
                         <span className="flex items-center">
                           {(() => {
                             const { logo, displayName } = getProviderLogoAndName(request.custom_llm_provider);

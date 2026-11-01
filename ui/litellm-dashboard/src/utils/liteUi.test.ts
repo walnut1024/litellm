@@ -54,6 +54,11 @@ describe("lightweight UI visibility", () => {
     expect(liteTabAllowed("models-and-endpoints", "auto-routers", true)).toBe(false);
   });
 
+  it.each([false, true])("hides beta model budgets in both views, admin=%s", (admin) => {
+    expect(liteTabAllowed("models-and-endpoints", "access-group-budgets", admin)).toBe(false);
+    expect(liteTabAllowed("models-and-endpoints", "all-models", admin)).toBe(true);
+  });
+
   it("hides advanced fields while preserving provider authentication and basic budgets", () => {
     expect(liteFieldHidden("api-keys", "guardrails")).toBe(true);
     expect(liteFieldHidden("users", "teams.0.team_id")).toBe(false);
@@ -83,6 +88,7 @@ describe("lightweight UI visibility", () => {
     "masks enterprise fields in %s without masking basic controls",
     (route) => {
       expect(liteFieldHidden(route, "organization_id")).toBe(true);
+      expect(liteFieldHidden(route, "organization_ids")).toBe(true);
       expect(liteFieldHidden(route, "model_max_budget")).toBe(true);
       expect(liteFieldHidden(route, "secret_manager_settings")).toBe(true);
       expect(liteFieldHidden(route, "logging_settings")).toBe(true);

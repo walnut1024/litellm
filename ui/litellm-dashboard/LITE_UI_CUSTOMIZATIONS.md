@@ -56,7 +56,7 @@
 | 页面                     | 屏蔽项                                                                                                                                                  | 保留项和说明                                                              |
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | Home                     | Lite Admin 入口、新闻、榜单和更新推广区域                                                                                                               | 核心用量与日常操作                                                        |
-| Models + Endpoints       | Auto Routers、Pass Through、Model Group Alias、Price Data、Decision Models 推广、User Connections                                                       | 管理员的模型配置和供应商凭据正常保留                                      |
+| Models + Endpoints       | Auto Routers、Pass Through、Model Group Alias、Model Access Group Budgets Beta、Price Data、Decision Models 推广、User Connections                      | 管理员的模型配置和供应商凭据正常保留                                      |
 | 员工模型详情             | 新增模型、凭据、健康检查、重试、Raw 页签，以及编辑等管理动作和上游配置展示                                                                              | 模型可用性和基础信息                                                      |
 | 模型新增表单             | Team-BYOK 专属模型开关和对应团队选择区域                                                                                                                | 原有必需团队作用域、模型访问组和供应商认证字段保留                        |
 | Virtual Keys 详情        | Savings、Auto Router Usage、Regenerate Key、组织和项目展示、独立日志、自动轮换、Guardrails、Policies、Prompts、路由权限、标签及原始 Metadata 等高级区块 | 基本信息、模型、用量、预算、过期时间、编辑、删除及原权限允许的其他动作    |
@@ -82,7 +82,7 @@ Playground 已整页屏蔽，早期添加到 `Composer`、`Inspector`、`Playgro
 
 | 生效位置                             | 屏蔽字段                                                                                                                                                                                                                                                                                    |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 使用共享表单的页面                   | `organization_id`、`secret_manager_settings`、`model_max_budget`、`team_member_model_max_budget`、`allowed_passthrough_routes`、`logging_settings`、`disable_global_guardrails`                                                                                                             |
+| 使用共享表单的页面                   | `organization_id`、`organization_ids`、`secret_manager_settings`、`model_max_budget`、`team_member_model_max_budget`、`allowed_passthrough_routes`、`logging_settings`、`disable_global_guardrails`                                                                                         |
 | Key 和模型表单的资源扩展             | `project_id`、`metadata`、`tags`、`guardrails`、`policies`、`prompts`、`vector_stores`、`vector_store_ids`、`allowed_vector_store_ids`、`allowed_routes`、`allowed_mcp_servers_and_groups`、`mcp_servers_and_groups`、`mcp_tool_permissions`、`allowed_agents_and_groups`、`allowed_skills` |
 | Key 和模型表单的高级预算与限流       | `soft_budget`、`budget_windows`、`budget_fallbacks`、`end_user_budget_id`、`tpd_limit`、`tpm_limit_type`、`rpm_limit_type`、`model_tpm_limit`、`model_rpm_limit`、`throttle_on_budget_exceeded`、`default_estimated_output_tokens`、`default_estimated_output_tokens_per_model`             |
 | Key 和模型表单的缓存、路由与成本参数 | `enable_prompt_caching`、`use_in_pass_through`、`kubernetes_pod_discovery`、`cache_control`、`cache_control_injection_points`、`litellm_extra_params`、`model_info_params`、`ptu_count`、`cost_per_ptu_per_hour`、`ptu_effective_from`、`ptu_effective_to`                                  |
@@ -152,7 +152,7 @@ Playground 已整页屏蔽，早期添加到 `Composer`、`Inspector`、`Playgro
 
 密钥表格在 `VirtualKeysPage/keyTableColumns.tsx` 使用原 `ModelsCell` 的 `maxVisible` 参数，默认显示 1 个模型及剩余数量，避免窄列中的多个标签将整行撑高。其余模型继续通过原提示和密钥详情查看，不修改 Key 的 models、模型权限或接口提交值。对应表格测试同步检查首项和剩余数量，未修改共享 ModelsCell 的默认行为
 
-共享表格的工具栏、状态标记和分页一并应用主题。分页显示总条数和当前页码，完整结果范围与总页数继续提供给读屏工具，翻页和每页条数回调不变。中文日期使用年月日显示，英文格式和原始时间戳不变。这些是展示调整，原有创建、编辑、筛选、排序、分页和弹窗操作继续使用原实现
+共享表格的工具栏、状态标记和分页一并应用主题。分页显示总条数和当前页码，完整结果范围与总页数继续提供给读屏工具，翻页和每页条数回调不变。中文日期与相对时间使用中文显示，英文使用英语日期和相对时间，原始时间戳不变。这些是展示调整，原有创建、编辑、筛选、排序、分页和弹窗操作继续使用原实现
 
 | 实现位置，相对 dashboard                                                                                                                                                                                                                                                                                                    | 维护内容                                               |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -172,7 +172,7 @@ Playground 已整页屏蔽，早期添加到 `Composer`、`Inspector`、`Playgro
 
 语言偏好保存在浏览器 `moma.locale`，不发送到后端。支持 `zh-CN` 与 `en`，默认中文，刷新时恢复已保存语言。语言切换不重新挂载页面或表单。日期显示可以本地化，时间戳和时区语义保持原逻辑。货币标识默认人民币，金额数值和接口提交值保持原样
 
-未知英文文案回退为英文。供应商返回的错误、接口原始 JSON、技术说明和代码示例可能继续显示英文。社区新增或修改界面文案时，需要同步补充词典和渲染位置，不能把中英文字符串用于权限、路由或筛选条件判断。已有组织等字段屏蔽仍以原始字段名和英文配置标签为依据，翻译发生在显示层之后
+未知文案仍有英文回退机制，不能把回退作为新增界面文案的验收结果。普通说明、状态、选项、帮助与反馈使用中文。模型名称、供应商名称、用户输入、接口标识、原始模型响应、API 错误详情、JSON 和代码示例保留原文。社区新增或修改界面文案时，需要同步补充词典和渲染位置，不能把中英文字符串用于权限、路由或筛选条件判断。已有组织等字段屏蔽仍以原始字段名和英文配置标签为依据，翻译发生在显示层之后
 
 ## 模型服务控制台与一键开通
 
@@ -275,6 +275,7 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 | 关联入口                  | Home、模型详情、Key 详情、设置开关没有留下通往被屏蔽页面的按钮或链接                                      |
 | Docker 运行时             | Python 或 Rust 更新后先重建 `litellm-lite-runtime:local`，不能只替换 UI 后声称后端也升级                  |
 | 主题与导航                | 顶部导航与窄屏抽屉复用同一权限过滤，管理员管理菜单不会遗漏原可用入口，深浅色均可读                        |
+| Beta 能力                 | 检索 BetaBadge、[BETA] 等标记，核对新入口、字段和直接链接的屏蔽，不按 beta 字符串过滤 API 协议或模型名称  |
 | 中文与数据边界            | 新文案补齐词典，用户输入、API 参数、权限判断与模型 ID 不参与翻译，语言切换不重置表单                      |
 | 视觉基准                  | 参考 design/moma-workspace-zh.png 与 design-qa.md 重测桌面、中英文、手机和弹窗                            |
 
@@ -491,3 +492,153 @@ Docker 浏览器验收使用 4001 的独立演示环境。真实供应商调用�
 390×844 下核对模型卡片、抽屉导航、密钥表格和管理员创建表单，未出现整页横向溢出。长模型名称继续换行，宽表继续在容器内横向滚动，手机品牌保留原有省略显示，侧栏和表单保留滚动。没有创建新 Key，检查后恢复中文、默认视口和管理员模型广场。截图见[14px 字号复核](design-qa.md#14px-字号复核)
 
 没有执行真实模型推理、计费、全站跨浏览器或完整无障碍回归，之前记录的员工配置读取权限问题不在本次处理范围内
+
+### Beta 屏蔽与中文补齐
+
+2026-11-01 从 `a2ce8adf2d` 继续更新，社区基线仍为 `9546f9a69ff470dfcc5a21eccab89d2fd86a634f`，版本 1.109.0。本轮仅调整前端屏蔽、界面文案和显示格式，没有修改后端接口、模型转发、鉴权、数据库结构、预算数值或模型配置
+
+`liteUi.ts` 对管理员和员工均屏蔽模型访问组共享预算页签 `access-group-budgets`。直接访问旧链接时由原 `useUrlTab` 回到模型列表并清除无效页签参数，其他查询参数保留。项目、自动路由、榜单、Lens、Playground Decisions 以及设置中的项目和聊天 Beta 开关继续按原规则屏蔽。普通访问组管理与模型访问组授权保留。API 头名、协议路径和模型名称中的 beta 属于接口或业务数据，不按文本关键词过滤
+
+邀请用户表单使用复数字段 `organization_ids`，原来只屏蔽了 `organization_id`。本轮将两者一并纳入既有组织字段屏蔽规则，不清空表单或数据库中的组织归属
+
+中文补齐覆盖模型健康检查、重试策略、添加模型和凭据、模型及密钥详情、用户与团队、访问组、预算、用量、路由、日志和告警。显示标签与状态使用词典，含模型名、分组名和字段名的反馈改为参数插值，数据值不送入翻译。账户的系统占位名显示为账户，实际用户标识原样保留。金额描述和日期时间本地化，金额、预算及接口时间戳不变
+
+`getLocale` 提供当前语言给非 React 操作反馈。固定界面提示在触发时按当前语言翻译，真实异常继续通过 `toast.fromError` 显示中文概要并保留原始技术详情。前端输入校验提示使用已翻译的界面错误消息。没有 DOM 扫描、自动改写文本或远程翻译服务，也没有新增依赖
+
+本轮词典新增 476 项并修正 9 项既有翻译。通知中的自动路由推广在轻量版隐藏，版本更新通知继续保留并使用中文。通知图标、部署健康图标、页面操作区、表格排序和访问组资源提示的可读标签同步本地化。访问组的空状态、工具权限摘要及详情日期也使用现有词典和日期组件，资源名称和工具名称保持原值
+
+路由通用设置的说明文字移除固定 `0.65rem`，日志抽屉的固定 12/13/16px 字号改用已有主题变量，使这些区域使用 14px 辅助文字和 21px 标题档，延续最小 14px 的既有要求
+
+| 实现位置，相对 dashboard                                                                                                                                     | 本轮维护点                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `src/utils/liteUi.ts`、模型页和策略测试                                                                                                                      | Beta 页签、旧链接回退、复数组织字段屏蔽                            |
+| `src/i18n/zh-CN.json`、`src/contexts/LocaleContext.tsx`、`src/lib/toast.ts`                                                                                  | 中文词典、非组件语言读取和操作反馈                                 |
+| `src/components/Navbar/`、`SidebarAccountMenu/`                                                                                                              | 账户占位名、可读标签与用户数据边界                                 |
+| `src/components/shared/table_cells/`                                                                                                                         | 金额占位、预算描述及原有数值语义                                   |
+| `src/components/add_model/`、`model_add/`、`model_dashboard/`、模型页 components 与 panels                                                                   | 模型配置、凭据、健康、重试、状态和日期                             |
+| `src/components/logs/`                                                                                                                                       | 列表筛选、日志详情、相对时间、费用和复制标签，原始请求与响应不翻译 |
+| `src/components/router_settings/`、`routing_groups/`、`Settings/RouterSettings/`、路由页 \_components                                                        | 路由设置、规则、后台元数据说明与反馈插值                           |
+| 用户页 \_components、`Teams.tsx`、`team/`、访问组页 \_components、预算页 \_components                                                                        | 日常管理页面、表单、角色和状态显示                                 |
+| 用量页与 `src/components/UsagePage/`                                                                                                                         | 无关联用户的占位显示，身份与导出数据保持原值                       |
+| `src/components/organisms/create_key_button.tsx`、`model_info_view.tsx`、`update_model_credentials_modal.tsx`、`templates/key_info_view.tsx`、`settings.tsx` | 校验、原始错误传递和管理反馈的中文                                 |
+
+<details>
+<summary>本轮源码与测试文件清单，相对 dashboard</summary>
+
+```text
+src/app/(dashboard)/access-groups/_components/AccessGroupsDetailsPage.test.tsx
+src/app/(dashboard)/access-groups/_components/AccessGroupsDetailsPage.tsx
+src/app/(dashboard)/access-groups/_components/AccessGroupsModal/AccessGroupBaseForm.tsx
+src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx
+src/app/(dashboard)/access-groups/_components/access-group-create/AccessGroupCreateDialog.tsx
+src/app/(dashboard)/budgets/_components/BudgetFormFields.tsx
+src/app/(dashboard)/budgets/_components/BudgetPanel.tsx
+src/app/(dashboard)/budgets/_components/BudgetTable.tsx
+src/app/(dashboard)/logs/page.tsx
+src/app/(dashboard)/models-and-endpoints/components/ModelRetrySettingsTab.test.tsx
+src/app/(dashboard)/models-and-endpoints/components/ModelRetrySettingsTab.tsx
+src/app/(dashboard)/models-and-endpoints/components/ModelsTableColumns.tsx
+src/app/(dashboard)/models-and-endpoints/page.test.tsx
+src/app/(dashboard)/models-and-endpoints/panels/ModelRetrySettingsPanel.tsx
+src/app/(dashboard)/router-settings/_components/RequestTagMappings.tsx
+src/app/(dashboard)/router-settings/_components/general_settings.tsx
+src/app/(dashboard)/usage/_components/components/EntityUsage/TeamUserSpendCard.tsx
+src/app/(dashboard)/users/_components/BulkEditUsers.tsx
+src/app/(dashboard)/users/_components/default-user-settings/DefaultUserSettingsForm.tsx
+src/app/(dashboard)/users/_components/view_users/UsersTable.tsx
+src/app/(dashboard)/users/_components/view_users/UsersTableColumns.tsx
+src/app/(dashboard)/users/_components/view_users/user_info_view.tsx
+src/components/DeploymentHealth/DeploymentHealth.tsx
+src/components/Navbar/NotificationsBell/NotificationsBell.test.tsx
+src/components/Navbar/NotificationsBell/NotificationsBell.tsx
+src/components/Navbar/UserDropdown/UserDropdown.tsx
+src/components/Navbar/navDisplayName.test.ts
+src/components/Navbar/navDisplayName.ts
+src/components/Settings/RouterSettings/Fallbacks/AddFallbacks.tsx
+src/components/Settings/RouterSettings/Fallbacks/EditFallbacks.tsx
+src/components/Settings/RouterSettings/Fallbacks/Fallbacks.tsx
+src/components/SidebarAccountMenu/SidebarAccountMenu.tsx
+src/components/Teams.tsx
+src/components/UsagePage/components/KeyActivityPanel.tsx
+src/components/UsagePage/components/TopUsersView.tsx
+src/components/UsagePage/components/UserActivityTable.tsx
+src/components/UsagePage/components/userActivityData.ts
+src/components/add_model/AccessGroupTagsCombobox.tsx
+src/components/add_model/advanced_settings.tsx
+src/components/add_model/conditional_public_model_name.tsx
+src/components/add_model/litellm_model_name.tsx
+src/components/add_model/provider_specific_fields.tsx
+src/components/common_components/MetadataKeyValueFields.tsx
+src/components/logs/detail/DrawerHeader.tsx
+src/components/logs/detail/HistoryTree.tsx
+src/components/logs/detail/JsonViewer.tsx
+src/components/logs/detail/LogDetailContent.tsx
+src/components/logs/detail/LogDetailsDrawer.tsx
+src/components/logs/detail/SectionHeader.tsx
+src/components/logs/detail/constants.ts
+src/components/logs/detail/sections/CostBreakdownViewer.tsx
+src/components/logs/detail/sections/EvalViewer/EvalViewer.tsx
+src/components/logs/detail/sections/ToolsSection/FormattedToolView.tsx
+src/components/logs/detail/sections/ToolsSection/ToolExpandedContent.tsx
+src/components/logs/detail/sections/VectorStoreViewer.tsx
+src/components/logs/request/LogsTableToolbar.tsx
+src/components/logs/request/timeRange.test.ts
+src/components/logs/request/timeRange.ts
+src/components/model_add/CredentialModal.tsx
+src/components/model_add/CredentialsPanel.tsx
+src/components/model_add/CredentialsTable.tsx
+src/components/model_add/CredentialsTableColumns.tsx
+src/components/model_add/reuse_credentials.tsx
+src/components/model_dashboard/HealthCheckComponent.tsx
+src/components/model_dashboard/HealthChecksTable.tsx
+src/components/model_dashboard/HealthChecksTableColumns.tsx
+src/components/model_info_view.tsx
+src/components/organisms/create_key_button.tsx
+src/components/router_settings/ConfigOwned.tsx
+src/components/router_settings/LatencyBasedConfiguration.tsx
+src/components/router_settings/ReliabilityRetriesSection.tsx
+src/components/router_settings/RoutingStrategySelector.tsx
+src/components/router_settings/index.tsx
+src/components/routing_groups/RoutingGroupModal.tsx
+src/components/routing_groups/RoutingGroupUsagePanel.tsx
+src/components/routing_groups/RoutingGroupsTable.tsx
+src/components/routing_groups/RoutingGroupsTableColumns.tsx
+src/components/routing_groups/index.tsx
+src/components/settings.tsx
+src/components/shared/DataTable/DataTableSortHeader.tsx
+src/components/shared/PageHeader.tsx
+src/components/shared/table_cells/money_cell.tsx
+src/components/shared/table_cells/spend_budget_cell.test.tsx
+src/components/shared/table_cells/spend_budget_cell.tsx
+src/components/team/AvailableTeamsPanel.tsx
+src/components/team/TeamInfo.tsx
+src/components/team/member_permissions.tsx
+src/components/templates/key_info_view.tsx
+src/components/update_model_credentials_modal.test.tsx
+src/components/update_model_credentials_modal.tsx
+src/contexts/LiteUiContext.tsx
+src/contexts/LocaleContext.tsx
+src/i18n/zh-CN.json
+src/lib/toast.test.ts
+src/lib/toast.ts
+src/utils/liteUi.test.ts
+src/utils/liteUi.ts
+```
+
+</details>
+
+### Beta 与中文补齐验证
+
+最终生产构建、TypeScript 和静态导出通过。仓库前端检查脚本运行 Prettier、ESLint 和现有 lint 预算，未提高任何预算。`make check` 在 bootstrap 阶段因本机旧版 `uv` 无法解析当前锁文件而退出，之后直接运行 `scripts/pre_commit_lint.sh` 完成适用的前端检查。没有修改 Python 环境或锁文件，也没有将未运行的后端检查视为通过
+
+定向测试覆盖管理员和员工的 Beta 页签与旧链接回退、其他 URL 参数保留、组织字段屏蔽、模型名和策略字段不被翻译、金额数值保持不变、日期显示及成功和错误反馈。最初的 44 文件批次运行 670 项，健康状态英文占位被改动导致的失败已恢复原约定，并在相关 3 文件 28 项复核中通过。另一个 14 文件批次的两处真实异常传递失败已修复，最终相关 6 文件复核为 247 项通过和 5 项既有预期失败。密钥日期及预算显示的 2 文件 76 项、访问组和通知等 7 文件 116 项、表格排序 1 文件 4 项，以及缓存费用和路由通用设置 2 文件 28 项均通过。这些批次包含重复用例，不合计为全套测试数
+
+5 项 `it.fails` 在本轮之前已存在，没有新增或扩大预期失败。创建密钥有 1 项空可选设置不应增加请求字段的用例，模型编辑有 4 项仅编辑输入单价时不应提交未编辑字段的用例。它们都关联已有的三态 PATCH 表单问题，本轮没有改写这些业务行为。之前记录的 12 项隐藏 UsagePage 测试也没有在此轮重跑或修复
+
+最终镜像为 `litellm-moma:zh-beta-20261101`，ID 为 `sha256:8f1fd746a1cee22875ad1bdc611492af2b8bbda979d8dc3dfc3b5c838d54733d`。4001 服务只重建应用容器，保留数据库卷、账户、模型、密钥和 salt，健康检查返回 HTTP 200。镜像不包含数据库中的 41 项模型配置和上游凭据，迁移仍须遵守现有部署指南
+
+最终浏览器中，管理员旧 Beta 链接回到模型列表，模型页只显示已接入模型、添加模型、供应商凭据、健康状态和模型重试设置。员工旧链接回到可用模型页，继续只显示其原授权模型。已检查添加模型、凭据、健康、重试、密钥、预算、访问组、用户、团队、路由、日志与告警、系统设置、首页、用量和日志列表，以及访问组详情和日志抽屉。检查的是普通界面文案，模型、供应商、用户标识、API 参数、原始 JSON 和异常技术详情保留原文
+
+中英文切换时，未提交的密钥名称 `Home` 保持原值，检查后清空并关闭表单。390×844 下检查员工模型页、抽屉导航和创建密钥表单，所查文字没有小于 14px，页面无整页横向溢出。检查后恢复中文和默认桌面视口，未提交新密钥或任何模型、预算、用户及团队修改。截图和视觉证据见[本轮中文复核](design-qa.md#beta-屏蔽与中文复核)
+
+没有运行完整前端套件、真实推理、计费、供应商健康探测、跨浏览器或完整无障碍回归。已有员工设置读取权限问题不在本轮处理范围内。今后合并社区版本时，需要继续检查新增 Beta 入口、动态元数据说明和操作反馈，不能只检索页签字面量

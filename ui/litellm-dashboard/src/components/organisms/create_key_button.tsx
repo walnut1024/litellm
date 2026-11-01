@@ -483,7 +483,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
       setIsModalVisible(true);
 
       if (built.kind === "agent_not_selected") {
-        toast.fromError("Please select an agent");
+        toast.error("Please select an agent");
         return;
       }
       const { payload, endpoint } = built;
@@ -614,7 +614,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
       setUserOptions(options);
     } catch (error) {
       console.error("Error fetching users:", error);
-      if (isLatestSearch()) toast.fromError("Failed to search for users");
+      if (isLatestSearch()) toast.fromError(error);
     } finally {
       if (isLatestSearch()) setUserSearchLoading(false);
     }

@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useEffect, useState } from "react";
 import { useLiteUi } from "@/contexts/LiteUiContext";
@@ -298,6 +298,7 @@ const buildCallbackPayload = (formValues: Record<string, any>, callbackName: str
 };
 
 const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, premiumUser }) => {
+  const t = useTranslation();
   const lite = useLiteUi();
   const [callbacks, setCallbacks] = useState<AlertingObject[]>([]);
   const [isLoadingCallbacks, setIsLoadingCallbacks] = useState(true);
@@ -341,7 +342,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
         setCallbackConfigs(data || []);
       })
       .catch((error) => {
-        toast.fromError("Failed to load callback configs: " + parseErrorMessage(error));
+        toast.fromError(error);
       });
   }, [accessToken]);
 
@@ -444,7 +445,9 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
 
     try {
       await setCallbacksCall(accessToken, payload);
-      toast.success(isEdit ? "Callback updated successfully" : `Callback ${callbackName} added successfully`);
+      toast.success(
+        isEdit ? "Callback updated successfully" : t("Callback {name} added successfully", { name: callbackName }),
+      );
 
       if (isEdit) {
         setShowEditCallback(false);
@@ -551,7 +554,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
     try {
       setIsDeletingCallback(true);
       await deleteCallback(accessToken, callbackToDelete.name);
-      toast.success(`Callback ${callbackToDelete.name} deleted successfully`);
+      toast.success(t("Callback {name} deleted successfully", { name: callbackToDelete.name }));
 
       // Refresh the callbacks list
       if (userID && userRole) {
@@ -672,7 +675,9 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                           )}
                         </TableCell>
                         <TableCell className="whitespace-normal break-words">
-                          <p>{value}</p>
+                          <p>
+                            <L>{value}</L>
+                          </p>
                         </TableCell>
                         <TableCell>
                           <Input

@@ -9,7 +9,7 @@ export const userRowKey = (row: UserActivityRow): string =>
 
 export const userPrimaryLabel = (row: UserActivityRow): string => {
   const friendlyName = row.user_email || row.user_alias;
-  return friendlyName || row.user_id || "(no user)";
+  return friendlyName || row.user_id || "";
 };
 
 export const userSecondaryLabel = (row: UserActivityRow): string | null => {

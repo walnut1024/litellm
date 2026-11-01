@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText } from "@/contexts/LocaleContext";
+import { LocalizedText, useTranslation } from "@/contexts/LocaleContext";
 
 import type { ComponentProps } from "react";
 
@@ -33,11 +33,12 @@ export function PageHeaderDescription({ className, children, ...props }: Compone
 }
 
 export function PageHeaderControls({ className, ...props }: ComponentProps<"div">) {
+  const t = useTranslation();
   return (
     <div
       data-slot="page-controls"
       role="group"
-      aria-label="Page controls"
+      aria-label={t("Page controls")}
       className={cn("mt-5 flex min-h-9 items-center gap-2", className)}
       {...props}
     />

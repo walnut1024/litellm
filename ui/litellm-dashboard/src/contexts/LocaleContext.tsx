@@ -6,7 +6,7 @@ import { translate, type Locale } from "@/i18n/translate";
 const localeKey = "moma.locale";
 let memoryLocale: Locale = "zh-CN";
 const listeners = new Set<() => void>();
-const getLocale = (): Locale => {
+export const getLocale = (): Locale => {
   try {
     const saved = localStorage.getItem(localeKey);
     if (saved === "en" || saved === "zh-CN") return saved;

@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { useLiteUi } from "@/contexts/LiteUiContext";
@@ -10,7 +10,7 @@ import { Copy, Info, Loader2, Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { ModelData } from "@/components/model_dashboard/types";
 import { DataTableSortHeader } from "@/components/shared/DataTable";
-import { CellTooltip, DateCell, formatCellDate, IdCell, StatusBadge } from "@/components/shared/table_cells";
+import { CellTooltip, DateCell, IdCell, StatusBadge } from "@/components/shared/table_cells";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -49,14 +49,6 @@ const COLUMN_ID_TO_SERVER_SORT_FIELD: Record<string, string> = {
 };
 
 export const toServerSortField = (columnId: string): string => COLUMN_ID_TO_SERVER_SORT_FIELD[columnId] ?? columnId;
-
-const formatShortDate = (value: string | null | undefined): string | null => {
-  if (!value) {
-    return null;
-  }
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? null : formatCellDate(date, "date");
-};
 
 function ModelInformationCell({ model, displayName }: { model: ModelData; displayName: string }) {
   const lite = useLiteUi();
@@ -202,17 +194,22 @@ function CredentialsCell({ credentialName, label }: { credentialName: string | u
 }
 
 function CreatedByCell({ model }: { model: ModelData }) {
+  const t = useTranslation();
   const isConfigModel = !model.model_info?.db_model;
-  const createdAt = formatShortDate(model.model_info.created_at);
-  const primary = isConfigModel ? "Defined in config" : model.model_info.created_by || "Unknown";
-  const secondaryForDbModel = createdAt ?? "Unknown date";
+  const primary = isConfigModel ? t("Defined in config") : model.model_info.created_by || t("Unknown");
 
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <span className="max-w-44 truncate text-sm text-foreground" title={primary}>
         {primary}
       </span>
-      <span className="truncate text-xs text-muted-foreground">{isConfigModel ? "-" : secondaryForDbModel}</span>
+      <span className="truncate text-xs text-muted-foreground">
+        {isConfigModel ? (
+          "-"
+        ) : (
+          <DateCell value={model.model_info.created_at} precision="date" fallback="Unknown date" />
+        )}
+      </span>
     </div>
   );
 }

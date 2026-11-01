@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../../tests/test-utils";
 import { AccessGroupDetail } from "./AccessGroupsDetailsPage";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 vi.mock("@/app/(dashboard)/hooks/accessGroups/useAccessGroupDetails");
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
@@ -89,6 +90,24 @@ describe("AccessGroupDetail", () => {
       ...baseMockReturnValue,
       data: createMockAccessGroup(),
     } as ReturnType<typeof useAccessGroupDetails>);
+  });
+
+  it("translates empty resource states without translating model names", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    mockUseAccessGroupDetails.mockReturnValue({
+      ...baseMockReturnValue,
+      data: createMockAccessGroup({ access_model_names: ["Home"], access_mcp_servers: [] }),
+    } as ReturnType<typeof useAccessGroupDetails>);
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocaleProvider>
+        <AccessGroupDetail accessGroupId="ag-1" onBack={mockOnBack} />
+      </LocaleProvider>,
+    );
+    expect(screen.getByText("Home")).toBeVisible();
+    await user.click(screen.getByRole("tab", { name: /MCP 服务器/ }));
+    expect(screen.getByText("此访问组尚未分配 MCP 服务器")).toBeVisible();
+    localStorage.removeItem("moma.locale");
   });
 
   it("should render the component", () => {

@@ -39,6 +39,7 @@ export function DataTableSortHeader<TData, TValue>({
   variant = "header-cycle",
   className,
 }: DataTableSortHeaderProps<TData, TValue>) {
+  const t = useTranslation();
   const sorted = column.getIsSorted();
 
   if (!column.getCanSort()) {
@@ -61,7 +62,7 @@ export function DataTableSortHeader<TData, TValue>({
               <button
                 type="button"
                 data-testid={`sort-trigger-${column.id}`}
-                aria-label={`Sort options for ${column.id}`}
+                aria-label={t("Sort options for {fields}", { fields: column.id })}
                 onClick={(event) => event.stopPropagation()}
                 className={cn(
                   "inline-flex size-6 items-center justify-center rounded-md hover:bg-muted",
@@ -183,7 +184,9 @@ export function DataTableMultiSortHeader<TData>({ table, fields, className }: Da
             <button
               type="button"
               data-testid={`sort-trigger-${fields[0]?.id ?? "field"}`}
-              aria-label={`Sort options for ${fields.map((field) => field.label).join(" or ")}`}
+              aria-label={t("Sort options for {fields}", {
+                fields: fields.map((field) => t(field.label)).join(t(" or ")),
+              })}
               onClick={(event) => event.stopPropagation()}
               className={cn(
                 "inline-flex size-6 items-center justify-center rounded-md hover:bg-muted",

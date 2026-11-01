@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import type { ColumnDef } from "@tanstack/react-table";
 import { GitBranch, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
@@ -36,7 +38,7 @@ function RoutingGroupRowActions({ group, onEdit, onDelete }: RoutingGroupRowActi
       <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem data-testid="routing-group-action-edit" onClick={() => onEdit(group)}>
           <Pencil />
-          Edit
+          <L>Edit</L>
         </DropdownMenuItem>
         <DropdownMenuItem
           variant="destructive"
@@ -44,7 +46,7 @@ function RoutingGroupRowActions({ group, onEdit, onDelete }: RoutingGroupRowActi
           onClick={() => onDelete(group)}
         >
           <Trash2 />
-          Delete
+          <L>Delete</L>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -98,7 +100,11 @@ export const getRoutingGroupsTableColumns = ({
   {
     id: "actions",
     meta: { className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => (
+      <span className="sr-only">
+        <L>Actions</L>
+      </span>
+    ),
     size: 64,
     enableSorting: false,
     enableHiding: false,

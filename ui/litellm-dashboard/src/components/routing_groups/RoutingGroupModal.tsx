@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useEffect, useMemo } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -179,7 +181,9 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
                     </ComboboxValue>
                   </ComboboxChips>
                   <ComboboxContent anchor={modelsAnchor}>
-                    <ComboboxEmpty>No models found</ComboboxEmpty>
+                    <ComboboxEmpty>
+                      <L>No models found</L>
+                    </ComboboxEmpty>
                     <ComboboxList>
                       {(model: string) => (
                         <ComboboxItem key={model} value={model}>
@@ -272,7 +276,7 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
                             aria-label={`Remove priority for ${entry.model}`}
                             onClick={() => onChange(value.filter((_, itemIndex) => itemIndex !== index))}
                           >
-                            Remove
+                            <L>Remove</L>
                           </Button>
                         )}
                       </div>
@@ -304,10 +308,10 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
         </form>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
-            Cancel
+            <L>Cancel</L>
           </Button>
           <Button onClick={() => void form.handleSubmit(handleSubmit)()} disabled={saving} aria-busy={saving}>
-            {mode === "create" ? "Create Group" : "Save Changes"}
+            <L>{mode === "create" ? "Create Group" : "Save Changes"}</L>
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -58,7 +58,7 @@ const AvailableTeamsPanel: React.FC<AvailableTeamsProps> = ({ accessToken, userI
       setAvailableTeams((teams) => teams.filter((team) => team.team_id !== teamId));
     } catch (error) {
       console.error("Error joining team:", error);
-      toast.fromError("Failed to join team");
+      toast.fromError(error);
     }
   };
 

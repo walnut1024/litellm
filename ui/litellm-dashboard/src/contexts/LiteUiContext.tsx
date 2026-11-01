@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { createContext, useContext, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "./AuthContext";
@@ -31,8 +33,12 @@ export function LiteUiBoundary({ children }: { children: ReactNode }) {
         children
       ) : (
         <div className="flex h-full min-h-64 flex-col items-center justify-center gap-2 p-8 text-center">
-          <h1 className="text-2xl font-semibold">Access Denied</h1>
-          <p className="text-muted-foreground">This page is not available in this edition.</p>
+          <h1 className="text-2xl font-semibold">
+            <L>Access Denied</L>
+          </h1>
+          <p className="text-muted-foreground">
+            <L>This page is not available in this edition.</L>
+          </p>
         </div>
       )}
     </LiteUiContext.Provider>

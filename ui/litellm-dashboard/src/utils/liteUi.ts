@@ -31,7 +31,7 @@ export const liteRouteAllowed = (route: string, userRole: string): boolean =>
   (routePages[route] !== undefined && litePageAllowed(routePages[route], userRole));
 
 const hiddenTabs: Readonly<Record<string, readonly string[]>> = {
-  "models-and-endpoints": ["auto-routers", "pass-through", "model-group-alias", "price-data"],
+  "models-and-endpoints": ["auto-routers", "pass-through", "model-group-alias", "access-group-budgets", "price-data"],
   "api-keys": ["savings", "auto-router-usage"],
   usage: ["mcp", "endpoints"],
   logs: ["audit logs", "deleted keys", "deleted teams"],
@@ -58,6 +58,7 @@ export const liteTabAllowed = (route: string, tab: string, admin: boolean): bool
 
 const enterpriseFields = [
   "organization_id",
+  "organization_ids",
   "secret_manager_settings",
   "model_max_budget",
   "team_member_model_max_budget",

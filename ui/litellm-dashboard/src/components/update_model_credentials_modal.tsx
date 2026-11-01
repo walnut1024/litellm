@@ -46,7 +46,7 @@ export default function UpdateModelCredentialsModal({
   const handleSubmit = async (values: UpdateCredentialsValues) => {
     const apiKey = values.api_key?.trim();
     if (!apiKey) {
-      toast.fromError("Enter a new API key");
+      toast.error("Enter a new API key");
       return;
     }
     setIsSaving(true);
@@ -62,7 +62,7 @@ export default function UpdateModelCredentialsModal({
       onCancel();
     } catch (error) {
       console.error("Error updating API key:", error);
-      toast.fromError("Failed to update API key");
+      toast.fromError(error);
     } finally {
       setIsSaving(false);
     }

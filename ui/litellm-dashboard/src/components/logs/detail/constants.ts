@@ -15,9 +15,9 @@ export const TAB_RESPONSE = "response" as const;
 
 // Typography
 export const FONT_FAMILY_MONO = "monospace";
-export const FONT_SIZE_SMALL = 12;
-export const FONT_SIZE_MEDIUM = 13;
-export const FONT_SIZE_HEADER = 16;
+export const FONT_SIZE_SMALL = "var(--moma-text-caption)";
+export const FONT_SIZE_MEDIUM = "var(--moma-text-caption)";
+export const FONT_SIZE_HEADER = "var(--moma-text-body)";
 
 // Colors
 export const COLOR_BORDER = "var(--color-border)";

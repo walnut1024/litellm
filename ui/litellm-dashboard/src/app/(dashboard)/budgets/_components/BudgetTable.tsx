@@ -88,11 +88,15 @@ function EmptyState({ hasQuery }: { hasQuery: boolean }) {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Inbox className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">{hasQuery ? "No matching budgets" : "No budgets yet"}</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>{hasQuery ? "No matching budgets" : "No budgets yet"}</L>
+      </div>
       <div className="text-sm text-muted-foreground">
-        {hasQuery
-          ? "No budget matches your search or filters."
-          : "Create a budget to set spend, TPM and RPM limits for customers."}
+        <L>
+          {hasQuery
+            ? "No budget matches your search or filters."
+            : "Create a budget to set spend, TPM and RPM limits for customers."}
+        </L>
       </div>
     </div>
   );

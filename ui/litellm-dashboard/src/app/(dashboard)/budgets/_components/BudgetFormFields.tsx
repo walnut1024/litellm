@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useId } from "react";
 import { Controller } from "react-hook-form";
@@ -68,6 +68,7 @@ const OptionalBadge = () => (
 );
 
 function SpendLimitField({ form }: { form: BudgetForm }) {
+  const t = useTranslation();
   const amountId = useId();
   return (
     <Field className="gap-2">
@@ -93,7 +94,7 @@ function SpendLimitField({ form }: { form: BudgetForm }) {
           name="budget_duration"
           render={({ field }) => (
             <Select
-              items={RESET_OPTIONS}
+              items={RESET_OPTIONS.map((option) => ({ ...option, label: t(option.label) }))}
               value={field.value ?? NO_RESET}
               onValueChange={(next) => field.onChange(next === NO_RESET ? null : next)}
             >
@@ -103,7 +104,7 @@ function SpendLimitField({ form }: { form: BudgetForm }) {
               <SelectContent>
                 {RESET_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    <L>{option.label}</L>
                   </SelectItem>
                 ))}
               </SelectContent>

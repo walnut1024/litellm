@@ -732,7 +732,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
       const response = await teamInfoCall(accessToken, teamId);
       setTeamData(response);
     } catch (error) {
-      toast.fromError("Failed to load team information");
+      toast.fromError(error);
       console.error("Error fetching team info:", error);
     } finally {
       setLoading(false);
@@ -744,7 +744,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
     try {
       setTeamData(await teamInfoCall(accessToken, teamId));
     } catch {
-      toast.fromError("Failed to load team information");
+      toast.error("Failed to load team information");
     } finally {
       void queryClient.invalidateQueries({ queryKey: teamMemberBudgetQueryKey(teamId) });
     }
@@ -930,7 +930,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
       // Notify parent component of the update
       onUpdate(updatedTeamData);
     } catch (error) {
-      toast.fromError("Failed to remove team member");
+      toast.fromError(error);
       console.error("Error removing team member:", error);
     } finally {
       setIsDeleting(false);
@@ -1019,7 +1019,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
           try {
             estimatedOutputTokensPerModel = JSON.parse(trimmedEstimates);
           } catch (e) {
-            toast.fromError("Invalid JSON in estimated output tokens per model");
+            toast.error("Invalid JSON in estimated output tokens per model");
             return;
           }
         }
@@ -2260,7 +2260,9 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     className="mt-4 mb-4 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>Search Tool Settings</b>
+                      <b>
+                        <L>Search Tool Settings</L>
+                      </b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">

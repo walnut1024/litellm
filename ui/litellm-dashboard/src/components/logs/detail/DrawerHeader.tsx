@@ -1,5 +1,8 @@
 import { copyToClipboard } from "@/utils/dataUtils";
-import { type ReactNode, useState } from "react";
+import { type CSSProperties, type ReactNode, useState } from "react";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
+import { formatDistanceToNow } from "date-fns";
+import { enUS, zhCN } from "date-fns/locale";
 import { ArrowLeft, Check, ChevronDown, ChevronUp, Copy, X } from "lucide-react";
 import moment from "moment";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +79,9 @@ export function DrawerHeader({
         <Button variant="outline" size="sm" onClick={onClose} className="mb-3 max-w-full">
           <ArrowLeft data-icon="inline-start" />
           {backTo.icon}
-          <span className="truncate">Back to {backTo.label}</span>
+          <span className="truncate">
+            <L>Back to</L> <L>{backTo.label}</L>
+          </span>
         </Button>
       )}
       {/* Row 0: Model + Provider with Logo */}
@@ -178,9 +183,10 @@ function CopyableId({
 }: {
   value: string;
   label: string;
-  fontSize: number;
+  fontSize: CSSProperties["fontSize"];
   muted?: boolean;
 }) {
+  const t = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -211,7 +217,7 @@ function CopyableId({
           {value}
           <button
             type="button"
-            aria-label={copied ? "Copied!" : `Copy ${label}`}
+            aria-label={copied ? t("Copied!") : t("Copy {label}", { label: t(label) })}
             onClick={handleCopy}
             className="ml-1 align-middle text-muted-foreground hover:text-foreground"
           >
@@ -265,7 +271,9 @@ function NavigationSection({
           <TooltipTrigger render={<Button variant="ghost" size="icon-sm" onClick={onClose} />}>
             <X className="size-4" />
           </TooltipTrigger>
-          <TooltipContent>ESC to close</TooltipContent>
+          <TooltipContent>
+            <L>ESC to close</L>
+          </TooltipContent>
         </Tooltip>
       </TooltipProvider>
     </div>
@@ -286,16 +294,27 @@ function StatusBar({
   statusColor: "error" | "success";
   environment: string;
 }) {
+  const { locale } = useLocale();
+  const t = useTranslation();
+  const startedAt = new Date(log.startTime);
+  const distanceLocale = locale === "zh-CN" ? zhCN : enUS;
+  const relativeTime = Number.isNaN(startedAt.getTime())
+    ? t("Unknown date")
+    : formatDistanceToNow(startedAt, { addSuffix: true, locale: distanceLocale });
   return (
     <div className="flex items-center gap-3">
-      <Badge variant={statusColor === "error" ? "destructive" : "secondary"}>{statusLabel}</Badge>
-      <Badge variant="outline">Env: {environment}</Badge>
+      <Badge variant={statusColor === "error" ? "destructive" : "secondary"}>
+        <L>{statusLabel}</L>
+      </Badge>
+      <Badge variant="outline">
+        <L>Env:</L> {environment}
+      </Badge>
       <div className="flex items-center gap-2">
         <span className="text-muted-foreground" style={{ fontSize: FONT_SIZE_MEDIUM }}>
-          {moment(log.startTime).format("MMM D, YYYY h:mm:ss A")}
+          {moment(log.startTime).format(locale === "zh-CN" ? "YYYY年M月D日 HH:mm:ss" : "MMM D, YYYY h:mm:ss A")}
         </span>
         <span className="text-muted-foreground" style={{ fontSize: FONT_SIZE_MEDIUM }}>
-          ({moment(log.startTime).fromNow()})
+          ({relativeTime})
         </span>
       </div>
     </div>

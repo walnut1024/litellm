@@ -1,11 +1,25 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 import { SpendBudgetCell } from "./spend_budget_cell";
 
 const indicator = (container: HTMLElement) => container.querySelector('[data-slot="meter-indicator"]');
+afterEach(() => localStorage.clear());
 
 describe("SpendBudgetCell", () => {
+  it("localizes budget descriptions without changing meter amounts", () => {
+    render(
+      <LocaleProvider>
+        <SpendBudgetCell spend={25} maxBudget={100} spendDecimals={2} />
+      </LocaleProvider>,
+    );
+    expect(screen.getByText("预算 ¥100")).toBeVisible();
+    const meter = screen.getByRole("meter");
+    expect(meter).toHaveAttribute("aria-valuetext", "已用 ¥25.00，预算 ¥100");
+    expect(meter).toHaveAttribute("aria-valuenow", "25");
+    expect(meter).toHaveAttribute("aria-valuemax", "100");
+  });
   it("shows Unlimited and renders no meter when there is no budget", () => {
     const { container } = render(<SpendBudgetCell spend={0.5} maxBudget={null} />);
     expect(screen.getByText("· Unlimited")).toBeInTheDocument();

@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -63,7 +64,7 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
   return (
     <div className="min-w-80 space-y-4 whitespace-normal">
       <p className="text-xs text-muted-foreground">
-        Exact value mappings take priority over any-value rules for the same key.
+        <L>Exact value mappings take priority over any-value rules for the same key.</L>
       </p>
       {rules.map((rule, index) => {
         const exact = isExact(rule);
@@ -107,7 +108,7 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
               </Button>
             </div>
             <label className="flex flex-col gap-1 text-xs">
-              Baggage key
+              <L>Baggage key</L>
               <Input
                 aria-label={`${label} baggage key`}
                 placeholder="entrypoint"
@@ -118,7 +119,7 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
             {exact ? (
               <>
                 <label className="flex flex-col gap-1 text-xs">
-                  Match value
+                  <L>Match value</L>
                   <Input
                     aria-label={`${label} match value`}
                     value={rule.value ?? ""}
@@ -126,7 +127,7 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
                   />
                 </label>
                 <label className="flex flex-col gap-1 text-xs">
-                  Tag
+                  <L>Tag</L>
                   <Input
                     aria-label={`${label} tag`}
                     value={rule.tag ?? ""}
@@ -140,7 +141,7 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
             ) : (
               <>
                 <label className="flex flex-col gap-1 text-xs">
-                  Tag prefix
+                  <L>Tag prefix</L>
                   <Input
                     aria-label={`${label} tag prefix`}
                     placeholder="usecase:"
@@ -155,7 +156,7 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
             )}
             {problem ? <p className="text-xs text-destructive">{problem}</p> : null}
             <label className="flex items-center justify-between gap-3 text-xs">
-              Require a mapped value
+              <L>Require a mapped value</L>
               <Switch
                 aria-label={`${label} required`}
                 checked={rule.required ?? false}
@@ -163,7 +164,7 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
               />
             </label>
             <label className="flex items-center justify-between gap-3 text-xs">
-              Require an existing tag budget
+              <L>Require an existing tag budget</L>
               <Switch
                 aria-label={`${label} require budget`}
                 checked={rule.require_budgeted_tag ?? false}
@@ -174,7 +175,9 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
         );
       })}
       {disabled ? (
-        <p className="text-xs text-muted-foreground">Managed in config.yaml. Edit the YAML to change these rules.</p>
+        <p className="text-xs text-muted-foreground">
+          <L>Managed in config.yaml. Edit the YAML to change these rules.</L>
+        </p>
       ) : null}
       <Button
         disabled={disabled}
@@ -182,7 +185,7 @@ export function RequestTagMappingsEditor({ value, onChange, disabled = false }: 
         variant="outline"
         onClick={() => onChange([...rules, { header: "baggage", key: "", value: "", tag: "" }])}
       >
-        Add mapping
+        <L>Add mapping</L>
       </Button>
     </div>
   );

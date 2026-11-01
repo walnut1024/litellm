@@ -1,12 +1,14 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import ModelRetrySettingsTab from "./ModelRetrySettingsTab";
 
 type GlobalRetryPolicy = { [key: string]: number };
 type ModelGroupRetryPolicy = { [key: string]: { [key: string]: number } | undefined };
 
 const DEFAULT_RETRY = 0;
+afterEach(() => localStorage.clear());
 
 const buildProps = (overrides: Record<string, unknown> = {}) => ({
   selectedModelGroup: "global" as string | null,
@@ -22,6 +24,22 @@ const buildProps = (overrides: Record<string, unknown> = {}) => ({
 });
 
 describe("ModelRetrySettingsTab", () => {
+  it("translates retry labels while keeping model names and policy keys unchanged", () => {
+    const setModelGroupRetryPolicy =
+      vi.fn<(update: (state: ModelGroupRetryPolicy | null) => ModelGroupRetryPolicy | null) => void>();
+    render(
+      <LocaleProvider>
+        <ModelRetrySettingsTab
+          {...buildProps({ selectedModelGroup: "Home", availableModelGroups: ["Home"], setModelGroupRetryPolicy })}
+        />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("combobox")).toHaveTextContent("Home");
+    const input = screen.getByRole("spinbutton", { name: "资源不存在（404）重试次数" });
+    fireEvent.change(input, { target: { value: "2" } });
+    const update = setModelGroupRetryPolicy.mock.calls.at(-1)![0];
+    expect(update({})).toEqual({ Home: { NotFoundErrorRetries: 2 } });
+  });
   it("should render the 'Global Retry Policy' heading when selectedModelGroup is 'global'", () => {
     render(<ModelRetrySettingsTab {...buildProps()} />);
 

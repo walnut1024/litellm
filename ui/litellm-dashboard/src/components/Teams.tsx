@@ -1154,7 +1154,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     className="mt-8 mb-8 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>MCP Settings</b>
+                      <b>
+                        <L>MCP Settings</L>
+                      </b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">
@@ -1198,7 +1200,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     className="mt-8 mb-8 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>Agent Settings</b>
+                      <b>
+                        <L>Agent Settings</L>
+                      </b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">
@@ -1230,7 +1234,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     className="mt-8 mb-8 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>Search Tool Settings</b>
+                      <b>
+                        <L>Search Tool Settings</L>
+                      </b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">
@@ -1262,7 +1268,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     className="mt-8 mb-8 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>Skill Settings</b>
+                      <b>
+                        <L>Skill Settings</L>
+                      </b>
                       <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent className="px-4 pb-3">

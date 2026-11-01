@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as React from "react";
@@ -400,6 +400,7 @@ export const DefaultUserSettingsForm = ({
   fetchSettings = defaultFetchSettings,
   updateSettings = defaultUpdateSettings,
 }: DefaultUserSettingsFormProps) => {
+  const t = useTranslation();
   const [isEditing, setIsEditing] = React.useState(false);
   const { data, isPending, isError } = useQuery({ queryKey: SETTINGS_QUERY_KEY, queryFn: fetchSettings });
 
@@ -407,8 +408,12 @@ export const DefaultUserSettingsForm = ({
     () =>
       Object.entries(possibleUIRoles ?? {})
         .filter(([role]) => role.includes("internal_user"))
-        .map(([role, meta]) => ({ value: role, label: meta.ui_label || role, description: meta.description ?? "" })),
-    [possibleUIRoles],
+        .map(([role, meta]) => ({
+          value: role,
+          label: t(meta.ui_label || role),
+          description: t(meta.description ?? ""),
+        })),
+    [possibleUIRoles, t],
   );
 
   const initialValues = React.useMemo(() => (data === undefined ? undefined : settingsToForm(data.values)), [data]);

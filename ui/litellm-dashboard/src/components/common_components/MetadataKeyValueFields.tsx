@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { CircleMinus, Plus } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -208,7 +209,7 @@ const MetadataKeyValueFields = <TFieldValues extends FieldValues>({
         onClick={() => append({ key: "", value: "" } as never, { shouldFocus: false })}
       >
         <Plus className="size-4" />
-        Add Key-Value Pair
+        <L>Add Key-Value Pair</L>
       </Button>
     </>
   );

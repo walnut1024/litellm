@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { CircleAlert, Shield, TriangleAlert } from "lucide-react";
@@ -22,9 +22,8 @@ export const createDeploymentHealthHandle = (): DeploymentHealthHandle => Dialog
 export const activeWarnings = (warnings: readonly DeploymentWarning[]): DeploymentWarning[] =>
   warnings.filter((warning) => !warning.ignore);
 
-const pluralWarnings = (count: number): string => `${count} active ${count === 1 ? "warning" : "warnings"}`;
-
 export const DeploymentHealthIcon = ({ handle }: { handle: DeploymentHealthHandle }) => {
+  const t = useTranslation();
   const { canView } = useDeploymentHealthAccess();
   const { data } = useDeploymentWarnings();
   if (!canView) return null;
@@ -36,7 +35,16 @@ export const DeploymentHealthIcon = ({ handle }: { handle: DeploymentHealthHandl
     <SheetTrigger
       handle={handle}
       render={<Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground" />}
-      aria-label={active.length > 0 ? `Deployment health, ${pluralWarnings(active.length)}` : "Deployment health"}
+      aria-label={
+        active.length > 0
+          ? t(
+              active.length === 1
+                ? "Deployment health, {count} active warning"
+                : "Deployment health, {count} active warnings",
+              { count: active.length },
+            )
+          : t("Deployment health")
+      }
     >
       <Shield className="size-4" aria-hidden />
       {active.length > 0 ? (
@@ -53,6 +61,7 @@ export const DeploymentHealthIcon = ({ handle }: { handle: DeploymentHealthHandl
 };
 
 export const DeploymentHealthBanner = ({ handle }: { handle: DeploymentHealthHandle }) => {
+  const t = useTranslation();
   const { canView } = useDeploymentHealthAccess();
   const { data } = useDeploymentWarnings();
   const active = activeWarnings(data?.warnings ?? []);
@@ -65,7 +74,7 @@ export const DeploymentHealthBanner = ({ handle }: { handle: DeploymentHealthHan
     <Alert
       variant={critical ? "error" : "warning"}
       role={critical ? "alert" : "status"}
-      aria-label="Deployment alert"
+      aria-label={t("Deployment alert")}
       className="min-h-10 shrink-0 items-center *:[svg]:text-warning data-[variant=error]:*:[svg]:text-destructive rounded-none border-x-0 border-t-0 border-b-warning/25 bg-warning/10 px-4 py-2 text-[13px] leading-5 text-foreground data-[variant=error]:border-b-destructive/25 data-[variant=error]:bg-destructive/10"
     >
       <Icon aria-hidden />

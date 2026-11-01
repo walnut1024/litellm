@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useState } from "react";
 import {
   Combobox,
@@ -86,7 +88,9 @@ const AccessGroupTagsCombobox: React.FC<AccessGroupTagsComboboxProps> = ({
         </ComboboxValue>
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>No access groups found</ComboboxEmpty>
+        <ComboboxEmpty>
+          <L>No access groups found</L>
+        </ComboboxEmpty>
         <ComboboxList>
           {(group: string) => (
             <ComboboxItem key={group} value={group}>

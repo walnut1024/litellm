@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -141,7 +142,9 @@ const SettingValueEditor: React.FC<{
           <SelectValue placeholder="Default" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={null}>Default</SelectItem>
+          <SelectItem value={null}>
+            <L>Default</L>
+          </SelectItem>
           {(setting.field_options ?? []).map((option) => (
             <SelectItem key={option} value={option}>
               {option}
@@ -189,8 +192,12 @@ export const PromptCachingPanel: React.FC<{
 
         <div className="mt-6 flex items-start justify-between gap-8">
           <div className="min-w-0 max-w-2xl">
-            <p className="font-medium">Automatic Anthropic prompt caching</p>
-            <p className="mt-1 break-words text-xs text-muted-foreground">{enableSetting.field_description}</p>
+            <p className="font-medium">
+              <L>Automatic Anthropic prompt caching</L>
+            </p>
+            <p className="mt-1 break-words text-xs text-muted-foreground">
+              <L>{enableSetting.field_description}</L>
+            </p>
           </div>
           <Switch checked={enabled} onCheckedChange={(checked) => persist(ENABLE_ANTHROPIC_PROMPT_CACHING, checked)} />
         </div>
@@ -198,8 +205,12 @@ export const PromptCachingPanel: React.FC<{
         {ttlSetting && (
           <div className="mt-6 flex items-start justify-between gap-8">
             <div className="min-w-0 max-w-2xl">
-              <p className={`font-medium ${enabled ? "" : "text-muted-foreground"}`}>Cache lifetime (TTL)</p>
-              <p className="mt-1 break-words text-xs text-muted-foreground">{ttlSetting.field_description}</p>
+              <p className={`font-medium ${enabled ? "" : "text-muted-foreground"}`}>
+                <L>Cache lifetime (TTL)</L>
+              </p>
+              <p className="mt-1 break-words text-xs text-muted-foreground">
+                <L>{ttlSetting.field_description}</L>
+              </p>
             </div>
             <Select
               disabled={!enabled}
@@ -210,7 +221,9 @@ export const PromptCachingPanel: React.FC<{
                 <SelectValue placeholder="5m (default)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={null}>5m (default)</SelectItem>
+                <SelectItem value={null}>
+                  <L>5m (default)</L>
+                </SelectItem>
                 {(ttlSetting.field_options ?? []).map((option) => (
                   <SelectItem key={option} value={option}>
                     {option}
@@ -224,8 +237,12 @@ export const PromptCachingPanel: React.FC<{
         {systemFirstSetting && (
           <div className="mt-6 flex items-start justify-between gap-8">
             <div className="min-w-0 max-w-2xl">
-              <p className="font-medium">System messages first for OpenAI</p>
-              <p className="mt-1 break-words text-xs text-muted-foreground">{systemFirstSetting.field_description}</p>
+              <p className="font-medium">
+                <L>System messages first for OpenAI</L>
+              </p>
+              <p className="mt-1 break-words text-xs text-muted-foreground">
+                <L>{systemFirstSetting.field_description}</L>
+              </p>
             </div>
             <Switch
               aria-label="System messages first for OpenAI"
@@ -337,10 +354,18 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Setting</TableHead>
-                    <TableHead>Value</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Action</TableHead>
+                    <TableHead>
+                      <L>Setting</L>
+                    </TableHead>
+                    <TableHead>
+                      <L>Value</L>
+                    </TableHead>
+                    <TableHead>
+                      <L>Status</L>
+                    </TableHead>
+                    <TableHead>
+                      <L>Action</L>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -349,16 +374,11 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
                     .map((value, index) => (
                       <TableRow key={index}>
                         <TableCell className="whitespace-normal">
-                          <p className="break-words">{value.field_name}</p>
-                          <p
-                            style={{
-                              fontSize: "0.65rem",
-                              color: "#808080",
-                              fontStyle: "italic",
-                            }}
-                            className="mt-1 break-words"
-                          >
-                            {value.field_description}
+                          <p className="break-words">
+                            <L>{value.field_name}</L>
+                          </p>
+                          <p className="mt-1 break-words text-xs italic text-muted-foreground">
+                            <L>{value.field_description}</L>
                           </p>
                         </TableCell>
                         <TableCell>
@@ -381,7 +401,7 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
                             }
                             onClick={() => handleUpdateField(value.field_name)}
                           >
-                            Update
+                            <L>Update</L>
                           </Button>
                           {value.field_name === "request_tag_mappings" && value.editable === false ? null : (
                             <span

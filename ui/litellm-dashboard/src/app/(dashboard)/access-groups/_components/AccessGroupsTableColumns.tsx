@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Bot, Layers, MoreHorizontal, Server, Sparkles, Trash2 } from "lucide-react";
@@ -39,6 +39,7 @@ const RESOURCE_TONES: Record<"models" | "mcpServers" | "agents" | "skills", Reso
 };
 
 function ResourcesCell({ group }: { group: AccessGroup }) {
+  const t = useTranslation();
   const items = [
     { key: "models" as const, label: "Models", count: group.modelIds.length },
     { key: "mcpServers" as const, label: "MCP Servers", count: group.mcpServerIds.length },
@@ -54,7 +55,7 @@ function ResourcesCell({ group }: { group: AccessGroup }) {
         return (
           <span
             key={item.key}
-            title={`${item.count} ${item.label}`}
+            title={`${item.count} ${t(item.label)}`}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset [&_svg]:size-3.5",
               tone.className,
@@ -76,10 +77,11 @@ function AccessGroupRowActions({
   group: AccessGroup;
   onDeleteClick: (group: AccessGroup) => void;
 }) {
+  const t = useTranslation();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open access group actions"
+        aria-label={t("Open access group actions")}
         data-testid={`access-group-actions-${group.id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >

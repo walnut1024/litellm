@@ -70,7 +70,7 @@ const BudgetPanel: React.FC<BudgetSettingsPageProps> = ({ accessToken }) => {
       toast.success("Budget deleted.");
     } catch (error) {
       console.error("Error deleting budget:", error);
-      toast.fromError("Failed to delete budget");
+      toast.fromError(error);
     } finally {
       setIsDeleteModalVisible(false);
       setSelectedBudget(null);

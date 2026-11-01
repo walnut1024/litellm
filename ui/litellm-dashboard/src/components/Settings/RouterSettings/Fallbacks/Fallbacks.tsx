@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
 import { ArrowRight, Pencil, Play, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -122,7 +123,7 @@ async function testFallbackModelResponse(selectedModel: string, accessToken: str
       </span>,
     );
   } catch (error) {
-    toast.fromError(`Error occurred while generating model response. Please try again. Error: ${error}`);
+    toast.fromError(error);
   }
 }
 
@@ -289,16 +290,22 @@ const Fallbacks: React.FC<FallbacksProps> = ({ accessToken, userRole, userID }) 
       {!hasFallbacks ? (
         <div className="rounded-lg border border-border bg-muted px-4 py-6 text-center">
           <span className="text-muted-foreground">
-            No fallbacks configured. Add fallbacks to automatically try another model when the primary fails.
+            <L>No fallbacks configured. Add fallbacks to automatically try another model when the primary fails.</L>
           </span>
         </div>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Model Name</TableHead>
-              <TableHead>Fallbacks</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>
+                <L>Model Name</L>
+              </TableHead>
+              <TableHead>
+                <L>Fallbacks</L>
+              </TableHead>
+              <TableHead>
+                <L>Actions</L>
+              </TableHead>
             </TableRow>
           </TableHeader>
 

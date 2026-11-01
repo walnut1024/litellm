@@ -6,6 +6,8 @@ import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { renderWithProviders } from "../../../../tests/test-utils";
 import { recordUiEvent } from "@/lib/telemetry/uiEvents";
 import ModelsAndEndpointsPage from "./page";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 vi.mock("@/lib/telemetry/uiEvents", () => ({ recordUiEvent: vi.fn(() => Promise.resolve()) }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/ui/models-and-endpoints" }));
@@ -85,6 +87,25 @@ describe("ModelsAndEndpointsPage", () => {
       unobserve() {}
       disconnect() {}
     };
+  });
+
+  it.each([ADMIN, NON_ADMIN])("hides beta budgets and clears their direct URL for $userRole", async (session) => {
+    mockUseAuthorized.mockReturnValue(session);
+    const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "models-and-endpoints", admin: session.userRole === "Admin" }}>
+        <LocaleProvider>
+          <ModelsAndEndpointsPage />
+        </LocaleProvider>
+      </LiteUiContext.Provider>,
+      { searchParams: "?tab=access-group-budgets&model_search=Home", onUrlUpdate, resetUrlUpdateQueueOnMount: false },
+    );
+    expect(screen.queryByRole("tab", { name: /Beta/ })).not.toBeInTheDocument();
+    expect(screen.queryByTestId("panel-budgets")).not.toBeInTheDocument();
+    expect(screen.getByTestId("panel-all-models")).toBeInTheDocument();
+    if (session.userRole === "Admin") expect(screen.getByRole("tab", { name: "健康状态" })).toBeVisible();
+    await waitFor(() => expect(lastUrlParams(onUrlUpdate)?.has("tab")).toBe(false));
+    expect(lastUrlParams(onUrlUpdate)?.get("model_search")).toBe("Home");
   });
 
   it("renders the admin tab bar and the Deployed Models panel by default", () => {

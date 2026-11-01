@@ -1,4 +1,5 @@
 import React from "react";
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { CONFIG_OWNED_HINT, ConfigOwnedBadge } from "./ConfigOwned";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -23,11 +24,11 @@ const RoutingStrategySelector: React.FC<RoutingStrategySelectorProps> = ({
     <div className="space-y-2 max-w-3xl">
       <div>
         <label className="text-xs font-medium text-foreground uppercase tracking-wide">
-          {routerFieldsMetadata["routing_strategy"]?.ui_field_name || "Routing Strategy"}
+          <L>{routerFieldsMetadata["routing_strategy"]?.ui_field_name || "Routing Strategy"}</L>
         </label>
         {ownedByConfig && <ConfigOwnedBadge />}
         <p className="text-xs text-muted-foreground mt-0.5 mb-2">
-          {routerFieldsMetadata["routing_strategy"]?.field_description || ""}
+          <L>{routerFieldsMetadata["routing_strategy"]?.field_description || ""}</L>
         </p>
       </div>
       <div className="routing-strategy-select max-w-3xl">
@@ -43,10 +44,12 @@ const RoutingStrategySelector: React.FC<RoutingStrategySelectorProps> = ({
             {availableStrategies.map((strategy) => (
               <SelectItem key={strategy} value={strategy}>
                 <div className="flex flex-col gap-0.5 py-1">
-                  <span className="font-mono text-sm font-medium">{strategy}</span>
+                  <span className="font-mono text-sm font-medium">
+                    <L>{strategy}</L>
+                  </span>
                   {routingStrategyDescriptions[strategy] && (
                     <span className="text-xs font-normal text-muted-foreground">
-                      {routingStrategyDescriptions[strategy]}
+                      <L>{routingStrategyDescriptions[strategy]}</L>
                     </span>
                   )}
                 </div>

@@ -395,7 +395,11 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
   const emptyListBody = (() => {
     if (failed) return firstPageError;
     if (!loading) return null;
-    return <p className="px-4 py-8 text-center text-sm text-muted-foreground">Loading keys...</p>;
+    return (
+      <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+        <L>Loading keys...</L>
+      </p>
+    );
   })();
   const maxSpend = Math.max(0, ...Object.values(filteredMetrics).map((metrics) => metrics.total_spend));
   const keyList = Object.entries(filteredMetrics).map(([apiKey, metrics]) => {

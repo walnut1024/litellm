@@ -8,8 +8,10 @@ const sonner = vi.hoisted(() => ({
   error: vi.fn(),
   dismiss: vi.fn(),
 }));
+const preferences = vi.hoisted<{ locale: "en" | "zh-CN" }>(() => ({ locale: "en" }));
 
 vi.mock("sonner", () => ({ toast: sonner }));
+vi.mock("@/contexts/LocaleContext", () => ({ getLocale: () => preferences.locale }));
 vi.unmock("@/lib/toast");
 
 import { toast } from "./toast";
@@ -19,6 +21,18 @@ const lastCall = (fn: ReturnType<typeof vi.fn>) => fn.mock.calls.at(-1) as [unkn
 describe("toast", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    preferences.locale = "en";
+  });
+
+  it("localizes UI titles while preserving provider error details", () => {
+    preferences.locale = "zh-CN";
+    toast.success("Model activated");
+    expect(lastCall(sonner.success)[0]).toBe("开通成功");
+    toast.fromError(
+      new ApiError("upstream-model: invalid parameter", 403, { error: { type: "permission_access_denied" } }),
+    );
+    expect(lastCall(sonner.error)[0]).toBe("无权访问");
+    expect(lastCall(sonner.error)[1].description).toBe("upstream-model: invalid parameter");
   });
 
   describe("plain kinds", () => {

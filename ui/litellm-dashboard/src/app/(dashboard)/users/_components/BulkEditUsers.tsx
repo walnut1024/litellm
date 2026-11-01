@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useId, useState } from "react";
 import { userBulkUpdateUserCall, teamBulkMemberAddCall, Member } from "@/components/networking";
@@ -48,6 +48,7 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
   userModels,
   allowAllUsers = false,
 }) => {
+  const t = useTranslation();
   const { premiumUser } = useAuthorized();
   const [loading, setLoading] = useState(false);
   const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
@@ -196,7 +197,7 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
         }
 
         if (failedTeams.length > 0) {
-          toast.warning(`Failed to add users to ${failedTeams.length} team(s)`);
+          toast.warning(t("Failed to add users to {count} team(s)", { count: failedTeams.length }));
         }
       }
 
@@ -283,7 +284,7 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{user.user_email || "No email"}</TableCell>
                       <TableCell className="text-xs text-foreground">
-                        {possibleUIRoles?.[user.user_role]?.ui_label || user.user_role}
+                        <L>{possibleUIRoles?.[user.user_role]?.ui_label || user.user_role}</L>
                       </TableCell>
                       <TableCell className={NUMERIC_CELL_CLASS}>
                         <MoneyCell value={user.max_budget} decimals={2} emptyText="Unlimited" showZero />

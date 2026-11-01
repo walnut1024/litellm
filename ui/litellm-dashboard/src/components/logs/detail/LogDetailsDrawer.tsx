@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { copyToClipboard } from "@/utils/dataUtils";
 import { useEffect, useMemo, useState } from "react";
 import { Bot, Check, Copy, Sparkles, Wrench } from "lucide-react";
@@ -84,7 +85,10 @@ function TraceEventRow({ row, isSelected, onClick }: TraceEventRowProps) {
         <ClassifyTag origin={row.metadata?.internal_call_origin} className="ml-auto" />
       </div>
       <div className="text-[10px] text-muted-foreground mt-0 flex items-center gap-1.5 font-mono">
-        <span>{durationValue}s</span>
+        <span>
+          {durationValue}
+          <L>s</L>
+        </span>
         {row.spend ? (
           <>
             <span>·</span>
@@ -372,18 +376,19 @@ export function LogDetailsDrawer({
                   {isSessionMode && (
                     <>
                       <span className="mx-1.5">·</span>
-                      {sessionDurationSeconds}s
+                      {sessionDurationSeconds}
+                      <L>s</L>
                     </>
                   )}
                 </div>
                 {isSessionMode && (
                   <div className="text-[11px] text-muted-foreground font-mono whitespace-nowrap">
-                    {cacheHitCount}/{logsForList.length} cached
+                    {cacheHitCount}/{logsForList.length} <L>cached</L>
                   </div>
                 )}
                 {isSessionMode && sessionTruncated && (
                   <div className="mt-1 text-[11px] text-warning font-mono">
-                    Showing most recent {logsForList.length} of {sessionTotalCount}
+                    <L>Showing most recent</L> {logsForList.length} <L>of</L> {sessionTotalCount}
                   </div>
                 )}
                 {isSessionMode && (

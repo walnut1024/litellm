@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useTerminology } from "@/contexts/TerminologyContext";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -113,7 +115,7 @@ export default function CredentialsPanel() {
         {canModifyCredentials && (
           <Button onClick={() => setIsAddModalOpen(true)}>
             <Plus className="size-4" />
-            Add Credential
+            <L>Add Credential</L>
           </Button>
         )}
       </div>

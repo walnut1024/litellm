@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails";
@@ -88,6 +88,7 @@ interface SidebarAccountMenuProps {
 }
 
 const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, collapsed = false }) => {
+  const t = useTranslation();
   const {
     userId,
     userEmail,
@@ -152,8 +153,11 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
   const seed = userEmail || userId || "user";
   const initials = initialsFromIdentity(userEmail, userId);
   const hue = hueFromString(seed);
-  const displayName = navAccountDisplayName(userEmail, userId);
-  const triggerLabel = `Account menu — ${userRole ?? "Unknown role"} — signed in as ${userEmail || userId || "unknown"}`;
+  const displayName = navAccountDisplayName(userEmail, userId, t("Account"));
+  const triggerLabel = t("Account menu for {role}, signed in as {identity}", {
+    role: t(userRole ?? "Unknown role"),
+    identity: userEmail || userId || t("Unknown"),
+  });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

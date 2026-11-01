@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import type { ExpandedState, SortingState } from "@tanstack/react-table";
 import { Inbox } from "lucide-react";
 import React, { useCallback, useMemo, useState } from "react";
@@ -30,9 +32,11 @@ function EmptyState() {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <Inbox className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No routing groups yet</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>No routing groups yet</L>
+      </div>
       <div className="text-sm text-muted-foreground">
-        Create a group to load-balance a set of models behind one name.
+        <L>Create a group to load-balance a set of models behind one name.</L>
       </div>
     </div>
   );

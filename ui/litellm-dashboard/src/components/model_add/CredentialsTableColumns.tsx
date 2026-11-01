@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
@@ -42,7 +44,11 @@ function CredentialProviderCell({ provider, federated }: { provider: string | un
         />
       ) : null}
       <span className="truncate text-sm">{displayName || provider}</span>
-      {federated && <Badge variant="secondary">Workload identity federation</Badge>}
+      {federated && (
+        <Badge variant="secondary">
+          <L>Workload identity federation</L>
+        </Badge>
+      )}
     </div>
   );
 }
@@ -81,7 +87,7 @@ function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowAct
           onClick={() => onEdit(credential)}
         >
           <Pencil />
-          Edit
+          <L>Edit</L>
         </DropdownMenuItem>
         <DropdownMenuItem
           data-testid="credential-action-copy"
@@ -98,7 +104,7 @@ function CredentialRowActions({ credential, onEdit, onDelete }: CredentialRowAct
           onClick={() => onDelete(credential)}
         >
           <Trash2 />
-          Delete
+          <L>Delete</L>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -172,7 +178,11 @@ export const getCredentialsTableColumns = ({
     {
       id: "actions",
       meta: { className: "text-right", headerClassName: "text-right" },
-      header: () => <span className="sr-only">Actions</span>,
+      header: () => (
+        <span className="sr-only">
+          <L>Actions</L>
+        </span>
+      ),
       size: 64,
       enableSorting: false,
       enableHiding: false,

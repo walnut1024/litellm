@@ -1,4 +1,5 @@
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { useTranslation } from "@/contexts/LocaleContext";
 import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts";
 import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBouncingIcon";
 import { useDisableLiteAdmin } from "@/app/(dashboard)/hooks/useDisableLiteAdmin";
@@ -68,6 +69,7 @@ interface UserDropdownProps {
 }
 
 const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar", collapsed = false }) => {
+  const t = useTranslation();
   const {
     userId,
     userEmail,
@@ -222,7 +224,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onLogout, variant = "navbar
   const seed = userEmail || userId || "user";
   const initials = initialsFromIdentity(userEmail, userId);
   const hue = hueFromString(seed);
-  const displayName = navAccountDisplayName(userEmail, userId);
+  const displayName = navAccountDisplayName(userEmail, userId, t("Account"));
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

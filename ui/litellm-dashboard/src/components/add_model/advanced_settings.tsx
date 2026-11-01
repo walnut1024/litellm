@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import React from "react";
 import { MultiSelect } from "@/components/shared/MultiSelect";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -100,7 +101,9 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
     <>
       <Collapsible className="mt-2 mb-4 overflow-hidden rounded-lg border">
         <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-          <b>Advanced Settings</b>
+          <b>
+            <L>Advanced Settings</L>
+          </b>
           <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
         </CollapsibleTrigger>
         <CollapsibleContent className="px-4 pb-3">
@@ -446,7 +449,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                     rel="noopener noreferrer"
                     className="text-primary underline-offset-4 hover:underline"
                   >
-                    Learn more
+                    <L>Learn more</L>
                   </a>
                 </span>,
               )}
@@ -524,14 +527,14 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
             </MountedFormField>
             <div className="grid grid-cols-24 mb-4">
               <p className="col-start-11 col-span-10 text-muted-foreground text-sm">
-                Pass JSON of litellm supported params{" "}
+                <L>Pass JSON of litellm supported params</L>{" "}
                 <a
                   href="https://docs.litellm.ai/docs/completion/input"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline-offset-4 hover:underline"
                 >
-                  litellm.completion() call
+                  <L>litellm.completion() call</L>
                 </a>
               </p>
             </div>

@@ -161,7 +161,7 @@ export const getUsersTableColumns = ({
       enableSorting: true,
       cell: ({ row }) => (
         <span className="text-sm">
-          {(row.original.user_role && possibleUIRoles?.[row.original.user_role]?.ui_label) || "-"}
+          <L>{(row.original.user_role && possibleUIRoles?.[row.original.user_role]?.ui_label) || "-"}</L>
         </span>
       ),
     },

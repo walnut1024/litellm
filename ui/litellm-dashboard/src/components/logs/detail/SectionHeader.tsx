@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 /**
  * SectionHeader - Datadog-style header with icon, label, metrics, and copy
  */
@@ -43,7 +44,9 @@ export function SectionHeader({
         ) : (
           <span className="text-sm opacity-60 grayscale">✨</span>
         )}
-        <span className="text-sm font-medium">{type === "input" ? "Input" : "Output"}</span>
+        <span className="text-sm font-medium">
+          <L>{type === "input" ? "Input" : "Output"}</L>
+        </span>
       </div>
 
       {tokens !== undefined && <span className="text-xs text-muted-foreground">Tokens: {tokens.toLocaleString()}</span>}
@@ -92,7 +95,9 @@ export function SectionHeader({
         >
           <Copy />
         </TooltipTrigger>
-        <TooltipContent>Copy</TooltipContent>
+        <TooltipContent>
+          <L>Copy</L>
+        </TooltipContent>
       </Tooltip>
     </div>
   );

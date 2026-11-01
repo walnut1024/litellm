@@ -34,7 +34,7 @@ const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessTok
       setSelectedPermissions(teamPermissions);
       setHasChanges(false);
     } catch (error) {
-      toast.fromError("Failed to load permissions");
+      toast.fromError(error);
       console.error("Error fetching permissions:", error);
     } finally {
       setLoading(false);
@@ -61,7 +61,7 @@ const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessTok
       toast.success("Permissions updated successfully");
       setHasChanges(false);
     } catch (error) {
-      toast.fromError("Failed to update permissions");
+      toast.fromError(error);
       console.error("Error updating permissions:", error);
     } finally {
       setSaving(false);

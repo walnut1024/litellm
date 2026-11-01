@@ -95,7 +95,7 @@ const TopUsersView: React.FC<TopUsersViewProps> = ({ fetchUserPage }) => {
         return (
           <li key={userRowKey(row)} className={`${TOP_USER_ROW_GRID} border-b py-2.5 last:border-b-0`}>
             <div className="min-w-0">
-              <div className="truncate text-sm text-foreground">{userPrimaryLabel(row)}</div>
+              <div className="truncate text-sm text-foreground">{userPrimaryLabel(row) || <L>(no user)</L>}</div>
               {secondary && <div className="truncate text-xs text-muted-foreground">{secondary}</div>}
               <div aria-hidden="true" className="mt-1 h-1 w-full max-w-xs overflow-hidden rounded-full bg-muted">
                 <div

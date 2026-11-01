@@ -473,7 +473,9 @@ export default function UserInfoView({
           { label: "User ID", value: userData.user_id, code: true },
           {
             label: "Global Proxy Role",
-            value: (userData.user_role && possibleUIRoles?.[userData.user_role]?.ui_label) || userData.user_role || "-",
+            value: t(
+              (userData.user_role && possibleUIRoles?.[userData.user_role]?.ui_label) || userData.user_role || "-",
+            ),
           },
           {
             label: "Total Spend (CNY)",

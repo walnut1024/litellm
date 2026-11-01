@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import {
   ColumnFiltersState,
@@ -97,6 +97,7 @@ export function UsersTable({
   onDeleteUser,
   onResetPassword,
 }: UsersTableProps) {
+  const t = useTranslation();
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const columns = useMemo(() => {
@@ -114,10 +115,10 @@ export function UsersTable({
   const roleOptions = useMemo(
     () =>
       Object.entries(possibleUIRoles ?? {}).map(([role, config]) => ({
-        label: config.ui_label || role,
+        label: t(config.ui_label || role),
         value: role,
       })),
-    [possibleUIRoles],
+    [possibleUIRoles, t],
   );
 
   const teamOptions = useMemo(
@@ -132,7 +133,7 @@ export function UsersTable({
   const formatFilterValue = (columnId: string, value: unknown): string => {
     const raw = String(value);
     if (columnId === "user_role") {
-      return possibleUIRoles?.[raw]?.ui_label || raw;
+      return t(possibleUIRoles?.[raw]?.ui_label || raw);
     }
     if (columnId === "team") {
       return teams?.find((team) => team.team_id === raw)?.team_alias || raw;

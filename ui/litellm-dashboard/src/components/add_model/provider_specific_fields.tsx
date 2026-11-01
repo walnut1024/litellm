@@ -1,3 +1,4 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
 import { PasswordInput } from "@/components/shared/PasswordInput";
 import { Input } from "@/components/ui/input";
@@ -97,6 +98,7 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
   onAuthTypeChange,
   fieldValidators,
 }) => {
+  const t = useTranslation();
   const selectedProviderEnum = Providers[selectedProvider as keyof typeof Providers] as Providers;
   const form = useFormContext<MountedFormValues>();
   const authTypes = authTypesFor(selectedProvider);
@@ -282,7 +284,7 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
         <>
           <Button type="button" variant="outline" className="w-fit" onClick={() => credentialsFileRef.current?.click()}>
             <UploadIcon />
-            Click to Upload
+            <L>Click to Upload</L>
           </Button>
           <input
             ref={credentialsFileRef}
@@ -348,7 +350,7 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
             {labelWithHint("Auth Type:", "Select how LiteLLM authenticates to this provider.")}
           </label>
           <Select
-            items={availableAuthTypes.map(({ id, label }) => ({ value: id, label }))}
+            items={availableAuthTypes.map(({ id, label }) => ({ value: id, label: t(label) }))}
             value={selectedAuthType.id}
             onValueChange={(value) => setSelectedAuthTypeId(value ?? "")}
           >
@@ -358,7 +360,7 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
             <SelectContent>
               {availableAuthTypes.map((authType) => (
                 <SelectItem key={authType.id} value={authType.id}>
-                  {authType.label}
+                  <L>{authType.label}</L>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -368,9 +370,11 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
       )}
       {credentialOnlySelected ? (
         <>
-          <p className="mb-4 text-sm">This auth type is saved as an LLM credential and attached to this model.</p>
+          <p className="mb-4 text-sm">
+            <L>This auth type is saved as an LLM credential and attached to this model.</L>
+          </p>
           <Button type="button" onClick={() => onCreateCredential?.(selectedAuthType.id)}>
-            Create credential
+            <L>Create credential</L>
           </Button>
         </>
       ) : (
@@ -380,7 +384,11 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
           </MountedFormField>
         ))
       )}
-      {isLoading && allFields.length === 0 && <p className="text-sm mb-2">Loading provider fields...</p>}
+      {isLoading && allFields.length === 0 && (
+        <p className="text-sm mb-2">
+          <L>Loading provider fields...</L>
+        </p>
+      )}
       {loadError && allFields.length === 0 && (
         <p className="text-sm mb-2 text-destructive">
           {loadError instanceof Error ? loadError.message : "Failed to load provider credential fields"}
@@ -405,21 +413,23 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
 
           {/* Special case for Vertex Credentials help text */}
           {field.key === "vertex_credentials" && (
-            <p className="text-sm mb-3 mt-1">Give a gcp service account(.json file)</p>
+            <p className="text-sm mb-3 mt-1">
+              <L>Give a gcp service account(.json file)</L>
+            </p>
           )}
 
           {/* Special case for Azure Base Model help text */}
           {field.key === "base_model" && (
             <div className="grid grid-cols-24">
               <p className="col-start-11 col-span-10 text-sm mb-2">
-                The actual model your azure deployment uses. Used for accurate cost tracking. Select name from{" "}
+                <L>The actual model your azure deployment uses. Used for accurate cost tracking. Select name from</L>{" "}
                 <a
                   href="https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-primary underline-offset-4 hover:underline"
                 >
-                  here
+                  <L>here</L>
                 </a>
               </p>
             </div>

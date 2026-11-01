@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { useTheme } from "next-themes";
 import { JsonView, darkStyles, defaultStyles } from "react-json-view-lite";
 import "react-json-view-lite/dist/index.css";
@@ -15,7 +16,12 @@ interface JsonViewerProps {
 export function JsonViewer({ data }: JsonViewerProps) {
   const { resolvedTheme } = useTheme();
 
-  if (!data) return <span className="text-muted-foreground">No data</span>;
+  if (!data)
+    return (
+      <span className="text-muted-foreground">
+        <L>No data</L>
+      </span>
+    );
 
   return (
     <div

@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
 import moment from "moment";
 import { CalendarDays } from "lucide-react";
@@ -45,13 +45,14 @@ interface LogsTimeRangePickerProps {
 }
 
 export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePickerProps) {
+  const { locale } = useLocale();
   const [open, setOpen] = useState(false);
 
   const selectedOption = QUICK_SELECT_OPTIONS.find(
     (option) => option.value === value.interval.value && option.unit === value.interval.unit,
   );
   const displayLabel = value.isCustomDate
-    ? getTimeRangeDisplay(true, value.startTime, value.endTime)
+    ? getTimeRangeDisplay(true, value.startTime, value.endTime, locale)
     : selectedOption?.label;
 
   return (
@@ -61,7 +62,7 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
           render={
             <Button variant="outline" size="sm" className="gap-2">
               <CalendarDays className="size-4" />
-              {displayLabel}
+              <L>{displayLabel}</L>
             </Button>
           }
         />
@@ -77,7 +78,7 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
                   setOpen(false);
                 }}
               >
-                {option.label}
+                <L>{option.label}</L>
               </Button>
             ))}
             <div className="my-2 border-t" />
@@ -116,10 +117,11 @@ export function LogsTimeRangePicker({ value, onValueChange }: LogsTimeRangePicke
 }
 
 export function LogsToolbarSwitch({ label, ...props }: ComponentProps<typeof Switch> & { label: string }) {
+  const t = useTranslation();
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-medium">{label}</span>
-      <Switch aria-label={label} {...props} />
+      <span className="text-sm font-medium">{t(label)}</span>
+      <Switch aria-label={t(label)} {...props} />
     </div>
   );
 }

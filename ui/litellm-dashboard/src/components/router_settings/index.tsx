@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/lib/toast";
@@ -203,14 +204,14 @@ const RouterSettings: React.FC<RouterSettingsProps> = ({ accessToken, userRole, 
       {/* Actions - Sticky at bottom */}
       <div className="border-t border-border pt-6 flex justify-end gap-3">
         <Button variant="outline" onClick={() => window.location.reload()}>
-          Reset
+          <L>Reset</L>
         </Button>
         <Button
           onClick={handleSaveChanges}
           disabled={routerSettingsSource === null}
           title={routerSettingsSource === null ? SOURCE_UNKNOWN_HINT : undefined}
         >
-          Save Changes
+          <L>Save Changes</L>
         </Button>
       </div>
     </div>

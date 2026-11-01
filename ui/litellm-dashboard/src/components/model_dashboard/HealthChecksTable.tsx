@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { OnChangeFn, PaginationState, RowSelectionState, SortingState } from "@tanstack/react-table";
 import { HeartPulse } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -32,8 +34,12 @@ function EmptyState() {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <HeartPulse className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">No models found</div>
-      <div className="text-sm text-muted-foreground">Models added to this proxy will show their health here.</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>No models found</L>
+      </div>
+      <div className="text-sm text-muted-foreground">
+        <L>Models added to this proxy will show their health here.</L>
+      </div>
     </div>
   );
 }

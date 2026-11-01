@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 /**
  * Formatted view of tool definition with parameters table and call data
  */
@@ -38,8 +39,12 @@ export function FormattedToolView({ tool }: FormattedToolViewProps) {
             <TableHeader>
               <TableRow>
                 <TableHead>Parameter</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead>
+                  <L>Type</L>
+                </TableHead>
+                <TableHead>
+                  <L>Description</L>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

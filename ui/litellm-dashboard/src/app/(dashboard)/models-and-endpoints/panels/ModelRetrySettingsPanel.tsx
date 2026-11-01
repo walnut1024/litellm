@@ -77,7 +77,7 @@ export default function ModelRetrySettingsPanel() {
           });
         },
         onError: () => {
-          toast.fromError("Failed to save retry settings");
+          toast.error("Failed to save retry settings");
         },
       },
     );

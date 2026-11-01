@@ -1,3 +1,4 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { copyToClipboard } from "@/utils/dataUtils";
 import { useState } from "react";
 import { Check, ChevronDown, ChevronRight, CircleAlert, Copy, Info } from "lucide-react";
@@ -129,7 +130,9 @@ export function LogDetailContent({
         >
           <CircleAlert className="size-4 shrink-0 text-destructive" />
           <div>
-            <div className="font-medium text-destructive">Request Failed</div>
+            <div className="font-medium text-destructive">
+              <L>Request Failed</L>
+            </div>
             <ErrorDescription errorInfo={errorInfo} />
           </div>
         </div>
@@ -225,7 +228,7 @@ export function LogDetailContent({
         <div className="bg-card rounded-lg shadow-sm w-full max-w-full overflow-hidden mb-6 p-8 text-center">
           <UiLoadingSpinner className="inline-block size-5" />
           <div style={{ marginTop: 8, color: "var(--color-muted-foreground)" }}>
-            Loading request &amp; response data...
+            <L>Loading request &amp; response data...</L>
           </div>
         </div>
       ) : null}
@@ -287,7 +290,9 @@ function DescriptionList({ children }: { children: React.ReactNode }) {
 function DescriptionItem({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="flex min-w-0 flex-wrap items-start gap-x-2 gap-y-0.5">
-      <span className="shrink-0 text-muted-foreground after:content-[':']">{label}</span>
+      <span className="shrink-0 text-muted-foreground after:content-[':']">
+        <L>{label}</L>
+      </span>
       <span className="min-w-0 break-words">{children}</span>
     </div>
   );
@@ -302,6 +307,7 @@ function CopyButton({
   label: string;
   disabled?: boolean;
 }) {
+  const t = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -317,7 +323,7 @@ function CopyButton({
       size="icon-sm"
       onClick={handleCopy}
       disabled={disabled}
-      aria-label={copied ? "Copied!" : label}
+      aria-label={t(copied ? "Copied!" : label)}
     >
       {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
     </Button>
@@ -329,12 +335,18 @@ function ErrorDescription({ errorInfo }: { errorInfo: any }) {
     <div>
       {errorInfo.error_code && (
         <div>
-          <span className="font-semibold">Error Code:</span> {errorInfo.error_code}
+          <span className="font-semibold">
+            <L>Error Code:</L>
+          </span>{" "}
+          {errorInfo.error_code}
         </div>
       )}
       {errorInfo.error_message && (
         <div>
-          <span className="font-semibold">Message:</span> {errorInfo.error_message}
+          <span className="font-semibold">
+            <L>Message:</L>
+          </span>{" "}
+          {errorInfo.error_message}
         </div>
       )}
     </div>
@@ -345,7 +357,7 @@ function TagsSection({ tags }: { tags: Record<string, any> }) {
   return (
     <div className="bg-card rounded-lg shadow-sm w-full max-w-full overflow-hidden p-4 mb-6">
       <span className="font-semibold" style={{ display: "block", marginBottom: 8, fontSize: 16 }}>
-        Tags
+        <L>Tags</L>
       </span>
       <div className="flex flex-wrap items-center gap-2">
         {Object.entries(tags).map(([key, value]) => (
@@ -379,7 +391,11 @@ function GuardrailLabel({ label, maskedCount }: { label: string; maskedCount: nu
       <a onClick={handleClick} style={{ cursor: "pointer" }}>
         {label}
       </a>
-      {maskedCount > 0 && <Badge variant="secondary">{maskedCount} masked</Badge>}
+      {maskedCount > 0 && (
+        <Badge variant="secondary">
+          {maskedCount} <L>masked</L>
+        </Badge>
+      )}
     </span>
   );
 }
@@ -407,7 +423,7 @@ const PROMPT_CACHE_DOCS_URL = "https://docs.litellm.ai/docs/completion/prompt_ca
 function MetricLabel({ label, tooltip, docsUrl }: { label: string; tooltip: string; docsUrl: string }) {
   return (
     <span className="inline-flex items-center gap-1">
-      {label}
+      <L>{label}</L>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger
@@ -416,9 +432,9 @@ function MetricLabel({ label, tooltip, docsUrl }: { label: string; tooltip: stri
             <Info className="size-3.5" />
           </TooltipTrigger>
           <TooltipContent>
-            {tooltip}{" "}
+            <L>{tooltip}</L>{" "}
             <a href={docsUrl} target="_blank" rel="noreferrer" className="underline">
-              Docs
+              <L>Docs</L>
             </a>
           </TooltipContent>
         </Tooltip>
@@ -522,10 +538,12 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
             )}
             <DescriptionItem label="Cost">¥{formatNumberWithCommas(logEntry.spend || 0, 8)}</DescriptionItem>
             <DescriptionItem label="Duration">
-              {logEntry.request_duration_ms != null ? (logEntry.request_duration_ms / 1000).toFixed(3) : "-"} s
+              {logEntry.request_duration_ms != null ? (logEntry.request_duration_ms / 1000).toFixed(3) : "-"} <L>s</L>
             </DescriptionItem>
             {ttftMs != null && ttftMs > 0 && (
-              <DescriptionItem label="Time to First Token">{(ttftMs / 1000).toFixed(3)} s</DescriptionItem>
+              <DescriptionItem label="Time to First Token">
+                {(ttftMs / 1000).toFixed(3)} <L>s</L>
+              </DescriptionItem>
             )}
 
             {showResponseCache && (
@@ -594,7 +612,7 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
               )}
               {metadata?.attempted_retries != null && metadata.attempted_retries <= 0 && (
                 <Badge variant="secondary" className="bg-success/15 text-success">
-                  None
+                  <L>None</L>
                 </Badge>
               )}
               {metadata?.attempted_retries == null && "-"}
@@ -660,7 +678,7 @@ function RequestResponseSection({
                 <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" />
               )}
               <h3 className="text-lg font-medium text-foreground" style={{ margin: 0 }}>
-                Request & Response
+                <L>Request & Response</L>
               </h3>
             </CollapsibleTrigger>
             <TabsList className="mr-4">
@@ -716,7 +734,7 @@ function RequestResponseSection({
                             fontStyle: "italic",
                           }}
                         >
-                          Response data not available
+                          <L>Response data not available</L>
                         </div>
                       )}
                     </div>
@@ -776,10 +794,12 @@ export function GuardrailJumpLink({ guardrailEntries }: { guardrailEntries: any[
           fontWeight: 500,
         }}
       >
-        {glyph} {evaluated.length} guardrail
-        {evaluated.length !== 1 ? "s" : ""} evaluated
+        {glyph} {evaluated.length} <L>guardrail</L>
+        <L>{evaluated.length !== 1 ? "s" : ""}</L> <L>evaluated</L>
         {notRunCount > 0 ? `, ${notRunCount} not run` : ""}
-        <span style={{ fontSize: 11, opacity: 0.7 }}>{"\u2193"}</span>
+        <span style={{ fontSize: 11, opacity: 0.7 }}>
+          <L>{"\u2193"}</L>
+        </span>
       </div>
     </div>
   );
@@ -797,7 +817,9 @@ function MetadataSection({ metadata }: { metadata: Record<string, any> }) {
           ) : (
             <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" />
           )}
-          <h3 className="text-lg font-medium text-foreground">Metadata</h3>
+          <h3 className="text-lg font-medium text-foreground">
+            <L>Metadata</L>
+          </h3>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <div>

@@ -1,11 +1,13 @@
 "use client";
 
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import { ColumnDef } from "@tanstack/react-table";
 import { Info, Play, RefreshCw } from "lucide-react";
 
 import { Team } from "@/components/key_team_helpers/key_list";
 import { createSelectionColumn, DataTableSortHeader } from "@/components/shared/DataTable";
-import { IdentityCell, StatusBadge, type StatusTone } from "@/components/shared/table_cells";
+import { DateCell, IdentityCell, StatusBadge, type StatusTone } from "@/components/shared/table_cells";
 import { cn } from "@/lib/cva.config";
 
 export interface HealthStatus {
@@ -79,11 +81,12 @@ function DetailButton({
   className: string;
   testId: string;
 }) {
+  const t = useTranslation();
   return (
     <button
       type="button"
-      title={label}
-      aria-label={label}
+      title={t(label)}
+      aria-label={t(label)}
       data-testid={testId}
       onClick={onClick}
       className={cn("cursor-pointer rounded-sm p-1 transition-colors", className)}
@@ -120,9 +123,10 @@ function RunHealthCheckButton({
   model: HealthCheckData;
   onRunHealthCheck: (modelId: string) => void;
 }) {
+  const t = useTranslation();
   const isLoading = model.health_loading;
   const hasExistingStatus = Boolean(model.health_status) && model.health_status !== "none";
-  const label = runButtonLabel(isLoading, hasExistingStatus);
+  const label = t(runButtonLabel(isLoading, hasExistingStatus));
 
   return (
     <button
@@ -297,7 +301,9 @@ export const getHealthChecksTableColumns = ({
         return (
           <div className="flex items-center space-x-2">
             <DotPulse className="size-2 bg-indigo-500" />
-            <span className="text-sm text-muted-foreground">Checking...</span>
+            <span className="text-sm text-muted-foreground">
+              <L>Checking...</L>
+            </span>
           </div>
         );
       }
@@ -335,7 +341,11 @@ export const getHealthChecksTableColumns = ({
       const healthStatus = modelHealthStatuses[modelId];
 
       if (!healthStatus?.error) {
-        return <span className="text-sm text-muted-foreground">No errors</span>;
+        return (
+          <span className="text-sm text-muted-foreground">
+            <L>No errors</L>
+          </span>
+        );
       }
 
       const cleanedError = healthStatus.error;
@@ -374,7 +384,10 @@ export const getHealthChecksTableColumns = ({
     },
     cell: ({ row }) => (
       <span className="text-sm text-muted-foreground">
-        {row.original.health_loading ? CHECK_IN_PROGRESS : row.original.last_check}
+        <DateCell
+          value={row.original.health_loading ? undefined : row.original.last_check}
+          fallback={row.original.health_loading ? CHECK_IN_PROGRESS : row.original.last_check || NEVER_CHECKED}
+        />
       </span>
     ),
   },
@@ -394,13 +407,21 @@ export const getHealthChecksTableColumns = ({
     cell: ({ row }) => {
       const modelId = row.original.model_info?.id ?? "";
       const lastSuccess = modelHealthStatuses[modelId]?.lastSuccess || NONE;
-      return <span className="text-sm text-muted-foreground">{lastSuccess}</span>;
+      return (
+        <span className="text-sm text-muted-foreground">
+          <DateCell value={lastSuccess} fallback={lastSuccess} />
+        </span>
+      );
     },
   },
   {
     id: "actions",
     meta: { title: "Actions", className: "text-right", headerClassName: "text-right" },
-    header: () => <span className="sr-only">Actions</span>,
+    header: () => (
+      <span className="sr-only">
+        <L>Actions</L>
+      </span>
+    ),
     size: 80,
     enableSorting: false,
     enableHiding: false,

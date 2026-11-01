@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { LoaderCircle } from "lucide-react";
 import React from "react";
@@ -55,9 +55,10 @@ const ModelRetrySettingsTab = ({
   handleSaveRetrySettings,
   isSaving = false,
 }: ModelRetrySettingsTabProps) => {
+  const t = useTranslation();
   const isGlobalScope = selectedModelGroup === "global";
   const scopeItems = [
-    { value: "global", label: "Global Default" },
+    { value: "global", label: t("Global Default") },
     ...availableModelGroups.map((group) => ({ value: group, label: group })),
   ];
 
@@ -141,7 +142,9 @@ const ModelRetrySettingsTab = ({
             return (
               <tr key={retryPolicyKey} className="flex items-center justify-between gap-4 border-b py-2 last:border-0">
                 <td className="text-sm">
-                  <span>{exceptionType}</span>
+                  <span>
+                    <L>{exceptionType}</L>
+                  </span>
                   {!isGlobalScope && (
                     <span className="ml-2 text-xs text-muted-foreground">
                       <L>(Global: </L>
@@ -153,7 +156,7 @@ const ModelRetrySettingsTab = ({
                   <Input
                     className="w-28"
                     type="number"
-                    aria-label={`${exceptionType} retry count`}
+                    aria-label={t("{error} retry count", { error: t(exceptionType) })}
                     min={0}
                     step={1}
                     value={isGlobalScope ? inheritedValue : hasOverride ? override : ""}

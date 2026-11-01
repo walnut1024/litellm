@@ -39,7 +39,12 @@ const columns: ColumnDef<TeamUserSpendRow>[] = [
     accessorFn: userLabel,
     id: "user",
     meta: QUIET_HEADER,
-    cell: ({ row }) => <span className="font-medium text-foreground">{userLabel(row.original)}</span>,
+    cell: ({ row }) => {
+      const identity = row.original.user_email || row.original.user_alias;
+      return (
+        <span className="font-medium text-foreground">{identity || row.original.user_id || <L>(no user)</L>}</span>
+      );
+    },
   },
   {
     header: "Spend",

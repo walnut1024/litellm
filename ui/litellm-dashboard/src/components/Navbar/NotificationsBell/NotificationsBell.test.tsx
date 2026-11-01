@@ -2,6 +2,8 @@ import { renderWithProviders, screen } from "../../../../tests/test-utils";
 import { AUTO_ROUTER_DOCS_URL, NotificationsBell, NotificationsBellView } from "./NotificationsBell";
 import type { LatestReleaseInfo } from "@/app/(dashboard)/hooks/latestRelease/useLatestReleaseInfo";
 import React from "react";
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -35,6 +37,34 @@ describe("NotificationsBellView", () => {
 
   afterEach(() => {
     localStorage.clear();
+  });
+
+  it("hides Auto Router promotion in the lightweight edition and translates release notices", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocaleProvider>
+        <LiteUiContext.Provider value={{ route: "home", admin: true }}>
+          <NotificationsBellView currentVersion="1.102.0" latestRelease={RELEASE} />
+        </LiteUiContext.Provider>
+      </LocaleProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: "通知，1 条未读" }));
+    expect(screen.getAllByRole("article")).toHaveLength(1);
+    expect(announcement("LiteLLM v1.103.0 已发布")).toHaveTextContent("12 项新功能");
+    expect(screen.getByRole("link", { name: "查看更新说明" })).toHaveAttribute("href", RELEASE.release_url);
+  });
+
+  it("shows an empty notification state when the lightweight edition is current", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "home", admin: false }}>
+        <NotificationsBellView currentVersion={RELEASE.version} latestRelease={RELEASE} />
+      </LiteUiContext.Provider>,
+    );
+    await user.click(bell(0));
+    expect(screen.getByText("No notifications")).toBeVisible();
+    expect(screen.queryByRole("article")).not.toBeInTheDocument();
   });
 
   it("lists the new version notice above Auto Router when the proxy is behind the latest release", async () => {

@@ -218,7 +218,7 @@ export const AccessGroupCreateDialog = ({
               <L>Cancel</L>
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? "Creating..." : "Create Group"}
+              <L>{mutation.isPending ? "Creating..." : "Create Group"}</L>
             </Button>
           </DialogFooter>
         </form>

@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { useState } from "react";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useCan from "@/app/(dashboard)/hooks/useCan";
@@ -33,7 +35,9 @@ export default function LogsPage() {
     <Page className="h-full">
       <PageTabs value={activeTab} onValueChange={(value: LogsTab) => setActiveTab(value)}>
         <PageTabsList>
-          <PageTabsTrigger value="request logs">Request Logs</PageTabsTrigger>
+          <PageTabsTrigger value="request logs">
+            <L>Request Logs</L>
+          </PageTabsTrigger>
           {canViewAuditLogs && <PageTabsTrigger value="audit logs">Audit Logs</PageTabsTrigger>}
           <PageTabsTrigger value="deleted keys">Deleted Keys</PageTabsTrigger>
           {canViewDeletedTeams && <PageTabsTrigger value="deleted teams">Deleted Teams</PageTabsTrigger>}

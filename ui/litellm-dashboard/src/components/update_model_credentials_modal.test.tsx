@@ -95,7 +95,7 @@ describe("UpdateModelCredentialsModal", () => {
     fireEvent.change(screen.getByLabelText(/new api key/i), { target: { value: "   " } });
     await user.click(screen.getByRole("button", { name: /update api key/i }));
 
-    await waitFor(() => expect(mockToast.fromError).toHaveBeenCalledWith("Enter a new API key"));
+    await waitFor(() => expect(mockToast.error).toHaveBeenCalledWith("Enter a new API key"));
     expect(mockModelPatchUpdateCall).not.toHaveBeenCalled();
   });
 

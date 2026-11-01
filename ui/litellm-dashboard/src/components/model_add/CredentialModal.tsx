@@ -1,3 +1,4 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { Input } from "@/components/ui/input";
 import { SearchSelect, type SearchSelectOption } from "@/components/shared/SearchSelect";
 import { SimpleTooltip } from "@/components/ui/tooltip";
@@ -84,6 +85,7 @@ export default function CredentialModal({
   initialAuthTypeId,
   providerLocked = false,
 }: CredentialModalProps) {
+  const t = useTranslation();
   const isEdit = mode === "edit";
   const [selectedProvider, setSelectedProvider] = useState<string | null>(
     (existingCredential?.credential_info.custom_llm_provider as Providers) ?? initialProvider ?? Providers.OpenAI,
@@ -235,7 +237,7 @@ export default function CredentialModal({
                     )}
                   </label>
                   <Select
-                    items={authMethodItems}
+                    items={authMethodItems.map((item) => ({ ...item, label: t(item.label) }))}
                     value={authMethod}
                     onValueChange={(value) => changeAuthMethod(value as AuthMethod)}
                   >
@@ -245,7 +247,7 @@ export default function CredentialModal({
                     <SelectContent>
                       {authMethodItems.map((item) => (
                         <SelectItem key={item.value} value={item.value}>
-                          {item.label}
+                          <L>{item.label}</L>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -273,15 +275,17 @@ export default function CredentialModal({
               <div className="flex justify-between items-center">
                 <SimpleTooltip content="Get help on our github">
                   <a href="https://github.com/BerriAI/litellm/issues" className="text-sm text-primary hover:underline">
-                    Need Help?
+                    <L>Need Help?</L>
                   </a>
                 </SimpleTooltip>
 
                 <div>
                   <Button variant="outline" className="mr-2.5" onClick={closeAndReset}>
-                    Cancel
+                    <L>Cancel</L>
                   </Button>
-                  <Button type="submit">{isEdit ? "Update Credential" : "Add Credential"}</Button>
+                  <Button type="submit">
+                    <L>{isEdit ? "Update Credential" : "Add Credential"}</L>
+                  </Button>
                 </div>
               </div>
             </form>

@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import React from "react";
 import { z } from "zod";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -88,18 +89,22 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
                         href="https://github.com/BerriAI/litellm/issues"
                         className="text-sm text-primary underline-offset-4 hover:underline"
                       >
-                        Need Help?
+                        <L>Need Help?</L>
                       </a>
                     }
                   />
-                  <TooltipContent>Get help on our github</TooltipContent>
+                  <TooltipContent>
+                    <L>Get help on our github</L>
+                  </TooltipContent>
                 </Tooltip>
 
                 <div className="flex gap-2.5">
                   <Button type="button" variant="outline" onClick={handleCancel}>
-                    Cancel
+                    <L>Cancel</L>
                   </Button>
-                  <Button type="submit">Reuse Credentials</Button>
+                  <Button type="submit">
+                    <L>Reuse Credentials</L>
+                  </Button>
                 </div>
               </div>
             </FieldGroup>

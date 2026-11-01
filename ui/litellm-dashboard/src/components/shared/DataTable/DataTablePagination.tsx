@@ -72,12 +72,10 @@ export function DataTablePagination({
       </div>
 
       <div data-slot="table-pagination-summary" className="flex items-center gap-4">
-        <span data-testid="pagination-range" className="text-sm text-muted-foreground tabular-nums">
+        <span data-testid="pagination-range" className="sr-only">
           {rowCount === 0 ? t("No results") : t("Showing {start}-{end} of {count}", { start, end, count: rowCount })}
         </span>
-        <span data-testid="pagination-page" className="text-sm text-muted-foreground tabular-nums">
-          {t("Page {page} of {pages}", { page: page + 1, pages: Math.max(pageCount, 1) })}
-        </span>
+        <span className="text-sm text-muted-foreground tabular-nums">{t("{count} total", { count: rowCount })}</span>
         <div className="flex items-center gap-1">
           <Button
             variant="outline"
@@ -99,6 +97,17 @@ export function DataTablePagination({
           >
             <ChevronLeft />
           </Button>
+          <span
+            data-testid="pagination-page"
+            data-slot="pagination-current"
+            aria-current="page"
+            className="inline-flex size-8 items-center justify-center rounded-md border border-border text-sm text-primary"
+          >
+            <span aria-hidden="true">{page + 1}</span>
+            <span className="sr-only">
+              {t("Page {page} of {pages}", { page: page + 1, pages: Math.max(pageCount, 1) })}
+            </span>
+          </span>
           <Button
             variant="outline"
             size="icon-sm"

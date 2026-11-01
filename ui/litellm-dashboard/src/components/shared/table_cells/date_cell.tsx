@@ -46,7 +46,7 @@ export function DateCell({ value, precision = "datetime", fallback = "-" }: Date
             : date.toLocaleString(
                 locale,
                 precision === "date"
-                  ? { year: "numeric", month: "2-digit", day: "2-digit" }
+                  ? { year: "numeric", month: "long", day: "numeric" }
                   : {
                       month: "2-digit",
                       day: "2-digit",

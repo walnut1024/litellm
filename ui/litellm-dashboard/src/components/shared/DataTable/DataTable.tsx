@@ -258,6 +258,7 @@ function DataTableBodyCell<TData>({ cell, size, stickyHeader, enableColumnResizi
 
   return (
     <TableCell
+      data-column-id={column.id}
       className={cn(
         "overflow-hidden text-ellipsis",
         size === "compact" ? "px-2 py-1 text-xs" : "",
@@ -713,7 +714,11 @@ export function DataTable<TData extends RowData, TValue>(props: DataTableProps<T
   return (
     <div data-slot="data-table-root" data-testid="data-table-root" className={dataTableRoot({ fill: fillHeight })}>
       <div data-slot="data-table-frame" data-testid="data-table-frame" className={dataTableFrame({ fill: fillHeight })}>
-        {toolbar !== undefined && <div className="shrink-0 border-b border-border px-4 py-3">{toolbar(table)}</div>}
+        {toolbar !== undefined && (
+          <div data-slot="data-table-toolbar" className="shrink-0 border-b border-border px-4 py-3">
+            {toolbar(table)}
+          </div>
+        )}
         <div
           data-testid="data-table-scroller"
           className={dataTableScroller({ sticky: stickyHeader, fill: fillHeight, stretchEmpty })}

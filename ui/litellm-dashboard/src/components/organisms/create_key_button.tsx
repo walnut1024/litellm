@@ -28,7 +28,7 @@ import { MultiSelect, type MultiSelectOption } from "@/components/shared/MultiSe
 import { PaginatedSearchSelect } from "@/components/shared/PaginatedSearchSelect";
 import { SearchSelect, type SearchSelectOption } from "@/components/shared/SearchSelect";
 import { TagsInput } from "@/app/(dashboard)/guardrails/_components/content_filter/TagsInput";
-import { ChevronDown, Info } from "lucide-react";
+import { ChevronDown, Info, Plus } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { type Control, useForm, useWatch, type UseFormSetValue } from "react-hook-form";
 import { isProxyAdminRole, rolesWithWriteAccess } from "../../utils/roles";
@@ -763,7 +763,8 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
     <div>
       {userRole && rolesWithWriteAccess.includes(userRole) && (
         <Button className="mx-auto" onClick={() => setIsModalVisible(true)} data-testid="create-key-button">
-          <L>+ Create New Key</L>
+          <Plus />
+          <L>Create New Key</L>
         </Button>
       )}
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>

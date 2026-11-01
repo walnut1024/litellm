@@ -127,7 +127,7 @@ export const getKeyTableColumns = ({
       ),
     },
     header: ({ column }) => <DataTableSortHeader column={column} title="Key" variant="header-cycle" />,
-    size: 260,
+    size: 266,
     enableSorting: true,
     cell: ({ row }) => {
       const status = getKeyStatus(row.original);
@@ -162,7 +162,7 @@ export const getKeyTableColumns = ({
     accessorKey: "team_id",
     meta: { title: "Team" },
     header: "Team",
-    size: 120,
+    size: 100,
     enableSorting: false,
     cell: (info) => {
       const teamId = info.getValue() as string | null;
@@ -223,7 +223,7 @@ export const getKeyTableColumns = ({
     accessorKey: "created_at",
     meta: { title: "Created At" },
     header: ({ column }) => <DataTableSortHeader column={column} title="Created At" variant="header-cycle" />,
-    size: 120,
+    size: 166,
     enableSorting: true,
     cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" />,
   },
@@ -267,7 +267,7 @@ export const getKeyTableColumns = ({
         tooltip="This is a new field and is not backfilled. Only new key usage will update this value."
       />
     ),
-    size: 130,
+    size: 148,
     enableSorting: true,
     sortDescFirst: false,
     cell: (info) => <DateCell value={info.getValue() as string | null} precision="date" fallback="Unknown" />,
@@ -287,7 +287,7 @@ export const getKeyTableColumns = ({
     accessorKey: "spend",
     meta: { title: "Spend / Budget", skeleton: "meter", numeric: true },
     header: ({ table }) => <DataTableMultiSortHeader table={table} fields={SPEND_BUDGET_SORT_FIELDS} />,
-    size: 240,
+    size: 180,
     enableSorting: true,
     cell: ({ row }) => {
       const team = allTeams.find((t) => t.team_id === row.original.team_id);
@@ -330,7 +330,7 @@ export const getKeyTableColumns = ({
         tooltip="Cumulative spend across every budget period. Budget resets do not touch this value. Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026, so keys created earlier only count spend since that upgrade."
       />
     ),
-    size: 130,
+    size: 150,
     enableSorting: true,
     sortDescFirst: true,
     cell: (info) => <MoneyCell value={info.getValue() as number | null | undefined} showZero />,
@@ -340,7 +340,7 @@ export const getKeyTableColumns = ({
     accessorKey: "budget_reset_at",
     meta: { title: "Budget Reset" },
     header: ({ column }) => <DataTableSortHeader column={column} title="Budget Reset" />,
-    size: 130,
+    size: 152,
     enableSorting: true,
     sortDescFirst: false,
     cell: (info) => <DateCell value={info.getValue() as string | null} fallback="Never" />,
@@ -350,7 +350,7 @@ export const getKeyTableColumns = ({
     accessorKey: "models",
     meta: { title: "Models", skeleton: "chips" },
     header: "Models",
-    size: 220,
+    size: 158,
     enableSorting: false,
     cell: (info) => (
       <ModelsCell

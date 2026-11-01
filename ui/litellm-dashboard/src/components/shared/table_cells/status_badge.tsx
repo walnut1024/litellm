@@ -31,7 +31,7 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ tone, label, tooltip, dataTestId, className, href }: StatusBadgeProps) {
   const t = useTranslation();
-  const badgeClassName = cn("whitespace-nowrap font-normal", TONE_CLASS[tone], className);
+  const badgeClassName = cn("moma-status-badge whitespace-nowrap font-normal", TONE_CLASS[tone], className);
   const badge = href ? (
     <LinkedStatusBadge href={href} dataTestId={dataTestId} className={badgeClassName}>
       {t(label)}

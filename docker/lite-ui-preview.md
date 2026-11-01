@@ -57,7 +57,7 @@ Some existing employee-page hooks still request administrator-only configuration
 
 On 2026-11-01 the dashboard at commit `d37c64c78e` was rebuilt and packaged as `litellm-lite-ui:local`, also tagged `litellm-moma:d37c64c78e`. The image ID is `sha256:e606989a0674783a401bf8e62eb95e666f4e881e5b67c5e2bafb6fb517121cf6`. The runtime remains the existing source-built LiteLLM 1.109.0 image. No Python or Rust changes were introduced
 
-The current preview database additionally contains `moma-deepseek-v3.2` and `moma-qwen3.5-397b`. They use the existing provider API Key and the OpenAI-compatible endpoint `https://zhenze-huhehaote.cmecloud.cn/v1`, with upstream model IDs `deepseek-v3.2` and `qwen3.5-397b-a17b`. They were added through `/model/new` and are separate from the ten YAML mock entries. Image distribution alone does not include these database records or credentials
+The first real provider verification added `moma-deepseek-v3.2` and `moma-qwen3.5-397b`. They use the existing provider API Key and the OpenAI-compatible endpoint `https://zhenze-huhehaote.cmecloud.cn/v1`, with upstream model IDs `deepseek-v3.2` and `qwen3.5-397b-a17b`. They were added through `/model/new` and are separate from the ten YAML mock entries. Image distribution alone does not include these database records or credentials
 
 The preview employee received these two additional model permissions. An existing session needed a fresh login before the new models appeared. A separate one-day employee test Key is limited to these two names and a budget of 0.05. Its value is not recorded here
 
@@ -68,3 +68,11 @@ Configured estimates use the provider page's daytime short-context rates per mil
 The latest DeepSeek-V4.1 model has a different official endpoint, `https://vip.moma.cmecloud.cn/v1`. This account returned HTTP 402 with `subscription_required` there. No subscription was purchased and that model was not added to the preview. A model appearing in `/models` does not establish that its subscription or serving endpoint is available
 
 After a container restart, health returned HTTP 200 and both real model records remained available. Existing accounts, mock entries, database volumes, and the separate services on ports 4000 and 4002 were preserved. Keep provider credentials outside the checkout and rebuild or relocate these records through the native model management flow when deploying elsewhere
+
+## Administrator model inventory
+
+The next administrator configuration pass covered a requested list of 42 models. Forty-one have verified upstream IDs and saved deployments, including forty new records and reuse of the existing Qwen 397B deployment. The original twelve records remain, for a current total of fifty-two. The unresolved hy3 entry was not replaced with a guessed ID or a mock
+
+Five requested Qwen models are enabled and passed both upstream and local gateway checks. Twenty-four chat models returned HTTP 402 with `subscription_required` and remain paused. Twelve image, video, and realtime records also remain paused because generation and subscription were not verified, with specific adapter limitations recorded for several protocols. No provider subscription, employee authorization change, application code change, or image rebuild was performed in this pass
+
+The complete mappings, endpoint sources, statuses, pricing limits, and validation evidence are maintained in [moma-model-catalog.md](moma-model-catalog.md). Preserve this inventory together with the external database and salt configuration when moving the environment. The image alone contains neither the configured model records nor their credentials

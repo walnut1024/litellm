@@ -31,11 +31,11 @@ LITELLM_PREVIEW_ENV=$(mktemp -t litellm-lite-preview)
 docker compose -p litellm-lite-preview --env-file "$LITELLM_PREVIEW_ENV" -f docker/docker-compose.lite-ui.yml up -d --build
 ```
 
-Open [the dashboard](http://localhost:4001/ui/) and use the `admin` account with the generated `LITELLM_PREVIEW_PASSWORD`. Invite employees through Internal Users and grant them the `internal_user` role with access to `preview-text`
+Open [the dashboard](http://localhost:4001/ui/) and use the `admin` account with the generated `LITELLM_PREVIEW_PASSWORD`. Configure models through Models + Endpoints, invite employees through Internal Users, and grant them the `internal_user` role with access to the required configured models
 
-The stack includes `preview-text` and nine `demo-*` models for general conversation, coding, writing, fast text tasks, long documents, reasoning, Chinese text, and two embedding examples. Provider names and icons demonstrate OpenAI, Anthropic, Gemini, DeepSeek, and Qwen. Every model uses a local mock response. The new demo models have zero configured token cost. Both embedding models return fixed four-dimensional vectors, which are preview data rather than usable semantic embeddings
+The YAML model list is empty. Models and encrypted provider credentials are stored in the external preview database through the native management APIs. A new database starts without models, while the current environment contains only the forty-one models in [moma-model-catalog.md](moma-model-catalog.md)
 
-Grant the preview employee access to the configured model names through Internal Users. Keep existing user budgets and roles in place. These models do not send requests to providers, and their usage does not represent real supplier balances or production billing
+The ten original YAML mock entries, including `preview-text` and nine `demo-*` names, were removed. The earlier `moma-deepseek-v3.2` trial deployment was also removed because it is outside the approved list. The existing Qwen 397B deployment is retained as `moma-qwen3.5-397b`. Existing users, keys, and request history are retained, so historical logs or stored key scopes can still mention removed models. No scope was widened by clearing an allowlist
 
 For UI-only updates, rebuild the dashboard and run the same Compose command. The final image replaces only the exported dashboard in the source-built runtime, so it does not need to recompile Rust for every UI edit
 
@@ -71,8 +71,14 @@ After a container restart, health returned HTTP 200 and both real model records 
 
 ## Administrator model inventory
 
-The administrator model list contains forty-one models after the user excluded hy3. All forty-one have verified upstream IDs and saved deployments, including forty new records and reuse of the existing Qwen 397B deployment. The original twelve records remain, for a current total of fifty-two. No hy3 deployment was created and it is no longer a pending item
+The administrator model list contains forty-one models after the user excluded hy3. All forty-one have verified upstream IDs and saved deployments, including forty new records and reuse of the existing Qwen 397B deployment. The later cleanup removed the ten original mock entries and the extra DeepSeek-V3.2 trial deployment, leaving exactly forty-one active catalog records. No hy3 deployment was created and it is no longer a pending item
 
 Five requested Qwen models are enabled and passed both upstream and local gateway checks. Twenty-four chat models returned HTTP 402 with `subscription_required` and remain paused. Twelve image, video, and realtime records also remain paused because generation and subscription were not verified, with specific adapter limitations recorded for several protocols. No provider subscription, employee authorization change, application code change, or image rebuild was performed in this pass
 
 The complete mappings, endpoint sources, statuses, pricing limits, and validation evidence are maintained in [moma-model-catalog.md](moma-model-catalog.md). Preserve this inventory together with the external database and salt configuration when moving the environment. The image alone contains neither the configured model records nor their credentials
+
+## Compact dashboard
+
+The compact dashboard image is also tagged `litellm-moma:compact-20261101`, with image ID `sha256:28310e0bb7afad0f34acd03c33c79e1cfa2d3ef1cb203cc8d732a563fb4dd1b9`. It retains the existing 1.5 typography scale while reducing header, sidebar, table, toolbar, panel, and card spacing. Model cards adapt to a minimum width of 240px, and key rows display one model plus the remaining count through the existing ModelsCell control. These changes affect presentation only
+
+After rebuilding and recreating the 4001 service, health and model inventory returned HTTP 200, with exactly forty-one configured models and no mock responses. The retained model IDs, provider parameters, and pause states were unchanged. Six focused frontend test files passed 197 tests, and the production build, TypeScript check, and static export passed. Browser checks covered both roles, language and theme switching, model search and view switching, the key form, and phone, tablet, and desktop layouts. No provider inference or invoice reconciliation was repeated for this layout change

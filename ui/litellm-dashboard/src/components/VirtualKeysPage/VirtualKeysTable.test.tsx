@@ -358,14 +358,16 @@ it("should show 'No keys found' message when the key list is empty", () => {
   expect(screen.getByText("No keys found")).toBeInTheDocument();
 });
 
-it("collapses models beyond the visible limit into a '+N more' badge", () => {
+it("shows one model and counts the remaining models in the compact table", () => {
   mockUseKeys.mockReturnValue(
-    keysResult([{ ...mockKey, models: ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo", "claude-3", "claude-3-5-sonnet"] }]),
+    keysResult([{ ...mockKey, models: ["model-one", "model-two", "model-three", "model-four", "model-five"] }]),
   );
 
   renderWithProviders(<VirtualKeysTable />);
 
-  expect(screen.getByText("+2 more")).toBeInTheDocument();
+  expect(screen.getByText("model-one")).toBeInTheDocument();
+  expect(screen.queryByText("model-two")).not.toBeInTheDocument();
+  expect(screen.getByText("+4 more")).toBeInTheDocument();
 });
 
 it("should render the redesigned table headers", () => {

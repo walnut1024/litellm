@@ -355,6 +355,7 @@ export const getKeyTableColumns = ({
     cell: (info) => (
       <ModelsCell
         models={info.getValue() as string[] | null | undefined}
+        maxVisible={1}
         allowedRoutes={info.row.original.allowed_routes}
         keyType={info.row.original.key_type}
       />

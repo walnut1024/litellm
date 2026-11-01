@@ -110,8 +110,8 @@ export function ModelCatalog({
           const disabled = !(canWrite && scopeAvailable && allowed);
           return (
             <article key={model.model_info.id} className="moma-model-card">
-              <div className="flex items-start gap-3">
-                <ProviderLogo provider={model.provider} className="size-9 shrink-0" />
+              <div className="flex items-start gap-2">
+                <ProviderLogo provider={model.provider} className="size-7 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <h3>
                     <button className="text-left hover:text-primary" onClick={() => onModelClick(model.model_info.id)}>
@@ -119,29 +119,21 @@ export function ModelCatalog({
                     </button>
                   </h3>
                   {existing && (
-                    <span className="mt-2 flex items-center gap-1 text-xs text-success">
+                    <span className="mt-1 flex items-center gap-1 text-xs text-success">
                       <Check className="size-3.5" />
                       <L>Activated</L>
                     </span>
                   )}
                 </div>
               </div>
-              <dl className="grid gap-3 text-xs text-muted-foreground">
-                <div className="flex justify-between gap-4">
+              <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                <div className="flex min-w-0 justify-between gap-1">
                   <dt>
                     <L>Provider</L>
                   </dt>
-                  <dd>{model.provider}</dd>
+                  <dd className="min-w-0 break-words text-right">{model.provider}</dd>
                 </div>
-                {(model.max_input_tokens ?? model.max_tokens) != null && (
-                  <div className="flex justify-between gap-4">
-                    <dt>
-                      <L>Context window</L>
-                    </dt>
-                    <dd>{(model.max_input_tokens ?? model.max_tokens)?.toLocaleString()} Token</dd>
-                  </div>
-                )}
-                <div className="flex justify-between gap-4">
+                <div className="flex justify-between gap-1">
                   <dt>
                     <L>Status</L>
                   </dt>
@@ -149,8 +141,16 @@ export function ModelCatalog({
                     <L>{model.model_info.blocked ? "Paused" : "Available"}</L>
                   </dd>
                 </div>
+                {(model.max_input_tokens ?? model.max_tokens) != null && (
+                  <div className="col-span-2 flex justify-between gap-4">
+                    <dt>
+                      <L>Context window</L>
+                    </dt>
+                    <dd>{(model.max_input_tokens ?? model.max_tokens)?.toLocaleString()} Token</dd>
+                  </div>
+                )}
               </dl>
-              <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t pt-2">
                 <Button variant="ghost" size="sm" onClick={() => onModelClick(model.model_info.id)}>
                   <L>View details</L>
                   <ArrowUpRight />

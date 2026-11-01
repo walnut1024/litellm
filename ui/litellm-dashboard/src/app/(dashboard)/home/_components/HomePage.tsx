@@ -41,7 +41,7 @@ export default function HomePage() {
         valueFormatter={formatCompact}
         showLegend={false}
         showDots
-        className="h-56"
+        className="h-40"
       />
     );
   };
@@ -79,7 +79,7 @@ export default function HomePage() {
     );
   };
   return (
-    <Page>
+    <Page className="moma-home">
       <PageHeader className="flex flex-wrap items-center justify-between gap-4">
         <PageHeaderTitle>
           <L>Welcome to your workspace</L>
@@ -113,9 +113,9 @@ export default function HomePage() {
           />
         )}
       </section>
-      <div className="grid gap-4 min-[1100px]:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
+      <div className="grid gap-3 min-[1100px]:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
         <section className="moma-panel" aria-labelledby="home-usage-trend">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <h2 id="home-usage-trend" className="moma-panel-title">
               <L>Token usage trend</L>
             </h2>
@@ -123,28 +123,28 @@ export default function HomePage() {
           </div>
           {renderTrend()}
         </section>
-        <section className="moma-panel flex flex-col gap-4" aria-labelledby="home-start">
+        <section className="moma-panel flex flex-col gap-2" aria-labelledby="home-start">
           <h2 id="home-start" className="moma-panel-title">
             <L>Start using models</L>
           </h2>
-          <div className="flex gap-4">
-            <Boxes className="size-6 shrink-0 text-primary" />
+          <div className="flex gap-2">
+            <Boxes className="size-5 shrink-0 text-primary" />
             <div>
               <h3 className="font-medium">
                 <L>Activate a model</L>
               </h3>
-              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 <L>Choose an available model and activate access without an order or approval.</L>
               </p>
             </div>
           </div>
-          <div className="flex gap-4">
-            <KeyRound className="size-6 shrink-0 text-primary" />
+          <div className="flex gap-2">
+            <KeyRound className="size-5 shrink-0 text-primary" />
             <div>
               <h3 className="font-medium">
                 <L>Call with an API key</L>
               </h3>
-              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 <L>Use the model name and your API key in an OpenAI-compatible client.</L>
               </p>
             </div>
@@ -156,7 +156,7 @@ export default function HomePage() {
         </section>
       </div>
       <section className="moma-panel" aria-labelledby="home-models">
-        <div className="mb-3 flex items-center justify-between gap-4">
+        <div className="mb-2 flex items-center justify-between gap-2">
           <h2 id="home-models" className="moma-panel-title">
             <L>Available models</L>
           </h2>

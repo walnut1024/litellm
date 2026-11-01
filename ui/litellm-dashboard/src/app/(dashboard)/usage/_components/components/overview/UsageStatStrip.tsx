@@ -32,9 +32,9 @@ export default function UsageStatStrip({
   return (
     <div
       data-slot="metric-strip"
-      className="grid grid-cols-2 overflow-hidden rounded-xl border bg-card lg:grid-cols-4 lg:divide-x"
+      className="grid grid-cols-2 overflow-hidden rounded-xl border bg-card lg:grid-cols-5 lg:divide-x"
     >
-      <StatCell trend={<Sparkline data={daily} dataKey="spend" color={BRAND} className="h-8" />}>
+      <StatCell trend={<Sparkline data={daily} dataKey="spend" color={BRAND} className="h-6" />}>
         <Stat
           label="Spend"
           value={formatUsd(totals.spend)}
@@ -42,7 +42,7 @@ export default function UsageStatStrip({
           hint={budget ? t("of {budget} budget", { budget: formatUsd(budget) }) : "No budget set"}
         />
       </StatCell>
-      <StatCell trend={<Sparkline data={daily} dataKey="requests" color={BRAND} className="h-8" />}>
+      <StatCell trend={<Sparkline data={daily} dataKey="requests" color={BRAND} className="h-6" />}>
         <Stat label="Total Requests" value={totals.requests.toLocaleString()} pending={requestCountsPending} />
         {!requestCountsPending && (
           <div className="mt-0.5 flex gap-3 text-xs leading-4 text-muted-foreground">
@@ -59,19 +59,21 @@ export default function UsageStatStrip({
           </div>
         )}
       </StatCell>
-      <StatCell trend={<Sparkline data={daily} dataKey="tokens" color={BRAND} className="h-8" />}>
+      <StatCell trend={<Sparkline data={daily} dataKey="tokens" color={BRAND} className="h-6" />}>
         <Stat
           label="Total Tokens"
           value={loading ? null : formatCompact(totals.tokens)}
           exact={`${totals.tokens.toLocaleString()} tokens`}
           pending={loading}
-          hint={loading ? undefined : t("{tokens} cache read", { tokens: formatCompact(totals.cacheReadTokens) })}
         />
         {!loading && (
           <Popover>
-            <PopoverTrigger className="mt-1 text-xs font-medium text-primary underline-offset-4 hover:underline">
-              <L>View token breakdown</L>
-            </PopoverTrigger>
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs leading-5 text-muted-foreground">
+              <span>{t("{tokens} cache read", { tokens: formatCompact(totals.cacheReadTokens) })}</span>
+              <PopoverTrigger className="text-xs font-medium text-primary underline-offset-4 hover:underline">
+                <L>View token breakdown</L>
+              </PopoverTrigger>
+            </div>
             <PopoverContent side="right" align="start" className="w-80 gap-3">
               <PopoverTitle>
                 <L>What counts toward total tokens?</L>
@@ -125,19 +127,17 @@ export default function UsageStatStrip({
         )}
       </StatCell>
       <StatCell>
-        <div className="grid gap-3">
-          <Stat label="Avg cost / request" value={formatUsd(totals.avgCostPerRequest, 4)} pending={loading} />
-          <Stat
-            label="Avg latency"
-            value={totals.avgLatencyMs === null ? "—" : formatLatency(totals.avgLatencyMs)}
-            pending={loading}
-            hint={
-              totals.successRate === null
-                ? undefined
-                : t("{rate}% success rate", { rate: totals.successRate.toFixed(1) })
-            }
-          />
-        </div>
+        <Stat label="Avg cost / request" value={formatUsd(totals.avgCostPerRequest, 4)} pending={loading} />
+      </StatCell>
+      <StatCell>
+        <Stat
+          label="Avg latency"
+          value={totals.avgLatencyMs === null ? "—" : formatLatency(totals.avgLatencyMs)}
+          pending={loading}
+          hint={
+            totals.successRate === null ? undefined : t("{rate}% success rate", { rate: totals.successRate.toFixed(1) })
+          }
+        />
       </StatCell>
     </div>
   );

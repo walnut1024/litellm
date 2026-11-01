@@ -43,7 +43,7 @@ export function Panel({
     >
       <header
         className={cn(
-          "flex min-h-8 flex-wrap justify-between gap-x-3 gap-y-2 pt-4",
+          "flex min-h-8 flex-wrap justify-between gap-x-3 gap-y-2 pt-3",
           PANEL_INSET_X,
           subtitle ? "items-start" : "items-center",
         )}
@@ -169,7 +169,7 @@ export function Stat({
 }) {
   return (
     <div className="min-w-0">
-      <div className="flex h-4 items-center gap-1.5 text-xs leading-4 text-muted-foreground">
+      <div className="flex min-h-5 items-center gap-1.5 text-xs leading-5 text-muted-foreground">
         <L>{label}</L>
       </div>
       {pending ? (

@@ -36,7 +36,7 @@ const hiddenTabs: Readonly<Record<string, readonly string[]>> = {
   usage: ["mcp", "endpoints"],
   logs: ["audit logs", "deleted keys", "deleted teams"],
   teams: ["default-settings"],
-  "logging-and-alerts": ["logging-callbacks", "cloudzero-cost-tracking"],
+  "logging-and-alerts": ["logging-callbacks", "cloudzero-cost-tracking", "ms-teams-alerts"],
   "admin-panel": [
     "sso-settings",
     "security-settings",

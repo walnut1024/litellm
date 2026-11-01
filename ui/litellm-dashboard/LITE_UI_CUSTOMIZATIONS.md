@@ -66,7 +66,7 @@
 | 团队成员添加或编辑       | 新分配团队 Admin 角色、单模型预算                                                                                                                       | 新成员默认普通角色。已有 Admin 成员编辑时保留原角色选项，避免改写已有授权 |
 | Usage                    | MCP、Endpoints 页签、Aria 自然语言查询、Top Agents，以及 Customer、Tag、Agent、User Agent Activity、Organization 统计视角                               | 全局、本人、用户、团队统计按原权限提供                                    |
 | Router Settings          | 路由策略选择、标签过滤、基于延迟的高级配置                                                                                                              | 原有基础重试等设置                                                        |
-| Logging & Alerts         | Logging Callbacks、CloudZero 页签、Region Outage 企业告警                                                                                               | 告警类型、可用的普通告警设置、Email 设置。默认打开 Alerting Types         |
+| Logging & Alerts         | Logging Callbacks、CloudZero、MS Teams Alerts 页签、Region Outage 企业告警                                                                              | 告警类型、可用的普通告警设置、Email 设置。默认打开 Alerting Types         |
 | 告警参数表               | 后端标记 `premium_field=true` 的整行，包括付费控件、说明和升级链接                                                                                      | 普通参数继续编辑和重置，重置使用原始配置索引                              |
 | Email 设置               | `EMAIL_LOGO_URL`、`EMAIL_SUPPORT_CONTACT` 品牌定制                                                                                                      | SMTP、测试邮件和普通邮件事件                                              |
 | Admin Settings           | SSO Settings、Security Settings、SCIM、Hashicorp Vault、CyberArk、Plugins、Web Search Interception                                                      | UI Settings、Logging Settings。默认打开 UI Settings                       |
@@ -140,7 +140,7 @@ Playground 已整页屏蔽，早期添加到 `Composer`、`Inspector`、`Playgro
 
 品牌在控制台页头、窄屏导航、登录、开通账户、加载页和账户菜单中改为纯文字 MoMA 轻量版。页面标题同时更新。供应商标识、模型名称、技术参数和社区文档链接保留原值
 
-当前布局参考[控制台](https://xatokenhub.com/estack/web/maas/console/welcome)，按本轻量版接口和角色调整内容。[方案 2 中文稿](design/moma-workspace-zh.png) 保留为历史资料，当前视觉验收见 [design-qa.md](design-qa.md#模型服务控制台复核)
+当前布局参考[控制台](https://xatokenhub.com/estack/web/maas/console/welcome)，按本轻量版接口和角色调整内容。[方案 2 中文稿](design/moma-workspace-zh.png) 保留为历史资料，当前视觉验收见 [design-qa.md](design-qa.md#首页首屏与用量对齐复核)
 
 浅蓝灰背景、白色侧栏与卡片、蓝紫色强调色集中在 `src/app/moma-theme.css`，同时保留深色模式。当前统一规范记录在 [DESIGN.md](DESIGN.md)，后续调整样式应先核对该规范。字号继续为相邻 1.5 倍的 `47.25 / 31.5 / 21 / 14px` 四档，页面标题和核心指标为 31.5px，区块标题、弹窗标题及桌面品牌为 21px，普通正文、模型名称、导航、表格和控件统一为 14px。47.25px 仅保留为确有需要时使用的展示档。桌面页头高 56px、侧栏宽 208px、内容内边距 20px。模型卡片按最小 240px 自动排布，间距 12px、内边距 16px，手机保持单列和导航抽屉
 
@@ -679,3 +679,27 @@ src/utils/liteUi.ts
 最终镜像另标记为 `litellm-moma:uniform-20261102`，镜像 ID 为 `sha256:7028c6be80d998ac2144d79bf8929116449264e39adff778528414e2cdd88da1`。4001 应用容器使用最终静态资源重建，健康检查返回 HTTP 200，原数据库卷、salt、账户、模型和密钥保留。4000 和 4002 未参与本轮更新。镜像本身仍不包含数据库中的模型和上游凭据
 
 没有重复真实推理、计费、供应商健康探测、完整可访问性、全套前端或跨浏览器回归，已有员工配置读取权限问题未在此轮处理
+
+### 首页首屏与用量对齐
+
+2026-11-02 从 `8b32bbf80a` 继续调整，社区基线和版本不变。字号及颜色保持上一轮规范，只调整布局和间距。首页与用量共用的指标从四列调整为五列，原来叠放的平均花费和平均延迟分别占一列，所有数值顶部对齐，指标小趋势从 32px 收到 24px。Token 缓存提示与明细入口允许同行排列，所有数值、查询、预算提示和明细弹窗仍使用原实现
+
+首页区块间距及面板内边距使用 12px，趋势图从 224px 收到 160px，使用指引同步压紧。可用模型将图标与文字横排，并使用 auto-fit 让实际卡片占满可用宽度，仍只展示原授权接口返回的前三项。没有增加模型权限、改变开通动作或修改 API Key 创建入口
+
+用量统计移除主题对 Panel 内边距的重复覆盖，保留组件原有 bodyClassName，使“常用模型”与面板标题共享内容边界。供应商与用户排行位于第一行，密钥排行与 API 路径请求量位于第二行，1100px 以上使用双列，同行顶部对齐。原先的两个独立堆叠列不再保留。移除花费列强制左对齐的主题规则，恢复共享表格按 numeric 元数据对齐表头与数值。修复 InputGroup 内输入高 36px 超出 32px 外框的问题，内部输入跟随外框内容高度，外部筛选控件仍为 32px
+
+按要求在集中隐藏页签列表增加 `ms-teams-alerts`，管理员“日志与告警”只保留告警类型、告警设置及邮件告警三个页签。共享 Tabs 同时阻止 Teams 页签按钮和内容挂载，即使已有选中值也不展示。没有删除 Teams 配置或后端告警实现，也没有关闭已存在的 Webhook 配置
+
+本轮改动涉及 `home/_components/HomePage.tsx`、用量 `overview/UsageStatStrip.tsx`、`Primitives.tsx`、`UsageOverview.tsx`、`src/app/moma-theme.css`、`src/utils/liteUi.ts`。`liteUi.test.ts` 和 `LiteUiContext.integration.test.tsx` 增加 Teams 告警屏蔽及保留邮件入口的回归。设计规范与截图证据分别维护于 [DESIGN.md](DESIGN.md) 和 [首屏与对齐复核](design-qa.md#首页首屏与用量对齐复核)
+
+### 首页与对齐验证
+
+定向运行 5 个文件、56 项测试，以及图表、供应商、密钥排行和设置页相关 4 个文件、87 项测试，全部通过。生产构建、TypeScript、静态导出及 `scripts/pre_commit_lint.sh` 的适用前端格式、ESLint、lint 预算检查通过。没有放宽规则或预算，没有修改依赖、后端或 OpenAPI 类型
+
+默认中文 1280×720 下，首页指标区从 176px 收到 144px，趋势及指引面板从 298px 收到 222px，可用模型区从 y=683px 提前到 y=563px，三张模型卡片连同入口在约 y=698px 内完整显示。普通文字仍为 14px，区块标题 21px，页面标题及指标 31.5px。长文案、不同数据和缩放可能继续需要滚动，不以隐藏内容保证首屏
+
+用量页五个指标数值顶部均为 y=306px，同排筛选外框均高 32px、顶部均为 y=169px。两排统计面板各自顶部对齐，常用模型左边界为 x=245px，与每日用量标题一致。请求日志的筛选控件同排等高，金额表头与数值均恢复右对齐。检查用量概览、模型、密钥、用户及错误页签，以及 2078px 宽桌面与 900px 窄桌面窗口，所查页面没有整页横向溢出，宽表保留内部滚动。首页另外检查 1536×900、英文和深色，检查后恢复中文浅色及默认视口
+
+最终镜像另标记 `litellm-moma:dense-home-20261102`，ID 为 `sha256:c394f1a296a8b6648f982a27f646936095721c9743b534b012e54c5629da5747`。4001 应用容器已重建，健康检查返回 HTTP 200，数据库、salt、账户、模型及密钥保留。首次容器启动尚未就绪时浏览器出现临时连接错误，待健康检查成功后重新加载并完成最终验收。旧浏览器缓存需要强制刷新才能加载新静态资源
+
+本轮按桌面 Web 验收，没有手机专项、真实模型调用、计费、完整前端套件或跨浏览器回归。没有提交任何告警设置，也没有创建、删除或修改模型、用户、密钥和预算。已有员工配置读取权限限制不在此轮修改范围

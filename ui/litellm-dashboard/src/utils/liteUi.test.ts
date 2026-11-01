@@ -67,6 +67,12 @@ describe("lightweight UI visibility", () => {
     expect(liteFieldHidden("models-and-endpoints", "project")).toBe(false);
   });
 
+  it("hides Teams alerts while preserving email and general alerts", () => {
+    expect(liteTabAllowed("logging-and-alerts", "ms-teams-alerts", true)).toBe(false);
+    expect(liteTabAllowed("logging-and-alerts", "email-alerts", true)).toBe(true);
+    expect(liteTabAllowed("logging-and-alerts", "alerting-settings", true)).toBe(true);
+  });
+
   it("hides management columns without removing administrator ownership information", () => {
     expect(liteColumnAllowed("api-keys", "team_alias", true)).toBe(true);
     expect(liteColumnAllowed("api-keys", "user", true)).toBe(true);

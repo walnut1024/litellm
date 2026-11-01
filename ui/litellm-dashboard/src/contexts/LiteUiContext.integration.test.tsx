@@ -100,6 +100,25 @@ describe("lightweight UI rendering", () => {
     expect(screen.queryByText("Enterprise audit preview")).not.toBeInTheDocument();
   });
 
+  it("keeps Teams alert settings hidden even when selected, preserving email alerts", () => {
+    render(
+      <LiteUiContext.Provider value={{ route: "logging-and-alerts", admin: true }}>
+        <Tabs value="ms-teams-alerts">
+          <TabsList>
+            <TabsTrigger value="email-alerts">Email Alerts</TabsTrigger>
+            <TabsTrigger value="ms-teams-alerts">MS Teams Alerts</TabsTrigger>
+          </TabsList>
+          <TabsContent value="ms-teams-alerts" keepMounted>
+            Microsoft Teams Alerting Settings
+          </TabsContent>
+        </Tabs>
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.getByRole("tab", { name: "Email Alerts" })).toBeVisible();
+    expect(screen.queryByRole("tab", { name: "MS Teams Alerts" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Microsoft Teams Alerting Settings")).not.toBeInTheDocument();
+  });
+
   it("restores team columns while keeping masked columns out of the table and column selector", async () => {
     render(
       <LiteUiContext.Provider value={{ route: "api-keys", admin: false }}>

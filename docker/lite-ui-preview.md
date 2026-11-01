@@ -41,7 +41,7 @@ For UI-only updates, rebuild the dashboard and run the same Compose command. The
 
 Stop this stack with the same project name and environment file. Do not use volume deletion unless you intend to discard the preview database
 
-The dashboard keeps the existing page names, layout, validation, and backend APIs. Home, Virtual Keys, Models + Endpoints, and Usage remain available. Access Control retains Teams, Internal Users, Access Groups, and Budgets. The original role and API restrictions still apply. Team and access-group assignments and team usage remain available
+The dashboard keeps the existing page names, validation, and backend APIs, with the MoMA navigation and theme recorded in the differences guide. Home, Virtual Keys, Models + Endpoints, and Usage remain available. Access Control retains Teams, Internal Users, Access Groups, and Budgets. The original role and API restrictions still apply. Team and access-group assignments and team usage remain available
 
 Administrators additionally retain Logs, Router Settings, Logging & Alerts, and Admin Settings. Playground and the deprecated API Reference page remain hidden for both roles, including navigation, search, and direct page URLs
 
@@ -51,4 +51,20 @@ The complete employee and administrator inventory, source baseline, changed-file
 
 Browser verification covered both roles signing in, employee key creation, administrator visibility of that key, and blocked page URLs. Mock chat and hidden-tab fallback were verified before Playground was fully hidden. The static dashboard build, scoped frontend lint gates, and focused tests passed
 
-Some existing employee-page hooks still request administrator-only configuration and team endpoints, which return 403 in the console. The verified key and chat flows succeed. Backend authorization and those API contracts are unchanged by this masking pass. Real provider requests, real cost attribution, SSO, and production deployment were not validated
+Some existing employee-page hooks still request administrator-only configuration and team endpoints, which return 403 in the console. The verified key and chat flows succeed. Backend authorization and those API contracts are unchanged by this masking pass. SSO and production deployment were not validated
+
+## Real provider verification
+
+On 2026-11-01 the dashboard at commit `d37c64c78e` was rebuilt and packaged as `litellm-lite-ui:local`, also tagged `litellm-moma:d37c64c78e`. The image ID is `sha256:e606989a0674783a401bf8e62eb95e666f4e881e5b67c5e2bafb6fb517121cf6`. The runtime remains the existing source-built LiteLLM 1.109.0 image. No Python or Rust changes were introduced
+
+The current preview database additionally contains `moma-deepseek-v3.2` and `moma-qwen3.5-397b`. They use the existing provider API Key and the OpenAI-compatible endpoint `https://zhenze-huhehaote.cmecloud.cn/v1`, with upstream model IDs `deepseek-v3.2` and `qwen3.5-397b-a17b`. They were added through `/model/new` and are separate from the ten YAML mock entries. Image distribution alone does not include these database records or credentials
+
+The preview employee received these two additional model permissions. An existing session needed a fresh login before the new models appeared. A separate one-day employee test Key is limited to these two names and a budget of 0.05. Its value is not recorded here
+
+Employee chat requests returned HTTP 200 and the expected answer for both models. DeepSeek streaming also returned HTTP 200 and completed with `[DONE]`. Calling an unrelated model with the scoped test Key returned HTTP 403. The four successful HTTP requests, including the initial Qwen response that exhausted its 128-token output limit on reasoning, recorded 437 total tokens. Repeating Qwen with a 512-token limit produced the final answer. Request logs recorded an estimated total cost of 0.0028448 in the configured numerical units
+
+Configured estimates use the provider page's daytime short-context rates per million tokens, 2 input and 8 output for DeepSeek, and 1.2 input and 7.2 output for Qwen. They do not cover night discounts, cache pricing, long-context tiers, or contract discounts. Provider invoices were not reconciled
+
+The latest DeepSeek-V4.1 model has a different official endpoint, `https://vip.moma.cmecloud.cn/v1`. This account returned HTTP 402 with `subscription_required` there. No subscription was purchased and that model was not added to the preview. A model appearing in `/models` does not establish that its subscription or serving endpoint is available
+
+After a container restart, health returned HTTP 200 and both real model records remained available. Existing accounts, mock entries, database volumes, and the separate services on ports 4000 and 4002 were preserved. Keep provider credentials outside the checkout and rebuild or relocate these records through the native model management flow when deploying elsewhere

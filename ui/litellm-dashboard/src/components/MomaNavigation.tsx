@@ -45,10 +45,12 @@ export function MomaNavigation() {
   const sections = [
     { label: "Model services", items: servicePages.flatMap((page) => items.filter((item) => item.page === page)) },
     { label: "Usage and costs", items: items.filter((item) => usagePages.includes(item.page)) },
-    {
-      label: "Management",
-      items: items.filter((item) => ![...servicePages, ...usagePages].includes(item.page)),
-    },
+    ...groups
+      .filter((group) => ["ACCESS CONTROL", "SETTINGS"].includes(group.groupLabel))
+      .map((group) => ({
+        label: group.groupLabel === "ACCESS CONTROL" ? "Access Control" : "System Settings",
+        items: group.items,
+      })),
   ];
   const link = (item: MenuItem) => (
     <Link

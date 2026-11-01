@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import { MomaNavigation } from "./MomaNavigation";
@@ -30,19 +30,31 @@ describe("MomaNavigation", () => {
     const keys = screen.getByRole("link", { name: "API 密钥" });
     expect(keys).toHaveAttribute("href", "/ui/api-keys");
     expect(keys).toHaveAttribute("aria-current", "page");
-    expect(screen.queryByRole("button", { name: "管理" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "团队" })).toBeVisible();
+    const accessControl = within(screen.getByRole("region", { name: "访问控制" }));
+    expect(accessControl.getByRole("link", { name: "团队" })).toBeVisible();
+    expect(accessControl.getAllByRole("link")).toHaveLength(1);
+    expect(screen.queryByRole("region", { name: "系统设置" })).not.toBeInTheDocument();
   });
 
-  it("keeps the existing admin destinations in the management section", async () => {
+  it("separates admin access control and system settings with their existing destinations", () => {
     state.role = "proxy_admin";
     render(
       <LocaleProvider>
         <MomaNavigation />
       </LocaleProvider>,
     );
-    expect(await screen.findByRole("link", { name: "用户管理" })).toHaveAttribute("href", "/ui/users");
-    expect(screen.getByRole("link", { name: "访问组" })).toHaveAttribute("href", "/ui/access-groups");
+    const accessControl = within(screen.getByRole("region", { name: "访问控制" }));
+    expect(accessControl.getAllByRole("link")).toHaveLength(4);
+    expect(accessControl.getByRole("link", { name: "团队" })).toHaveAttribute("href", "/ui/teams");
+    expect(accessControl.getByRole("link", { name: "用户管理" })).toHaveAttribute("href", "/ui/users");
+    expect(accessControl.getByRole("link", { name: "访问组" })).toHaveAttribute("href", "/ui/access-groups");
+    expect(accessControl.getByRole("link", { name: "预算" })).toHaveAttribute("href", "/ui/budgets");
+    const systemSettings = within(screen.getByRole("region", { name: "系统设置" }));
+    expect(systemSettings.getAllByRole("link")).toHaveLength(3);
+    expect(systemSettings.getByRole("link", { name: "路由设置" })).toHaveAttribute("href", "/ui/router-settings");
+    expect(systemSettings.getByRole("link", { name: "日志与告警" })).toHaveAttribute("href", "/ui/logging-and-alerts");
+    expect(systemSettings.getByRole("link", { name: "系统设置" })).toHaveAttribute("href", "/ui/admin-panel");
+    expect(screen.queryByRole("region", { name: "管理", exact: true })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Projects|Organizations|Playground/ })).not.toBeInTheDocument();
   });
 

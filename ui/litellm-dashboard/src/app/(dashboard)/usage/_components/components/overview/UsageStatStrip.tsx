@@ -30,8 +30,11 @@ export default function UsageStatStrip({
   const t = useTranslation();
   const daily = useMemo(() => dailyTotals(results), [results]);
   return (
-    <div className="grid grid-cols-1 overflow-hidden rounded-xl border bg-card sm:grid-cols-2 lg:grid-cols-4 lg:divide-x">
-      <StatCell trend={<Sparkline data={daily} dataKey="spend" color={BRAND} className="h-14" />}>
+    <div
+      data-slot="metric-strip"
+      className="grid grid-cols-2 overflow-hidden rounded-xl border bg-card lg:grid-cols-4 lg:divide-x"
+    >
+      <StatCell trend={<Sparkline data={daily} dataKey="spend" color={BRAND} className="h-8" />}>
         <Stat
           label="Spend"
           value={formatUsd(totals.spend)}
@@ -39,7 +42,7 @@ export default function UsageStatStrip({
           hint={budget ? t("of {budget} budget", { budget: formatUsd(budget) }) : "No budget set"}
         />
       </StatCell>
-      <StatCell trend={<Sparkline data={daily} dataKey="requests" color={BRAND} className="h-14" />}>
+      <StatCell trend={<Sparkline data={daily} dataKey="requests" color={BRAND} className="h-8" />}>
         <Stat label="Total Requests" value={totals.requests.toLocaleString()} pending={requestCountsPending} />
         {!requestCountsPending && (
           <div className="mt-0.5 flex gap-3 text-xs leading-4 text-muted-foreground">
@@ -56,7 +59,7 @@ export default function UsageStatStrip({
           </div>
         )}
       </StatCell>
-      <StatCell trend={<Sparkline data={daily} dataKey="tokens" color={BRAND} className="h-14" />}>
+      <StatCell trend={<Sparkline data={daily} dataKey="tokens" color={BRAND} className="h-8" />}>
         <Stat
           label="Total Tokens"
           value={loading ? null : formatCompact(totals.tokens)}
@@ -143,8 +146,9 @@ export default function UsageStatStrip({
 function StatCell({ children, trend }: { children: React.ReactNode; trend?: React.ReactNode }) {
   return (
     <div
+      data-slot="metric-cell"
       className={cn(
-        "flex min-w-0 flex-col justify-between gap-3 border-b py-4 last:border-b-0 lg:border-b-0",
+        "flex min-w-0 flex-col justify-between gap-2 border-b py-3 last:border-b-0 lg:border-b-0",
         PANEL_INSET_X,
       )}
     >

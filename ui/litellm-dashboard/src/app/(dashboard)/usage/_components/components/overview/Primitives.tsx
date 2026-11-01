@@ -14,7 +14,7 @@ import type { SeriesDay } from "./overviewData";
 
 const EMPTY_CONFIG = {};
 
-export const PANEL_INSET_X = "px-5";
+export const PANEL_INSET_X = "px-4";
 
 export function Panel({
   icon: Icon,
@@ -36,7 +36,11 @@ export function Panel({
   testId?: string;
 }) {
   return (
-    <section data-testid={testId} className={cn("flex min-w-0 flex-col rounded-xl border bg-card", className)}>
+    <section
+      data-slot="usage-panel"
+      data-testid={testId}
+      className={cn("flex min-w-0 flex-col rounded-xl border bg-card", className)}
+    >
       <header
         className={cn(
           "flex min-h-8 flex-wrap justify-between gap-x-3 gap-y-2 pt-4",
@@ -59,7 +63,12 @@ export function Panel({
         </div>
         {action && <div className="flex flex-wrap items-center gap-2">{action}</div>}
       </header>
-      <div className={cn("flex min-h-0 flex-1 flex-col pt-3 pb-4", PANEL_INSET_X, bodyClassName)}>{children}</div>
+      <div
+        data-slot="usage-panel-body"
+        className={cn("flex min-h-0 flex-1 flex-col pt-3 pb-4", PANEL_INSET_X, bodyClassName)}
+      >
+        {children}
+      </div>
     </section>
   );
 }
@@ -167,6 +176,7 @@ export function Stat({
         <Skeleton className={cn("mt-1", size === "lg" ? "h-9 w-32" : "h-7 w-20")} />
       ) : (
         <div
+          data-slot="metric-value"
           title={exact}
           className={cn(
             "mt-1 truncate font-semibold tracking-tight tabular-nums",

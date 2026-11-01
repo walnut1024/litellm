@@ -11,6 +11,7 @@ import AuditLogsPanel from "@/components/logs/audit/AuditLogsPanel";
 import RequestLogsPanel from "@/components/logs/request/RequestLogsPanel";
 import { Page, PageTabs, PageTabsList, PageTabsTrigger, PageTabsContent } from "@/components/shared/Page";
 import { UiLoadingSpinner } from "@/components/ui/ui-loading-spinner";
+import { PageHeader, PageHeaderTitle } from "@/components/shared/PageHeader";
 
 type LogsTab = "request logs" | "audit logs" | "deleted keys" | "deleted teams";
 
@@ -33,6 +34,9 @@ export default function LogsPage() {
 
   return (
     <Page className="h-full">
+      <PageHeader>
+        <PageHeaderTitle>Request Logs</PageHeaderTitle>
+      </PageHeader>
       <PageTabs value={activeTab} onValueChange={(value: LogsTab) => setActiveTab(value)}>
         <PageTabsList>
           <PageTabsTrigger value="request logs">

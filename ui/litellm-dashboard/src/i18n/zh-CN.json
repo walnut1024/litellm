@@ -1607,5 +1607,17 @@
   "View release notes": "查看更新说明",
   "Sort options for {fields}": "{fields}排序选项",
   "or": "或",
-  "(Cached)": "（命中缓存）"
+  "(Cached)": "（命中缓存）",
+  "Search users by email…": "搜索用户邮箱",
+  "Successful": "成功",
+  "Gateway Requests by Endpoint": "各 API 路径请求量",
+  "Successful and failed requests per route": "按 API 路径统计成功和失败请求",
+  "Search by budget ID…": "搜索预算 ID",
+  "Start and end dates": "起止日期",
+  "From:": "开始",
+  "To:": "结束",
+  "7d": "7 天",
+  "30d": "30 天",
+  "MTD": "本月至今",
+  "YTD": "今年至今"
 }

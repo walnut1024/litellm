@@ -530,8 +530,8 @@ export default function ModelInfoView({
       .map((model: any) => ({ value: model.model_group, label: model.model_group })) || [];
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
+    <div className="moma-detail">
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
         <div>
           <Button variant="ghost" onClick={onClose} className="mb-4">
             <ArrowLeft className="size-4" />

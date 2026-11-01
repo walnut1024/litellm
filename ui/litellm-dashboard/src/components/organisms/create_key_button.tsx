@@ -768,7 +768,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
         </Button>
       )}
       <Dialog open={isModalVisible} onOpenChange={(open) => !open && handleCancel()}>
-        <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
+        <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold text-foreground">
               <L>Create New Key</L>
@@ -777,7 +777,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
           <MountedFormProvider value={mountedForm}>
             <form onSubmit={handleSubmit}>
               {/* Section 1: Key Ownership */}
-              <div className="mb-8">
+              <div className="mb-4">
                 <h3 className="text-lg font-medium text-foreground mb-4">
                   <L>Key Ownership</L>
                 </h3>
@@ -929,7 +929,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
 
               {/* Show message when team selection is required */}
               {isFormDisabled && (
-                <div className="mb-8 p-4 bg-info/10 border border-info/20 rounded-md">
+                <div className="mb-4 p-4 bg-info/10 border border-info/20 rounded-md">
                   <p className="text-info text-sm">
                     <L>
                       Please select a team to continue configuring your Virtual Key. If you do not see any teams, please
@@ -941,7 +941,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
 
               {/* Section 2: Key Details */}
               {!isFormDisabled && (
-                <div className="mb-8">
+                <div className="mb-4">
                   <h3 className="text-lg font-medium text-foreground mb-4">
                     <L>Key Details</L>
                   </h3>
@@ -1053,7 +1053,7 @@ const CreateKey: React.FC<CreateKeyProps> = ({ team, teams, data, addKey, autoOp
 
               {/* Section 3: Optional Settings */}
               {!isFormDisabled && (
-                <div className="mb-8">
+                <div className="mb-4">
                   <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
                     <h3 className="m-0 text-lg font-medium text-foreground">
                       <CollapsibleTrigger className={SECTION_HEADER_CLASS}>

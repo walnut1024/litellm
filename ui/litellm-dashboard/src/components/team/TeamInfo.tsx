@@ -2687,8 +2687,8 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   ].filter((tab) => visibleTabs.includes(tab.key));
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
+    <div className="moma-detail">
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
         <div>
           <Button variant="ghost" onClick={onClose} className="mb-4">
             <ArrowLeftIcon className="h-4 w-4" />

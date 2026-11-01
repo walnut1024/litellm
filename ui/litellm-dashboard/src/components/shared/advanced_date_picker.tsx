@@ -331,7 +331,7 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                             isSelected ? "text-info bg-info/15" : "text-muted-foreground bg-muted"
                           }`}
                         >
-                          {option.shortLabel}
+                          {t(option.shortLabel)}
                         </span>
                       </button>
                     );
@@ -344,7 +344,9 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                 <div className="p-3.5 border-b border-border">
                   <div className="flex items-center gap-2">
                     <Calendar className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-semibold text-foreground">Start and end dates</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      <L>Start and end dates</L>
+                    </span>
                   </div>
                 </div>
 
@@ -423,12 +425,20 @@ const AdvancedDatePicker: React.FC<AdvancedDatePickerProps> = ({
                   {tempValue.from && tempValue.to && validation.isValid && (
                     <div className={cn("bg-info/10 p-3 rounded-md space-y-1", compact && "col-span-2")}>
                       <div className="text-xs text-info">
-                        <span className="font-medium">From:</span>{" "}
-                        {moment(tempValue.from).format("MMM D, YYYY [at] HH:mm:ss")}
+                        <span className="font-medium">
+                          <L>From:</L>
+                        </span>{" "}
+                        {moment(tempValue.from).format(
+                          locale === "zh-CN" ? "YYYY年M月D日 HH:mm:ss" : "MMM D, YYYY [at] HH:mm:ss",
+                        )}
                       </div>
                       <div className="text-xs text-info">
-                        <span className="font-medium">To:</span>{" "}
-                        {moment(tempValue.to).format("MMM D, YYYY [at] HH:mm:ss")}
+                        <span className="font-medium">
+                          <L>To:</L>
+                        </span>{" "}
+                        {moment(tempValue.to).format(
+                          locale === "zh-CN" ? "YYYY年M月D日 HH:mm:ss" : "MMM D, YYYY [at] HH:mm:ss",
+                        )}
                       </div>
                     </div>
                   )}

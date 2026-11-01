@@ -181,7 +181,6 @@ const SpendByProvider: React.FC<SpendByProviderProps> = ({ loading, isDateChangi
     <Panel
       icon={Server}
       title="Spend by Provider"
-      className="h-full"
       action={
         <div className="flex flex-wrap items-center gap-3">
           <ToggleField label="Show Zero Spend" checked={includeZeroSpend} onCheckedChange={setIncludeZeroSpend} />

@@ -584,7 +584,7 @@ export default function KeyInfoView({
   const inheritedGates = hasOwnBudget ? [] : inheritedBudgetGates(parentTeam, parentOrg, ownerUser, memberGate);
 
   return (
-    <div className="w-full h-full overflow-y-auto p-4">
+    <div className="moma-detail w-full min-w-0">
       <KeyInfoHeader
         data={{
           keyName: currentKeyData.key_alias || "Virtual Key",

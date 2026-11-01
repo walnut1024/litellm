@@ -1,4 +1,5 @@
 import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+import { PageHeader, PageHeaderTitle } from "@/components/shared/PageHeader";
 
 import React, { useEffect, useState } from "react";
 import { useLiteUi } from "@/contexts/LiteUiContext";
@@ -577,8 +578,11 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
   }
 
   return (
-    <div className="mx-4">
-      <div className="grid grid-cols-1 gap-2 p-8 w-full mt-2">
+    <div>
+      <PageHeader className="mb-4">
+        <PageHeaderTitle>Logging &amp; Alerts</PageHeaderTitle>
+      </PageHeader>
+      <div className="grid grid-cols-1 gap-4 w-full">
         <Tabs defaultValue={lite ? "alerting-types" : "logging-callbacks"}>
           <TabsList variant="line">
             <TabsTrigger value="logging-callbacks">Logging Callbacks</TabsTrigger>

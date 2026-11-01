@@ -52,15 +52,20 @@ export default function UsageOverview({
       <UsageBreakdownChart results={results} loading={loading} />
 
       {topAgents}
-      {providerBreakdown}
-
-      <Panel icon={KeyRound} title="Top Virtual Keys">
-        {topKeys}
-      </Panel>
-      <Panel icon={Users} title="Top Users by Spend">
-        {topUsers}
-      </Panel>
-      {gatewayByEndpoint}
+      <div className="grid items-start gap-4 min-[1300px]:grid-cols-2">
+        <div className="grid min-w-0 gap-4">
+          {providerBreakdown}
+          <Panel icon={KeyRound} title="Top Virtual Keys">
+            {topKeys}
+          </Panel>
+        </div>
+        <div className="grid min-w-0 gap-4">
+          <Panel icon={Users} title="Top Users by Spend">
+            {topUsers}
+          </Panel>
+          {gatewayByEndpoint}
+        </div>
+      </div>
     </div>
   );
 }

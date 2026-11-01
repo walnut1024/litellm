@@ -1,4 +1,5 @@
 import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { PageHeader, PageHeaderTitle } from "@/components/shared/PageHeader";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
@@ -328,27 +329,30 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
 
   return (
     <div className="w-full">
-      <Tabs defaultValue="loadbalancing" className="h-[75vh] w-full">
-        <TabsList variant="line" className="mx-8 mt-4">
+      <PageHeader className="mb-4">
+        <PageHeaderTitle>Router Settings</PageHeaderTitle>
+      </PageHeader>
+      <Tabs defaultValue="loadbalancing" className="w-full">
+        <TabsList variant="line">
           <TabsTrigger value="loadbalancing">Loadbalancing</TabsTrigger>
           <TabsTrigger value="routing-groups">Routing Groups</TabsTrigger>
           <TabsTrigger value="fallbacks">Fallbacks</TabsTrigger>
           <TabsTrigger value="prompt-caching">Prompt Caching</TabsTrigger>
           <TabsTrigger value="general">General</TabsTrigger>
         </TabsList>
-        <TabsContent value="loadbalancing" className="px-8 py-6" keepMounted>
+        <TabsContent value="loadbalancing" keepMounted>
           <RouterSettings accessToken={accessToken} userRole={userRole} userID={userID} />
         </TabsContent>
-        <TabsContent value="routing-groups" className="px-8 py-6" keepMounted>
+        <TabsContent value="routing-groups" keepMounted>
           <RoutingGroups />
         </TabsContent>
-        <TabsContent value="fallbacks" className="px-8 py-6" keepMounted>
+        <TabsContent value="fallbacks" keepMounted>
           <Fallbacks accessToken={accessToken} userRole={userRole} userID={userID} />
         </TabsContent>
-        <TabsContent value="prompt-caching" className="px-8 py-6" keepMounted>
+        <TabsContent value="prompt-caching" keepMounted>
           <PromptCachingPanel accessToken={accessToken} settings={generalSettings} onChange={handleInputChange} />
         </TabsContent>
-        <TabsContent value="general" className="px-8 py-6" keepMounted>
+        <TabsContent value="general" keepMounted>
           <Card>
             <CardContent>
               <Table>

@@ -5,11 +5,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/cva.config";
 
 export function Page({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("flex min-h-0 min-w-0 w-full flex-col gap-6 p-4 sm:p-6", className)} {...props} />;
+  return (
+    <div
+      data-slot="page"
+      className={cn("flex min-h-0 min-w-0 w-full flex-col gap-6 p-4 sm:p-6", className)}
+      {...props}
+    />
+  );
 }
 
 export function PageContent({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("flex min-h-0 min-w-0 flex-1 flex-col gap-6", className)} {...props} />;
+  return (
+    <div data-slot="page-content" className={cn("flex min-h-0 min-w-0 flex-1 flex-col gap-6", className)} {...props} />
+  );
 }
 
 export function PageTabs({ className, ...props }: ComponentProps<typeof Tabs>) {

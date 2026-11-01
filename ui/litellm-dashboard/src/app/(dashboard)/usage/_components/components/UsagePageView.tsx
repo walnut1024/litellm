@@ -48,6 +48,7 @@ import {
   userDailyActivityUserPageCall,
 } from "@/components/networking";
 import AdvancedDatePicker from "@/components/shared/advanced_date_picker";
+import { PageHeader } from "@/components/shared/PageHeader";
 import { Tag } from "@/components/tag_management/types";
 import UserAgentActivity from "@/components/user_agent_activity";
 import { useAggregatedDailyActivity } from "../hooks/useAggregatedDailyActivity";
@@ -458,8 +459,8 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
   );
 
   return (
-    <div ref={pageRef} className="relative w-full px-4 pt-3 pb-8 sm:px-6">
-      <header className="mb-3 flex w-full flex-wrap items-center justify-between gap-3 border-b pb-3">
+    <div ref={pageRef} className="relative w-full">
+      <PageHeader className="moma-usage-header mb-4">
         <UsageViewSelect
           value={usageView}
           onChange={(value) => void setUrlParams(usageViewPatch(value))}
@@ -467,22 +468,25 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
           canViewTagUsage={canViewTagUsage}
           isOrgAdmin={isOrgAdmin}
         />
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="moma-usage-filters">
           {isAdmin && usageView === "global" && (
-            <div className="flex items-center gap-2">
-              <div className="w-64">
+            <div className="moma-usage-user-filter flex items-center gap-2">
+              <div className="w-56">
                 <UserDropdown value={urlParams.user} onChange={(user) => void setUrlParams({ user })} />
               </div>
               {urlParams.user && <UserRecordLink userId={urlParams.user} />}
             </div>
           )}
           {CLIENT_USAGE_VIEWS.includes(usageView) && (
-            <div className="w-44">
+            <div className="moma-usage-client-filter w-44">
               <ClientUsageSelect value={selectedClient} onChange={openClientPanel} />
             </div>
           )}
-          <div className="flex items-center gap-2">
+          <div className="moma-usage-date-filter flex items-center gap-2">
             <AdvancedDatePicker
+              label=""
+              compact
+              className="w-[300px]"
               value={dateValue}
               onValueChange={handleDateChange}
               presetShortLabel={presetShortLabel}
@@ -493,7 +497,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
             </Button>
           </div>
         </div>
-      </header>
+      </PageHeader>
       <LiteUiMask>
         <AriaUsageComposer />
       </LiteUiMask>

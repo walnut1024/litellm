@@ -69,7 +69,7 @@ export default function UsageBreakdownChart({
     >
       <div className="px-2 pb-2">
         {loading ? (
-          <ChartSkeleton className={cn("mx-3 w-auto", compact ? "h-56" : "h-[380px]")} />
+          <ChartSkeleton className={cn("mx-3 w-auto", compact ? "h-56" : "h-64")} />
         ) : (
           <StackedUsageChart
             data={series.data}
@@ -81,7 +81,7 @@ export default function UsageBreakdownChart({
             scale={scale}
             format={format}
             totalFor={(date) => totalsByBucket.get(date)}
-            className={compact ? "h-56" : undefined}
+            className={compact ? "h-56" : "h-64"}
           />
         )}
       </div>

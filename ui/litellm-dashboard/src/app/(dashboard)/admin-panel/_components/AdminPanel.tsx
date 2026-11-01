@@ -3,6 +3,7 @@
  * Use this to avoid sharing master key with others
  */
 import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { PageHeader, PageHeaderTitle, PageHeaderDescription } from "@/components/shared/PageHeader";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { Alert, AlertDescription, AlertTitle } from "@/components/shared/Alert";
@@ -427,13 +428,13 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
   ];
 
   return (
-    <div className="w-full m-2 mt-2 p-8">
-      <h2 className="mb-2 text-base font-semibold text-foreground">
-        <L>Admin Access</L>
-      </h2>
-      <p className="mb-4 text-sm text-foreground">
-        <L>Go to &apos;Internal Users&apos; page to add other admins.</L>
-      </p>
+    <div className="w-full">
+      <PageHeader className="mb-4">
+        <PageHeaderTitle>Admin Settings</PageHeaderTitle>
+        <PageHeaderDescription>
+          <L>Go to &apos;Internal Users&apos; page to add other admins.</L>
+        </PageHeaderDescription>
+      </PageHeader>
       <Tabs defaultValue={lite ? "ui-settings" : tabItems[0].key}>
         <TabsList variant="line" className="mb-4 h-auto flex-wrap">
           {tabItems.map((item) => (

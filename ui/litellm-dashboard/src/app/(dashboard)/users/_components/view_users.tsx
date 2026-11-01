@@ -1,4 +1,5 @@
 import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { PageHeader, PageHeaderTitle, PageHeaderControls } from "@/components/shared/PageHeader";
 
 import { parseAsString, useQueryState } from "nuqs";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -319,9 +320,10 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
   );
 
   return (
-    <div className="w-full overflow-hidden p-8">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex space-x-3">
+    <div className="w-full min-w-0">
+      <PageHeader className="mb-4">
+        <PageHeaderTitle>Internal Users</PageHeaderTitle>
+        <PageHeaderControls>
           {userListQuery.isLoading && (
             <>
               <Skeleton className="h-9 w-28" />
@@ -364,8 +366,8 @@ const ViewUserDashboard: React.FC<ViewUserDashboardProps> = ({
               )}
             </>
           )}
-        </div>
-      </div>
+        </PageHeaderControls>
+      </PageHeader>
 
       {isProxyAdmin ? (
         <Tabs defaultValue="users" className="gap-0">

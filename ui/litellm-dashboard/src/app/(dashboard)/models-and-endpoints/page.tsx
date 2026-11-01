@@ -1,6 +1,7 @@
 "use client";
 
 import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { PageHeader, PageHeaderTitle, PageHeaderDescription } from "@/components/shared/PageHeader";
 
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useMemo, useState } from "react";
@@ -190,22 +191,20 @@ export default function ModelsAndEndpointsPage() {
   return (
     <div className="moma-model-page">
       <div className="flex w-full flex-col gap-2">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">
-              <L>Model marketplace</L>
-            </h1>
-            {isAdmin ? (
-              <p className="text-sm text-muted-foreground">
-                <L>Add and manage models for the proxy</L>
-              </p>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                <L>Activate a model and start calling it with an API key.</L>
-              </p>
-            )}
-          </div>
-        </div>
+        <PageHeader>
+          <PageHeaderTitle>
+            <L>Model marketplace</L>
+          </PageHeaderTitle>
+          {isAdmin ? (
+            <PageHeaderDescription>
+              <L>Add and manage models for the proxy</L>
+            </PageHeaderDescription>
+          ) : (
+            <PageHeaderDescription>
+              <L>Activate a model and start calling it with an API key.</L>
+            </PageHeaderDescription>
+          )}
+        </PageHeader>
 
         {!isViewOnly && (
           <LiteUiMask>

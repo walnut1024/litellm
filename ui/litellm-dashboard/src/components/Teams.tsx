@@ -730,7 +730,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
 
       {canCreateOrManageTeams(userRole, userID, organizations) && (
         <Dialog open={isTeamModalVisible} onOpenChange={(open) => !open && handleCancel()}>
-          <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[1000px]">
+          <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
             <DialogHeader>
               <DialogTitle>
                 <L>Create Team</L>
@@ -754,7 +754,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         <FormField
                           control={form.control}
                           name="organization_id"
-                          className="mt-8"
+                          className="mt-4"
                           label={labelWithDocsHint(
                             "Organization",
                             "Organizations can have multiple teams. Learn more about the user management hierarchy",
@@ -789,7 +789,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         </FormField>
 
                         {isOrgAdmin && !isSingleOrg && adminOrgs.length > 1 && (
-                          <div className="mb-8 rounded-md border border-info/20 bg-info/10 p-4">
+                          <div className="mb-4 rounded-md border border-info/20 bg-info/10 p-4">
                             <span className="text-sm text-info">
                               Please select an organization to create a team for. You can only create teams within
                               organizations where you are an admin.
@@ -828,7 +828,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                       <NumericalInput {...field} ref={ref} value={value ?? ""} step={0.01} precision={2} width={200} />
                     )}
                   </FormField>
-                  <FormField control={form.control} name="budget_duration" className="mt-8" label="Reset Budget">
+                  <FormField control={form.control} name="budget_duration" className="mt-4" label="Reset Budget">
                     {({ id, value, onChange }) => (
                       <BudgetDurationDropdown
                         id={id}
@@ -889,7 +889,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <Collapsible
                     open={additionalSettingsOpen}
                     onOpenChange={setAdditionalSettingsOpen}
-                    className="mt-20 mb-8 overflow-hidden rounded-lg border"
+                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
                       <b>
@@ -998,7 +998,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         <FormField
                           control={form.control}
                           name="guardrails"
-                          className="mt-8"
+                          className="mt-4"
                           label={labelWithDocsHint(
                             "Guardrails",
                             "Setup your first guardrail",
@@ -1060,7 +1060,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           <FormField
                             control={form.control}
                             name="policies"
-                            className="mt-8"
+                            className="mt-4"
                             label={labelWithDocsHint(
                               "Policies",
                               "Apply policies to this team to control guardrails and other settings",
@@ -1082,7 +1082,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         <FormField
                           control={form.control}
                           name="access_group_ids"
-                          className="mt-8"
+                          className="mt-4"
                           label={labelWithHint(
                             "Access Groups",
                             "Assign access groups to this team. Access groups control which models, MCP servers, and agents this team can use",
@@ -1100,7 +1100,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         <FormField
                           control={form.control}
                           name="allowed_vector_store_ids"
-                          className="mt-8"
+                          className="mt-4"
                           label={labelWithHint(
                             "Allowed Vector Stores",
                             "Select which vector stores this team can access by default. Leave empty for access to all vector stores",
@@ -1119,7 +1119,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                         <FormField
                           control={form.control}
                           name="allowed_passthrough_routes"
-                          className="mt-8"
+                          className="mt-4"
                           label={
                             !premiumUser
                               ? labelWithHint(
@@ -1151,7 +1151,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <Collapsible
                     open={mcpSettingsOpen}
                     onOpenChange={setMcpSettingsOpen}
-                    className="mt-8 mb-8 overflow-hidden rounded-lg border"
+                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
                       <b>
@@ -1197,7 +1197,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <Collapsible
                     open={agentSettingsOpen}
                     onOpenChange={setAgentSettingsOpen}
-                    className="mt-8 mb-8 overflow-hidden rounded-lg border"
+                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
                       <b>
@@ -1231,7 +1231,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <Collapsible
                     open={searchToolSettingsOpen}
                     onOpenChange={setSearchToolSettingsOpen}
-                    className="mt-8 mb-8 overflow-hidden rounded-lg border"
+                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
                       <b>
@@ -1265,7 +1265,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   <Collapsible
                     open={skillSettingsOpen}
                     onOpenChange={setSkillSettingsOpen}
-                    className="mt-8 mb-8 overflow-hidden rounded-lg border"
+                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
                       <b>
@@ -1297,7 +1297,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                   </Collapsible>
 
                   <LiteUiMask>
-                    <Collapsible className="mt-8 mb-8 overflow-hidden rounded-lg border">
+                    <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
                       <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
                         <b>
                           <L>Logging Settings</L>
@@ -1318,7 +1318,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
 
                   <Collapsible
                     key={`router-settings-accordion-${routerSettingsKey}`}
-                    className="mt-8 mb-8 overflow-hidden rounded-lg border"
+                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
                   >
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
                       <b>
@@ -1343,7 +1343,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     </CollapsibleContent>
                   </Collapsible>
 
-                  <Collapsible className="mt-8 mb-8 overflow-hidden rounded-lg border">
+                  <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">
                     <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
                       <b>
                         <L>Model Aliases</L>

@@ -693,7 +693,7 @@ function KeyEditSession({
             control={form.control}
             name="access_group_ids"
             label={labelWithHint(
-              "Access Groups",
+              t("Access Groups"),
               "Assign access groups to this key. Access groups control which models, MCP servers, and agents this key can use",
             )}
           >

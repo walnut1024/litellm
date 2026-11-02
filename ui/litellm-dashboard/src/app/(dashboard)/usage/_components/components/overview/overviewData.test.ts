@@ -181,3 +181,15 @@ describe("model colors", () => {
     expect(bucketTotals(series).get("2026-10-01")).toBe(55);
   });
 });
+
+describe("localized bucket labels", () => {
+  it("localizes daily and weekly dates without changing totals or entity names", () => {
+    const series = seriesBy([day("2026-10-31", 7, { "Oct 31": 7 })], "model_groups", "spend");
+    expect(labelForDate(series, "2026-10-31", "zh-CN")).toBe("10月31日");
+    expect(labelForDate(series, "2026-10-31", "en")).toBe("Oct 31");
+    expect(labelForDate(bucketSeries(series, "week"), "2026-10-31", "zh-CN")).toBe("10月31日当周");
+    expect(labelForDate(series, "missing", "zh-CN")).toBe("missing");
+    expect(bucketTotals(series).get("2026-10-31")).toBe(7);
+    expect(series.labels).toContain("Oct 31");
+  });
+});

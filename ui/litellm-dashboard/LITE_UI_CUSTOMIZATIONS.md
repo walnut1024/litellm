@@ -763,3 +763,23 @@ src/utils/liteUi.ts
 最终镜像标记 `litellm-moma:ui-audit-20261102`，ID 为 `sha256:72f28a862648e4874b09132817b01e3e72527ca1de1d41ca782b0697e9c610af`。4001 应用容器已重建并重启，健康检查返回 HTTP 200。原数据库卷、salt、账户、模型与密钥保留，4000 和 4002 服务未参与。旧浏览器需要强制刷新加载新静态资源
 
 本轮没有提交任何表单、创建或删除业务记录、调用供应商模型、发送邮件、执行完整前端套件、手机专项或跨浏览器及完整可访问性回归。实时事件和评估详情的字号按共享令牌修正，当前预览没有对应真实业务样本，不把源码修正视为这些流程已完成业务验证。上游错误消息、用户内容及原始 JSON 保留原文，未为未知供应商的全部动态字段承诺翻译覆盖
+
+## 首次使用提示与详情页汉化补齐
+
+2026-11-02 从 `f4dcafae12` 继续补齐用户列出的 14 类遗漏，社区基线仍为 `9546f9a69ff470dfcc5a21eccab89d2fd86a634f`、版本 1.109.0。沿用现有翻译组件和词典，没有新增依赖、修改后端接口、鉴权或金额数值
+
+`src/components/CommandPalette/` 补齐首次使用提示、命令面板标题、动作、页面分组、类型、搜索空状态及底部快捷键说明，品牌行统一为 MoMA 轻量版，密钥搜索结果的金额符号统一为人民币。中文搜索使用本地化后的页面和动作名称，首次打开后的提示隐藏逻辑保持原样
+
+`src/components/VirtualKeysPage/VirtualKeysTable.tsx` 与 `logs/request/RequestLogsFilters.tsx` 同时翻译状态选项和当前选中值，筛选仍提交原状态字符串。请求日志表格空状态、公开模型或搜索工具标签，以及 `logs/detail/` 的请求标题、提示词存储说明、令牌数、费用和凭据状态同步汉化。配置示例、请求 ID、原始请求与响应保持原值
+
+`src/components/templates/key_info_view.tsx` 翻译详情占位值和人民币单位，`key_edit_view.tsx` 将访问组标签与创建表单对齐。模型表单的超时字段补充词典，`shared/CredentialIdentity.tsx` 翻译手动配置状态。`SidebarAccountMenu/SidebarAccountMenu.tsx` 翻译账户角色，版本标签由词典补齐
+
+`src/app/(dashboard)/usage/_components/components/overview/UsageBreakdownChart.tsx` 与 `overviewData.ts` 按当前语言格式化每日及每周图表刻度和提示日期。`src/app/(dashboard)/users/_components/view_users/user_info_view.tsx` 补齐节省费用、自动路由用量、详情占位值、中文日期和预算重置周期，`src/components/permissions/MCPServerPermissions.tsx` 补齐区块标题与空状态。模型名、用户别名和分组数据不参与翻译
+
+`src/app/login/LoginPage.tsx` 仅在展示层翻译词典内已知的登录凭据错误，覆盖管理员环境变量密码和用户密码两种提示。其他后端错误继续显示原文，后端返回值不变。这是原先保留后端错误原文边界中的明确登录场景例外
+
+最终定向回归 12 个文件、334 项全部通过，覆盖首次提示、命令面板中文搜索与英文切换、筛选状态原值、密钥详情金额及占位值、登录错误、账户角色、用户日期与 MCP 空状态。另运行密钥编辑集成测试，112 项通过、2 项预期失败、7 项失败。通过临时 Vitest 加载插件使用修改前的该组件复跑，得到相同的 7 项失败，均涉及旧测试查找 Prompts 或 Models 标签；没有修改这些无关断言或把失败记为通过
+
+最终生产构建、TypeScript、静态导出和 `scripts/pre_commit_lint.sh` 的适用前端 Prettier、ESLint 与 lint 预算检查通过，没有放宽规则或预算。日期格式化合并后，用户详情 29 项用例复核通过，属于前述 334 项，不重复累计。4001 应用容器使用现有 Compose 项目及私有环境文件重新构建、创建并启动，数据库服务与卷保持原状，健康检查返回 HTTP 200。当前镜像 ID 为 `sha256:2e4ce49f0f90c5fb700ba5a8d864fdc1353e38e06f069df1abc6ccb291400bef`，4000 和 4002 服务没有参与本次更新
+
+Chrome 实际复现了更新前的英文登录错误，并验证更新后的中文错误、英文切换及页面截图，最后恢复中文。镜像替换时旧页面出现一次静态资源加载错误，重新加载后登录页面和交互正常。本次浏览器会话已经退出，登录后的页面通过组件回归验证，没有声称完成登录后的全页面浏览器复核。没有创建、删除业务记录、调用模型、发送邮件、修改账户密码或执行全套前端、跨浏览器与完整可访问性回归

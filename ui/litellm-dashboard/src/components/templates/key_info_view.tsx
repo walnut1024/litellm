@@ -579,7 +579,7 @@ export default function KeyInfoView({
   const budgetDisplay = (() => {
     if (hasOwnBudget) return `¥${formatNumberWithCommas(currentKeyData.max_budget, 2)}`;
     if (memberGate) return `¥${formatNumberWithCommas(memberGate.maxBudget, 2)} (team member budget)`;
-    return "Unlimited";
+    return t("Unlimited");
   })();
   const inheritedGates = hasOwnBudget ? [] : inheritedBudgetGates(parentTeam, parentOrg, ownerUser, memberGate);
 
@@ -604,8 +604,8 @@ export default function KeyInfoView({
           createdById: currentKeyData.created_by_user?.user_id || currentKeyData.created_by || "",
           createdAt: currentKeyData.created_at ? formatTimestamp(currentKeyData.created_at) : "",
           lastUpdated: lastConfiguredAt ? formatTimestamp(lastConfiguredAt) : "",
-          lastActive: currentKeyData.last_active ? formatTimestamp(currentKeyData.last_active) : "Never",
-          expires: currentKeyData.expires ? formatTimestamp(currentKeyData.expires) : "Never",
+          lastActive: currentKeyData.last_active ? formatTimestamp(currentKeyData.last_active) : t("Never"),
+          expires: currentKeyData.expires ? formatTimestamp(currentKeyData.expires) : t("Never"),
         }}
         onBack={onClose}
         onRegenerate={() => setIsRegenerateModalOpen(true)}
@@ -995,7 +995,7 @@ export default function KeyInfoView({
                     <p className="text-sm font-medium">
                       <L>Key Alias</L>
                     </p>
-                    <p className="text-sm">{currentKeyData.key_alias || "Not Set"}</p>
+                    <p className="text-sm">{currentKeyData.key_alias || t("Not Set")}</p>
                   </div>
 
                   <div>
@@ -1015,7 +1015,7 @@ export default function KeyInfoView({
                           {currentKeyData.team_id}
                         </EntityLink>
                       ) : (
-                        "Not Set"
+                        t("Not Set")
                       )}
                     </p>
                   </div>
@@ -1041,7 +1041,7 @@ export default function KeyInfoView({
                       <p className="text-sm font-medium">
                         <L>Organization</L>
                       </p>
-                      <p className="text-sm">{keyOrganizationId(currentKeyData) || "Not Set"}</p>
+                      <p className="text-sm">{keyOrganizationId(currentKeyData) || t("Not Set")}</p>
                     </div>
                   </LiteUiMask>
 
@@ -1071,7 +1071,7 @@ export default function KeyInfoView({
                       <L>Expires</L>
                     </p>
                     <p className="text-sm">
-                      {currentKeyData.expires ? formatTimestamp(currentKeyData.expires) : "Never"}
+                      {currentKeyData.expires ? formatTimestamp(currentKeyData.expires) : t("Never")}
                     </p>
                   </div>
 
@@ -1102,14 +1102,18 @@ export default function KeyInfoView({
                     <p className="text-sm font-medium">
                       <L>Spend</L>
                     </p>
-                    <p className="text-sm">¥{formatNumberWithCommas(currentKeyData.spend, 4)} CNY</p>
+                    <p className="text-sm">
+                      ¥{formatNumberWithCommas(currentKeyData.spend, 4)} {t("CNY")}
+                    </p>
                   </div>
 
                   <div>
                     <p className="text-sm font-medium">
                       <L>Lifetime Spend</L>
                     </p>
-                    <p className="text-sm">¥{formatNumberWithCommas(currentKeyData.total_spend ?? 0, 4)} CNY</p>
+                    <p className="text-sm">
+                      ¥{formatNumberWithCommas(currentKeyData.total_spend ?? 0, 4)} {t("CNY")}
+                    </p>
                   </div>
 
                   <div>
@@ -1126,7 +1130,7 @@ export default function KeyInfoView({
                     <p data-testid="budget-reset-value" className="text-sm">
                       {currentKeyData.budget_reset_at
                         ? `${currentKeyData.budget_duration ? `Every ${currentKeyData.budget_duration}, next ` : ""}${formatTimestamp(currentKeyData.budget_reset_at)}`
-                        : "Never"}
+                        : t("Never")}
                     </p>
                   </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale } from "@/contexts/LocaleContext";
 
 import { useMemo, useState } from "react";
 import type { DailyData } from "@/components/UsagePage/types";
@@ -44,6 +44,7 @@ export default function UsageBreakdownChart({
   colorByModel,
   dimension = "model_groups",
 }: UsageBreakdownChartProps) {
+  const { locale } = useLocale();
   const [metric, setMetric] = useState<UsageMetric>("spend");
   const state: BreakdownState = { metric, dimension };
   const [granularity, setGranularity] = useState<Granularity>("day");
@@ -77,7 +78,7 @@ export default function UsageBreakdownChart({
             labels={series.labels}
             colors={series.colors}
             xKey="date"
-            xLabel={(date) => labelForDate(series, date)}
+            xLabel={(date) => labelForDate(series, date, locale)}
             scale={scale}
             format={format}
             totalFor={(date) => totalsByBucket.get(date)}

@@ -321,7 +321,7 @@ export function LogDetailsDrawer({
         style={{ width: DRAWER_WIDTH }}
       >
         <SheetTitle className="sr-only">
-          {logEntry?.request_id ? `Request ${logEntry.request_id} details` : "Request details"}
+          {logEntry?.request_id ? t("Request {id} details", { id: logEntry.request_id }) : t("Request details")}
         </SheetTitle>
         <div style={{ height: "100%" }} className="flex relative">
           {!isSidebarCollapsed && (

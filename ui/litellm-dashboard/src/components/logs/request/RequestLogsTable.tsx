@@ -1,5 +1,6 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import type { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { ScrollText } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -54,11 +55,15 @@ function RequestLogsEmptyState({ filtered }: { filtered: boolean }) {
       <div className="mb-1 flex size-10 items-center justify-center rounded-lg bg-muted">
         <ScrollText className="size-5 text-muted-foreground" />
       </div>
-      <div className="text-sm font-medium text-foreground">{filtered ? "No matching requests" : "No requests yet"}</div>
+      <div className="text-sm font-medium text-foreground">
+        <L>{filtered ? "No matching requests" : "No requests yet"}</L>
+      </div>
       <div className="max-w-xs text-center text-sm text-muted-foreground">
-        {filtered
-          ? "No requests match your filters for this time range."
-          : "Requests proxied through LiteLLM will appear here."}
+        <L>
+          {filtered
+            ? "No requests match your filters for this time range."
+            : "Requests proxied through LiteLLM will appear here."}
+        </L>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import type { ReactNode } from "react";
 
 import type { CredentialItem } from "@/components/networking";
@@ -33,7 +34,7 @@ interface AttachedCredentialProps {
 
 export function AttachedCredential({ credentialName, credentials }: AttachedCredentialProps) {
   if (!credentialName) {
-    return <>Manual</>;
+    return <L>Manual</L>;
   }
   return (
     <CredentialIdentity

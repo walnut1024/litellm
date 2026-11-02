@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen, waitFor } from "../../../tests/test-utils";
@@ -65,6 +66,19 @@ vi.mock("@/utils/localStorageUtils", () => ({
 }));
 
 describe("SidebarAccountMenu", () => {
+  it("localizes the tier and role while preserving the account identity", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocaleProvider>
+        <SidebarAccountMenu onLogout={vi.fn()} />
+      </LocaleProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: /账户菜单/ }));
+    expect(await screen.findByText("版本")).toBeVisible();
+    expect(screen.getAllByText("管理员（全部权限）").length).toBeGreaterThan(0);
+    expect(screen.getByText("test-user-id")).toBeVisible();
+  });
+
   const mockOnLogout = vi.fn();
 
   const getAccountTrigger = () => screen.getByRole("button", { name: /account menu/i });

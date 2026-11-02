@@ -1,3 +1,5 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -137,6 +139,34 @@ afterEach(() => {
 });
 
 describe("CommandPalette integration", () => {
+  it("localizes first-use discovery and command actions while keeping navigation and English switching", async () => {
+    mocks.pathname = "/home";
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocaleProvider>
+        <TerminologyProvider>
+          <LanguageSwitcher />
+          <CommandPaletteProvider>
+            <CommandPaletteTrigger />
+          </CommandPaletteProvider>
+        </TerminologyProvider>
+      </LocaleProvider>,
+    );
+    await user.click(await screen.findByRole("button", { name: /搜索或跳转页面/ }));
+    expect(await screen.findByRole("dialog", { name: "命令面板" })).toBeVisible();
+    expect(screen.getByRole("option", { name: /搜索 API 密钥.*按别名或 ID 查找密钥.*操作/ })).toBeVisible();
+    expect(screen.getByRole("group", { name: "页面" })).toBeVisible();
+    await user.type(screen.getByRole("combobox", { name: "搜索" }), "搜索");
+    await user.keyboard("{Enter}");
+    expect(await screen.findByText("最近使用的密钥")).toBeVisible();
+    expect(screen.getByRole("option", { name: /prod-backend/ })).toHaveTextContent("platform-team");
+    expect(localStorage.getItem(COMMAND_PALETTE_HINT_KEY.name)).toBe("true");
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "语言" }));
+    await user.click(screen.getByRole("button", { name: /Search/ }));
+    expect(await screen.findByRole("dialog", { name: "Command palette" })).toBeVisible();
+  });
+
   it("shows the discovery hint on the keys route", async () => {
     renderPalette();
 
@@ -257,7 +287,7 @@ describe("CommandPalette integration", () => {
     const keyOption = await screen.findByRole("option", { name: /prod-backend/ });
     expect(firstKeyOption).toHaveAttribute("aria-selected", "true");
     expect(keyOption).toHaveTextContent("platform-team");
-    expect(keyOption).toHaveTextContent("$2.50");
+    expect(keyOption).toHaveTextContent("¥2.50");
     expect(screen.queryByRole("option", { name: /staging-agent/ })).not.toBeInTheDocument();
 
     fireEvent.keyDown(input, { key: "ArrowDown" });
@@ -415,8 +445,8 @@ describe("CommandPalette integration", () => {
   });
 
   it.each([
-    [true, "si hub", /^SI Hub/],
-    [false, "ai hub", /^AI Hub/],
+    [true, "si gateway", /^Home/],
+    [false, "ai gateway", /^Home/],
   ])(
     "lists and matches nav pages in the configured terminology when SI terminology is %s",
     async (useSi, query, option) => {

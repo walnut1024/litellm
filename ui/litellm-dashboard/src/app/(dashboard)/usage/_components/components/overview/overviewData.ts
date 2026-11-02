@@ -171,8 +171,14 @@ export const bucketTotals = (series: Series): ReadonlyMap<string, number> =>
   new Map(series.data.map((day) => [day.date, series.keys.reduce((sum, key) => sum + Number(day[key] ?? 0), 0)]));
 
 /** Display label for a bucket's ISO date, for chart ticks and tooltip headers. */
-export const labelForDate = (series: Series, date: string): string =>
-  series.data.find((day) => day.date === date)?.label ?? date;
+export const labelForDate = (series: Series, date: string, locale: "zh-CN" | "en" = "en"): string => {
+  const label = series.data.find((day) => day.date === date)?.label;
+  if (locale !== "zh-CN" || label === undefined) return label ?? date;
+  const parsed = new Date(`${date}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return date;
+  const dayLabel = parsed.toLocaleDateString("zh-CN", { month: "long", day: "numeric" });
+  return label.startsWith("Wk of ") ? `${dayLabel}当周` : dayLabel;
+};
 
 export interface LeaderRow extends RankedRow {
   share: number;

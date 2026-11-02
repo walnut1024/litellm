@@ -282,7 +282,9 @@ function LoginPageContent() {
               {error && (
                 <Alert variant="error">
                   <CircleAlert />
-                  <AlertTitle>{error}</AlertTitle>
+                  <AlertTitle>
+                    <L>{error}</L>
+                  </AlertTitle>
                 </Alert>
               )}
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cva.config";
 
@@ -44,7 +45,9 @@ export function CommandPaletteResultRow({
         <span className="truncate text-sm font-medium">{item.title}</span>
         {item.subtitle && <span className="truncate text-xs text-muted-foreground">{item.subtitle}</span>}
       </span>
-      <span className="shrink-0 text-xs text-muted-foreground">{item.typeLabel}</span>
+      <span className="shrink-0 text-xs text-muted-foreground">
+        <L>{item.typeLabel}</L>
+      </span>
     </button>
   );
 }

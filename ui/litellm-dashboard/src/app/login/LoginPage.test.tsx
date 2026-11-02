@@ -1,3 +1,5 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { useLogin } from "@/app/(dashboard)/hooks/login/useLogin";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -68,8 +70,48 @@ const createQueryClient = () =>
   });
 
 describe("LoginPage", () => {
+  it("translates known credential failures and preserves other backend errors", async () => {
+    vi.mocked(useUIConfig).mockReturnValue({ data: { admin_ui_disabled: false }, isLoading: false } as ReturnType<
+      typeof useUIConfig
+    >);
+    vi.mocked(getCookieFromDocument).mockReturnValue(null);
+    vi.mocked(useLogin).mockReturnValue({
+      error: new Error(
+        "Invalid credentials used to access UI. Check 'UI_USERNAME' and 'UI_PASSWORD', or the password set for your user",
+      ),
+      mutate: vi.fn(),
+      isPending: false,
+    } as unknown as ReturnType<typeof useLogin>);
+    const view = render(
+      <QueryClientProvider client={createQueryClient()}>
+        <LocaleProvider>
+          <LoginPage />
+        </LocaleProvider>
+      </QueryClientProvider>,
+    );
+    expect(
+      await screen.findByText("用户名或密码错误，请检查 UI_USERNAME、UI_PASSWORD 或该用户设置的密码"),
+    ).toBeVisible();
+    vi.mocked(useLogin).mockReturnValue({
+      error: new Error("backend-detail-id"),
+      mutate: vi.fn(),
+      isPending: false,
+    } as unknown as ReturnType<typeof useLogin>);
+    view.rerender(
+      <QueryClientProvider client={createQueryClient()}>
+        <LocaleProvider>
+          <LoginPage />
+        </LocaleProvider>
+      </QueryClientProvider>,
+    );
+    expect(await screen.findByText("backend-detail-id")).toBeVisible();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useLogin).mockReturnValue({ mutate: vi.fn(), isPending: false, error: null } as unknown as ReturnType<
+      typeof useLogin
+    >);
     mockPush.mockClear();
     mockReplace.mockClear();
   });

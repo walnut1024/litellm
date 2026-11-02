@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import {
   act,
   fireEvent,
@@ -93,6 +94,24 @@ vi.mock("@/app/(dashboard)/hooks/mcpServers/useMCPToolsets", () => ({
   useMCPToolsets: () => ({ data: [], isLoading: false }),
 }));
 describe("UserInfoView add-to-team form", () => {
+  it("localizes detail dates, budget duration and MCP empty state", async () => {
+    const userWithoutMcp = { ...MOCK_USER_DATA, user_alias: null, teams: [], object_permission: {} };
+    mockUserGetInfoV2.mockResolvedValue(userWithoutMcp);
+    const user = userEvent.setup();
+    render(
+      <LocaleProvider>
+        <UserInfoView {...defaultProps} />
+      </LocaleProvider>,
+    );
+    await user.click(await screen.findByRole("tab", { name: "详情" }));
+    expect(await screen.findByText("未设置")).toBeVisible();
+    expect(screen.getByText(new Date(MOCK_USER_DATA.created_at).toLocaleString("zh-CN"))).toBeVisible();
+    expect(screen.getByText(new Date(MOCK_USER_DATA.updated_at).toLocaleString("zh-CN"))).toBeVisible();
+    expect(screen.getByText("每月")).toBeVisible();
+    expect(screen.getByText("MCP 权限")).toBeVisible();
+    expect(screen.getByText("尚未配置 MCP 服务器、访问组或工具集")).toBeVisible();
+  });
+
   const defaultProps = {
     userId: "user-123",
     onClose: vi.fn(),

@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { act, screen, waitFor, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { OnUrlUpdateFunction } from "nuqs/adapters/testing";
@@ -1229,4 +1230,41 @@ describe("a failed keys fetch does not rewrite the URL", () => {
       expect(lastSearchParam(onUrlUpdate, "page")).toBeNull();
     });
   });
+});
+
+it("localizes status options and keeps the API status unchanged", async () => {
+  const user = userEvent.setup();
+  const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
+  renderWithProviders(
+    <LocaleProvider>
+      <VirtualKeysTable />
+    </LocaleProvider>,
+    { onUrlUpdate },
+  );
+  await user.click(screen.getByRole("button", { name: "筛选" }));
+  await chooseSelectOption(user, await screen.findByRole("combobox", { name: "状态" }), "已吊销（已停用）");
+  fireEvent.click(screen.getByTestId("filter-drawer-apply"));
+  await waitFor(() =>
+    expect(mockUseKeys).toHaveBeenLastCalledWith(1, 50, expect.objectContaining({ status: "revoked" })),
+  );
+  expect(lastSearchParam(onUrlUpdate, "filter_status")).toBe("revoked");
+});
+
+it("localizes key detail placeholders and currency without translating key aliases", async () => {
+  mockUseKeys.mockReturnValue(
+    keysResult([{ ...mockKey, team_id: null, max_budget: null, expires: null, last_active: null }]),
+  );
+  renderWithProviders(
+    <LocaleProvider>
+      <VirtualKeysTable />
+    </LocaleProvider>,
+    { searchParams: { key: mockKey.token } },
+  );
+  expect(await screen.findByRole("heading", { name: "Test Key Alias" })).toBeVisible();
+  expect(screen.getAllByText("永不").length).toBeGreaterThan(1);
+  await userEvent.click(screen.getByRole("tab", { name: "设置" }));
+  expect(await screen.findByText("¥5.5000 人民币")).toBeVisible();
+  expect(screen.getByText("¥42.2500 人民币")).toBeVisible();
+  expect(screen.getAllByText("未设置").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("不限额").length).toBeGreaterThan(0);
 });

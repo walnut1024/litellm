@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import React, { useState, useEffect } from "react";
 import { ServerIcon, ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/outline";
 import { Badge } from "@/components/ui/badge";
@@ -135,7 +136,9 @@ export function MCPServerPermissions({
     <div className="space-y-3">
       <div className="flex items-center gap-2">
         <ServerIcon className="h-4 w-4 text-info" />
-        <p className="text-sm font-semibold text-foreground">MCP Servers</p>
+        <p className="text-sm font-semibold text-foreground">
+          <L>MCP Servers</L>
+        </p>
         <Badge variant={blocksAllMcpServers ? "destructive" : "secondary"}>
           {blocksAllMcpServers ? "Blocked" : grantsAllProxyMcpServers ? "All" : totalCount}
         </Badge>
@@ -285,7 +288,9 @@ export function MCPServerPermissions({
       ) : (
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted border border-border">
           <ServerIcon className="h-4 w-4 text-muted-foreground" />
-          <p className="text-muted-foreground text-sm">No MCP servers, access groups, or toolsets configured</p>
+          <p className="text-muted-foreground text-sm">
+            <L>No MCP servers, access groups, or toolsets configured</L>
+          </p>
         </div>
       )}
     </div>

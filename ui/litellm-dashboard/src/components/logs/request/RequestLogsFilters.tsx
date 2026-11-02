@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { useMemo, useState } from "react";
 
@@ -334,6 +334,7 @@ interface RequestLogsFiltersProps {
 }
 
 export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsFiltersProps) {
+  const t = useTranslation();
   const valueOf = (id: string): string => asString(get(id));
   const setter = (id: string) => (next: string | undefined) => set(id, next);
 
@@ -347,7 +348,7 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
 
       <DataTableFilterField label="Span Type">
         <Select
-          items={SPAN_TYPE_FILTER_ITEMS}
+          items={SPAN_TYPE_FILTER_ITEMS.map((item) => ({ ...item, label: t(item.label) }))}
           value={valueOf(LOG_FILTER_IDS.SPAN_TYPE) === "" ? ALL_VALUE : valueOf(LOG_FILTER_IDS.SPAN_TYPE)}
           onValueChange={(next) =>
             set(LOG_FILTER_IDS.SPAN_TYPE, next === null || next === ALL_VALUE ? undefined : next)
@@ -359,7 +360,7 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
           <SelectContent>
             {SPAN_TYPE_FILTER_ITEMS.map((item) => (
               <SelectItem key={item.value} value={item.value}>
-                {item.label}
+                {t(item.label)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -368,7 +369,7 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
 
       <DataTableFilterField label="Status">
         <Select
-          items={STATUS_FILTER_ITEMS}
+          items={STATUS_FILTER_ITEMS.map((item) => ({ ...item, label: t(item.label) }))}
           value={valueOf(LOG_FILTER_IDS.STATUS) === "" ? ALL_VALUE : valueOf(LOG_FILTER_IDS.STATUS)}
           onValueChange={(next) => set(LOG_FILTER_IDS.STATUS, next === null || next === ALL_VALUE ? undefined : next)}
         >
@@ -378,7 +379,7 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
           <SelectContent>
             {STATUS_FILTER_ITEMS.map((item) => (
               <SelectItem key={item.value} value={item.value}>
-                {item.label}
+                {t(item.label)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -387,7 +388,7 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
 
       <DataTableFilterField label="Cache">
         <Select
-          items={CACHE_FILTER_ITEMS}
+          items={CACHE_FILTER_ITEMS.map((item) => ({ ...item, label: t(item.label) }))}
           value={valueOf(LOG_FILTER_IDS.CACHE_STATUS) === "" ? ALL_VALUE : valueOf(LOG_FILTER_IDS.CACHE_STATUS)}
           onValueChange={(next) =>
             set(LOG_FILTER_IDS.CACHE_STATUS, next === null || next === ALL_VALUE ? undefined : next)
@@ -399,7 +400,7 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
           <SelectContent>
             {CACHE_FILTER_ITEMS.map((item) => (
               <SelectItem key={item.value} value={item.value}>
-                {item.label}
+                {t(item.label)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -408,7 +409,7 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
 
       <DataTableFilterField label="Credential">
         <Select
-          items={CREDENTIAL_FILTER_ITEMS}
+          items={CREDENTIAL_FILTER_ITEMS.map((item) => ({ ...item, label: t(item.label) }))}
           value={valueOf(LOG_FILTER_IDS.CREDENTIAL) === "" ? ALL_VALUE : valueOf(LOG_FILTER_IDS.CREDENTIAL)}
           onValueChange={(next) =>
             set(LOG_FILTER_IDS.CREDENTIAL, next === null || next === ALL_VALUE ? undefined : next)
@@ -420,7 +421,7 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
           <SelectContent>
             {CREDENTIAL_FILTER_ITEMS.map((item) => (
               <SelectItem key={item.value} value={item.value}>
-                {item.label}
+                {t(item.label)}
               </SelectItem>
             ))}
           </SelectContent>

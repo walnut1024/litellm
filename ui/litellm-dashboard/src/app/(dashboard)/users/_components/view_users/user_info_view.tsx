@@ -1,6 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
-
-import { useTranslation } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -94,6 +92,8 @@ export default function UserInfoView({
   startInEditMode = false,
 }: UserInfoViewProps) {
   const t = useTranslation();
+  const { locale } = useLocale();
+  const formatTimestamp = (value: string) => new Date(value).toLocaleString(locale === "zh-CN" ? "zh-CN" : "en-US");
   const { premiumUser, userId: signedInUserId } = useAuthorized();
   const canViewAutoRouterUsage = hasProxyWideSpendView(userRole);
   const canViewSavings = canViewAutoRouterUsage || (Boolean(userId.trim()) && userId === signedInUserId);
@@ -501,12 +501,12 @@ export default function UserInfoView({
           </TabsTrigger>
           {canViewSavings && (
             <TabsTrigger value="savings" className="flex-none data-active:text-primary after:bg-primary">
-              Savings
+              {t("Savings")}
             </TabsTrigger>
           )}
           {canViewAutoRouterUsage && (
             <TabsTrigger value="auto-router-usage" className="flex-none data-active:text-primary after:bg-primary">
-              Auto-router usage
+              {t("Auto-router usage")}
             </TabsTrigger>
           )}
         </TabsList>
@@ -528,7 +528,7 @@ export default function UserInfoView({
                 <h3 className="text-lg font-medium">¥{formatNumberWithCommas(userData.spend || 0, 2)}</h3>
                 <p>
                   {t("of ")}
-                  {userData.max_budget !== null ? `¥${formatNumberWithCommas(userData.max_budget, 2)}` : "Unlimited"}
+                  {userData.max_budget !== null ? `¥${formatNumberWithCommas(userData.max_budget, 2)}` : t("Unlimited")}
                 </p>
               </div>
             </Card>
@@ -656,27 +656,27 @@ export default function UserInfoView({
 
                 <div>
                   <p className="font-medium">{t("Email")}</p>
-                  <p>{userData.user_email || "Not Set"}</p>
+                  <p>{userData.user_email || t("Not Set")}</p>
                 </div>
 
                 <div>
                   <p className="font-medium">{t("User Alias")}</p>
-                  <p>{userData.user_alias || "Not Set"}</p>
+                  <p>{userData.user_alias || t("Not Set")}</p>
                 </div>
 
                 <div>
                   <p className="font-medium">{t("Global Proxy Role")}</p>
-                  <p>{userData.user_role || "Not Set"}</p>
+                  <p>{userData.user_role || t("Not Set")}</p>
                 </div>
 
                 <div>
                   <p className="font-medium">{t("Created")}</p>
-                  <p>{userData.created_at ? new Date(userData.created_at).toLocaleString() : "Unknown"}</p>
+                  <p>{userData.created_at ? formatTimestamp(userData.created_at) : t("Unknown")}</p>
                 </div>
 
                 <div>
                   <p className="font-medium">{t("Last Updated")}</p>
-                  <p>{userData.updated_at ? new Date(userData.updated_at).toLocaleString() : "Unknown"}</p>
+                  <p>{userData.updated_at ? formatTimestamp(userData.updated_at) : t("Unknown")}</p>
                 </div>
 
                 <div>
@@ -699,13 +699,13 @@ export default function UserInfoView({
                   <p>
                     {userData.max_budget !== null && userData.max_budget !== undefined
                       ? `¥${formatNumberWithCommas(userData.max_budget, 4)}`
-                      : "Unlimited"}
+                      : t("Unlimited")}
                   </p>
                 </div>
 
                 <div>
                   <p className="font-medium">{t("Budget Reset")}</p>
-                  <p>{getBudgetDurationLabel(userData.budget_duration ?? null)}</p>
+                  <p>{t(getBudgetDurationLabel(userData.budget_duration ?? null))}</p>
                 </div>
 
                 <div>
@@ -718,7 +718,7 @@ export default function UserInfoView({
                 </div>
 
                 <div>
-                  <p className="font-medium mb-2">MCP Permissions</p>
+                  <p className="font-medium mb-2">{t("MCP Permissions")}</p>
                   <MCPServerPermissions
                     mcpServers={userData.object_permission?.mcp_servers || []}
                     mcpAccessGroups={userData.object_permission?.mcp_access_groups || []}

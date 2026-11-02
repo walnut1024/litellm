@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { useKeyInfo } from "@/app/(dashboard)/hooks/keys/useKeyInfo";
 import { useKeys } from "@/app/(dashboard)/hooks/keys/useKeys";
@@ -91,6 +91,7 @@ const appliedFilter = (filters: ColumnFiltersState, column: FilterColumn): strin
 };
 
 export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
+  const t = useTranslation();
   const { data: fetchedOrganizations } = useOrganizations();
   const organizations = useMemo(() => fetchedOrganizations ?? [], [fetchedOrganizations]);
   const { data: fetchedTeams } = useAllTeams();
@@ -337,7 +338,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
                   </DataTableFilterField>
                   <DataTableFilterField label="Status">
                     <Select
-                      items={STATUS_FILTER_ITEMS}
+                      items={STATUS_FILTER_ITEMS.map((item) => ({ ...item, label: t(item.label) }))}
                       value={(get("status") as string) || ALL_STATUSES}
                       onValueChange={(value) => set("status", value === ALL_STATUSES ? undefined : value)}
                     >
@@ -347,7 +348,7 @@ export function VirtualKeysTable({ headerActions }: VirtualKeysTableProps) {
                       <SelectContent>
                         {STATUS_FILTER_ITEMS.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
-                            {item.label}
+                            {t(item.label)}
                           </SelectItem>
                         ))}
                       </SelectContent>

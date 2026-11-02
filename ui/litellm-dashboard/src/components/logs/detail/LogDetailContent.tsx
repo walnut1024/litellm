@@ -181,7 +181,7 @@ export function LogDetailContent({
               )}
               {typeof logEntry.metadata?.used_client_oauth_token === "boolean" && (
                 <DescriptionItem label="Credential">
-                  {CREDENTIAL_LABELS[String(logEntry.metadata.used_client_oauth_token)]}
+                  <L>{CREDENTIAL_LABELS[String(logEntry.metadata.used_client_oauth_token)]}</L>
                 </DescriptionItem>
               )}
               {hasGuardrailData && (

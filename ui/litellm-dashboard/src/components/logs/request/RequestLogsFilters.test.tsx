@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -62,6 +63,20 @@ function StatefulFilters() {
 }
 
 describe("RequestLogsFilters", () => {
+  it("translates selected status labels and submits the original status value", async () => {
+    const user = userEvent.setup();
+    const set = vi.fn();
+    renderWithProviders(
+      <LocaleProvider>
+        <RequestLogsFilters get={() => ""} set={set} teams={[]} logsWindow={LOGS_WINDOW} />
+      </LocaleProvider>,
+    );
+    await user.click(await screen.findByText("所有状态"));
+    expect(await screen.findByRole("option", { name: "所有状态" })).toBeVisible();
+    await user.click(screen.getByRole("option", { name: "成功" }));
+    expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.STATUS, "success");
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     testQueryClient.clear();

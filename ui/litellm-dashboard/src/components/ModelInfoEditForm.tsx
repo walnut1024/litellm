@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L, ParameterLabel } from "@/contexts/LocaleContext";
+import { LocalizedText as L, LocalizedLabel } from "@/contexts/LocaleContext";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleHelp } from "lucide-react";
@@ -275,18 +275,14 @@ const Display: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const FIELD_LABEL_CLASS = "text-sm font-medium text-foreground";
 
-const FieldLabel: React.FC<{ htmlFor?: string; name?: string; children: React.ReactNode }> = ({
-  htmlFor,
-  name,
-  children,
-}) =>
+const FieldLabel: React.FC<{ htmlFor?: string; children: React.ReactNode }> = ({ htmlFor, children }) =>
   htmlFor === undefined ? (
     <p className={FIELD_LABEL_CLASS}>
-      {name ? <ParameterLabel name={name}>{children}</ParameterLabel> : <L>{children}</L>}
+      <LocalizedLabel>{children}</LocalizedLabel>
     </p>
   ) : (
     <label htmlFor={htmlFor} className={FIELD_LABEL_CLASS}>
-      {name ? <ParameterLabel name={name}>{children}</ParameterLabel> : <L>{children}</L>}
+      <LocalizedLabel>{children}</LocalizedLabel>
     </label>
   );
 
@@ -375,7 +371,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
   const textField = (name: ModelEditFieldName, label: string, placeholder: string, stored: unknown) => (
     <div>
-      <FieldLabel name={name}>{label}</FieldLabel>
+      <FieldLabel>{label}</FieldLabel>
       {isEditing ? (
         <FormField control={form.control} name={name}>
           {({ value, ...control }) => <Input {...control} value={(value as string) ?? ""} placeholder={placeholder} />}
@@ -388,7 +384,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
   const numberField = (name: ModelEditFieldName, label: string, placeholder: string, stored: unknown) => (
     <div>
-      <FieldLabel name={name}>{label}</FieldLabel>
+      <FieldLabel>{label}</FieldLabel>
       {isEditing ? (
         <FormField control={form.control} name={name}>
           {({ value, ...control }) => <NumericalInput {...control} value={value ?? ""} placeholder={placeholder} />}
@@ -416,7 +412,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
       </FormField>
     ) : (
       <div>
-        <FieldLabel name={name}>{label}</FieldLabel>
+        <FieldLabel>{label}</FieldLabel>
         <Display>
           <L>{displayCost(localModelData, name)}</L>
         </Display>
@@ -461,9 +457,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             {ptuCostAttributionEnabled &&
               PTU_EDIT_FIELDS.map((ptuField) => (
                 <div key={ptuField.name}>
-                  <FieldLabel name={ptuField.name} htmlFor={ptuField.name}>
-                    {ptuField.label}
-                  </FieldLabel>
+                  <FieldLabel htmlFor={ptuField.name}>{ptuField.label}</FieldLabel>
                   {isEditing ? (
                     <FormField control={form.control} name={ptuField.name as ModelEditFieldName}>
                       {({ value, onChange, ...control }) =>
@@ -542,7 +536,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             )}
 
             <div>
-              <FieldLabel name="model_access_group">Model Access Groups</FieldLabel>
+              <FieldLabel>Model Access Groups</FieldLabel>
               {isEditing ? (
                 tagsField(
                   "model_access_group",
@@ -557,7 +551,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel name="guardrails">
+              <FieldLabel>
                 <L>Guardrails</L>
                 <DocsHint
                   text="Apply safety guardrails to this model to filter content or enforce policies"
@@ -578,7 +572,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel name="vector_store_ids">
+              <FieldLabel>
                 <L>Attached Knowledge Bases (RAG)</L>
                 <DocsHint
                   text="Vector stores used for RAG. Every request to this model will automatically retrieve context from these knowledge bases."
@@ -607,7 +601,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel name="tags">Tags</FieldLabel>
+              <FieldLabel>Tags</FieldLabel>
               {isEditing ? (
                 tagsField(
                   "tags",
@@ -622,7 +616,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel name="litellm_credential_name">Existing Credentials</FieldLabel>
+              <FieldLabel>Existing Credentials</FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="litellm_credential_name">
                   {({ id, value, onChange }) => (
@@ -656,7 +650,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
             {isWildcardModel && (
               <div>
-                <FieldLabel name="health_check_model">Health Check Model</FieldLabel>
+                <FieldLabel>Health Check Model</FieldLabel>
                 {isEditing ? (
                   <FormField control={form.control} name="health_check_model">
                     {({ id, value, onChange, onBlur }) => (
@@ -725,7 +719,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
               </>
             ) : (
               <div>
-                <FieldLabel name="cache_control">Cache Control</FieldLabel>
+                <FieldLabel>Cache Control</FieldLabel>
                 <Display>
                   {localModelData.litellm_params?.cache_control_injection_points ? (
                     <div>
@@ -760,7 +754,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             )}
 
             <div>
-              <FieldLabel name="model_info">Model Info</FieldLabel>
+              <FieldLabel>Model Info</FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="model_info">
                   {({ value, ...control }) => (
@@ -811,7 +805,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel name="team_id">Team</FieldLabel>
+              <FieldLabel>Team</FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="team_id">
                   {({ id, value, onChange, onBlur }) => (

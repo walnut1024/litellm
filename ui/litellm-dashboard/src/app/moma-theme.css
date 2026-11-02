@@ -350,12 +350,12 @@ body {
 .moma-content .recharts-text {
   font-size: var(--moma-text-caption);
 }
-[data-slot="parameter-label"] {
+[data-slot="localized-label"] {
   min-width: 0;
   overflow-wrap: anywhere;
   line-height: 20px;
 }
-[data-slot="parameter-label"] [data-slot="tooltip-trigger"] {
+[data-slot="localized-label"] [data-slot="tooltip-trigger"] {
   display: inline-block;
   margin-inline: 4px;
   vertical-align: middle;

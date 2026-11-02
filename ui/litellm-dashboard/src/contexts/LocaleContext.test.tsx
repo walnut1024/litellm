@@ -4,7 +4,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { FormField } from "@/components/shared/form/FormField";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { LocaleProvider, LocalizedText, ParameterLabel } from "./LocaleContext";
+import { LocaleProvider, LocalizedText, LocalizedLabel } from "./LocaleContext";
 
 function KeyForm({ onSubmit }: { onSubmit: (values: { key_alias: string }) => void }) {
   const form = useForm({ defaultValues: { key_alias: "" } });
@@ -23,24 +23,24 @@ function KeyForm({ onSubmit }: { onSubmit: (values: { key_alias: string }) => vo
 afterEach(() => localStorage.clear());
 
 describe("LocaleProvider", () => {
-  it("shows the original parameter name once for translated and rich labels", () => {
+  it("shows only translated text for plain and rich labels", () => {
     localStorage.setItem("moma.locale", "zh-CN");
     render(
       <LocaleProvider>
         <label>
-          <ParameterLabel name="SMTP_HOST">
+          <LocalizedLabel>
             <LocalizedText>SMTP_HOST</LocalizedText>
-          </ParameterLabel>
+          </LocalizedLabel>
         </label>
         <label>
-          <ParameterLabel name="team_alias">
+          <LocalizedLabel>
             <LocalizedText>Team Name</LocalizedText>
-          </ParameterLabel>
+          </LocalizedLabel>
         </label>
       </LocaleProvider>,
     );
-    expect(screen.getByText("邮件服务器地址（SMTP_HOST）")).toHaveTextContent(/^邮件服务器地址（SMTP_HOST）$/);
-    expect(screen.getByText("团队名称")).toHaveTextContent("团队名称（team_alias）");
+    expect(screen.getByText("邮件服务器地址")).toHaveTextContent(/^邮件服务器地址$/);
+    expect(screen.getByText("团队名称")).toHaveTextContent(/^团队名称$/);
   });
 
   it("changes UI copy without resetting a form or translating its submitted data", async () => {
@@ -51,15 +51,15 @@ describe("LocaleProvider", () => {
         <KeyForm onSubmit={submit} />
       </LocaleProvider>,
     );
-    fireEvent.change(screen.getByLabelText("密钥别名（key_alias）"), { target: { value: "Home" } });
+    fireEvent.change(screen.getByLabelText("密钥别名"), { target: { value: "Home（model_id）" } });
     fireEvent.click(screen.getByRole("button", { name: "语言" }));
-    expect(screen.getByLabelText("Key Alias")).toHaveValue("Home");
+    expect(screen.getByLabelText("Key Alias")).toHaveValue("Home（model_id）");
     expect(screen.getByPlaceholderText("Key Name")).toBeVisible();
     expect(localStorage.getItem("moma.locale")).toBe("en");
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
-    await waitFor(() => expect(submit).toHaveBeenCalledWith({ key_alias: "Home" }, expect.anything()));
+    await waitFor(() => expect(submit).toHaveBeenCalledWith({ key_alias: "Home（model_id）" }, expect.anything()));
     fireEvent.click(screen.getByRole("button", { name: "Language" }));
-    expect(screen.getByLabelText("密钥别名（key_alias）")).toHaveValue("Home");
+    expect(screen.getByLabelText("密钥别名")).toHaveValue("Home（model_id）");
     expect(document.documentElement.lang).toBe("zh-CN");
   });
 

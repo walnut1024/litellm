@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Children,
-  Fragment,
-  isValidElement,
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useSyncExternalStore,
-  type ReactNode,
-} from "react";
+import { Children, createContext, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { translate, type Locale } from "@/i18n/translate";
 
 const localeKey = "moma.locale";
@@ -70,23 +60,10 @@ export function LocalizedText({ children }: { children: ReactNode }) {
   return <>{Children.map(children, (child) => (typeof child === "string" ? t(child) : child))}</>;
 }
 
-export function ParameterLabel({ name, children }: { name: string; children: ReactNode }) {
-  const { locale } = useLocale();
-  const t = useTranslation();
-  const containsName = (nodes: ReactNode): boolean =>
-    Children.toArray(nodes).some((node) => {
-      if (typeof node === "string") return t(node).includes(name);
-      if (!isValidElement<{ children?: ReactNode }>(node)) return false;
-      if (node.type !== LocalizedText && node.type !== Fragment && typeof node.type !== "string") return false;
-      return containsName(node.props.children);
-    });
-  const label = typeof children === "string" ? t(children) : children;
+export function LocalizedLabel({ children }: { children: ReactNode }) {
   return (
-    <span data-slot="parameter-label">
-      <LocalizedText>{label}</LocalizedText>
-      {locale === "zh-CN" && !containsName(children) && (
-        <span className="font-normal text-muted-foreground">（{name}）</span>
-      )}
+    <span data-slot="localized-label">
+      <LocalizedText>{children}</LocalizedText>
     </span>
   );
 }

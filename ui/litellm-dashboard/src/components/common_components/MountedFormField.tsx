@@ -11,7 +11,7 @@ import {
 
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { useLiteUi } from "@/contexts/LiteUiContext";
-import { ParameterLabel } from "@/contexts/LocaleContext";
+import { LocalizedLabel } from "@/contexts/LocaleContext";
 import { liteFieldHidden } from "@/utils/liteUi";
 
 export type MountedFormValues = Record<string, unknown>;
@@ -180,7 +180,7 @@ export const MountedFormField: React.FC<MountedFormFieldProps> = ({
       >
         {label !== undefined && (
           <FieldLabel htmlFor={path}>
-            <ParameterLabel name={path}>{label}</ParameterLabel>
+            <LocalizedLabel>{label}</LocalizedLabel>
           </FieldLabel>
         )}
         {children(controlProps)}

@@ -1,4 +1,4 @@
-import { LocalizedText as L, ParameterLabel, useTranslation } from "@/contexts/LocaleContext";
+import { LocalizedText as L, LocalizedLabel, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useId } from "react";
 import { Controller } from "react-hook-form";
@@ -73,7 +73,7 @@ function SpendLimitField({ form }: { form: BudgetForm }) {
   return (
     <Field className="gap-2">
       <FieldLabel htmlFor={amountId}>
-        <ParameterLabel name="max_budget">Spend limit</ParameterLabel>
+        <LocalizedLabel>Spend limit</LocalizedLabel>
         <OptionalBadge />
       </FieldLabel>
       <ButtonGroup className="w-full">

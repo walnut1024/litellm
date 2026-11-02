@@ -1,4 +1,4 @@
-import { LocalizedText as L, useTranslation, ParameterLabel } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation, LocalizedLabel } from "@/contexts/LocaleContext";
 
 import React, { useState } from "react";
 import { CircleHelp } from "lucide-react";
@@ -97,7 +97,7 @@ const KeyLifecycleSettings: React.FC<KeyLifecycleSettingsProps> = ({
           <div className="space-y-2">
             <div className="flex items-center space-x-1 text-sm font-medium text-foreground">
               <label htmlFor={durationId}>
-                <ParameterLabel name="duration">Expire Key</ParameterLabel>
+                <LocalizedLabel>Expire Key</LocalizedLabel>
               </label>
               {hintIcon(
                 t(
@@ -139,7 +139,7 @@ const KeyLifecycleSettings: React.FC<KeyLifecycleSettingsProps> = ({
             <div className="space-y-2">
               <label className="flex items-center space-x-1 text-sm font-medium text-foreground">
                 <span>
-                  <ParameterLabel name="auto_rotate">Enable Auto-Rotation</ParameterLabel>
+                  <LocalizedLabel>Enable Auto-Rotation</LocalizedLabel>
                 </span>
                 {hintIcon(t("Key will automatically regenerate at the specified interval for enhanced security."))}
               </label>
@@ -150,7 +150,7 @@ const KeyLifecycleSettings: React.FC<KeyLifecycleSettingsProps> = ({
               <div className="space-y-2">
                 <label className="flex items-center space-x-1 text-sm font-medium text-foreground">
                   <span>
-                    <ParameterLabel name="rotation_interval">Rotation Interval</ParameterLabel>
+                    <LocalizedLabel>Rotation Interval</LocalizedLabel>
                   </span>
                   {hintIcon(
                     t(

@@ -1,4 +1,4 @@
-import { LocalizedText as L, ParameterLabel, useTranslation } from "@/contexts/LocaleContext";
+import { LocalizedText as L, LocalizedLabel, useTranslation } from "@/contexts/LocaleContext";
 
 import { LoaderCircle } from "lucide-react";
 import React from "react";
@@ -143,7 +143,7 @@ const ModelRetrySettingsTab = ({
               <tr key={retryPolicyKey} className="flex items-center justify-between gap-4 border-b py-2 last:border-0">
                 <td className="text-sm">
                   <span>
-                    <ParameterLabel name={retryPolicyKey}>{exceptionType}</ParameterLabel>
+                    <LocalizedLabel>{exceptionType}</LocalizedLabel>
                   </span>
                   {!isGlobalScope && (
                     <span className="ml-2 text-xs text-muted-foreground">

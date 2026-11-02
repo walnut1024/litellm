@@ -283,10 +283,10 @@ describe("DynamicForm presentation", () => {
         />
       </LocaleProvider>,
     );
-    expect(screen.getByText("部署报告发送间隔（daily_report_frequency）")).toBeVisible();
+    expect(screen.getByText("部署报告发送间隔")).toBeVisible();
     expect(screen.getByText("部署延迟和失败报告的发送间隔，单位为秒，默认 12 小时")).toBeVisible();
     expect(screen.getByText("已存入数据库")).toBeVisible();
-    fireEvent.change(screen.getByRole("spinbutton", { name: "部署报告发送间隔（daily_report_frequency）" }), {
+    fireEvent.change(screen.getByRole("spinbutton", { name: "部署报告发送间隔" }), {
       target: { value: "24" },
     });
     fireEvent.click(screen.getByRole("button", { name: "更新设置" }));

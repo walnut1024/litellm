@@ -2,6 +2,17 @@ import { describe, expect, it } from "vitest";
 import { translate } from "./translate";
 
 describe("translate", () => {
+  it.each([
+    ["Model ID", "模型 ID"],
+    ["API Base", "API 地址"],
+    ["SMTP_HOST", "邮件服务器地址"],
+    ["max_request_size_mb", "请求大小上限（兆字节）"],
+    ["Temporary Budget Expiry (UTC)", "临时预算到期时间（协调世界时）"],
+  ])("shows a readable Chinese label for %s without an English parameter suffix", (message, chinese) => {
+    expect(translate(message, "zh-CN")).toBe(chinese);
+    expect(translate(message, "en")).toBe(message);
+  });
+
   it("translates UI copy and keeps English available", () => {
     expect(translate("Key Alias", "zh-CN")).toBe("密钥别名");
     expect(translate("Key Alias", "en")).toBe("Key Alias");

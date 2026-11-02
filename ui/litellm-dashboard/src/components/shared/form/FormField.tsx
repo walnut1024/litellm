@@ -11,7 +11,7 @@ import {
 
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { useLiteUi } from "@/contexts/LiteUiContext";
-import { ParameterLabel } from "@/contexts/LocaleContext";
+import { LocalizedLabel } from "@/contexts/LocaleContext";
 import { liteFieldHidden } from "@/utils/liteUi";
 
 export type FormFieldControlProps<
@@ -76,7 +76,7 @@ export const FormField = <TFieldValues extends FieldValues, TName extends FieldP
           >
             {label !== undefined && (
               <FieldLabel htmlFor={controlId}>
-                <ParameterLabel name={name}>{label}</ParameterLabel>
+                <LocalizedLabel>{label}</LocalizedLabel>
               </FieldLabel>
             )}
             {children(controlProps)}

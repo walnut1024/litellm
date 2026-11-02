@@ -93,9 +93,9 @@ describe("EmailSettings", () => {
         <EmailSettings accessToken="sk-test" premiumUser alerts={alerts} />
       </LocaleProvider>,
     );
-    const host = screen.getByLabelText("邮件服务器地址（SMTP_HOST）");
+    const host = screen.getByLabelText("邮件服务器地址");
     expect(host).toHaveValue("smtp.example.com");
-    expect(screen.getByLabelText("邮件服务器密码（SMTP_PASSWORD）")).toHaveValue("********");
+    expect(screen.getByLabelText("邮件服务器密码")).toHaveValue("********");
     fireEvent.change(host, { target: { value: "smtp.changed.com" } });
     fireEvent.click(screen.getByRole("button", { name: "语言" }));
     expect(screen.getByLabelText("SMTP_HOST")).toHaveValue("smtp.changed.com");

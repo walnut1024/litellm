@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 /**
  * Modal wrapper for the fallback selection form
  * Handles modal visibility and layout, but delegates content to children
@@ -24,9 +26,11 @@ export function AddFallbacksModal({ open, onCancel, children }: AddFallbacksModa
                 <ArrowRight className="w-5 h-5 text-indigo-600 dark:text-indigo-300" />
               </div>
               <div>
-                <DialogTitle className="text-lg font-bold m-0">Configure Model Fallbacks</DialogTitle>
+                <DialogTitle className="text-lg font-bold m-0">
+                  <L>Configure Model Fallbacks</L>
+                </DialogTitle>
                 <p className="text-sm text-muted-foreground font-normal m-0">
-                  Manage multiple fallback chains for different models (up to 5 groups at a time)
+                  <L>Manage multiple fallback chains for different models (up to 5 groups at a time)</L>
                 </p>
               </div>
             </div>

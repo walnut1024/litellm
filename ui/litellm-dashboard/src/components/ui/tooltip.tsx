@@ -3,6 +3,7 @@
 import React from "react";
 import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
 import { CircleHelp } from "lucide-react";
+import { useTranslation } from "@/contexts/LocaleContext";
 
 import { cn } from "@/lib/cva.config";
 
@@ -73,16 +74,19 @@ const triggerClassName = (className?: string): string =>
     className,
   );
 
-const defaultTrigger = <CircleHelp aria-label="question-circle" className="ml-1 size-4 text-muted-foreground" />;
+function DefaultTrigger() {
+  const t = useTranslation();
+  return <CircleHelp aria-label={t("Field help")} className="ml-1 size-4 text-muted-foreground" />;
+}
 
 const SimpleTooltip: React.FC<SimpleTooltipProps> = ({ content, children, width = "auto", className, side }) =>
   content === undefined || content === null || content === "" ? (
-    <span className={triggerClassName(className)}>{children ?? defaultTrigger}</span>
+    <span className={triggerClassName(className)}>{children ?? <DefaultTrigger />}</span>
   ) : (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger render={<span className={triggerClassName(className)} />}>
-          {children ?? defaultTrigger}
+          {children ?? <DefaultTrigger />}
         </TooltipTrigger>
         <TooltipContent side={side} className={cn("whitespace-normal", widthClassNames[width] ?? "max-w-xs")}>
           {content}

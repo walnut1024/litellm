@@ -189,7 +189,7 @@ describe("AutoRouterBenchmarksTab", () => {
         : ["Unavailable", "Unavailable", "Unavailable", "Unavailable"],
     );
     expect(screen.queryByText(/Matching cost details are unavailable/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText("question-circle")).toBeInTheDocument();
+    expect(screen.getByLabelText("Field help")).toBeInTheDocument();
     const partial = estimatedTurns > 0 && estimatedTurns < 3073;
     expect(screen.queryByText(/adaptive and quality routers are excluded/) != null).toBe(partial);
     if (partial) {

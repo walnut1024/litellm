@@ -5,6 +5,7 @@ import { useState } from "react";
 import { describe, expect, it } from "vitest";
 
 import { createSelectionColumn, DataTable } from "./index";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 interface Model {
   id: string;
@@ -52,6 +53,20 @@ function ControlledHarness() {
 }
 
 describe("DataTable row selection", () => {
+  it("translates selection controls while preserving the selected entity ID", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const user = userEvent.setup();
+    render(
+      <LocaleProvider>
+        <ControlledHarness />
+      </LocaleProvider>,
+    );
+    await user.click(screen.getByRole("checkbox", { name: "选择 Beta" }));
+    expect(screen.getByTestId("keys")).toHaveTextContent("m2");
+    expect(screen.getByRole("checkbox", { name: "选择全部行" })).toBePartiallyChecked();
+    localStorage.clear();
+  });
+
   it("supports uncontrolled per-row toggle, select-all, and indeterminate", async () => {
     const user = userEvent.setup();
 

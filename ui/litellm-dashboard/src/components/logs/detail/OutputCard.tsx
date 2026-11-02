@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 /**
  * OutputCard - Displays output message with token count and cost
  * Datadog-style: header with icon/metrics, content below
@@ -44,7 +46,9 @@ export function OutputCard({ message, completionTokens, outputCost }: OutputCard
           {message ? (
             <SimpleMessageBlock label="ASSISTANT" content={message.content} toolCalls={message.toolCalls} />
           ) : (
-            <span className="text-[13px] text-muted-foreground italic">No response data available</span>
+            <span className="text-[13px] text-muted-foreground italic">
+              <L>No response data available</L>
+            </span>
           )}
         </div>
       </div>

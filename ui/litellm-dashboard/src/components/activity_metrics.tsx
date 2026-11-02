@@ -17,6 +17,7 @@ import { Panel, Stat } from "@/app/(dashboard)/usage/_components/components/over
 import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { providerForModel } from "@/app/(dashboard)/usage/_components/components/overview/modelProvider";
 import { cn } from "@/lib/cva.config";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { Activity, ChevronDown, Coins, Database, KeyRound, Timer } from "lucide-react";
 import React, { type ReactNode, useRef, useState } from "react";
 import { Team } from "./key_team_helpers/key_list";
@@ -46,14 +47,17 @@ const modelAverageResponseTimeMs = (metrics: ModelActivityData): number | null =
 
 const formatSpend = (value: number) => `¥${formatNumberWithCommas(value, 2, true)}`;
 
-export const ResponseTimeTooltip = ({ active, payload, label }: ChartTooltipProps) => (
-  <ValueTooltip
-    active={active}
-    payload={payload?.map((item) => ({ ...item, name: formatCategoryName(String(item.dataKey ?? "")) }))}
-    label={label}
-    valueFormatter={formatResponseTime}
-  />
-);
+export const ResponseTimeTooltip = ({ active, payload, label }: ChartTooltipProps) => {
+  const t = useTranslation();
+  return (
+    <ValueTooltip
+      active={active}
+      payload={payload?.map((item) => ({ ...item, name: t(formatCategoryName(String(item.dataKey ?? ""))) }))}
+      label={label}
+      valueFormatter={formatResponseTime}
+    />
+  );
+};
 
 const SeriesKey = ({ categories, colors }: { categories: readonly string[]; colors: readonly ChartColor[] }) => (
   <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
@@ -64,7 +68,7 @@ const SeriesKey = ({ categories, colors }: { categories: readonly string[]; colo
           className="size-2 shrink-0 rounded-[2px]"
           style={{ backgroundColor: chartColorValue(colors[idx % colors.length]) }}
         />
-        {formatCategoryName(category)}
+        <L>{formatCategoryName(category)}</L>
       </span>
     ))}
   </div>
@@ -179,7 +183,9 @@ const ModelTopKeys = ({
   if (current === null) {
     return (
       <TopKeysPanel>
-        <p className="py-2 text-xs text-muted-foreground">Loading top keys...</p>
+        <p className="py-2 text-xs text-muted-foreground">
+          <L>Loading top keys...</L>
+        </p>
       </TopKeysPanel>
     );
   }
@@ -188,7 +194,7 @@ const ModelTopKeys = ({
     return (
       <TopKeysPanel>
         <p className="py-2 text-xs text-muted-foreground">
-          Could not load top keys.{" "}
+          <L>Could not load top keys.</L>{" "}
           <button
             type="button"
             className="font-medium text-foreground underline"
@@ -197,7 +203,7 @@ const ModelTopKeys = ({
               setRetryToken((token) => token + 1);
             }}
           >
-            Retry
+            <L>Retry</L>
           </button>
         </p>
       </TopKeysPanel>
@@ -216,15 +222,21 @@ const ModelTopKeys = ({
             <li key={keyData.api_key} className="flex items-center justify-between gap-4 py-2.5">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">{keyLabel}</p>
-                {keyData.team_id && <p className="truncate text-xs text-muted-foreground">Team: {keyData.team_id}</p>}
+                {keyData.team_id && (
+                  <p className="truncate text-xs text-muted-foreground">
+                    <L>Team:</L> {keyData.team_id}
+                  </p>
+                )}
                 {keyData.user && keyData.user !== keyLabel && (
-                  <p className="truncate text-xs text-muted-foreground">User: {keyData.user}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    <L>User:</L> {keyData.user}
+                  </p>
                 )}
               </div>
               <div className="shrink-0 text-right">
                 <p className="text-sm tabular-nums text-foreground">¥{formatNumberWithCommas(keyData.spend, 2)}</p>
                 <p className="text-xs tabular-nums text-muted-foreground">
-                  {keyData.requests.toLocaleString()} requests | {keyData.tokens.toLocaleString()} tokens
+                  {keyData.requests.toLocaleString()} <L>requests</L> | {keyData.tokens.toLocaleString()} <L>tokens</L>
                 </p>
               </div>
             </li>
@@ -246,6 +258,7 @@ export const ModelSection = ({
   hidePromptCachingMetrics?: boolean;
   fetchTopApiKeys?: (model: string) => Promise<ModelTopKeysResponse>;
 }) => {
+  const t = useTranslation();
   return (
     <div className="grid gap-3">
       <StatStrip columns={5}>
@@ -262,21 +275,27 @@ export const ModelSection = ({
           <Stat
             label="Total Tokens"
             value={<StatValue>{metrics.total_tokens.toLocaleString()}</StatValue>}
-            hint={`${Math.round(metrics.total_tokens / metrics.total_successful_requests)} avg per successful request`}
+            hint={t("{count} avg per successful request", {
+              count: Math.round(metrics.total_tokens / metrics.total_successful_requests),
+            })}
           />
         </StatCell>
         <StatCell>
           <Stat
             label="Total Spend"
             value={<StatValue>¥{formatNumberWithCommas(metrics.total_spend, 2)}</StatValue>}
-            hint={`¥${formatNumberWithCommas(metrics.total_spend / metrics.total_successful_requests, 3)} per successful request`}
+            hint={t("{cost} per successful request", {
+              cost: `¥${formatNumberWithCommas(metrics.total_spend / metrics.total_successful_requests, 3)}`,
+            })}
           />
         </StatCell>
         <StatCell>
           <Stat
             label="Avg Response Time"
             value={<StatValue>{formatResponseTime(modelAverageResponseTimeMs(metrics))}</StatValue>}
-            hint={`over ${(metrics.total_timed_requests ?? 0).toLocaleString()} timed successful requests`}
+            hint={t("over {count} timed successful requests", {
+              count: (metrics.total_timed_requests ?? 0).toLocaleString(),
+            })}
           />
         </StatCell>
       </StatStrip>
@@ -370,8 +389,12 @@ export const ModelSection = ({
             action={<SeriesKey categories={CACHE_CATEGORIES} colors={["cyan", "purple"]} />}
           >
             <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs tabular-nums text-muted-foreground">
-              <p>Cache Read: {metrics.total_cache_read_input_tokens?.toLocaleString() || 0} tokens</p>
-              <p>Cache Creation: {metrics.total_cache_creation_input_tokens?.toLocaleString() || 0} tokens</p>
+              <p>
+                <L>Cache Read:</L> {metrics.total_cache_read_input_tokens?.toLocaleString() || 0} <L>tokens</L>
+              </p>
+              <p>
+                <L>Cache Creation:</L> {metrics.total_cache_creation_input_tokens?.toLocaleString() || 0} <L>tokens</L>
+              </p>
             </div>
             <AreaChart
               className={cn(CHART_CLASS, "mt-3")}
@@ -524,7 +547,7 @@ export const ActivityMetrics: React.FC<ActivityMetricsProps> = ({
       <section className="grid gap-3">
         <h3 className="flex items-center gap-2 text-sm font-medium text-foreground">
           <Activity aria-hidden="true" className="size-4 text-muted-foreground" strokeWidth={1.75} />
-          {summaryTitle}
+          <L>{summaryTitle}</L>
         </h3>
         <StatStrip columns={4}>
           <StatCell>
@@ -614,9 +637,13 @@ export const ActivityMetrics: React.FC<ActivityMetricsProps> = ({
                     </div>
                     <div className="flex shrink-0 items-center gap-5 text-sm tabular-nums text-muted-foreground">
                       <span className="text-foreground">¥{formatNumberWithCommas(metrics.total_spend, 2)}</span>
-                      <span>{metrics.total_requests.toLocaleString()} requests</span>
+                      <span>
+                        {metrics.total_requests.toLocaleString()} <L>requests</L>
+                      </span>
                       {avgResponse != null && (
-                        <span className="hidden md:inline">{formatResponseTime(avgResponse)} avg response</span>
+                        <span className="hidden md:inline">
+                          {formatResponseTime(avgResponse)} <L>avg response</L>
+                        </span>
                       )}
                     </div>
                   </div>

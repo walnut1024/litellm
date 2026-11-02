@@ -56,6 +56,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
       aria-label={props["aria-label"] ? t(props["aria-label"]) : undefined}
+      title={typeof props.title === "string" ? t(props.title) : props.title}
     />
   );
 }

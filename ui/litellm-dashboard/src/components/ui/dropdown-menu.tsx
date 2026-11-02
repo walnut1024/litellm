@@ -5,6 +5,7 @@ import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 
 import { cn } from "@/lib/cva.config";
 import { ChevronRightIcon, CheckIcon } from "lucide-react";
+import { useTranslation } from "@/contexts/LocaleContext";
 
 function DropdownMenu({ ...props }: MenuPrimitive.Root.Props) {
   return <MenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
@@ -15,7 +16,14 @@ function DropdownMenuPortal({ ...props }: MenuPrimitive.Portal.Props) {
 }
 
 function DropdownMenuTrigger({ ...props }: MenuPrimitive.Trigger.Props) {
-  return <MenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />;
+  const t = useTranslation();
+  return (
+    <MenuPrimitive.Trigger
+      data-slot="dropdown-menu-trigger"
+      {...props}
+      aria-label={props["aria-label"] ? t(props["aria-label"]) : undefined}
+    />
+  );
 }
 
 function DropdownMenuContent({

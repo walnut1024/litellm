@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { copyToClipboard } from "@/utils/dataUtils";
 import { useEffect, useMemo, useState } from "react";
 import { Bot, Check, Copy, Sparkles, Wrench } from "lucide-react";
@@ -80,7 +80,11 @@ function TraceEventRow({ row, isSelected, onClick }: TraceEventRowProps) {
       <div className="flex items-center gap-1">
         <TraceEventIcon callType={row.call_type} isAutoRouted={isAutoRouted} />
         <span className="text-xs font-medium text-foreground truncate">
-          {getEventDisplayName(row.call_type, row.model)}
+          {row.model ? (
+            getEventDisplayName(row.call_type, row.model)
+          ) : (
+            <L>{getEventDisplayName(row.call_type, row.model)}</L>
+          )}
         </span>
         <ClassifyTag origin={row.metadata?.internal_call_origin} className="ml-auto" />
       </div>
@@ -98,7 +102,7 @@ function TraceEventRow({ row, isSelected, onClick }: TraceEventRowProps) {
         {row.total_tokens ? (
           <>
             <span>·</span>
-            <span>{row.total_tokens} tok</span>
+            <span>{row.total_tokens} Token</span>
           </>
         ) : null}
       </div>
@@ -127,6 +131,7 @@ export function LogDetailsDrawer({
   startTime,
   backTo,
 }: LogDetailsDrawerProps) {
+  const t = useTranslation();
   const isSessionMode = Boolean(sessionId);
   const [selectedSessionRequestId, setSelectedSessionRequestId] = useState<string | null>(null);
   const [sessionSortMode, setSessionSortMode] = useState<SessionLogSortMode>("duration");
@@ -332,7 +337,7 @@ export function LogDetailsDrawer({
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                      {isSessionMode ? "Session" : "Trace"}
+                      <L>{isSessionMode ? "Session" : "Trace"}</L>
                     </div>
                     <div className="font-mono text-[12px] text-foreground leading-tight flex items-center gap-1">
                       <span className="truncate">{leftPanelDisplayId}</span>
@@ -340,7 +345,7 @@ export function LogDetailsDrawer({
                         type="button"
                         onClick={handleCopyLeftPanelId}
                         className="text-muted-foreground hover:text-foreground"
-                        aria-label="Copy trace id"
+                        aria-label={t("Copy trace id")}
                       >
                         {copiedLeftPanelId ? <Check className="size-3" /> : <Copy className="size-3" />}
                       </button>
@@ -348,7 +353,7 @@ export function LogDetailsDrawer({
                   </div>
                 </div>
                 <div className="mt-1 text-[11px] text-muted-foreground font-mono">
-                  {logsForList.length} req
+                  {logsForList.length} <L>requests</L>
                   {[
                     isSessionMode
                       ? llmCount
@@ -367,7 +372,7 @@ export function LogDetailsDrawer({
                       <span key={label}>
                         <span className="mx-1.5">·</span>
                         {count}
-                        {label}
+                        <L>{label}</L>
                       </span>
                     ) : null;
                   })}
@@ -399,10 +404,10 @@ export function LogDetailsDrawer({
                   >
                     <TabsList className="w-full">
                       <TabsTrigger value="duration" className="text-[11px]">
-                        Duration
+                        <L>Duration</L>
                       </TabsTrigger>
                       <TabsTrigger value="start_time" className="text-[11px]">
-                        Start time
+                        <L>Start time</L>
                       </TabsTrigger>
                     </TabsList>
                   </Tabs>

@@ -763,8 +763,11 @@ export default function KeyInfoView({
                   <h3 className="text-lg font-medium">¥{formatNumberWithCommas(currentKeyData.spend, 4)}</h3>
                   <p className="text-sm">
                     {memberGate
-                      ? `Team member spend ¥${formatNumberWithCommas(memberGate.spend ?? 0, 4)} of ¥${formatNumberWithCommas(memberGate.maxBudget, 2)} (team member budget)`
-                      : `of ${budgetDisplay}`}
+                      ? t("Team member spend ¥{spend} of ¥{budget} (team member budget)", {
+                          spend: formatNumberWithCommas(memberGate.spend ?? 0, 4),
+                          budget: formatNumberWithCommas(memberGate.maxBudget, 2),
+                        })
+                      : t("of {budget}", { budget: budgetDisplay })}
                     <InheritedBudgetHint gates={inheritedGates} />
                   </p>
                   {currentKeyData.budget_reset_at && (
@@ -809,14 +812,14 @@ export default function KeyInfoView({
                 <div className="mt-2">
                   <p className="text-sm">
                     <L>TPM: </L>
-                    {currentKeyData.tpm_limit !== null ? currentKeyData.tpm_limit : "Unlimited"}
+                    {currentKeyData.tpm_limit !== null ? currentKeyData.tpm_limit : t("Unlimited")}
                   </p>
                   <p className="text-sm">
                     <L>RPM: </L>
-                    {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : "Unlimited"}
+                    {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : t("Unlimited")}
                   </p>
                   <LiteUiMask>
-                    <p className="text-sm">TPD (batch): {currentKeyData.tpd_limit ?? "Unlimited"}</p>
+                    <p className="text-sm">TPD (batch): {currentKeyData.tpd_limit ?? t("Unlimited")}</p>
                     {Boolean(currentKeyData.metadata?.throttle_on_budget_exceeded) && (
                       <p className="text-sm">Throttle on budget exceeded: Yes</p>
                     )}
@@ -1251,40 +1254,40 @@ export default function KeyInfoView({
                     </p>
                     <p className="text-sm">
                       <L>TPM: </L>
-                      {currentKeyData.tpm_limit !== null ? currentKeyData.tpm_limit : "Unlimited"}
+                      {currentKeyData.tpm_limit !== null ? currentKeyData.tpm_limit : t("Unlimited")}
                     </p>
                     <p className="text-sm">
                       <L>RPM: </L>
-                      {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : "Unlimited"}
+                      {currentKeyData.rpm_limit !== null ? currentKeyData.rpm_limit : t("Unlimited")}
                     </p>
                     <LiteUiMask>
-                      <p className="text-sm">TPD (batch): {currentKeyData.tpd_limit ?? "Unlimited"}</p>
+                      <p className="text-sm">TPD (batch): {currentKeyData.tpd_limit ?? t("Unlimited")}</p>
                     </LiteUiMask>
                     <p className="text-sm">
                       <L>Max Parallel Requests:</L>{" "}
                       {currentKeyData.max_parallel_requests !== null
                         ? currentKeyData.max_parallel_requests
-                        : "Unlimited"}
+                        : t("Unlimited")}
                     </p>
                     <LiteUiMask>
                       <p className="text-sm">
                         Model TPM Limits:{" "}
                         {currentKeyData.metadata?.model_tpm_limit
                           ? JSON.stringify(currentKeyData.metadata.model_tpm_limit)
-                          : "Unlimited"}
+                          : t("Unlimited")}
                       </p>
                       <p className="text-sm">
                         Model RPM Limits:{" "}
                         {currentKeyData.metadata?.model_rpm_limit
                           ? JSON.stringify(currentKeyData.metadata.model_rpm_limit)
-                          : "Unlimited"}
+                          : t("Unlimited")}
                       </p>
                       <p className="text-sm">
                         Tag RPM Limits:{" "}
                         {currentKeyData.metadata?.tag_rpm_limit &&
                         Object.keys(currentKeyData.metadata.tag_rpm_limit).length > 0
                           ? JSON.stringify(currentKeyData.metadata.tag_rpm_limit)
-                          : "Unlimited"}
+                          : t("Unlimited")}
                       </p>
                       <p className="text-sm">
                         Estimated Output Tokens:{" "}

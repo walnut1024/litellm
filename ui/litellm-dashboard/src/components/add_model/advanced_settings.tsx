@@ -525,8 +525,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 />
               )}
             </MountedFormField>
-            <div className="grid grid-cols-24 mb-4">
-              <p className="col-start-11 col-span-10 text-muted-foreground text-sm">
+            <div className="mb-4">
+              <p className="text-muted-foreground text-sm">
                 <L>Pass JSON of litellm supported params</L>{" "}
                 <a
                   href="https://docs.litellm.ai/docs/completion/input"

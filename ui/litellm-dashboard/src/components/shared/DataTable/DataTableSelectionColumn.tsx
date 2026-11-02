@@ -3,6 +3,7 @@
 import type { ColumnDef, Row, RowData, Table } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
+import { useTranslation } from "@/contexts/LocaleContext";
 
 interface SelectionColumnOptions<TData> {
   rowAriaLabel?: (row: Row<TData>) => string;
@@ -24,9 +25,10 @@ function SelectAllCheckbox<TData>({ table }: { table: Table<TData> }) {
 }
 
 function SelectRowCheckbox<TData>({ row, label }: { row: Row<TData>; label: string }) {
+  const t = useTranslation();
   return (
     <Checkbox
-      aria-label={label}
+      aria-label={label.startsWith("Select ") ? t("Select {row}", { row: label.slice(7) }) : t(label)}
       data-testid={`datatable-select-row-${row.id}`}
       checked={row.getIsSelected()}
       disabled={!row.getCanSelect()}

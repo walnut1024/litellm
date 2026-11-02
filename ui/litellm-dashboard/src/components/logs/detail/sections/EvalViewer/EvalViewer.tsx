@@ -39,7 +39,7 @@ export default function EvalViewer({ data }: EvalViewerProps) {
     <div className="mb-6">
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <FlaskConical className="size-4" style={{ color: "#6366f1" }} />
-        <span className="font-semibold" style={{ fontSize: 15 }}>
+        <span className="font-semibold" style={{ fontSize: "var(--moma-text-caption)" }}>
           LLM Judge Results
         </span>
       </div>
@@ -79,7 +79,7 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
                   render={
                     <span
                       className="text-muted-foreground"
-                      style={{ fontSize: 12, cursor: "help", borderBottom: "1px dashed #aaa" }}
+                      style={{ fontSize: "var(--moma-text-caption)", cursor: "help", borderBottom: "1px dashed #aaa" }}
                     />
                   }
                 >
@@ -97,12 +97,12 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
         <CardAction>
           <div className="flex items-center gap-2">
             {entry.judge_model && (
-              <span className="text-muted-foreground" style={{ fontSize: 12 }}>
+              <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
                 Judge: {entry.judge_model}
               </span>
             )}
             {entry.iteration != null && (
-              <span className="text-muted-foreground" style={{ fontSize: 12 }}>
+              <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
                 Iter: {entry.iteration + 1}
               </span>
             )}
@@ -112,7 +112,10 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
 
       <CardContent>
         {entry.eval_error && (
-          <span className="text-warning" style={{ display: "block", marginBottom: 8, fontSize: 12 }}>
+          <span
+            className="text-warning"
+            style={{ display: "block", marginBottom: 8, fontSize: "var(--moma-text-caption)" }}
+          >
             Judge error: {entry.eval_error}
           </span>
         )}
@@ -151,7 +154,7 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
                     </TableCell>
                     <TableCell>
                       {row.weight != null ? (
-                        <span className="text-muted-foreground" style={{ fontSize: 12 }}>
+                        <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
                           {row.weight}%
                         </span>
                       ) : null}
@@ -168,7 +171,7 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
                     </TableCell>
                     <TableCell>
                       {contrib != null ? (
-                        <span className="text-muted-foreground" style={{ fontSize: 12 }}>
+                        <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
                           {contrib % 1 === 0 ? contrib : contrib.toFixed(1)}
                         </span>
                       ) : null}
@@ -176,7 +179,9 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
                     <TableCell>
                       <TooltipProvider>
                         <Tooltip>
-                          <TooltipTrigger render={<span style={{ fontSize: 12 }} />}>{row.reasoning}</TooltipTrigger>
+                          <TooltipTrigger render={<span style={{ fontSize: "var(--moma-text-caption)" }} />}>
+                            {row.reasoning}
+                          </TooltipTrigger>
                           <TooltipContent>{row.reasoning}</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -189,14 +194,14 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
               <TableFooter>
                 <TableRow>
                   <TableCell>
-                    <span className="font-semibold" style={{ fontSize: 12 }}>
+                    <span className="font-semibold" style={{ fontSize: "var(--moma-text-caption)" }}>
                       <L>Total</L>
                     </span>
                   </TableCell>
                   <TableCell />
                   <TableCell />
                   <TableCell>
-                    <span className="font-semibold" style={{ fontSize: 12, color: scoreColor }}>
+                    <span className="font-semibold" style={{ fontSize: "var(--moma-text-caption)", color: scoreColor }}>
                       {weightedTotal % 1 === 0 ? weightedTotal : weightedTotal.toFixed(1)}
                     </span>
                   </TableCell>
@@ -206,7 +211,7 @@ function EvalEntryCard({ entry }: { entry: EvalInformation }) {
             )}
           </Table>
         ) : (
-          <span className="text-muted-foreground" style={{ fontSize: 12 }}>
+          <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
             Score: {entry.overall_score?.toFixed(1)} — no per-criterion breakdown available.
           </span>
         )}

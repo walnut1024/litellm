@@ -115,7 +115,7 @@ export function DrawerHeader({
                 className="text-muted-foreground"
                 style={{ fontSize: FONT_SIZE_MEDIUM, fontFamily: FONT_FAMILY_MONO, whiteSpace: "nowrap" }}
               >
-                x-litellm-call-id:
+                <L>x-litellm-call-id:</L>
               </span>
               <CopyableId value={callId} label="x-litellm-call-id" fontSize={FONT_SIZE_MEDIUM} muted />
             </div>
@@ -160,11 +160,11 @@ function ModelProviderSection({
         />
       )}
       <div className="flex items-center gap-2">
-        <span className="font-semibold" style={{ fontSize: 14 }}>
+        <span className="font-semibold" style={{ fontSize: "var(--moma-text-caption)" }}>
           {model}
         </span>
         {providerName && (
-          <span className="text-muted-foreground" style={{ fontSize: 12 }}>
+          <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
             {providerName}
           </span>
         )}
@@ -247,7 +247,7 @@ function NavigationSection({
     border: "1px solid var(--color-border)",
     borderRadius: 4,
     padding: "0 4px",
-    fontSize: 12,
+    fontSize: "var(--moma-text-caption)",
     fontFamily: "monospace",
     marginLeft: 4,
     background: "var(--color-muted)",

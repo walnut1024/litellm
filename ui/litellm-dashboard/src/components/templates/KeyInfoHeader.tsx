@@ -201,7 +201,7 @@ export function KeyInfoHeader({
       <div style={{ marginBottom: 16 }}>
         <Button variant="ghost" onClick={onBack}>
           <ArrowLeft className="size-3.5" />
-          {backButtonText}
+          <L>{backButtonText}</L>
         </Button>
       </div>
 

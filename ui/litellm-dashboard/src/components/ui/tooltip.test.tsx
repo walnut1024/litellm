@@ -6,7 +6,7 @@ import { SimpleTooltip } from "./tooltip";
 describe("SimpleTooltip", () => {
   it("should render", () => {
     render(<SimpleTooltip content="Help text" />);
-    expect(screen.getByLabelText("question-circle")).toBeInTheDocument();
+    expect(screen.getByLabelText("Field help")).toBeInTheDocument();
   });
 
   it("should render children instead of the default icon when provided", () => {
@@ -16,14 +16,14 @@ describe("SimpleTooltip", () => {
       </SimpleTooltip>,
     );
     expect(screen.getByRole("button", { name: /info/i })).toBeInTheDocument();
-    expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Field help")).not.toBeInTheDocument();
   });
 
   it("should show tooltip content on mouse enter", async () => {
     const user = userEvent.setup();
     render(<SimpleTooltip content="Help text" />);
 
-    await user.hover(screen.getByLabelText("question-circle"));
+    await user.hover(screen.getByLabelText("Field help"));
 
     expect(screen.getByText("Help text")).toBeInTheDocument();
   });
@@ -32,10 +32,10 @@ describe("SimpleTooltip", () => {
     const user = userEvent.setup();
     render(<SimpleTooltip content="Help text" />);
 
-    await user.hover(screen.getByLabelText("question-circle"));
+    await user.hover(screen.getByLabelText("Field help"));
     expect(screen.getByText("Help text")).toBeInTheDocument();
 
-    await user.unhover(screen.getByLabelText("question-circle"));
+    await user.unhover(screen.getByLabelText("Field help"));
     expect(screen.queryByText("Help text")).not.toBeInTheDocument();
   });
 
@@ -63,7 +63,7 @@ describe("SimpleTooltip", () => {
     const user = userEvent.setup();
     render(<SimpleTooltip content="Help text" side="right" />);
 
-    await user.hover(screen.getByLabelText("question-circle"));
+    await user.hover(screen.getByLabelText("Field help"));
 
     expect(await screen.findByText("Help text")).toHaveAttribute("data-side", "right");
   });

@@ -4,8 +4,10 @@ import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
 
 import { cn } from "@/lib/cva.config";
 import { CheckIcon } from "lucide-react";
+import { useTranslation } from "@/contexts/LocaleContext";
 
 function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
+  const t = useTranslation();
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"
@@ -14,6 +16,7 @@ function Checkbox({ className, ...props }: CheckboxPrimitive.Root.Props) {
         className,
       )}
       {...props}
+      aria-label={props["aria-label"] ? t(props["aria-label"]) : undefined}
     >
       <CheckboxPrimitive.Indicator
         data-slot="checkbox-indicator"

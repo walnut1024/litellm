@@ -147,7 +147,9 @@ export function LogDetailContent({
       <div className="bg-card rounded-lg shadow-sm w-full max-w-full overflow-hidden mb-6">
         <Card size="sm" style={{ marginBottom: 0 }}>
           <CardHeader>
-            <CardTitle>Request Details</CardTitle>
+            <CardTitle>
+              <L>Request Details</L>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <DescriptionList>
@@ -356,7 +358,7 @@ function ErrorDescription({ errorInfo }: { errorInfo: any }) {
 function TagsSection({ tags }: { tags: Record<string, any> }) {
   return (
     <div className="bg-card rounded-lg shadow-sm w-full max-w-full overflow-hidden p-4 mb-6">
-      <span className="font-semibold" style={{ display: "block", marginBottom: 8, fontSize: 16 }}>
+      <span className="font-semibold" style={{ display: "block", marginBottom: 8, fontSize: "var(--moma-text-body)" }}>
         <L>Tags</L>
       </span>
       <div className="flex flex-wrap items-center gap-2">
@@ -457,7 +459,9 @@ function BatchResultsSection({ logEntry, metadata }: { logEntry: LogEntry; metad
     <div className="bg-card rounded-lg shadow-sm w-full max-w-full overflow-hidden mb-6">
       <Card size="sm" style={{ marginBottom: 0 }}>
         <CardHeader>
-          <CardTitle>Batch Results</CardTitle>
+          <CardTitle>
+            <L>Batch Results</L>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <DescriptionList>
@@ -513,7 +517,9 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
     <div className="bg-card rounded-lg shadow-sm w-full max-w-full overflow-hidden mb-6">
       <Card size="sm" style={{ marginBottom: 0 }}>
         <CardHeader>
-          <CardTitle>Metrics</CardTitle>
+          <CardTitle>
+            <L>Metrics</L>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <DescriptionList>
@@ -557,7 +563,7 @@ function MetricsSection({ logEntry, metadata }: { logEntry: LogEntry; metadata: 
                 }
               >
                 <Badge variant="secondary" className={isResponseCacheHit ? "bg-success/15 text-success" : undefined}>
-                  {isResponseCacheHit ? "Hit" : "Miss"}
+                  <L>{isResponseCacheHit ? "Hit" : "Miss"}</L>
                 </Badge>
               </DescriptionItem>
             )}
@@ -682,7 +688,9 @@ function RequestResponseSection({
               </h3>
             </CollapsibleTrigger>
             <TabsList className="mr-4">
-              <TabsTrigger value="pretty">Pretty</TabsTrigger>
+              <TabsTrigger value="pretty">
+                <L>Pretty</L>
+              </TabsTrigger>
               <TabsTrigger value="json">JSON</TabsTrigger>
             </TabsList>
           </div>
@@ -707,8 +715,12 @@ function RequestResponseSection({
                 >
                   <div className="flex items-center justify-between">
                     <TabsList>
-                      <TabsTrigger value={TAB_REQUEST}>Request</TabsTrigger>
-                      <TabsTrigger value={TAB_RESPONSE}>Response</TabsTrigger>
+                      <TabsTrigger value={TAB_REQUEST}>
+                        <L>Request</L>
+                      </TabsTrigger>
+                      <TabsTrigger value={TAB_RESPONSE}>
+                        <L>Response</L>
+                      </TabsTrigger>
                     </TabsList>
                     <CopyButton
                       getText={getCopyText}
@@ -790,14 +802,14 @@ export function GuardrailJumpLink({ guardrailEntries }: { guardrailEntries: any[
           padding: "4px 12px",
           borderRadius: 16,
           cursor: "pointer",
-          fontSize: 13,
+          fontSize: "var(--moma-text-caption)",
           fontWeight: 500,
         }}
       >
         {glyph} {evaluated.length} <L>guardrail</L>
         <L>{evaluated.length !== 1 ? "s" : ""}</L> <L>evaluated</L>
         {notRunCount > 0 ? `, ${notRunCount} not run` : ""}
-        <span style={{ fontSize: 11, opacity: 0.7 }}>
+        <span style={{ fontSize: "var(--moma-text-caption)", opacity: 0.7 }}>
           <L>{"\u2193"}</L>
         </span>
       </div>

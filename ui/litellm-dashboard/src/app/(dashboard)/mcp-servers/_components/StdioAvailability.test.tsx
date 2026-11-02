@@ -33,7 +33,7 @@ describe("TransportSelectItems", () => {
     expect(option(/Server-Sent Events/)).not.toHaveAttribute("data-disabled");
     expect(option(/OpenAPI Spec/)).not.toHaveAttribute("data-disabled");
 
-    await user.hover(screen.getByLabelText("question-circle"));
+    await user.hover(screen.getByLabelText("Field help"));
 
     expect(await screen.findByText(STDIO_DISABLED_MESSAGE)).toBeInTheDocument();
   });
@@ -42,7 +42,7 @@ describe("TransportSelectItems", () => {
     openTransportSelect(true);
 
     expect(option(/Standard Input\/Output \(stdio\)/)).not.toHaveAttribute("data-disabled");
-    expect(screen.queryByLabelText("question-circle")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Field help")).not.toBeInTheDocument();
   });
 });
 

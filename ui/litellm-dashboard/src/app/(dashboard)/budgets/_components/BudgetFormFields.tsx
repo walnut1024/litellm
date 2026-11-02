@@ -1,4 +1,4 @@
-import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+import { LocalizedText as L, ParameterLabel, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useId } from "react";
 import { Controller } from "react-hook-form";
@@ -73,7 +73,7 @@ function SpendLimitField({ form }: { form: BudgetForm }) {
   return (
     <Field className="gap-2">
       <FieldLabel htmlFor={amountId}>
-        <L>Spend limit</L>
+        <ParameterLabel name="max_budget">Spend limit</ParameterLabel>
         <OptionalBadge />
       </FieldLabel>
       <ButtonGroup className="w-full">
@@ -98,7 +98,7 @@ function SpendLimitField({ form }: { form: BudgetForm }) {
               value={field.value ?? NO_RESET}
               onValueChange={(next) => field.onChange(next === NO_RESET ? null : next)}
             >
-              <SelectTrigger aria-label="Reset period" className="w-32">
+              <SelectTrigger aria-label={t("Reset period (budget_duration)")} className="w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -123,9 +123,9 @@ function RateLimitField({ form, name, label }: { form: BudgetForm; name: NumberF
       name={name}
       label={label}
       orientation="horizontal"
-      className="justify-between *:data-[slot=field-label]:flex-none"
+      className="justify-between *:data-[slot=field-label]:min-w-0"
     >
-      {(control) => <Input {...numberProps(control)} className="w-36" />}
+      {(control) => <Input {...numberProps(control)} className="w-36 shrink-0" />}
     </FormField>
   );
 }

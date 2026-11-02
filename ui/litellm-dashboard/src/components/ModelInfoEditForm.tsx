@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, ParameterLabel } from "@/contexts/LocaleContext";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleHelp } from "lucide-react";
 import type { Dayjs } from "dayjs";
@@ -273,12 +275,18 @@ const Display: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 const FIELD_LABEL_CLASS = "text-sm font-medium text-foreground";
 
-const FieldLabel: React.FC<{ htmlFor?: string; children: React.ReactNode }> = ({ htmlFor, children }) =>
+const FieldLabel: React.FC<{ htmlFor?: string; name?: string; children: React.ReactNode }> = ({
+  htmlFor,
+  name,
+  children,
+}) =>
   htmlFor === undefined ? (
-    <p className={FIELD_LABEL_CLASS}>{children}</p>
+    <p className={FIELD_LABEL_CLASS}>
+      {name ? <ParameterLabel name={name}>{children}</ParameterLabel> : <L>{children}</L>}
+    </p>
   ) : (
     <label htmlFor={htmlFor} className={FIELD_LABEL_CLASS}>
-      {children}
+      {name ? <ParameterLabel name={name}>{children}</ParameterLabel> : <L>{children}</L>}
     </label>
   );
 
@@ -299,13 +307,13 @@ const DocsHint: React.FC<{ text: string; href: string }> = ({ text, href }) => (
 
 const ChipList: React.FC<{ values: unknown; emptyLabel: string }> = ({ values, emptyLabel }) => {
   if (!values) {
-    return <>Not Set</>;
+    return <L>Not Set</L>;
   }
   if (!Array.isArray(values)) {
     return <>{String(values)}</>;
   }
   if (values.length === 0) {
-    return <>{emptyLabel}</>;
+    return <L>{emptyLabel}</L>;
   }
   return (
     <div className="flex flex-wrap gap-1">
@@ -367,26 +375,26 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
   const textField = (name: ModelEditFieldName, label: string, placeholder: string, stored: unknown) => (
     <div>
-      <FieldLabel>{label}</FieldLabel>
+      <FieldLabel name={name}>{label}</FieldLabel>
       {isEditing ? (
         <FormField control={form.control} name={name}>
           {({ value, ...control }) => <Input {...control} value={(value as string) ?? ""} placeholder={placeholder} />}
         </FormField>
       ) : (
-        <Display>{(stored as string) || "Not Set"}</Display>
+        <Display>{(stored as string) || <L>Not Set</L>}</Display>
       )}
     </div>
   );
 
   const numberField = (name: ModelEditFieldName, label: string, placeholder: string, stored: unknown) => (
     <div>
-      <FieldLabel>{label}</FieldLabel>
+      <FieldLabel name={name}>{label}</FieldLabel>
       {isEditing ? (
         <FormField control={form.control} name={name}>
           {({ value, ...control }) => <NumericalInput {...control} value={value ?? ""} placeholder={placeholder} />}
         </FormField>
       ) : (
-        <Display>{(stored as string) || "Not Set"}</Display>
+        <Display>{(stored as string) || <L>Not Set</L>}</Display>
       )}
     </div>
   );
@@ -408,8 +416,10 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
       </FormField>
     ) : (
       <div>
-        <FieldLabel>{label}</FieldLabel>
-        <Display>{displayCost(localModelData, name)}</Display>
+        <FieldLabel name={name}>{label}</FieldLabel>
+        <Display>
+          <L>{displayCost(localModelData, name)}</L>
+        </Display>
       </div>
     );
 
@@ -436,7 +446,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
     <TooltipProvider>
       <form onSubmit={submit}>
         <div className="space-y-4">
-          <div className="space-y-4">
+          <div className="grid grid-cols-2 items-start gap-x-6 gap-y-4">
             {textField("model_name", "Model Name", "Enter model name", localModelData.model_name)}
             {textField(
               "litellm_model_name",
@@ -451,7 +461,9 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             {ptuCostAttributionEnabled &&
               PTU_EDIT_FIELDS.map((ptuField) => (
                 <div key={ptuField.name}>
-                  <FieldLabel htmlFor={ptuField.name}>{ptuField.label}</FieldLabel>
+                  <FieldLabel name={ptuField.name} htmlFor={ptuField.name}>
+                    {ptuField.label}
+                  </FieldLabel>
                   {isEditing ? (
                     <FormField control={form.control} name={ptuField.name as ModelEditFieldName}>
                       {({ value, onChange, ...control }) =>
@@ -479,7 +491,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                     <Display>
                       {(ptuField.input === "datetime"
                         ? formatPtuUtcDisplay(localModelData?.model_info?.[ptuField.name])
-                        : localModelData?.model_info?.[ptuField.name]) ?? "Not Set"}
+                        : localModelData?.model_info?.[ptuField.name]) ?? <L>Not Set</L>}
                     </Display>
                   )}
                 </div>
@@ -530,7 +542,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             )}
 
             <div>
-              <FieldLabel>Model Access Groups</FieldLabel>
+              <FieldLabel name="model_access_group">Model Access Groups</FieldLabel>
               {isEditing ? (
                 tagsField(
                   "model_access_group",
@@ -545,8 +557,8 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel>
-                Guardrails
+              <FieldLabel name="guardrails">
+                <L>Guardrails</L>
                 <DocsHint
                   text="Apply safety guardrails to this model to filter content or enforce policies"
                   href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
@@ -566,8 +578,8 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel>
-                Attached Knowledge Bases (RAG)
+              <FieldLabel name="vector_store_ids">
+                <L>Attached Knowledge Bases (RAG)</L>
                 <DocsHint
                   text="Vector stores used for RAG. Every request to this model will automatically retrieve context from these knowledge bases."
                   href="https://docs.litellm.ai/docs/completion/knowledgebase"
@@ -595,7 +607,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel>Tags</FieldLabel>
+              <FieldLabel name="tags">Tags</FieldLabel>
               {isEditing ? (
                 tagsField(
                   "tags",
@@ -610,7 +622,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel>Existing Credentials</FieldLabel>
+              <FieldLabel name="litellm_credential_name">Existing Credentials</FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="litellm_credential_name">
                   {({ id, value, onChange }) => (
@@ -644,7 +656,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
             {isWildcardModel && (
               <div>
-                <FieldLabel>Health Check Model</FieldLabel>
+                <FieldLabel name="health_check_model">Health Check Model</FieldLabel>
                 {isEditing ? (
                   <FormField control={form.control} name="health_check_model">
                     {({ id, value, onChange, onBlur }) => (
@@ -657,7 +669,9 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                           <SelectValue placeholder="Select existing health check model" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value={null}>None</SelectItem>
+                          <SelectItem value={null}>
+                            <L>None</L>
+                          </SelectItem>
                           {healthCheckModelOptions.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
                               {option.label}
@@ -668,7 +682,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                     )}
                   </FormField>
                 ) : (
-                  <Display>{localModelData.model_info?.health_check_model || "Not Set"}</Display>
+                  <Display>{localModelData.model_info?.health_check_model || <L>Not Set</L>}</Display>
                 )}
               </div>
             )}
@@ -711,29 +725,42 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
               </>
             ) : (
               <div>
-                <FieldLabel>Cache Control</FieldLabel>
+                <FieldLabel name="cache_control">Cache Control</FieldLabel>
                 <Display>
                   {localModelData.litellm_params?.cache_control_injection_points ? (
                     <div>
-                      <p>Enabled</p>
+                      <p>
+                        <L>Enabled</L>
+                      </p>
                       <div className="mt-2">
                         {localModelData.litellm_params.cache_control_injection_points.map((point: any, i: number) => (
                           <div key={i} className="mb-1 text-sm text-muted-foreground">
-                            Location: {point.location},{point.role && <span> Role: {point.role}</span>}
-                            {point.index !== undefined && <span> Index: {point.index}</span>}
+                            <L>Location:</L> {point.location},
+                            {point.role && (
+                              <span>
+                                {" "}
+                                <L>Role:</L> {point.role}
+                              </span>
+                            )}
+                            {point.index !== undefined && (
+                              <span>
+                                {" "}
+                                <L>Index:</L> {point.index}
+                              </span>
+                            )}
                           </div>
                         ))}
                       </div>
                     </div>
                   ) : (
-                    "Disabled"
+                    <L>Disabled</L>
                   )}
                 </Display>
               </div>
             )}
 
             <div>
-              <FieldLabel>Model Info</FieldLabel>
+              <FieldLabel name="model_info">Model Info</FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="model_info">
                   {({ value, ...control }) => (
@@ -756,7 +783,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
             <div>
               <FieldLabel>
-                LiteLLM Params
+                <L>LiteLLM Params</L>
                 <DocsHint
                   text="Additional parameters for model requests. Settings with dedicated fields above are edited there. Remove a key here to delete its saved value."
                   href="https://docs.litellm.ai/docs/completion/input"
@@ -784,7 +811,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             </div>
 
             <div>
-              <FieldLabel>Team</FieldLabel>
+              <FieldLabel name="team_id">Team</FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="team_id">
                   {({ id, value, onChange, onBlur }) => (
@@ -795,7 +822,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
                 <Display>
                   {teamAlias
                     ? `${teamAlias} (${localModelData.model_info?.team_id})`
-                    : localModelData.model_info?.team_id || "Not Set"}
+                    : localModelData.model_info?.team_id || <L>Not Set</L>}
                 </Display>
               )}
             </div>
@@ -804,11 +831,11 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
           {isEditing && (
             <div className="mt-6 flex justify-end gap-2">
               <Button type="submit" variant="secondary" onClick={cancel} disabled={isSaving}>
-                Cancel
+                <L>Cancel</L>
               </Button>
               <Button type="submit" disabled={isSaving} aria-busy={isSaving}>
                 {isSaving && <UiLoadingSpinner className="size-4" />}
-                Save Changes
+                <L>Save Changes</L>
               </Button>
             </div>
           )}

@@ -725,3 +725,41 @@ src/utils/liteUi.ts
 最终镜像标记 `litellm-moma:settings-zh-20261102`，ID 为 `sha256:c1689732161579061418e6f7faa90072be3fe871479346ca7e4f8a64433ec3af`。已重建并重启 4001 应用容器，健康检查返回 HTTP 200，原数据库卷、salt、模型、用户与密钥保留，4000 与 4002 未参与。已有浏览器标签页需强制刷新以加载新的静态资源，MS Teams 页签继续屏蔽
 
 没有发送真实邮件、调用真实模型、修改后台配置或执行全套前端、手机专项、跨浏览器及完整可访问性回归。已知员工设置读取权限问题仍不在本轮处理范围
+
+### 保留页面的完整文案与排版复核
+
+2026-11-02 从 `3859052075` 继续检查保留的管理员和员工页面，社区基线仍为 `9546f9a69ff470dfcc5a21eccab89d2fd86a634f`、版本 1.109.0。本轮只修改前端显示、相关测试与文档，不修改代理、数据库结构、接口、权限、模型配置或人民币数值约定
+
+共享表单通过 `LocaleContext.ParameterLabel` 使用原注册字段名显示“中文（英文参数名）”。同时覆盖字符串和带提示图标的标签，并避免已含英文参数名的标签重复追加。英文模式保留原标签，语言切换不重建字段。`FormField`、`MountedFormField` 的注册、校验、隐藏逻辑和提交值保持原实现。局部自定义的模型编辑、预算和密钥生命周期标签也接入同一显示规则
+
+补齐用量模型明细、密钥和用户用量、错误分析、默认用户设置、模型价格与参数详情、密钥摘要、团队扩展字段、模型别名、密钥生命周期等保留入口的说明、状态、占位和操作名称。动态计数使用带变量的翻译模板，模型名、别名、用户信息、ID、JSON、API 枚举及上游错误消息保留原值。没有通过 DOM 替换、CSS 伪元素或翻译输入值实现汉化。未知供应商的新字段仍需按真实元数据补充词典，不能把所有后端返回文本视为已翻译
+
+模型参数和默认用户设置使用两列网格。移除新增模型模式说明与高级 JSON 说明的旧横向占位。错误指标预留一致的两行标签空间，提示可换行，数值顶部对齐，状态与失败排行移除重复内边距。参数标签按 14px 自然换行，日志详情中残留的 10 至 16px 内联字号改为既定字号令牌，保留 14、21、31.5、47.25px 阶梯及原始日志内容
+
+| 影响位置       | 本轮维护范围                                                                                                                                                                                                                                  |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 共享表单       | `src/contexts/LocaleContext.tsx`、`shared/form/FormField.tsx`、`common_components/MountedFormField.tsx`、`common_components/LabeledField.tsx`                                                                                                 |
+| 通用控件       | `src/components/ui/button.tsx`、`checkbox.tsx`、`select.tsx`、`switch.tsx`、`dropdown-menu.tsx`、`tooltip.tsx`、`shared/DataTable/DataTableSelectionColumn.tsx`，只翻译操作及辅助名称                                                         |
+| 模型管理       | `ModelInfoEditForm.tsx`、`model_info_view.tsx`、`molecules/models/ModelPricingSummary.tsx`、模型目录的 `ModelsTableColumns.tsx` 和 `ModelRetrySettingsTab.tsx`、`add_model/AddModelForm.tsx` 和 `advanced_settings.tsx`                       |
+| 用量与配额     | `activity_metrics.tsx`、`UsagePage/components/KeyActivityPanel.tsx` 和 `UserActivityTable.tsx`、用量 `ModelViewToggle.tsx`、`errors/ErrorsTab.tsx`、`overview/Primitives.tsx`、`shared/charts/chart_tooltip.tsx`、预算 `BudgetFormFields.tsx` |
+| 用户与设置     | 默认用户设置 `DefaultUserSettingsForm.tsx`、`UsersTableColumns.tsx`、`Settings/AdminSettings/UISettings/TeamAdminEditableFieldsSettings.tsx`                                                                                                  |
+| 密钥与团队表单 | `templates/KeyInfoHeader.tsx`、`key_info_view.tsx`、`common_components/DefaultProxyAdminTag.tsx`、`KeyLifecycleSettings.tsx`、`ModelAliasManager.tsx`，团队扩展字段的显示文案由词典覆盖                                                       |
+| 故障转移       | `Settings/RouterSettings/Fallbacks/` 中 `AddFallbacks.tsx`、`AddFallbacksModal.tsx`、`FallbackSelectionForm.tsx` 和 `FallbackGroupConfig.tsx`                                                                                                 |
+| 日志详情       | `logs/detail/` 中 `LogDetailsDrawer.tsx`、`LogDetailContent.tsx`、`DrawerHeader.tsx`、`TokenFlow.tsx`、`CollapsibleMessage.tsx`、`SimpleMessageBlock.tsx`、`HistoryTree.tsx`、`OutputCard.tsx`，以及实时事件和评估详情中的字号                |
+| 样式与词典     | `src/app/moma-theme.css`、`src/i18n/zh-CN.json`、`DESIGN.md`、`design-qa.md`、Docker 预览说明及对应截图                                                                                                                                       |
+
+共享提示图标的英文辅助名称由内部图标名改为 `Field help`，相应调用方测试同步调整，包括已屏蔽的 MCP 和智能路由测试中的该项断言，没有恢复这些功能。社区升级时重点合并新的表单注册方式、动态文案、价格展示、图表类别和日志组件，继续核对双语标签只出现一次、原输入和提交键不被翻译、所有已屏蔽入口保持隐藏
+
+### 保留页面复核的验证与限制
+
+保留页面和共享控件相关的 27 个测试文件、424 项不同用例通过。语言回归验证双语参数名不重复、切换语言不丢失未提交输入，提交仍使用原键和值，表格选择仍返回原实体 ID。最后的对齐检查 2 个文件、11 项，以及后续 3 个文件、40 项和语言 3 项复核均通过，重复用例没有累计到不同用例数量中
+
+另外运行了已屏蔽的 `AutoRouterBenchmarksTab.test.tsx`，36 项中 22 项通过，14 项失败。失败集中在旧测试仍断言美元符号，而本轮起点的 `costOptimizationUtils.ts` 已输出人民币符号，金额展示代码不在本轮差异中。仅同步该测试内共享提示图标名称的断言，没有调整金额断言、恢复智能路由页面或把这些失败视为通过。此前记录的其他全套测试限制仍保留
+
+最终生产构建、TypeScript、静态导出，以及 `scripts/pre_commit_lint.sh` 的适用前端 Prettier、ESLint 和 lint 预算检查通过，没有放宽规则、预算或修改依赖。初次检查发现的新增嵌套条件、文件行数超限和测试断言写法已修正后复核通过
+
+浏览器检查管理员 12 个主页面、18 个保留页签和员工 5 个主页面，并检查创建密钥及有效期、创建团队的七个扩展区、用户邀请、预算、模型新增与编辑等常用表单和日志详情。默认 1280×720 下主页面标题左边界均为 x=228px，所查文字属于 14、21、31.5、47.25px 阶梯，没有整页横向溢出。错误页六个指标数值顶部均为 y=330px，标签与说明换行后仍保持一致。另检查 900px 窄桌面、1536px 及 2078px 宽桌面窗口和英文、深色模式，最后恢复中文浅色及默认视口。模型目录仍为 41 项，原业务字段、历史日志和员工可见范围保持不变
+
+最终镜像标记 `litellm-moma:ui-audit-20261102`，ID 为 `sha256:72f28a862648e4874b09132817b01e3e72527ca1de1d41ca782b0697e9c610af`。4001 应用容器已重建并重启，健康检查返回 HTTP 200。原数据库卷、salt、账户、模型与密钥保留，4000 和 4002 服务未参与。旧浏览器需要强制刷新加载新静态资源
+
+本轮没有提交任何表单、创建或删除业务记录、调用供应商模型、发送邮件、执行完整前端套件、手机专项或跨浏览器及完整可访问性回归。实时事件和评估详情的字号按共享令牌修正，当前预览没有对应真实业务样本，不把源码修正视为这些流程已完成业务验证。上游错误消息、用户内容及原始 JSON 保留原文，未为未知供应商的全部动态字段承诺翻译覆盖

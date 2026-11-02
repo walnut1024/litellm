@@ -1,4 +1,5 @@
 import React from "react";
+import { LocalizedText } from "@/contexts/LocaleContext";
 import CopyButton from "@/components/shared/CopyButton";
 import { EntityLink } from "@/components/shared/EntityLink";
 import { cx } from "@/lib/cva.config";
@@ -50,7 +51,9 @@ export default function LabeledField({
     <div className="min-w-0">
       <div className="flex items-center gap-1 text-muted-foreground">
         {icon}
-        <span className="text-xs tracking-wider uppercase">{label}</span>
+        <span className="text-xs">
+          <LocalizedText>{label}</LocalizedText>
+        </span>
       </div>
       <div className="min-w-0">{valueEl}</div>
     </div>

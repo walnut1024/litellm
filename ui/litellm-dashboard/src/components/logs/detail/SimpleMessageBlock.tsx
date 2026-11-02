@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 /**
  * SimpleMessageBlock - Simple message display without collapsing
  * Used for messages in tree view and last user message
@@ -26,7 +28,9 @@ export function SimpleMessageBlock({ label, content, toolCalls, isCompact = fals
 
   return (
     <div className={cn(isCompact && "mb-2")}>
-      <span className="mb-[3px] block text-[10px] uppercase tracking-[0.5px] text-muted-foreground">{label}</span>
+      <span className="mb-[3px] block text-[10px] uppercase tracking-[0.5px] text-muted-foreground">
+        <L>{label}</L>
+      </span>
 
       {displayContent && (
         <div

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import type { TooltipContentProps, TooltipValueType } from "recharts";
 
 export type ChartTooltipProps = Pick<
@@ -86,7 +87,9 @@ export const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => 
                 className="h-2 w-2 shrink-0 rounded-full ring-2 ring-white drop-shadow-md"
                 style={{ backgroundColor: item.color }}
               />
-              <p className="font-medium text-muted-foreground">{formatCategoryName(dataKey)}</p>
+              <p className="font-medium text-muted-foreground">
+                <L>{formatCategoryName(dataKey)}</L>
+              </p>
             </div>
             <p className="font-medium text-foreground">{formattedValue}</p>
           </div>

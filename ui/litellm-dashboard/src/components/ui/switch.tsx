@@ -3,6 +3,7 @@
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
 
 import { cn } from "@/lib/cva.config";
+import { useTranslation } from "@/contexts/LocaleContext";
 
 function Switch({
   className,
@@ -11,6 +12,7 @@ function Switch({
 }: SwitchPrimitive.Root.Props & {
   size?: "sm" | "default";
 }) {
+  const t = useTranslation();
   return (
     <SwitchPrimitive.Root
       data-slot="switch"
@@ -20,6 +22,7 @@ function Switch({
         className,
       )}
       {...props}
+      aria-label={props["aria-label"] ? t(props["aria-label"]) : undefined}
     >
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"

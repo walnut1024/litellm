@@ -129,7 +129,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange, disabl
           <TooltipTrigger render={<span className="inline-flex" tabIndex={0} />}>
             <Button className="mx-auto" disabled aria-disabled="true">
               <span>+</span>
-              Add Fallbacks
+              <L>Add Fallbacks</L>
             </Button>
           </TooltipTrigger>
           <TooltipContent>{disabledReason}</TooltipContent>
@@ -137,7 +137,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange, disabl
       ) : (
         <Button className="mx-auto" onClick={() => setIsModalVisible(true)}>
           <span>+</span>
-          Add Fallbacks
+          <L>Add Fallbacks</L>
         </Button>
       )}
       <AddFallbacksModal open={isModalVisible} onCancel={handleCancel}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ChartColumn, Copy, Info, KeyRound, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
@@ -202,15 +202,18 @@ export const getUsersTableColumns = ({
       id: "sso_user_id",
       accessorKey: "sso_user_id",
       meta: { title: "SSO ID" },
-      header: ({ column }) => (
-        <span className="flex items-center gap-1.5">
-          <DataTableSortHeader column={column} title="SSO ID" />
-          <CellTooltip
-            content={SSO_ID_HINT}
-            trigger={<Info className="size-3.5 shrink-0 text-muted-foreground" aria-label="About SSO ID" />}
-          />
-        </span>
-      ),
+      header: function SsoIdHeader({ column }) {
+        const t = useTranslation();
+        return (
+          <span className="flex items-center gap-1.5">
+            <DataTableSortHeader column={column} title="SSO ID" />
+            <CellTooltip
+              content={SSO_ID_HINT}
+              trigger={<Info className="size-3.5 shrink-0 text-muted-foreground" aria-label={t("About SSO ID")} />}
+            />
+          </span>
+        );
+      },
       sortDescFirst: false,
       size: 160,
       enableSorting: true,

@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { KeyRound, Search, X } from "lucide-react";
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -60,12 +60,6 @@ type KeyDetailState =
   | { status: "failed" }
   | { status: "loaded"; metrics: ModelActivityData | undefined };
 
-const keyCountText = (searching: boolean, isFiltering: boolean, shownKeys: number, total: number): string => {
-  if (searching) return "Searching...";
-  if (isFiltering) return `${shownKeys.toLocaleString()} matching keys`;
-  return `${total.toLocaleString()} keys`;
-};
-
 interface KeyDetailContentProps {
   apiKey: string;
   detail: KeyDetailState | undefined;
@@ -75,12 +69,16 @@ interface KeyDetailContentProps {
 
 const KeyDetailContent: React.FC<KeyDetailContentProps> = ({ apiKey, detail, hidePromptCachingMetrics, onRetry }) => {
   if (detail?.status === "loading") {
-    return <p className="py-4 text-sm text-muted-foreground">Loading key details...</p>;
+    return (
+      <p className="py-4 text-sm text-muted-foreground">
+        <L>Loading key details...</L>
+      </p>
+    );
   }
   if (detail?.status === "failed") {
     return (
       <p className="py-4 text-sm text-muted-foreground">
-        Could not load key details.{" "}
+        <L>Could not load key details.</L>{" "}
         <button type="button" className="font-medium text-foreground underline" onClick={onRetry}>
           <L>Retry</L>
         </button>
@@ -88,7 +86,11 @@ const KeyDetailContent: React.FC<KeyDetailContentProps> = ({ apiKey, detail, hid
     );
   }
   if (detail?.status !== "loaded" || detail.metrics === undefined) {
-    return <p className="py-4 text-sm text-muted-foreground">No daily details available</p>;
+    return (
+      <p className="py-4 text-sm text-muted-foreground">
+        <L>No daily details available</L>
+      </p>
+    );
   }
   return (
     <ModelSection modelName={apiKey} metrics={detail.metrics} hidePromptCachingMetrics={hidePromptCachingMetrics} />
@@ -120,6 +122,7 @@ interface KeySummaryStripProps {
 }
 
 const KeySummaryStrip: React.FC<KeySummaryStripProps> = ({ summary, loading, hidePromptCachingMetrics }) => {
+  const t = useTranslation();
   const daily = useMemo(() => summarySeries(summary), [summary]);
   const trend = (dataKey: string) =>
     loading || daily.length < 2 ? undefined : (
@@ -136,7 +139,9 @@ const KeySummaryStrip: React.FC<KeySummaryStripProps> = ({ summary, loading, hid
           <L>Loading chart data...</L>
         </span>
       ) : (
-        <h3 className="sr-only">Overall Usage</h3>
+        <h3 className="sr-only">
+          <L>Overall Usage</L>
+        </h3>
       )}
       <StatCell trend={trend("spend")}>
         <Stat label="Spend" value={formatUsd(summary.total_spend)} pending={loading} />
@@ -166,7 +171,10 @@ const KeySummaryStrip: React.FC<KeySummaryStripProps> = ({ summary, loading, hid
           hint={
             loading
               ? undefined
-              : `${formatCompact(summary.prompt_tokens)} in · ${formatCompact(summary.completion_tokens)} out`
+              : t("{input} in · {output} out", {
+                  input: formatCompact(summary.prompt_tokens),
+                  output: formatCompact(summary.completion_tokens),
+                })
           }
         />
       </StatCell>
@@ -178,7 +186,7 @@ const KeySummaryStrip: React.FC<KeySummaryStripProps> = ({ summary, loading, hid
           hint={
             loading || hidePromptCachingMetrics
               ? undefined
-              : `${formatCompact(summary.total_cache_read_input_tokens)} cache read tokens`
+              : t("{count} cache read tokens", { count: formatCompact(summary.total_cache_read_input_tokens) })
           }
         />
       </StatCell>
@@ -195,6 +203,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
   teams,
   hidePromptCachingMetrics = false,
 }) => {
+  const t = useTranslation();
   const [queryState, setQueryState] = useState<{ scope: FetchKeyPage; value: string } | null>(null);
   const query = queryState?.scope === fetchKeyPage ? queryState.value : "";
   const updateQuery = useCallback((value: string) => setQueryState({ scope: fetchKeyPage, value }), [fetchKeyPage]);
@@ -358,10 +367,12 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
   const isFiltering = trimmedQuery.length > 0;
   const searchSettled = isFiltering && !searching;
   const visibleDetails = detailState?.scope === fetchKeyPage ? detailState.details : {};
-  const keyCountLabel =
-    searchSettled && searchFailed && shownKeys === 0
-      ? "Search failed"
-      : keyCountText(searching, isFiltering, shownKeys, total);
+  const keyCountLabel = (() => {
+    if (searchSettled && searchFailed && shownKeys === 0) return t("Search failed");
+    if (searching) return t("Searching...");
+    if (isFiltering) return t("{count} matching keys", { count: shownKeys.toLocaleString() });
+    return t("{count} keys", { count: total.toLocaleString() });
+  })();
 
   const retryFirstPage = () => {
     setPageState({
@@ -386,7 +397,7 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
   };
   const firstPageError = (
     <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-      Could not load keys for this range.{" "}
+      <L>Could not load keys for this range.</L>{" "}
       <button type="button" className="font-medium text-foreground underline" onClick={retryFirstPage}>
         <L>Retry</L>
       </button>
@@ -423,7 +434,10 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
             </div>
             <span className="text-right text-sm tabular-nums text-foreground">{formatUsd(metrics.total_spend)}</span>
             <span className="text-right text-sm tabular-nums text-muted-foreground">
-              {metrics.total_requests.toLocaleString()} <span className="sr-only">requests</span>
+              {metrics.total_requests.toLocaleString()}{" "}
+              <span className="sr-only">
+                <L>requests</L>
+              </span>
             </span>
           </div>
         }
@@ -447,14 +461,17 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
   const showSearchErrorNote = !noMatches && searchFailed && !searching;
   const searchRetryButton = (
     <button type="button" className="font-medium text-foreground underline" onClick={retrySearch}>
-      Retry search
+      <L>Retry search</L>
     </button>
   );
   const emptyFilterBody = searchFailed ? (
-    <p className="px-4 py-8 text-center text-sm text-muted-foreground">Could not search keys. {searchRetryButton}</p>
+    <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+      <L>Could not search keys.</L> {searchRetryButton}
+    </p>
   ) : (
     <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-      No keys match &quot;{trimmedQuery}
+      <L>No keys match &quot;</L>
+      {trimmedQuery}
       <L>&quot; in this date range</L>
     </p>
   );
@@ -543,11 +560,19 @@ const KeyActivityPanel: React.FC<KeyActivityPanelProps> = ({
         <div className={showColumnHeaders ? undefined : "border-t"}>{noMatches ? emptyFilterBody : listBody}</div>
         {showFooter && (
           <div className="border-t px-4 py-2.5 text-xs text-muted-foreground">
-            {showSearchErrorNote && <p>Could not search all keys. {searchRetryButton}</p>}
-            {loadingMore && <p>Loading more keys...</p>}
+            {showSearchErrorNote && (
+              <p>
+                <L>Could not search all keys.</L> {searchRetryButton}
+              </p>
+            )}
+            {loadingMore && (
+              <p>
+                <L>Loading more keys...</L>
+              </p>
+            )}
             {showNextPageRetry && (
               <p>
-                Could not load more keys.{" "}
+                <L>Could not load more keys.</L>{" "}
                 <button type="button" className="font-medium text-foreground underline" onClick={retryNextPage}>
                   <L>Retry</L>
                 </button>

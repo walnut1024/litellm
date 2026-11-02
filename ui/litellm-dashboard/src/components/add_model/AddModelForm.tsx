@@ -324,24 +324,21 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                           </Select>
                         )}
                       </MountedFormField>
-                      <div className="grid grid-cols-12">
-                        <div className="col-span-5" />
-                        <div className="col-span-5">
-                          <p className="text-sm mb-5 mt-1">
-                            <strong>
-                              <L>Optional</L>
-                            </strong>
-                            <L> - LiteLLM endpoint to use when health checking this model</L>{" "}
-                            <a
-                              href="https://docs.litellm.ai/docs/proxy/health#health"
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-primary hover:underline"
-                            >
-                              <L>Learn more</L>
-                            </a>
-                          </p>
-                        </div>
+                      <div>
+                        <p className="text-sm mb-5 mt-1">
+                          <strong>
+                            <L>Optional</L>
+                          </strong>
+                          <L> - LiteLLM endpoint to use when health checking this model</L>{" "}
+                          <a
+                            href="https://docs.litellm.ai/docs/proxy/health#health"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            <L>Learn more</L>
+                          </a>
+                        </p>
                       </div>
 
                       {/* Credentials */}

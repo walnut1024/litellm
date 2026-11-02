@@ -350,6 +350,24 @@ body {
 .moma-content .recharts-text {
   font-size: var(--moma-text-caption);
 }
+[data-slot="parameter-label"] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 20px;
+}
+[data-slot="parameter-label"] [data-slot="tooltip-trigger"] {
+  display: inline-block;
+  margin-inline: 4px;
+  vertical-align: middle;
+}
+.moma-content [data-slot="error-stat-strip"] [data-slot="metric-label"] {
+  min-height: 40px;
+  align-items: flex-start;
+}
+.moma-content [data-slot="error-stat-strip"] [data-slot="metric-hint"] {
+  white-space: normal;
+  overflow: visible;
+}
 .moma-content .recharts-cartesian-axis-tick-value {
   fill: var(--muted-foreground);
 }

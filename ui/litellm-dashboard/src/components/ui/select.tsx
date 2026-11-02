@@ -34,6 +34,7 @@ function SelectTrigger({
 }: SelectPrimitive.Trigger.Props & {
   size?: "sm" | "default";
 }) {
+  const t = useTranslation();
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
@@ -43,6 +44,7 @@ function SelectTrigger({
         className,
       )}
       {...props}
+      aria-label={props["aria-label"] ? t(props["aria-label"]) : undefined}
     >
       {children}
       <SelectPrimitive.Icon render={<ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />} />

@@ -187,7 +187,9 @@ const TeamsField = ({ control }: { control: SettingsControl }) => {
 
 const ViewRow = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <div>
-    <p className="text-sm font-medium">{label}</p>
+    <p className="text-sm font-medium">
+      <L>{label}</L>
+    </p>
     <p className="text-sm text-muted-foreground">{children}</p>
   </div>
 );
@@ -204,14 +206,20 @@ const SettingsView = ({ values, roleOptions }: SettingsViewProps) => {
     BUDGET_DURATION_OPTIONS.find((option) => option.value === durationValue)?.label ?? values.budget_duration;
 
   return (
-    <div className="flex flex-col gap-4">
-      <ViewRow label="Default Role">{roleLabel === "" ? "Not set" : roleLabel}</ViewRow>
-      <ViewRow label="Max Budget (CNY)">{values.max_budget === "" ? "Not set" : values.max_budget}</ViewRow>
-      <ViewRow label="Reset Budget">{durationLabel}</ViewRow>
+    <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+      <ViewRow label="Default Role">
+        <L>{roleLabel === "" ? "Not set" : roleLabel}</L>
+      </ViewRow>
+      <ViewRow label="Max Budget (CNY)">{values.max_budget === "" ? <L>Not set</L> : values.max_budget}</ViewRow>
+      <ViewRow label="Reset Budget">
+        <L>{durationLabel}</L>
+      </ViewRow>
       <ViewRow label="Default Models">
-        {values.models.length === 0
-          ? "Not set"
-          : values.models.map((model) => MODEL_SENTINEL_LABELS.get(model) ?? model).join(", ")}
+        {values.models.length === 0 ? (
+          <L>Not set</L>
+        ) : (
+          values.models.map((model) => MODEL_SENTINEL_LABELS.get(model) ?? model).join(", ")
+        )}
       </ViewRow>
       <div>
         <p className="text-sm font-medium">
@@ -291,7 +299,9 @@ const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, on
                   <SelectItem key={option.value} value={option.value}>
                     <span>{option.label}</span>
                     {option.description !== "" && (
-                      <span className="text-xs text-muted-foreground">{option.description}</span>
+                      <span className="text-xs text-muted-foreground">
+                        <L>{option.description}</L>
+                      </span>
                     )}
                   </SelectItem>
                 ))}

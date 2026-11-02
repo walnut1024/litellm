@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/cva.config";
 import { uiHref } from "@/utils/uiHref";
-import { ChartSkeleton, Panel, PANEL_INSET_X, Segmented, Stat } from "../overview/Primitives";
+import { ChartSkeleton, Panel, Segmented, Stat } from "../overview/Primitives";
 import {
   ERROR_ENTITY_KINDS,
   ERROR_ENTITY_LABEL,
@@ -55,8 +55,9 @@ function RateBar({ rate, className }: { rate: number | null; className?: string 
 }
 
 function StatCell({ label, children }: { label: string; children: React.ReactNode }) {
+  const t = useTranslation();
   return (
-    <div role="group" aria-label={label} className="rounded-xl border bg-card p-4">
+    <div role="group" aria-label={t(label)} className="rounded-xl border bg-card p-4">
       {children}
     </div>
   );
@@ -85,6 +86,7 @@ function rateChartEmpty(rateView: ErrorRateView, series: ErrorSeries, noTraffic:
 }
 
 export default function ErrorsTab({ activity, loading, failed, userScoped = false }: ErrorsTabProps) {
+  const t = useTranslation();
   const [kind, setKind] = useState<ErrorEntityKind>("key");
   const [rateView, setRateView] = useState<ErrorRateView>("total");
   const summary = useMemo(() => (activity ? errorSummary(activity) : null), [activity]);
@@ -132,14 +134,18 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
 
   return (
     <div className="grid gap-3" data-testid="usage-errors-tab">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div data-slot="error-stat-strip" className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCell label="Error rate">
           <Stat
             label="Error rate"
             value={summary ? formatRate(summary.rate) : null}
             pending={loading}
             tone={summary && summary.failed > 0 ? "destructive" : undefined}
-            hint={summary ? `${count(summary.failed)} of ${count(summary.requests)} requests` : undefined}
+            hint={
+              summary
+                ? t("{failed} of {total} requests", { failed: count(summary.failed), total: count(summary.requests) })
+                : undefined
+            }
           />
         </StatCell>
         <StatCell label="Failed requests">
@@ -203,8 +209,8 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
               className="h-64"
             />
             <ul
-              className={cn("flex flex-wrap gap-x-4 gap-y-1 pb-4 text-xs text-muted-foreground", PANEL_INSET_X)}
-              aria-label="Status codes in the chart"
+              className="flex flex-wrap gap-x-4 gap-y-1 pb-4 text-xs text-muted-foreground"
+              aria-label={t("Status codes in the chart")}
             >
               {series.codes.map((code, index) => (
                 <li key={code} className="flex items-center gap-1.5">
@@ -228,7 +234,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
             height="h-48"
             empty={statusRows.length === 0 ? "No failed requests in this range" : null}
           >
-            <ul className={cn("grid gap-2 pb-4", PANEL_INSET_X)} aria-label="Failed requests by status code">
+            <ul className="grid gap-2 pb-4" aria-label={t("Failed requests by status code")}>
               {statusRows.map((row) => (
                 <li
                   key={row.status_code}
@@ -236,7 +242,9 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
                 >
                   <span className="font-medium tabular-nums">{row.status_code === 0 ? "—" : row.status_code}</span>
                   <span className="min-w-0">
-                    <span className="block truncate text-foreground">{row.label}</span>
+                    <span className="block truncate text-foreground">
+                      <L>{row.label}</L>
+                    </span>
                     <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden="true">
                       <span className="block h-full rounded-full bg-destructive" style={{ width: `${row.share}%` }} />
                     </span>
@@ -260,14 +268,18 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
             height="h-48"
             empty={
               rows.length === 0
-                ? `No ${ERROR_ENTITY_LABEL[kind].plural.toLowerCase()} with failed requests in this range`
+                ? t("No {entity} with failed requests in this range", {
+                    entity: t(ERROR_ENTITY_LABEL[kind].plural.toLowerCase()),
+                  })
                 : null
             }
           >
-            <Table aria-label={`${ERROR_ENTITY_LABEL[kind].plural} ranked by failed requests`}>
+            <Table aria-label={t("{entity} ranked by failed requests", { entity: t(ERROR_ENTITY_LABEL[kind].plural) })}>
               <TableHeader>
                 <TableRow>
-                  <TableHead>{ERROR_ENTITY_LABEL[kind].singular}</TableHead>
+                  <TableHead>
+                    <L>{ERROR_ENTITY_LABEL[kind].singular}</L>
+                  </TableHead>
                   <TableHead className="text-right">
                     <L>Requests</L>
                   </TableHead>
@@ -306,7 +318,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
               </TableBody>
             </Table>
           </PanelBody>
-          <div className={cn("flex justify-end pb-4 pt-2", PANEL_INSET_X)}>
+          <div className="flex justify-end pb-4 pt-2">
             <Button variant="outline" size="sm" nativeButton={false} render={<Link href={uiHref("logs")} />}>
               <L>Inspect failed requests in Logs</L>
               <ArrowUpRight />
@@ -319,5 +331,9 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
 }
 
 function EmptyNote({ children }: { children: React.ReactNode }) {
-  return <p className={cn("pb-4 text-sm text-muted-foreground", PANEL_INSET_X)}>{children}</p>;
+  return (
+    <p className="pb-4 text-sm text-muted-foreground">
+      <L>{children}</L>
+    </p>
+  );
 }

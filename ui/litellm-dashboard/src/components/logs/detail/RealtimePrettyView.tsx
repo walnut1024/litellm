@@ -112,7 +112,7 @@ export function RealtimePrettyView({ response, metrics }: RealtimePrettyViewProp
             padding: "16px",
             color: "var(--color-muted-foreground)",
             fontStyle: "italic",
-            fontSize: 13,
+            fontSize: "var(--moma-text-caption)",
           }}
         >
           No recognized realtime events found
@@ -163,9 +163,9 @@ function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCou
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Settings className="size-3.5 text-muted-foreground" />
-            <span style={{ fontWeight: 500, fontSize: 14 }}>Session</span>
+            <span style={{ fontWeight: 500, fontSize: "var(--moma-text-caption)" }}>Session</span>
           </div>
-          <span className="text-muted-foreground" style={{ fontSize: 12 }}>
+          <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
             {session.model}
           </span>
           {turnCount > 0 && (
@@ -204,7 +204,7 @@ function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCou
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
               gap: "8px 24px",
-              fontSize: 13,
+              fontSize: "var(--moma-text-caption)",
             }}
           >
             <ConfigRow label="Model" value={session.model} />
@@ -224,7 +224,7 @@ function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCou
               <span
                 className="text-muted-foreground"
                 style={{
-                  fontSize: 10,
+                  fontSize: "var(--moma-text-caption)",
                   letterSpacing: "0.5px",
                   textTransform: "uppercase",
                   display: "block",
@@ -235,7 +235,7 @@ function SessionCard({ session, turnCount }: { session: RealtimeSession; turnCou
               </span>
               <div
                 style={{
-                  fontSize: 12,
+                  fontSize: "var(--moma-text-caption)",
                   lineHeight: 1.6,
                   color: "var(--color-muted-foreground)",
                   background: "var(--color-muted)",
@@ -341,7 +341,7 @@ function ResponseTurn({ response, index }: { response: RealtimeResponse; index: 
           {response.status || "unknown"}
         </Badge>
         {usage && (
-          <span className="text-muted-foreground" style={{ fontSize: 11 }}>
+          <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
             {usage.input_tokens ?? 0} in / {usage.output_tokens ?? 0} out tokens
           </span>
         )}
@@ -349,7 +349,12 @@ function ResponseTurn({ response, index }: { response: RealtimeResponse; index: 
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
-                render={<span className="text-muted-foreground" style={{ fontSize: 11, cursor: "help" }} />}
+                render={
+                  <span
+                    className="text-muted-foreground"
+                    style={{ fontSize: "var(--moma-text-caption)", cursor: "help" }}
+                  />
+                }
               >
                 conv: {response.conversation_id.slice(0, 12)}...
               </TooltipTrigger>
@@ -382,7 +387,7 @@ function OutputMessage({ output }: { output: RealtimeOutputItem }) {
       <span
         className="text-muted-foreground"
         style={{
-          fontSize: 10,
+          fontSize: "var(--moma-text-caption)",
           letterSpacing: "0.5px",
           textTransform: "uppercase",
           display: "block",
@@ -424,7 +429,7 @@ function OutputMessage({ output }: { output: RealtimeOutputItem }) {
             )}
             <div
               style={{
-                fontSize: 13,
+                fontSize: "var(--moma-text-caption)",
                 lineHeight: 1.7,
                 color: "var(--color-foreground)",
                 whiteSpace: "pre-wrap",
@@ -451,7 +456,7 @@ function TokenBreakdown({ label, details }: { label: string; details: Record<str
     <div style={{ marginTop: 4 }}>
       <span
         className="text-muted-foreground"
-        style={{ fontSize: 10, letterSpacing: "0.5px", textTransform: "uppercase" }}
+        style={{ fontSize: "var(--moma-text-caption)", letterSpacing: "0.5px", textTransform: "uppercase" }}
       >
         {label} Token Breakdown
       </span>
@@ -482,10 +487,10 @@ function ConfigRow({ label, value }: { label: string; value: any }) {
   if (value === undefined || value === null) return null;
   return (
     <div>
-      <span className="text-muted-foreground" style={{ fontSize: 11 }}>
+      <span className="text-muted-foreground" style={{ fontSize: "var(--moma-text-caption)" }}>
         {label}
       </span>
-      <div style={{ fontSize: 13, color: "var(--color-foreground)" }}>{String(value)}</div>
+      <div style={{ fontSize: "var(--moma-text-caption)", color: "var(--color-foreground)" }}>{String(value)}</div>
     </div>
   );
 }

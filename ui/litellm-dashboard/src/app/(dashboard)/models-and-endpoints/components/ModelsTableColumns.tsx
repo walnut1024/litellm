@@ -127,6 +127,7 @@ function ModelInformationCell({ model, displayName }: { model: ModelData; displa
 }
 
 function CredentialsHeader() {
+  const t = useTranslation();
   return (
     <span className="flex items-center gap-1">
       <L>Credentials</L>
@@ -135,7 +136,7 @@ function CredentialsHeader() {
           render={
             <button
               type="button"
-              aria-label="About credential types"
+              aria-label={t("About credential types")}
               data-testid="credentials-header-info"
               className="cursor-pointer text-muted-foreground hover:text-foreground"
             />
@@ -217,7 +218,9 @@ function CreatedByCell({ model }: { model: ModelData }) {
 function CostRow({ label, value }: { label: string; value: string }) {
   return (
     <span className="flex items-baseline gap-1.5">
-      <span className="text-[10px] font-semibold tracking-wider text-muted-foreground">{label}</span>
+      <span className="text-[10px] font-semibold tracking-wider text-muted-foreground">
+        <L>{label}</L>
+      </span>
       <span className="text-xs font-medium tabular-nums text-foreground">{value}</span>
     </span>
   );

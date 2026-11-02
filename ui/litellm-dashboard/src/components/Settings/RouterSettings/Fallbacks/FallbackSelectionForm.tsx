@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 /**
  * Form component for selecting and configuring fallback groups
  * Manages groups state internally, but does not handle submission
@@ -82,10 +84,12 @@ export function FallbackSelectionForm({
   if (groups.length === 0) {
     return (
       <div className="text-center py-12 bg-muted rounded-lg border border-dashed border-border">
-        <p className="text-muted-foreground mb-4">No fallback groups configured</p>
+        <p className="text-muted-foreground mb-4">
+          <L>No fallback groups configured</L>
+        </p>
         <Button onClick={handleAddGroup}>
           <Plus className="w-4 h-4" />
-          Create First Group
+          <L>Create First Group</L>
         </Button>
       </div>
     );

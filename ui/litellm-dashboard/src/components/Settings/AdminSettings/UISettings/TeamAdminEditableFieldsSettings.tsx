@@ -231,12 +231,13 @@ interface FieldHelpProps {
 }
 
 function FieldHelp({ label, text }: FieldHelpProps) {
+  const t = useTranslation();
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger
           type="button"
-          aria-label={label}
+          aria-label={t(label)}
           className="inline-flex cursor-help items-center rounded-sm text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         >
           <CircleHelp className="size-3.5" />

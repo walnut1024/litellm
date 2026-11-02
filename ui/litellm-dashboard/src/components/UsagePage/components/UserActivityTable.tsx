@@ -47,7 +47,7 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
     if (firstPageFailed) {
       return (
         <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-          Could not load users for this range.{" "}
+          <L>Could not load users for this range.</L>{" "}
           <button type="button" className="font-medium text-foreground underline" onClick={onRetryFirstPage}>
             <L>Retry</L>
           </button>
@@ -62,7 +62,11 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
       );
     }
     if (rows.length === 0) {
-      return <p className="px-4 py-8 text-center text-sm text-muted-foreground">No user activity in this date range</p>;
+      return (
+        <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+          <L>No user activity in this date range</L>
+        </p>
+      );
     }
     return (
       <div className="overflow-x-auto">
@@ -80,7 +84,9 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
             <span className="text-right">
               <L>Requests</L>
             </span>
-            <span className="text-right">Successful</span>
+            <span className="text-right">
+              <L>Successful</L>
+            </span>
             <span className="text-right">
               <L>Failed</L>
             </span>
@@ -123,16 +129,20 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-xs text-muted-foreground tabular-nums" aria-live="polite">
-          {total.toLocaleString()} users
+          {total.toLocaleString()} <L>users</L>
         </span>
       </div>
       <div>{body}</div>
       {showFooter && (
         <div className="border-t px-4 py-2.5 text-xs text-muted-foreground">
-          {loadingMore && <p>Loading more users...</p>}
+          {loadingMore && (
+            <p>
+              <L>Loading more users...</L>
+            </p>
+          )}
           {failed && !firstPageFailed && (
             <p>
-              Could not load more users.{" "}
+              <L>Could not load more users.</L>{" "}
               <button type="button" className="font-medium text-foreground underline" onClick={onRetryNextPage}>
                 <L>Retry</L>
               </button>
@@ -140,7 +150,7 @@ const UserActivityTable: React.FC<UserActivityTableProps> = ({
           )}
           {canLoadMore && (
             <button type="button" className="font-medium text-foreground underline" onClick={onLoadMore}>
-              Load more
+              <L>Load more</L>
             </button>
           )}
         </div>

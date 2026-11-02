@@ -169,7 +169,10 @@ export function Stat({
 }) {
   return (
     <div className="min-w-0">
-      <div className="flex min-h-5 items-center gap-1.5 text-xs leading-5 text-muted-foreground">
+      <div
+        data-slot="metric-label"
+        className="flex min-h-5 items-center gap-1.5 text-xs leading-5 text-muted-foreground"
+      >
         <L>{label}</L>
       </div>
       {pending ? (
@@ -189,7 +192,7 @@ export function Stat({
         </div>
       )}
       {hint && (
-        <div className="mt-0.5 truncate text-xs leading-4 text-muted-foreground">
+        <div data-slot="metric-hint" className="mt-0.5 truncate text-xs leading-4 text-muted-foreground">
           <L>{hint}</L>
         </div>
       )}

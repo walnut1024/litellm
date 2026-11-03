@@ -1,3 +1,4 @@
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
 import { copyToClipboard } from "@/utils/dataUtils";
 import { type CSSProperties, type ReactNode, useState } from "react";
 import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
@@ -307,7 +308,7 @@ function StatusBar({
         <L>{statusLabel}</L>
       </Badge>
       <Badge variant="outline">
-        <L>Env:</L> {environment}
+        <L>Env:</L> {systemResourceLabel(environment)}
       </Badge>
       <div className="flex items-center gap-2">
         <span className="text-muted-foreground" style={{ fontSize: FONT_SIZE_MEDIUM }}>

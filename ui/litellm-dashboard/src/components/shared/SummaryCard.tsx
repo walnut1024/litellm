@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React from "react";
 import { Info } from "lucide-react";
 
@@ -26,7 +28,9 @@ const slugOf = (label: string): string => label.toLowerCase().replace(/\s+/g, "-
 const SummaryCard = ({ label, value, hint, info, secondary }: SummaryCardProps) => (
   <Card data-testid={`summary-card-${slugOf(label)}`}>
     <CardHeader className="flex flex-row items-center justify-between space-y-0">
-      <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
+      <CardTitle className="text-sm font-medium text-muted-foreground">
+        <L>{label}</L>
+      </CardTitle>
       {info && (
         <Popover>
           <PopoverTrigger
@@ -37,7 +41,7 @@ const SummaryCard = ({ label, value, hint, info, secondary }: SummaryCardProps) 
             <Info className="size-3.5" />
           </PopoverTrigger>
           <PopoverContent align="end" className="w-64 text-sm text-muted-foreground">
-            {info}
+            <L>{info}</L>
           </PopoverContent>
         </Popover>
       )}
@@ -46,13 +50,19 @@ const SummaryCard = ({ label, value, hint, info, secondary }: SummaryCardProps) 
       <div className="flex items-end gap-4">
         <div>
           <p className="text-2xl font-semibold text-foreground">{value}</p>
-          {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+          {hint && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              <L>{hint}</L>
+            </p>
+          )}
         </div>
         {secondary && (
           <div className="self-stretch border-l pl-4">
             <div className="flex h-full flex-col justify-end">
               <p className="text-lg font-medium text-muted-foreground">{secondary.value}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{secondary.label}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                <L>{secondary.label}</L>
+              </p>
             </div>
           </div>
         )}

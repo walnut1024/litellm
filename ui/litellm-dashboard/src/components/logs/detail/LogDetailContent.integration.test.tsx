@@ -105,12 +105,13 @@ describe("LogDetailContent", () => {
     render(
       <LogDetailContent
         logEntry={createLogEntry({
-          request_tags: { env: "prod", version: "1.0" },
+          request_tags: { env: "prod", version: "1.0", system: "litellm-internal-health-check" },
         })}
       />,
     );
 
     expect(screen.getByText("Tags")).toBeInTheDocument();
+    expect(screen.getByText("system: 系统健康检查")).toBeInTheDocument();
     expect(screen.getByText("env: prod")).toBeInTheDocument();
     expect(screen.getByText("version: 1.0")).toBeInTheDocument();
   });

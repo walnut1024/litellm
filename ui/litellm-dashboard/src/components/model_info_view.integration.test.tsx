@@ -544,7 +544,7 @@ describe("ModelInfoView", () => {
     render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
       expect(screen.getByText("Provider")).toBeInTheDocument();
-      expect(screen.getByText("LiteLLM Model")).toBeInTheDocument();
+      expect(screen.getByText("Upstream Model")).toBeInTheDocument();
       expect(screen.getByText("Pricing")).toBeInTheDocument();
     });
   });

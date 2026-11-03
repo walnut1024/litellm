@@ -476,7 +476,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   const breakdownTiles = showFlatCost && showCostBreakdown ? buildCostBreakdownTiles(spendData.metadata) : [];
   const summaryTiles = buildSummaryTiles(spendData.metadata, showFlatCost, showPtuHours);
 
-  const modelViewTitle = modelViewType === "groups" ? "Top Public Model Names" : "Top Litellm Models";
+  const modelViewTitle = modelViewType === "groups" ? "Top Public Model Names" : "Top Upstream Models";
   const chartFormat = (value: number) => formatMetricValue(value, breakdown.metric);
 
   const costPanel = loading ? (

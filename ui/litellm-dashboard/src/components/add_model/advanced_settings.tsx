@@ -483,7 +483,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               name="litellm_extra_params"
               label={labelWithHint(
                 "Model Call Parameters",
-                "Optional litellm params used for making a model request call.",
+                "Optional model parameters used for making a model request call.",
               )}
               className="mb-4 mt-4"
               rules={{ validate: validatorRules({ validator: formItemValidateJSON }) }}

@@ -62,7 +62,7 @@ function RequestLogsEmptyState({ filtered }: { filtered: boolean }) {
         <L>
           {filtered
             ? "No requests match your filters for this time range."
-            : "Requests proxied through LiteLLM will appear here."}
+            : "Requests proxied through the gateway will appear here."}
         </L>
       </div>
     </div>

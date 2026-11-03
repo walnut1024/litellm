@@ -60,7 +60,7 @@ describe("AvailableTeamsPanel", () => {
     await waitFor(() => {
       expect(screen.getByText(/No available teams to join/i)).toBeInTheDocument();
     });
-    expect(screen.getByText(/See how to set available teams/i)).toBeInTheDocument();
+    expect(screen.getByText(/Contact your administrator to make a team available/i)).toBeInTheDocument();
   });
 
   it("should call teamMemberAddCall when the Join team menu item is clicked", async () => {

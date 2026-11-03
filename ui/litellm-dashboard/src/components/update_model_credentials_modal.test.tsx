@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -45,6 +46,23 @@ const renderModal = (overrides: Partial<Parameters<typeof UpdateModelCredentials
   );
 
 describe("UpdateModelCredentialsModal", () => {
+  it("explains supported credential types in Chinese", () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    render(
+      <LocaleProvider>
+        <UpdateModelCredentialsModal
+          open
+          onCancel={vi.fn()}
+          accessToken="test-token"
+          modelId="model-123"
+          onUpdated={vi.fn()}
+        />
+      </LocaleProvider>,
+    );
+    expect(screen.getByText(/使用 Azure AD 令牌、AWS 凭据或 Vertex 服务账户 JSON/)).toBeInTheDocument();
+    expect(screen.getByLabelText("新 API 密钥")).toHaveAttribute("placeholder", "请输入新的 API 密钥");
+    localStorage.removeItem("moma.locale");
+  });
   beforeEach(() => {
     vi.clearAllMocks();
   });

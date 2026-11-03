@@ -1,3 +1,4 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
@@ -35,6 +36,7 @@ export default function UpdateModelCredentialsModal({
   modelId,
   onUpdated,
 }: UpdateModelCredentialsModalProps) {
+  const t = useTranslation();
   const form = useZodForm(updateCredentialsSchema, { defaultValues: EMPTY_VALUES });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -75,32 +77,40 @@ export default function UpdateModelCredentialsModal({
           <DialogTitle>Update API Key</DialogTitle>
         </DialogHeader>
         <span className="block mb-4 text-sm text-muted-foreground">
-          Update this model&apos;s API key. Only the new key is sent; the rest of the deployment configuration is left
-          untouched.
+          <L>
+            Update this model&apos;s API key. Only the new key is sent; the rest of the deployment configuration is left
+            untouched.
+          </L>
         </span>
         <Alert variant="warning" className="mb-4">
           <TriangleAlert />
           <AlertTitle>
-            Only the API key is rotated here. Models that authenticate with an Azure AD token, AWS credentials, or a
-            Vertex service-account JSON aren&apos;t supported yet; update those from the model&apos;s LiteLLM Params for
-            now.
+            <L>
+              Only the API key is rotated here. Models that authenticate with an Azure AD token, AWS credentials, or a
+              Vertex service-account JSON are not supported here. Update those from the model call parameters.
+            </L>
           </AlertTitle>
         </Alert>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <FieldGroup>
             <FormField control={form.control} name="api_key" label="New API Key">
               {({ ref, ...field }) => (
-                <PasswordInput {...field} ref={ref} placeholder="Enter the new API key" autoComplete="new-password" />
+                <PasswordInput
+                  {...field}
+                  ref={ref}
+                  placeholder={t("Enter the new API key")}
+                  autoComplete="new-password"
+                />
               )}
             </FormField>
           </FieldGroup>
           <div className="flex justify-end items-center mt-4 gap-2.5">
             <Button type="button" variant="outline" onClick={close}>
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button type="submit" disabled={isSaving}>
               {isSaving && <UiLoadingSpinner className="size-4" />}
-              Update API Key
+              <L>Update API Key</L>
             </Button>
           </div>
         </form>

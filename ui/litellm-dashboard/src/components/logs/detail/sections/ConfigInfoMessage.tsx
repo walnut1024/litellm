@@ -33,7 +33,7 @@ export const ConfigInfoMessage: React.FC<ConfigInfoMessageProps> = ({ show }) =>
         </h4>
         <p className="text-sm text-info mt-1">
           <L>
-            To view request and response details, enable prompt storage in your LiteLLM configuration by adding the
+            To view request and response details, enable prompt storage in your gateway configuration by adding the
             following to your
           </L>{" "}
           <code className="bg-info/15 px-1 py-0.5 rounded-sm">proxy_config.yaml</code>

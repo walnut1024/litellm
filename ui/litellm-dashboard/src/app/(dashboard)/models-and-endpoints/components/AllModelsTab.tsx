@@ -390,7 +390,7 @@ const AllModelsTab = ({
                   value: modelToDelete.model_name || "Not Set",
                 },
                 {
-                  label: "LiteLLM Model Name",
+                  label: "Upstream Model Name",
                   value: modelToDelete.litellm_model_name || "Not Set",
                 },
                 {

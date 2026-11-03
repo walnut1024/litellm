@@ -264,7 +264,7 @@ export default function ModelInfoView({
 
       const parsedExtraParams = parseModelExtraParams(values.litellm_extra_params);
       if (parsedExtraParams === null) {
-        toast.error("LiteLLM Params must be a valid JSON object");
+        toast.error("Model Call Parameters must be a valid JSON object");
         return;
       }
 
@@ -634,7 +634,7 @@ export default function ModelInfoView({
               </Card>
               <LiteUiMask adminOnly>
                 <Card className="block p-6">
-                  <p className="text-sm">{t("LiteLLM Model")}</p>
+                  <p className="text-sm">{t("Upstream Model")}</p>
                   <div className="mt-2 overflow-hidden">
                     <SimpleTooltip content={modelData.litellm_model_name || "Not Set"} className="w-full min-w-0">
                       <div className="break-all text-sm font-medium leading-relaxed cursor-pointer">
@@ -767,7 +767,7 @@ export default function ModelInfoView({
             value: modelData?.model_name || "Not Set",
           },
           {
-            label: "LiteLLM Model Name",
+            label: "Upstream Model Name",
             value: modelData?.litellm_model_name || "Not Set",
           },
           {

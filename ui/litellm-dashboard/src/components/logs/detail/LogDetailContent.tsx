@@ -1,3 +1,4 @@
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
 import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { copyToClipboard } from "@/utils/dataUtils";
 import { useState } from "react";
@@ -364,7 +365,7 @@ function TagsSection({ tags }: { tags: Record<string, any> }) {
       <div className="flex flex-wrap items-center gap-2">
         {Object.entries(tags).map(([key, value]) => (
           <Badge key={key} variant="outline">
-            {key}: {String(value)}
+            {key}: {systemResourceLabel(String(value))}
           </Badge>
         ))}
       </div>

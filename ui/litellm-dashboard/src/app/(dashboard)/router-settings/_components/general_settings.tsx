@@ -382,7 +382,11 @@ const GeneralSettings: React.FC<GeneralSettingsPageProps> = ({ accessToken, user
                             <L>{value.field_name}</L>
                           </p>
                           <p className="mt-1 break-words text-xs italic text-muted-foreground">
-                            <L>{value.field_description}</L>
+                            <L>
+                              {value.field_name === "pass_through_endpoints"
+                                ? "Configure pass-through endpoints for provider-specific APIs."
+                                : value.field_description}
+                            </L>
                           </p>
                         </TableCell>
                         <TableCell>

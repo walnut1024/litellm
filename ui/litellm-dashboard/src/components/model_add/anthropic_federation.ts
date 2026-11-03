@@ -101,7 +101,7 @@ export const IDENTITY_SOURCES: readonly IdentitySource[] = [
         key: "anthropic_issuer_url",
         label: "Issuer URL",
         tooltip: "The issuer registered on the federation rule. The proxy puts it in the token's iss claim.",
-        placeholder: "https://litellm.example.com",
+        placeholder: "https://gateway.example.com",
         required: true,
         control: "text",
       },

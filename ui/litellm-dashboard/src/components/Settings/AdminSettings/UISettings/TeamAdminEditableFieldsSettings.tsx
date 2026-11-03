@@ -41,8 +41,6 @@ const RAISE_MAX_BUDGET_TOOLTIP =
 const METADATA_HELP_LABEL = "About editing team metadata";
 const METADATA_TOOLTIP =
   "Lets team admins add, change and remove their own metadata keys. Keys the proxy reads as settings stay with proxy admins, and keys declared in the team metadata schema can be changed but not removed.";
-const TEAM_ADMIN_FIELDS_DOCS_URL =
-  "https://docs.litellm.ai/docs/proxy/access_control#choosing-what-team-admins-can-edit";
 
 const toggleEditableField = (
   supportedFields: readonly string[],
@@ -244,10 +242,7 @@ function FieldHelp({ label, text }: FieldHelpProps) {
         </TooltipTrigger>
         <TooltipContent>
           <span>
-            <L>{text}</L>{" "}
-            <a href={TEAM_ADMIN_FIELDS_DOCS_URL} target="_blank" rel="noopener noreferrer" className="underline">
-              <L>Learn more</L>
-            </a>
+            <L>{text}</L>
           </span>
         </TooltipContent>
       </Tooltip>

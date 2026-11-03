@@ -119,6 +119,25 @@ describe("lightweight UI rendering", () => {
     expect(screen.queryByText("Microsoft Teams Alerting Settings")).not.toBeInTheDocument();
   });
 
+  it.each(["mcp-servers", "mcp", "agents", "skills"])("keeps access group tab %s hidden even when selected", (tab) => {
+    render(
+      <LiteUiContext.Provider value={{ route: "access-groups", admin: true }}>
+        <Tabs value={tab}>
+          <TabsList>
+            <TabsTrigger value="models">Models</TabsTrigger>
+            <TabsTrigger value={tab}>Hidden resource</TabsTrigger>
+          </TabsList>
+          <TabsContent value={tab} keepMounted>
+            Hidden resource configuration
+          </TabsContent>
+        </Tabs>
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.getByRole("tab", { name: "Models" })).toBeVisible();
+    expect(screen.queryByRole("tab", { name: "Hidden resource" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Hidden resource configuration")).not.toBeInTheDocument();
+  });
+
   it("restores team columns while keeping masked columns out of the table and column selector", async () => {
     render(
       <LiteUiContext.Provider value={{ route: "api-keys", admin: false }}>

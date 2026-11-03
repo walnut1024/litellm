@@ -64,6 +64,7 @@
 | Logs                     | Audit Logs、Deleted Keys、Deleted Teams，连同 Enterprise 预览和升级说明                                                                                 | Request Logs 及请求详情                                                   |
 | Teams                    | Default Team Settings 页签、创建团队中的独立 Logging Settings、组织与密钥管理展示、单模型预算编辑和展示                                                 | 团队基本预算和成员预算保留，成员表中的原始限额数据不重算                  |
 | 团队成员添加或编辑       | 新分配团队 Admin 角色、单模型预算                                                                                                                       | 新成员默认普通角色。已有 Admin 成员编辑时保留原角色选项，避免改写已有授权 |
+| 访问组创建、编辑及详情   | MCP Servers、Agents、Skills 页签及对应内容                                                                                                              | 创建和编辑保留基本信息与模型，详情保留模型，隐藏项已有授权不会被清空      |
 | Usage                    | MCP、Endpoints 页签、Aria 自然语言查询、Top Agents，以及 Customer、Tag、Agent、User Agent Activity、Organization 统计视角                               | 全局、本人、用户、团队统计按原权限提供                                    |
 | Router Settings          | 路由策略选择、标签过滤、基于延迟的高级配置                                                                                                              | 原有基础重试等设置                                                        |
 | Logging & Alerts         | Logging Callbacks、CloudZero、MS Teams Alerts 页签、Region Outage 企业告警                                                                              | 告警类型、可用的普通告警设置、Email 设置。默认打开 Alerting Types         |
@@ -893,3 +894,15 @@ Chrome 实际复现了更新前的英文登录错误，并验证更新后的中�
 本次检查不等于所有凭据有效性、上游历史样例、GitHub 缓存或他人克隆均已证明无风险。Git 历史替换会改变相关提交 ID，其他本地副本后续应基于清理后的分支同步，避免重新引入旧提交。仅修改公开文档及相关历史，没有重建镜像、重启应用、执行供应商调用或业务测试
 
 相关 4 个近期文档提交已改写并使用明确的 `--force-with-lease` 推送，两个旧文档版本中的私有路径被替换，最终工作树内容与改写前一致，社区历史及原轻量分支未改动。重新扫描轻量提交仍为 0 凭据命中，精确匹配未发现本机凭据或新增历史中的私有路径，GitHub 当前 main 内容与本机一致。通过旧 SHA 请求时，GitHub 仍返回原文档，因此旧对象清除尚未完成，需要按[GitHub 敏感数据清理说明](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository)处理服务端缓存。支持清理请求材料仅保存在本机，没有代用户发送支持消息
+
+## 访问组资源页签裁剪
+
+2026-11-03 按用户要求，在 `src/utils/liteUi.ts` 的访问组统一规则中屏蔽 `mcp-servers`、`mcp`、`agents`、`skills`，覆盖创建、编辑和详情中的 MCP 服务器、智能体、技能页签及其内容。创建和编辑保留基本信息与模型，详情保留模型页签。复用现有 `TabsTrigger` 和 `TabsContent` 过滤，不新增页面状态或接口，未修改已存资源授权、关联关系、资源统计或后端能力
+
+`AccessGroupCreateDialog.test.tsx` 验证仅两个页签可见，名称、说明和所选模型仍进入原创建请求。`AccessGroupEditModal.integration.test.tsx` 验证模型信息保留，编辑说明时不提交隐藏资源的清空值。`LiteUiContext.integration.test.tsx` 验证被屏蔽项即使预选或 `keepMounted` 也不渲染内容。连同可见性规则和访问组详情，共 5 个定向文件、116 项通过。新增创建和编辑回归在修改前均因实际出现 5 个页签而失败，修改后通过。lint 调整测试写法后，编辑回归另复验 1 项通过，属于前述用例，不重复累计
+
+生产构建、TypeScript 和静态导出通过。首次适用 lint 检查发现新增文档的表格格式及测试对象字面量导致既有预算增加，格式化并改为命名变量后，Prettier、ESLint 和 lint 预算检查通过，没有提高预算或添加抑制。Next 构建仍有原配置的实验选项提示，未扩展修改构建配置
+
+本轮沿用当前完整源码构建的运行层，仅替换前端静态导出并重新创建 4001 应用。管理员在内置浏览器实查创建弹窗只剩基本信息与模型，模型选择可见两个官方 DeepSeek 型号，选择 Flash 后返回基本信息仍保留输入，取消后未创建访问组。页面身份、内容、交互、截图及控制台检查通过，没有框架错误覆盖层或捕获到的警告、错误。缓存临时关闭仅供验收，完成后恢复。截图和执行记录保存在仓库外，不上传账号或私有目录
+
+当前真实访问组为空，编辑和详情的验证来自上述组件回归，没有创建业务数据制造样本。没有执行真实创建或编辑提交、供应商调用、员工角色、手机专项、跨浏览器或完整可访问性回归。列表空状态仍有独立的英文文案残留，未纳入此次页签裁剪。社区基线、后端源码、数据库结构、模型及用户权限不变

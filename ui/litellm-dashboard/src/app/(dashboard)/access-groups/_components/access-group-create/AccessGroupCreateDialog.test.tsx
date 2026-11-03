@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { describe, expect, it, vi, type Mock } from "vitest";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 vi.mock("@/components/ModelSelect/ModelSelect", () => ({
   ModelSelect: ({ onChange }: { onChange: (values: string[]) => void }) => (
@@ -32,12 +33,14 @@ const Harness = ({ createAccessGroup }: { createAccessGroup: (body: unknown) => 
   );
 };
 
-const renderDialog = (overrides?: { createAccessGroup?: Mock }) => {
+const renderDialog = (overrides?: { createAccessGroup?: Mock; lightweight?: boolean }) => {
   const createAccessGroup = overrides?.createAccessGroup ?? vi.fn().mockResolvedValue({});
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={queryClient}>
-      <Harness createAccessGroup={createAccessGroup} />
+      <LiteUiContext.Provider value={overrides?.lightweight ? { route: "access-groups", admin: true } : null}>
+        <Harness createAccessGroup={createAccessGroup} />
+      </LiteUiContext.Provider>
     </QueryClientProvider>,
   );
   return { createAccessGroup };
@@ -80,9 +83,13 @@ describe("AccessGroupCreateDialog", () => {
     await waitFor(() => expect(screen.queryByLabelText("Group Name")).not.toBeInTheDocument());
   });
 
-  it("maps the description and model selections into the create body", async () => {
+  it("keeps only basic and model tabs in the lightweight create flow and submits their values", async () => {
     const user = userEvent.setup();
-    const { createAccessGroup } = renderDialog();
+    const { createAccessGroup } = renderDialog({ lightweight: true });
+
+    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getByRole("tab", { name: "General Info" })).toBeVisible();
+    expect(screen.getByRole("tab", { name: "Models" })).toBeVisible();
 
     await user.type(screen.getByLabelText("Group Name"), "prod-models");
     await user.type(screen.getByLabelText("Description"), "engineering access");

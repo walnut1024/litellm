@@ -4,6 +4,7 @@ import { fireEvent, renderWithProviders, screen, waitFor, within } from "../../.
 import { AccessGroupEditModal } from "./AccessGroupEditModal";
 import { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
 import * as networking from "@/components/networking";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 const mutate = vi.fn();
 
@@ -95,6 +96,32 @@ describe("AccessGroupEditModal submit payload", () => {
       ],
       error: false,
     });
+  });
+
+  it("preserves hidden grants while editing basic and model fields in the lightweight view", async () => {
+    const user = setup();
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "access-groups", admin: true }}>
+        <AccessGroupEditModal visible accessGroup={accessGroup} onCancel={vi.fn()} />
+      </LiteUiContext.Provider>,
+    );
+
+    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    fireEvent.change(screen.getByLabelText("Description"), { target: { value: "Updated description" } });
+    await user.click(screen.getByRole("tab", { name: "Models" }));
+    expect(screen.getByLabelText("model-select")).toHaveTextContent((accessGroup.access_model_names ?? []).join(","));
+    await save(user);
+
+    await waitFor(() => expect(mutate).toHaveBeenCalledTimes(1));
+    const expectedParams = {
+      access_group_name: accessGroup.access_group_name,
+      description: "Updated description",
+      access_model_names: accessGroup.access_model_names,
+      access_mcp_server_ids: undefined,
+      access_agent_ids: undefined,
+      access_skill_names: undefined,
+    };
+    expect(variables().params).toStrictEqual(expectedParams);
   });
 
   it("sends exactly the antd payload for an untouched save", async () => {

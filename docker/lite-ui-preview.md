@@ -1,5 +1,19 @@
 # Lightweight dashboard preview
 
+## Current deployment, 2026-11-03
+
+Port 4001 now runs a fresh `main` deployment under Compose project `litellm-main-clean-20261103`, using volume `litellm-main-clean-20261103_preview_db`. The root Dockerfile built the complete runtime and dashboard from `d327a994b1d10bd1f97438f83d66e986b3f0ea85`. Subsequent documentation-only release layers retain that runtime, include the updated deployment records, and label the image with the final `main` commit. Tags use `litellm-moma:main-<short-commit>`. The running image revision must match `git rev-parse HEAD`
+
+The fresh database started with zero models. It now contains only `deepseek-flash` and `deepseek-v4-pro`, using the native `deepseek/` provider at `https://api.deepseek.com`. There is one bootstrap administrator and one scoped, one-day smoke-test key. Old employees, keys, models and request history were not imported. The administrator password retains the last test value requested by the user
+
+Private deployment files and backups are kept outside this checkout in a local directory accessible only to the operator. Use its `preview.env` and `compose.override.yml` with `docker/docker-compose.lite-ui.yml` and `up -d --no-build litellm`. Keep the environment file with this database because it contains its new encryption salt and credentials. The old `litellm-lite-preview` containers are stopped, its volume is retained, and the final database dump was taken after stopping its application. Ports 4000 and 4002 were not changed
+
+Both models returned HTTP 200 and `测试成功` through `/v1/chat/completions`. A third Flash request verified streaming and `[DONE]`. The three successful request logs total 39 tokens and an estimated CNY 0.000229 using the configured official RMB rates. Peak, cache and weekday off-peak rates were configured from the official pricing page. Holiday discounts and provider invoices were not reconciled. The root image build passed the dashboard production build, TypeScript and static export. Browser checks covered administrator login, the two-model inventory, the single-user inventory, the test key and the three successful request logs. Old credentials also produced authentication-failure records after the reset, not failed provider calls. Existing browser sessions and API clients must sign in again or use a newly generated key. No employee was seeded or tested in this fresh database
+
+The following setup recipe describes the older reusable UI overlay workflow. Deployment and model inventories recorded below are historical and do not describe the fresh 4001 database
+
+## Reusable preview setup
+
 This local stack uses a source-built runtime, a separately built dashboard, an isolated database, and port 4001. Existing proxy containers and data are kept in place
 
 Build the runtime from this checkout once. Rebuild it when Python or Rust code changes
@@ -35,7 +49,7 @@ Open [the dashboard](http://localhost:4001/ui/) and use the `admin` account with
 
 This loopback-only test preview disables breached-password screening through `general_settings.password_policy_check_breached_passwords: false`, as explicitly requested for testing. The minimum length of 12 characters and the other password-strength requirements remain enabled. Keep test passwords in the private environment and account files, never in this checkout. Production and the separate services retain their existing policies
 
-The YAML model list is empty. Models and encrypted provider credentials are stored in the external preview database through the native management APIs. A new database starts without models, while the current environment contains only the forty-one models in [moma-model-catalog.md](moma-model-catalog.md)
+The YAML model list is empty. Models and encrypted provider credentials are stored in the external preview database through the native management APIs. A new database starts without models. The former forty-one-model inventory in [moma-model-catalog.md](moma-model-catalog.md) is retained as a historical record
 
 The ten original YAML mock entries, including `preview-text` and nine `demo-*` names, were removed. The earlier `moma-deepseek-v3.2` trial deployment was also removed because it is outside the approved list. The existing Qwen 397B deployment is retained as `moma-qwen3.5-397b`. Existing users, keys, and request history are retained, so historical logs or stored key scopes can still mention removed models. No scope was widened by clearing an allowlist
 
@@ -55,7 +69,7 @@ Browser verification covered both roles signing in, employee key creation, admin
 
 Some existing employee-page hooks still request administrator-only configuration and team endpoints, which return 403 in the console. The verified key and chat flows succeed. Backend authorization and those API contracts are unchanged by this masking pass. SSO and production deployment were not validated
 
-## Real provider verification
+## Historical real provider verification
 
 On 2026-11-01 the dashboard at commit `d37c64c78e` was rebuilt and packaged as `litellm-lite-ui:local`, also tagged `litellm-moma:d37c64c78e`. The image ID is `sha256:e606989a0674783a401bf8e62eb95e666f4e881e5b67c5e2bafb6fb517121cf6`. The runtime remains the existing source-built LiteLLM 1.109.0 image. No Python or Rust changes were introduced
 
@@ -71,7 +85,7 @@ The latest DeepSeek-V4.1 model has a different official endpoint, `https://vip.m
 
 After a container restart, health returned HTTP 200 and both real model records remained available. Existing accounts, mock entries, database volumes, and the separate services on ports 4000 and 4002 were preserved. Keep provider credentials outside the checkout and rebuild or relocate these records through the native model management flow when deploying elsewhere
 
-## Administrator model inventory
+## Historical administrator model inventory
 
 The administrator model list contains forty-one models after the user excluded hy3. All forty-one have verified upstream IDs and saved deployments, including forty new records and reuse of the existing Qwen 397B deployment. The later cleanup removed the ten original mock entries and the extra DeepSeek-V3.2 trial deployment, leaving exactly forty-one active catalog records. No hy3 deployment was created and it is no longer a pending item
 

@@ -33,6 +33,8 @@ docker compose -p litellm-lite-preview --env-file "$LITELLM_PREVIEW_ENV" -f dock
 
 Open [the dashboard](http://localhost:4001/ui/) and use the `admin` account with the generated `LITELLM_PREVIEW_PASSWORD`. Configure models through Models + Endpoints, invite employees through Internal Users, and grant them the `internal_user` role with access to the required configured models
 
+This loopback-only test preview disables breached-password screening through `general_settings.password_policy_check_breached_passwords: false`, as explicitly requested for testing. The minimum length of 12 characters and the other password-strength requirements remain enabled. Keep test passwords in the private environment and account files, never in this checkout. Production and the separate services retain their existing policies
+
 The YAML model list is empty. Models and encrypted provider credentials are stored in the external preview database through the native management APIs. A new database starts without models, while the current environment contains only the forty-one models in [moma-model-catalog.md](moma-model-catalog.md)
 
 The ten original YAML mock entries, including `preview-text` and nine `demo-*` names, were removed. The earlier `moma-deepseek-v3.2` trial deployment was also removed because it is outside the approved list. The existing Qwen 397B deployment is retained as `moma-qwen3.5-397b`. Existing users, keys, and request history are retained, so historical logs or stored key scopes can still mention removed models. No scope was widened by clearing an allowlist

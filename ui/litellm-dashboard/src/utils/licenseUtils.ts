@@ -20,12 +20,12 @@ const EXPIRY_DATE_FORMAT: Intl.DateTimeFormatOptions = {
   timeZone: "UTC",
 };
 
-export const formatExpiryDate = (expirationDate: string): string => {
+export const formatExpiryDate = (expirationDate: string, locale = "en-US"): string => {
   const date = new Date(`${expirationDate}T00:00:00Z`);
   if (Number.isNaN(date.getTime())) {
     return expirationDate;
   }
-  return date.toLocaleDateString("en-US", EXPIRY_DATE_FORMAT);
+  return date.toLocaleDateString(locale, EXPIRY_DATE_FORMAT);
 };
 
 export const formatExpirationStatus = (expirationDate: string | null, now: Date = new Date()): string => {

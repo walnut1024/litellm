@@ -71,16 +71,16 @@ describe("DrawerHeader sidebar toggle", () => {
 
     expect(screen.getByText("chatcmpl-h")).toBeInTheDocument();
     expect(screen.getByText("call-h")).toBeInTheDocument();
-    expect(screen.getByText("x-litellm-call-id:")).toBeInTheDocument();
+    expect(screen.getByText("Call ID:")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Copy Request ID" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Copy x-litellm-call-id" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy call ID" })).toBeInTheDocument();
   });
 
   it("omits the x-litellm-call-id line and button when the ids match", () => {
     renderHeader(logEntry({ request_id: "same-h", litellm_call_id: "same-h" }), false);
 
-    expect(screen.queryByText("x-litellm-call-id:")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Copy x-litellm-call-id" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Call ID:")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Copy call ID" })).not.toBeInTheDocument();
   });
 
   it("falls back to the request id row when the log names no model", () => {
@@ -133,13 +133,13 @@ describe("DrawerHeader copying", () => {
     renderHeader(logEntry({ request_id: "request-copy", litellm_call_id: "call-copy" }), false);
 
     const requestButton = screen.getByRole("button", { name: "Copy Request ID" });
-    const callButton = screen.getByRole("button", { name: "Copy x-litellm-call-id" });
+    const callButton = screen.getByRole("button", { name: "Copy call ID" });
     await user.click(requestButton);
     await user.click(callButton);
 
     expect(copyToClipboard).toHaveBeenNthCalledWith(1, "request-copy");
     expect(copyToClipboard).toHaveBeenNthCalledWith(2, "call-copy");
     expect(requestButton).toHaveAccessibleName(success ? "Copied!" : "Copy Request ID");
-    expect(callButton).toHaveAccessibleName(success ? "Copied!" : "Copy x-litellm-call-id");
+    expect(callButton).toHaveAccessibleName(success ? "Copied!" : "Copy call ID");
   });
 });

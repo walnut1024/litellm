@@ -105,7 +105,7 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
     <>
       <MountedFormField
         name="model"
-        label={labelWithHint("LiteLLM Model Name(s)", "The model name LiteLLM will send to the LLM API")}
+        label={labelWithHint("Upstream Model Name(s)", "The model name gateway will send to the LLM API")}
         required
         rules={{
           validate: {
@@ -197,8 +197,8 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
         <p className="col-start-11 col-span-14 text-sm mb-3 mt-1">
           <L>
             {selectedProvider === Providers.Azure
-              ? "Your deployment name will be saved as the public model name, and LiteLLM will use 'azure/deployment-name' internally"
-              : "The model name LiteLLM will send to the LLM API"}
+              ? "Your deployment name will be saved as the public model name, and gateway will use 'azure/deployment-name' internally"
+              : "The model name gateway will send to the LLM API"}
           </L>
         </p>
       </div>

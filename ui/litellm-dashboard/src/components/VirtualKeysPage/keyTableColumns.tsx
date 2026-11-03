@@ -91,7 +91,9 @@ const InfoHeader = ({ label, tooltip }: { label: ReactNode; tooltip: string }) =
     <L>{label}</L>
     <HoverCard>
       <HoverCardTrigger render={<Info className="size-3 text-muted-foreground cursor-help" />} />
-      <HoverCardContent className="w-auto">{tooltip}</HoverCardContent>
+      <HoverCardContent className="w-auto">
+        <L>{tooltip}</L>
+      </HoverCardContent>
     </HoverCard>
   </span>
 );
@@ -327,7 +329,7 @@ export const getKeyTableColumns = ({
     header: ({ column }) => (
       <InfoHeader
         label={<DataTableSortHeader column={column} title="Lifetime Spend" />}
-        tooltip="Cumulative spend across every budget period. Budget resets do not touch this value. Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026, so keys created earlier only count spend since that upgrade."
+        tooltip="Cumulative spend across every budget period. Budget resets do not touch this value. Earlier usage may be excluded because lifetime tracking was introduced after this key was created."
       />
     ),
     size: 150,

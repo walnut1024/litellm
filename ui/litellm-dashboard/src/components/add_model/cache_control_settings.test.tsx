@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import CacheControlInjectionPoints, { type CacheControlInjectionPoint } from "./cache_control_settings";
 
-const ROLE_HINT = "LiteLLM will mark all messages of this role as cacheable";
-const INDEX_HINT = "(Optional) If set litellm will mark the message at this index as cacheable";
+const ROLE_HINT = "The gateway will mark all messages of this role as cacheable";
+const INDEX_HINT = "(Optional) If set the gateway will mark the message at this index as cacheable";
 
 const ONE_POINT: CacheControlInjectionPoint[] = [{ location: "message" }];
 

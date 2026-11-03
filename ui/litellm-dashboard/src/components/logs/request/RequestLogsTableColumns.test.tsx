@@ -325,7 +325,7 @@ describe("Request ID column", () => {
     expect(screen.queryByText("call-uuid-9")).not.toBeInTheDocument();
 
     await user.hover(screen.getByText("chatcmpl-9"));
-    expect(await screen.findByText("x-litellm-call-id: call-uuid-9")).toBeInTheDocument();
+    expect(await screen.findByText("Call ID: call-uuid-9")).toBeInTheDocument();
   });
 
   it("copies the x-litellm-call-id from the tooltip without opening the row", async () => {
@@ -342,7 +342,7 @@ describe("Request ID column", () => {
     );
 
     await user.hover(screen.getByText("chatcmpl-9"));
-    fireEvent.click(await screen.findByRole("button", { name: "Copy x-litellm-call-id" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Copy call ID" }));
 
     expect(copyToClipboardMock).toHaveBeenCalledWith("call-uuid-9");
     expect(onRowClick).not.toHaveBeenCalled();

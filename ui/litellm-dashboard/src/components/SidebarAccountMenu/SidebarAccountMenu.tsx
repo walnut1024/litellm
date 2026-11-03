@@ -1,7 +1,6 @@
 import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useHealthReadinessDetails } from "@/app/(dashboard)/hooks/healthReadiness/useHealthReadinessDetails";
 import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts";
 import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBouncingIcon";
 import { useDisableLiteAdmin } from "@/app/(dashboard)/hooks/useDisableLiteAdmin";
@@ -23,8 +22,6 @@ import { isProxyAdminRole } from "@/utils/roles";
 import { ChevronsUpDown, Crown, IdCard, KeyRound, LogOut, Mail, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
-
-const RELEASE_NOTES_URL = "https://docs.litellm.ai/release_notes";
 
 function hueFromString(seed: string): number {
   let h = 0;
@@ -96,13 +93,10 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
     userRoleLabel: userRole,
     isViewOnly,
     premiumUser,
-    accessToken,
     loginMethod,
   } = useAuthorized();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const { data: healthData } = useHealthReadinessDetails(accessToken);
-  const version = healthData?.litellm_version;
   const disableShowPrompts = useDisableShowPrompts();
   const disableBlogPosts = useDisableBlogPosts();
   const disableBouncingIcon = useDisableBouncingIcon();
@@ -202,22 +196,13 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
             <span
               className="animate-bounce text-lg leading-none"
               style={{ animationDuration: "2s" }}
-              title="Thanks for using LiteLLM!"
+              title={t("Thanks for using MoMA!")}
               aria-hidden
             >
               🌴
             </span>
           )}
           <span className="flex-1" />
-          {version && (
-            <Badge
-              variant="outline"
-              render={<a href={RELEASE_NOTES_URL} target="_blank" rel="noopener noreferrer" />}
-              className="px-1.5 py-0 font-mono text-[10px] font-medium text-muted-foreground"
-            >
-              v{version}
-            </Badge>
-          )}
         </div>
 
         <div className="flex flex-col px-3 py-2">
@@ -228,7 +213,7 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
                 <L>Premium</L>
               </Badge>
             ) : (
-              <Badge variant="secondary" className="gap-1" title="Upgrade to Premium for advanced features">
+              <Badge variant="secondary" className="gap-1" title={t("Standard edition")}>
                 <Crown />
                 <L>Standard</L>
               </Badge>

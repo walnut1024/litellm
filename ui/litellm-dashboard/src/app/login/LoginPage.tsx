@@ -52,8 +52,8 @@ function SsoEnabledNotice() {
       <Info />
       <AlertTitle>
         <L>
-          Single Sign-On (SSO) is enabled. LiteLLM no longer automatically redirects to the SSO login flow upon loading
-          this page. To re-enable auto-redirect-to-SSO, set
+          Single Sign-On (SSO) is enabled. The gateway no longer automatically redirects to the SSO login flow upon
+          loading this page. To re-enable auto-redirect-to-SSO, set
         </L>{" "}
         <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">AUTO_REDIRECT_UI_LOGIN_TO_SSO=true</code>
         <L> in your environment configuration.</L>
@@ -265,15 +265,11 @@ function LoginPageContent() {
                     <p className="text-sm">
                       <L>By default, Username is </L>
                       <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">admin</code>
-                      <L> and Password is your set LiteLLM Proxy</L>
+                      <L> and Password is your configured gateway</L>
                       <code className="bg-muted px-1 py-0.5 rounded-sm text-xs">MASTER_KEY</code>.
                     </p>
                     <p className="mt-2 text-sm">
-                      <L>Need to set UI credentials or SSO?</L>{" "}
-                      <a href="https://docs.litellm.ai/docs/proxy/ui" target="_blank" rel="noopener noreferrer">
-                        <L>Check the documentation</L>
-                      </a>
-                      .
+                      <L>Need to set UI credentials or SSO?</L> <L>Contact your administrator.</L>.
                     </p>
                   </AlertDescription>
                 </Alert>

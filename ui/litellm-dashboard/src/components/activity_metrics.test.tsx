@@ -1484,6 +1484,18 @@ describe("ActivityMetrics response time", () => {
 });
 
 describe("formatKeyLabel", () => {
+  it("labels reserved key and team identifiers without modifying metadata", () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const modelData = createMockKeyMetricWithMetadata({
+      key_alias: null,
+      user_email: null,
+      team_id: "litellm-dashboard",
+    });
+    expect(formatKeyLabel(modelData, "litellm_proxy_master_key", [])).toBe("平台主密钥 (team_id: 控制台团队)");
+    expect(modelData.metadata.team_id).toBe("litellm-dashboard");
+    localStorage.clear();
+  });
+
   it("should return key_alias when no team_id is present", () => {
     const modelData = createMockKeyMetricWithMetadata({
       key_alias: "test-key",

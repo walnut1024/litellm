@@ -16,7 +16,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
 import { SearchSelect } from "@/components/shared/SearchSelect";
-import { labelWithDocsHint, labelWithHint } from "@/components/shared/form/LabelWithHint";
+import { labelWithHint } from "@/components/shared/form/LabelWithHint";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { TagsInput } from "@/app/(dashboard)/guardrails/_components/content_filter/TagsInput";
 import { TabsContent } from "@/components/ui/tabs";
@@ -755,10 +755,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           control={form.control}
                           name="organization_id"
                           className="mt-4"
-                          label={labelWithDocsHint(
+                          label={labelWithHint(
                             "Organization",
                             "Organizations can have multiple teams. Learn more about the user management hierarchy",
-                            "https://docs.litellm.ai/docs/proxy/user_management_heirarchy",
                           )}
                           description={
                             isOrgAdmin && isSingleOrg
@@ -999,11 +998,7 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           control={form.control}
                           name="guardrails"
                           className="mt-4"
-                          label={labelWithDocsHint(
-                            "Guardrails",
-                            "Setup your first guardrail",
-                            "https://docs.litellm.ai/docs/proxy/guardrails/quick_start",
-                          )}
+                          label={labelWithHint("Guardrails", "Setup your first guardrail")}
                           description="Select existing guardrails or enter new ones"
                         >
                           {({ id, value, onChange }) => (
@@ -1061,10 +1056,9 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                             control={form.control}
                             name="policies"
                             className="mt-4"
-                            label={labelWithDocsHint(
+                            label={labelWithHint(
                               "Policies",
                               "Apply policies to this team to control guardrails and other settings",
-                              "https://docs.litellm.ai/docs/proxy/guardrails/guardrail_policies",
                             )}
                             description="Select existing policies or enter new ones"
                           >

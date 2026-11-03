@@ -291,14 +291,10 @@ const Hint: React.FC<{ text: string }> = ({ text }) => (
     <TooltipTrigger
       render={<CircleHelp className="ml-1 inline size-3.5 shrink-0 cursor-help text-muted-foreground" />}
     />
-    <TooltipContent className="max-w-xs">{text}</TooltipContent>
+    <TooltipContent className="max-w-xs">
+      <L>{text}</L>
+    </TooltipContent>
   </Tooltip>
-);
-
-const DocsHint: React.FC<{ text: string; href: string }> = ({ text, href }) => (
-  <a href={href} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>
-    <Hint text={text} />
-  </a>
 );
 
 const ChipList: React.FC<{ values: unknown; emptyLabel: string }> = ({ values, emptyLabel }) => {
@@ -446,8 +442,8 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             {textField("model_name", "Model Name", "Enter model name", localModelData.model_name)}
             {textField(
               "litellm_model_name",
-              "LiteLLM Model Name",
-              "Enter LiteLLM model name",
+              "Upstream Model Name",
+              "Enter upstream model name",
               localModelData.litellm_model_name,
             )}
 
@@ -553,10 +549,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             <div>
               <FieldLabel>
                 <L>Guardrails</L>
-                <DocsHint
-                  text="Apply safety guardrails to this model to filter content or enforce policies"
-                  href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
-                />
+                <Hint text="Apply safety guardrails to this model to filter content or enforce policies" />
               </FieldLabel>
               {isEditing ? (
                 tagsField(
@@ -574,10 +567,7 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
             <div>
               <FieldLabel>
                 <L>Attached Knowledge Bases (RAG)</L>
-                <DocsHint
-                  text="Vector stores used for RAG. Every request to this model will automatically retrieve context from these knowledge bases."
-                  href="https://docs.litellm.ai/docs/completion/knowledgebase"
-                />
+                <Hint text="Vector stores used for RAG. Every request to this model will automatically retrieve context from these knowledge bases." />
               </FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="vector_store_ids">
@@ -777,18 +767,15 @@ const ModelInfoEditForm: React.FC<ModelInfoEditFormProps> = ({
 
             <div>
               <FieldLabel>
-                <L>LiteLLM Params</L>
-                <DocsHint
-                  text="Additional parameters for model requests. Settings with dedicated fields above are edited there. Remove a key here to delete its saved value."
-                  href="https://docs.litellm.ai/docs/completion/input"
-                />
+                <L>Model Call Parameters</L>
+                <Hint text="Additional parameters for model requests. Settings with dedicated fields above are edited there. Remove a key here to delete its saved value." />
               </FieldLabel>
               {isEditing ? (
                 <FormField control={form.control} name="litellm_extra_params">
                   {({ value, ...control }) => (
                     <Textarea
                       {...control}
-                      aria-label="LiteLLM Params"
+                      aria-label="Model Call Parameters"
                       value={(value as string) ?? ""}
                       rows={4}
                       placeholder={'{\n  "drop_params": true\n}'}

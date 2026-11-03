@@ -10,16 +10,12 @@ import { uiHref } from "@/utils/uiHref";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import SidebarAccountMenu from "@/components/SidebarAccountMenu/SidebarAccountMenu";
 import { useLogout } from "@/app/(dashboard)/hooks/useLogout";
-import { BlogDropdown } from "@/components/Navbar/BlogDropdown/BlogDropdown";
-import { DocsLink } from "@/components/Navbar/DocsLink/DocsLink";
-import { CommunityEngagementButtons } from "@/components/Navbar/CommunityEngagementButtons/CommunityEngagementButtons";
 import { NotificationsBell } from "@/components/Navbar/NotificationsBell/NotificationsBell";
 import ViewSwitcher from "@/components/Navbar/ViewSwitcher";
 import LiteAdmin from "@/components/liteadmin/LiteAdmin";
 import ThemeToggle from "@/components/ThemeToggle/ThemeToggle";
 import WorkerDropdown from "@/components/Navbar/WorkerDropdown/WorkerDropdown";
 import { useWorker } from "@/hooks/useWorker";
-import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
 import { clearTokenCookies } from "@/utils/cookieUtils";
 import { clearStoredReturnUrl, getLoginUrl } from "@/utils/returnUrlUtils";
 import { useState, type ReactNode } from "react";
@@ -44,7 +40,6 @@ export function DashboardHeader({
   if (isDesktop && mobileToolsOpen) setMobileToolsOpen(false);
   const { isControlPlane, selectedWorker } = useWorker();
   const showWorkerSwitch = isControlPlane && selectedWorker !== null;
-  const hideCommunityLinks = useDisableShowPrompts();
 
   const handleWorkerSwitch = (workerId: string) => {
     clearTokenCookies();
@@ -76,17 +71,6 @@ export function DashboardHeader({
               <ToolbarSeparator />
             </>
           )}
-          <LiteUiMask>
-            <DocsLink />
-          </LiteUiMask>
-          <LiteUiMask>
-            <BlogDropdown />
-          </LiteUiMask>
-          {!hideCommunityLinks && (
-            <LiteUiMask>
-              <CommunityEngagementButtons />
-            </LiteUiMask>
-          )}
           <ToolbarSeparator />
           <ThemeToggle />
           {deploymentHealth}
@@ -112,17 +96,6 @@ export function DashboardHeader({
               {showWorkerSwitch && <WorkerDropdown onWorkerSwitch={handleWorkerSwitch} />}
               <div className="flex flex-wrap items-center gap-2">
                 <ThemeToggle />
-                <LiteUiMask>
-                  <DocsLink />
-                </LiteUiMask>
-                <LiteUiMask>
-                  <BlogDropdown />
-                </LiteUiMask>
-                {!hideCommunityLinks && (
-                  <LiteUiMask>
-                    <CommunityEngagementButtons />
-                  </LiteUiMask>
-                )}
               </div>
             </PopoverContent>
           </Popover>

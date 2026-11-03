@@ -42,14 +42,11 @@ describe("EmailSettings", () => {
     serviceHealthCheck.mockResolvedValue({});
   });
 
-  it("renders the heading and the docs link", () => {
+  it("renders the email settings without an upstream documentation link", () => {
     renderWithProviders(<EmailSettings accessToken="sk-test" premiumUser alerts={alerts} />);
 
     expect(screen.getByText("Email Server Settings")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /LiteLLM Docs: email alerts/ })).toHaveAttribute(
-      "href",
-      "https://docs.litellm.ai/docs/proxy/email",
-    );
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 
   it("renders one named input per email variable and none for other alert types", () => {

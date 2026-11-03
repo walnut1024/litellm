@@ -1,3 +1,4 @@
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
 import { LocalizedText as L } from "@/contexts/LocaleContext";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
@@ -125,7 +126,7 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
       header: "Key Alias",
       accessorKey: "key_alias",
       meta: QUIET_HEADER,
-      cell: (info: any) => info.getValue() || "-",
+      cell: (info: any) => systemResourceLabel(info.getValue() || "-"),
     },
     ...(topKeys.some((k) => k.user)
       ? [
@@ -207,10 +208,10 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
 
   const columns = showTags ? [...baseColumns, tagsColumn, spendColumn] : [...baseColumns, spendColumn];
 
-  const processedTopKeys = topKeys.map((k) => ({
-    ...k,
-    display_key_alias: k.key_alias && k.key_alias.length > 10 ? `${k.key_alias.slice(0, 10)}...` : k.key_alias || "-",
-  }));
+  const processedTopKeys = topKeys.map((k) => {
+    const label = systemResourceLabel(k.key_alias || "-");
+    return { ...k, display_key_alias: label.length > 10 ? `${label.slice(0, 10)}...` : label };
+  });
 
   return (
     <>
@@ -247,7 +248,9 @@ const TopKeyView: React.FC<TopKeyViewProps> = ({ topKeys, teams, showTags = fals
                   <div className="grid gap-1">
                     <div>
                       <span className="text-muted-foreground">Key Alias: </span>
-                      <span className="break-all font-mono text-foreground">{item?.key_alias}</span>
+                      <span className="break-all font-mono text-foreground">
+                        {systemResourceLabel(item?.key_alias || "-")}
+                      </span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">

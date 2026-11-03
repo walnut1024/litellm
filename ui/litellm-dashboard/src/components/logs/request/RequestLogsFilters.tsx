@@ -1,5 +1,7 @@
 "use client";
 
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
+
 import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { useMemo, useState } from "react";
@@ -71,9 +73,9 @@ function TeamFilterField({
   const options = useMemo<SearchSelectOption[]>(
     () =>
       teams.map((team) => ({
-        label: team.team_alias || team.team_id,
+        label: systemResourceLabel(team.team_alias || team.team_id),
         value: team.team_id,
-        sublabel: team.team_id,
+        sublabel: systemResourceLabel(team.team_id),
       })),
     [teams],
   );
@@ -113,7 +115,7 @@ function KeyAliasFilterField({
       page.aliases.flatMap((alias) => {
         if (!alias || seen.has(alias)) return [];
         seen.add(alias);
-        return [{ label: alias, value: alias }];
+        return [{ label: systemResourceLabel(alias), value: alias }];
       }),
     );
   }, [data]);

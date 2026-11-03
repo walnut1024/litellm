@@ -5,7 +5,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { FormField } from "@/components/shared/form/FormField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { useZodForm } from "@/lib/forms/useZodForm";
 import { CredentialItem } from "../networking";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -81,23 +81,7 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
                 </Field>
               ))}
 
-              <div className="flex items-center justify-between">
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <a
-                        href="https://github.com/BerriAI/litellm/issues"
-                        className="text-sm text-primary underline-offset-4 hover:underline"
-                      >
-                        <L>Need Help?</L>
-                      </a>
-                    }
-                  />
-                  <TooltipContent>
-                    <L>Get help on our github</L>
-                  </TooltipContent>
-                </Tooltip>
-
+              <div className="flex items-center justify-end">
                 <div className="flex gap-2.5">
                   <Button type="button" variant="outline" onClick={handleCancel}>
                     <L>Cancel</L>

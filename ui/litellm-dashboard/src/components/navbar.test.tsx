@@ -1,7 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, waitFor, within } from "../../tests/test-utils";
+import { renderWithProviders, screen, waitFor } from "../../tests/test-utils";
 import Navbar from "./navbar";
 
 // Mock the hooks and utilities
@@ -149,29 +149,14 @@ describe("Navbar", () => {
     renderWithProviders(<Navbar {...defaultProps} />);
 
     expect(screen.getByRole("button", { name: /^notifications/i })).toBeInTheDocument();
-    expect(screen.getByText("Docs")).toBeInTheDocument();
+    expect(screen.queryByText("Docs")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: /open account menu/i })).toBeInTheDocument();
   });
 
   it("should link the logo to the UI home route rather than the proxy origin", () => {
     renderWithProviders(<Navbar {...defaultProps} />);
 
-    expect(screen.getByRole("link", { name: /litellm brand/i })).toHaveAttribute("href", "/ui");
-  });
-
-  it("pairs the logo with a dark-mode variant that swaps on the dark class", () => {
-    renderWithProviders(<Navbar {...defaultProps} />);
-
-    const [light, dark] = Array.from(screen.getByRole("link", { name: /litellm brand/i }).querySelectorAll("img"));
-    const classesOf = (el: Element) => new Set(el.className.split(/\s+/));
-
-    const lightSrc = light.getAttribute("src") ?? "";
-    expect(light).toHaveAttribute("src", expect.stringMatching(/\/get_image$/));
-    expect(dark).toHaveAttribute("src", `${lightSrc}?theme=dark`);
-    expect(classesOf(light).has("dark:hidden")).toBe(true);
-    expect(classesOf(light).has("hidden")).toBe(false);
-    expect(classesOf(dark).has("hidden")).toBe(true);
-    expect(classesOf(dark).has("dark:block")).toBe(true);
+    expect(screen.getByRole("link", { name: /MoMA 轻量版/i })).toHaveAttribute("href", "/ui/home");
   });
 
   it("should display user information in dropdown", async () => {
@@ -227,12 +212,13 @@ describe("Navbar", () => {
     mockUserDropdownData.current = originalCurrent;
   });
 
-  it("should show version badge when health data contains version", () => {
+  it("keeps the account menu without an upstream version promotion", () => {
     mockUseHealthReadinessDetailsImpl = () => ({ data: { litellm_version: "1.0.0" } });
 
     renderWithProviders(<Navbar {...defaultProps} />);
 
-    expect(screen.getByText("v1.0.0")).toBeInTheDocument();
+    expect(screen.queryByText("v1.0.0")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /open account menu/i })).toBeInTheDocument();
 
     // Reset mock
     mockUseHealthReadinessDetailsImpl = () => ({ data: null });
@@ -253,22 +239,6 @@ describe("Navbar", () => {
 
     expect(useHealthReadinessDetailsSpy).toHaveBeenCalledWith(null);
   });
-
-  it.each(["https://example.com/dark-logo.png", null])(
-    "should use the configured dark logo %s with the light logo as fallback",
-    (logoUrlDark) => {
-      const logoUrl = "https://example.com/custom-logo.png";
-      mockUseThemeImpl = () => ({ logoUrl, logoUrlDark });
-
-      renderWithProviders(<Navbar {...defaultProps} />);
-
-      const brand = within(screen.getByRole("link", { name: /litellm brand/i }));
-      const light = brand.getByAltText("LiteLLM Brand");
-      const dark = brand.getByAltText("");
-      expect(light).toHaveAttribute("src", logoUrl);
-      expect(dark).toHaveAttribute("src", logoUrlDark ?? logoUrl);
-    },
-  );
 
   it("should hide user dropdown and notifications on public pages", () => {
     const publicPageProps = { ...defaultProps, isPublicPage: true };

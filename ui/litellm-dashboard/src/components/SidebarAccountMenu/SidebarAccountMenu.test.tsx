@@ -160,15 +160,14 @@ describe("SidebarAccountMenu", () => {
     expect(screen.getByText("Premium")).toBeInTheDocument();
   });
 
-  it("should render a clickable version badge linking to the release notes", async () => {
+  it("keeps the account identity without community version links", async () => {
     const user = userEvent.setup();
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} />);
 
     await openMenu(user);
 
-    const versionLink = screen.getByRole("link", { name: /v1\.99\.0/ });
-    expect(versionLink).toHaveAttribute("href", "https://docs.litellm.ai/release_notes");
-    expect(versionLink).toHaveAttribute("target", "_blank");
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+    expect(screen.getByText("test-user-id")).toBeVisible();
   });
 
   it("should not render the version badge when the version is unavailable", async () => {
@@ -185,7 +184,7 @@ describe("SidebarAccountMenu", () => {
     const user = userEvent.setup();
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} />);
     await openMenu(user);
-    expect(screen.getByTitle("Thanks for using LiteLLM!")).toBeInTheDocument();
+    expect(screen.getByTitle("Thanks for using MoMA!")).toBeInTheDocument();
   });
 
   it("should hide the bouncing icon when Hide Bouncing Icon is enabled", async () => {
@@ -193,7 +192,7 @@ describe("SidebarAccountMenu", () => {
     mockUseDisableBouncingIconImpl = () => true;
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} />);
     await openMenu(user);
-    expect(screen.queryByTitle("Thanks for using LiteLLM!")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("Thanks for using MoMA!")).not.toBeInTheDocument();
   });
 
   it("wires the email row to the shared copy button", async () => {

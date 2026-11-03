@@ -107,7 +107,7 @@ interface NotificationsBellViewProps {
 export const NotificationsBellView: React.FC<NotificationsBellViewProps> = ({ currentVersion, latestRelease }) => {
   const t = useTranslation();
   const lite = useLiteUi();
-  const upgrade = upgradeAnnouncement(currentVersion, latestRelease, t);
+  const upgrade = lite === null ? upgradeAnnouncement(currentVersion, latestRelease, t) : null;
   const announcements = [upgrade, lite === null ? AUTO_ROUTER_ANNOUNCEMENT : null].filter(
     (item): item is Announcement => item !== null,
   );
@@ -143,6 +143,7 @@ export const NotificationsBellView: React.FC<NotificationsBellViewProps> = ({ cu
 
 export const NotificationsBell: React.FC<{ accessToken: string | null }> = ({ accessToken }) => {
   const { data: healthData } = useHealthReadinessDetails(accessToken);
-  const { data: latestRelease } = useLatestReleaseInfo(accessToken);
+  const lite = useLiteUi();
+  const { data: latestRelease } = useLatestReleaseInfo(lite === null ? accessToken : null);
   return <NotificationsBellView currentVersion={healthData?.litellm_version} latestRelease={latestRelease} />;
 };

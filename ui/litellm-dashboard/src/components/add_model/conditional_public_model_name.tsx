@@ -42,7 +42,7 @@ const ANTHROPIC_1M_HEADERS = JSON.stringify({ extra_headers: { "anthropic-beta":
 const publicNameTooltipContent = (
   <div className="flex flex-col gap-2 text-left font-normal">
     <div>
-      <L>The name you specify in your API calls to LiteLLM Proxy</L>
+      <L>The name you specify in your API calls to gateway</L>
     </div>
     <div>
       <strong>
@@ -50,20 +50,20 @@ const publicNameTooltipContent = (
       </strong>{" "}
       <L>If you name your public model</L> <code className={tooltipCodeClassName}>example-name</code>
       <L>, and choose</L> <code className={tooltipCodeClassName}>openai/qwen-plus-latest</code>{" "}
-      <L>as the LiteLLM model</L>
+      <L>as the gateway model</L>
     </div>
     <div>
       <strong>
         <L>Usage:</L>
       </strong>{" "}
-      <L>You make an API call to the LiteLLM proxy with</L>{" "}
+      <L>You make an API call to the gateway with</L>{" "}
       <code className={tooltipCodeClassName}>model = &quot;example-name&quot;</code>
     </div>
     <div>
       <strong>
         <L>Result:</L>
       </strong>{" "}
-      <L>LiteLLM sends</L> <code className={tooltipCodeClassName}>qwen-plus-latest</code> <L>to the provider</L>
+      <L>gateway sends</L> <code className={tooltipCodeClassName}>qwen-plus-latest</code> <L>to the provider</L>
     </div>
   </div>
 );
@@ -117,11 +117,11 @@ const columns: ColumnDef<ModelMapping>[] = [
     accessorKey: "litellm_model",
     header: () => (
       <span className="flex items-center">
-        <L>LiteLLM Model Name</L>
+        <L>Upstream Model Name</L>
         <SimpleTooltip
           content={
             <div>
-              <L>The model name LiteLLM will send to the LLM API</L>
+              <L>The model name gateway will send to the LLM API</L>
             </div>
           }
           width="360px"
@@ -225,7 +225,7 @@ const ConditionalPublicModelName: React.FC = () => {
       label={
         <span className="flex items-center">
           <L>Model Mappings</L>
-          <SimpleTooltip content="Map public model names to LiteLLM model names for load balancing" />
+          <SimpleTooltip content="Map public model names to gateway model names for load balancing" />
         </span>
       }
       required

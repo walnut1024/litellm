@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation, useLocale } from "@/contexts/LocaleContext";
 
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { CircleAlert, Shield, TriangleAlert } from "lucide-react";
@@ -61,6 +61,7 @@ export const DeploymentHealthIcon = ({ handle }: { handle: DeploymentHealthHandl
 };
 
 export const DeploymentHealthBanner = ({ handle }: { handle: DeploymentHealthHandle }) => {
+  const { locale } = useLocale();
   const t = useTranslation();
   const { canView } = useDeploymentHealthAccess();
   const { data } = useDeploymentWarnings();
@@ -79,7 +80,7 @@ export const DeploymentHealthBanner = ({ handle }: { handle: DeploymentHealthHan
     >
       <Icon aria-hidden />
       <AlertTitle className="flex flex-wrap items-center gap-x-2">
-        <L>{deploymentWarningContent(top.id).title}</L>
+        <L>{deploymentWarningContent(top.id, new Date(), locale).title}</L>
         <SheetTrigger
           handle={handle}
           render={

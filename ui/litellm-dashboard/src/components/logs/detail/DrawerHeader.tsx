@@ -115,9 +115,9 @@ export function DrawerHeader({
                 className="text-muted-foreground"
                 style={{ fontSize: FONT_SIZE_MEDIUM, fontFamily: FONT_FAMILY_MONO, whiteSpace: "nowrap" }}
               >
-                <L>x-litellm-call-id:</L>
+                <L>Call ID:</L>
               </span>
-              <CopyableId value={callId} label="x-litellm-call-id" fontSize={FONT_SIZE_MEDIUM} muted />
+              <CopyableId value={callId} label="call ID" fontSize={FONT_SIZE_MEDIUM} muted />
             </div>
           )}
         </div>

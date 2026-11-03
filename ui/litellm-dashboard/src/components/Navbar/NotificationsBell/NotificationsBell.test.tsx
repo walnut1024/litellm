@@ -39,7 +39,7 @@ describe("NotificationsBellView", () => {
     localStorage.clear();
   });
 
-  it("hides Auto Router promotion in the lightweight edition and translates release notices", async () => {
+  it("hides community announcements in the lightweight edition even when a newer release exists", async () => {
     localStorage.setItem("moma.locale", "zh-CN");
     const user = userEvent.setup();
     renderWithProviders(
@@ -49,10 +49,10 @@ describe("NotificationsBellView", () => {
         </LiteUiContext.Provider>
       </LocaleProvider>,
     );
-    await user.click(screen.getByRole("button", { name: "通知，1 条未读" }));
-    expect(screen.getAllByRole("article")).toHaveLength(1);
-    expect(announcement("LiteLLM v1.103.0 已发布")).toHaveTextContent("12 项新功能");
-    expect(screen.getByRole("link", { name: "查看更新说明" })).toHaveAttribute("href", RELEASE.release_url);
+    await user.click(screen.getByRole("button", { name: "通知" }));
+    expect(screen.getByText("暂无通知")).toBeVisible();
+    expect(screen.queryByRole("article")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
   });
 
   it("shows an empty notification state when the lightweight edition is current", async () => {

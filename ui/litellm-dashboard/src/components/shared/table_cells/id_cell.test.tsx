@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -16,6 +17,22 @@ vi.mock("@/utils/dataUtils", async (importOriginal) => ({
 }));
 
 describe("IdCell", () => {
+  it("shows the friendly system name but clicks and copies the original identifier", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const user = userEvent.setup();
+    const onClick = vi.fn();
+    render(
+      <LocaleProvider>
+        <IdCell value="litellm_proxy_master_key" onClick={onClick} copyable />
+      </LocaleProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: "平台主密钥" }));
+    expect(onClick).toHaveBeenCalledWith("litellm_proxy_master_key");
+    await user.click(screen.getByRole("button", { name: "Copy ID" }));
+    expect(copyToClipboardMock).toHaveBeenCalledWith("litellm_proxy_master_key");
+    localStorage.clear();
+  });
+
   it("renders '-' for empty values", () => {
     render(<IdCell value={null} />);
     expect(screen.getByText("-")).toBeInTheDocument();

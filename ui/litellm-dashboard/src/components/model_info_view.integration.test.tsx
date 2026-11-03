@@ -640,7 +640,7 @@ describe("ModelInfoView", () => {
 
     await waitFor(() => {
       expect(screen.getByPlaceholderText("Enter model name")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("Enter LiteLLM model name")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Enter upstream model name")).toBeInTheDocument();
     });
   });
 
@@ -719,10 +719,10 @@ describe("ModelInfoView", () => {
     });
   });
 
-  it("should display LiteLLM Params section", async () => {
+  it("should display Model Call Parameters section", async () => {
     render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await waitFor(() => {
-      expect(screen.getByText("LiteLLM Params")).toBeInTheDocument();
+      expect(screen.getByText("Model Call Parameters")).toBeInTheDocument();
     });
   });
 
@@ -741,7 +741,7 @@ describe("ModelInfoView", () => {
     });
   });
 
-  it("should keep selector credential and ignore litellm_credential_name from LiteLLM Params json", async () => {
+  it("should keep selector credential and ignore litellm_credential_name from Model Call Parameters json", async () => {
     const user = userEvent.setup();
     render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
 
@@ -751,7 +751,7 @@ describe("ModelInfoView", () => {
 
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
-    const litellmParamsInput = screen.getByRole("textbox", { name: "LiteLLM Params" });
+    const litellmParamsInput = screen.getByRole("textbox", { name: "Model Call Parameters" });
     expect((litellmParamsInput as HTMLTextAreaElement).value).not.toContain("litellm_credential_name");
     await user.clear(litellmParamsInput);
     await user.paste(`{"litellm_credential_name":"from-json","timeout":42}`);
@@ -782,7 +782,7 @@ describe("ModelInfoView", () => {
     const user = userEvent.setup();
     const { unmount } = render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    fireEvent.change(screen.getByRole("textbox", { name: "LiteLLM Params" }), {
+    fireEvent.change(screen.getByRole("textbox", { name: "Model Call Parameters" }), {
       target: { value: JSON.stringify(retained) },
     });
     await user.click(screen.getByRole("button", { name: /save changes/i }));
@@ -800,9 +800,9 @@ describe("ModelInfoView", () => {
     mockUseModelsInfo.mockReturnValue({ data: { data: [saved] }, isLoading: false });
     render(<ModelInfoView {...DEFAULT_ADMIN_PROPS} />, { wrapper });
     await user.click(await screen.findByRole("button", { name: /edit settings/i }));
-    expect(JSON.parse((screen.getByRole("textbox", { name: "LiteLLM Params" }) as HTMLTextAreaElement).value)).toEqual(
-      retained,
-    );
+    expect(
+      JSON.parse((screen.getByRole("textbox", { name: "Model Call Parameters" }) as HTMLTextAreaElement).value),
+    ).toEqual(retained);
     await user.click(screen.getByRole("button", { name: /save changes/i }));
     await waitFor(() => expect(mockModelPatchUpdateCall).toHaveBeenCalledTimes(2));
     expect(mockModelPatchUpdateCall.mock.calls[1][1].litellm_params).not.toHaveProperty("litellm_image_enabled");
@@ -819,7 +819,7 @@ describe("ModelInfoView", () => {
     };
     mockUseModelsInfo.mockReturnValue({ data: { data: [otherModel] }, isLoading: false });
     rerender(<ModelInfoView {...DEFAULT_ADMIN_PROPS} modelId="456" />);
-    expect(screen.getByPlaceholderText("Enter LiteLLM model name")).toHaveValue("openai/other-model");
+    expect(screen.getByPlaceholderText("Enter upstream model name")).toHaveValue("openai/other-model");
   });
 
   it("should not include vector_store_ids in update payload when model has none", async () => {
@@ -1143,7 +1143,7 @@ describe("ModelInfoView", () => {
     expect(await screen.findByRole("button", { name: /edit settings/i })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /edit settings/i }));
 
-    const extraParams = screen.getByRole("textbox", { name: "LiteLLM Params" });
+    const extraParams = screen.getByRole("textbox", { name: "Model Call Parameters" });
     await user.clear(extraParams);
     await user.paste(value);
 
@@ -1786,8 +1786,8 @@ describe("ModelInfoView", () => {
 
       await user.clear(screen.getByPlaceholderText("Enter model name"));
       await user.type(screen.getByPlaceholderText("Enter model name"), "renamed-model");
-      await user.clear(screen.getByPlaceholderText("Enter LiteLLM model name"));
-      await user.type(screen.getByPlaceholderText("Enter LiteLLM model name"), "gpt-4o");
+      await user.clear(screen.getByPlaceholderText("Enter upstream model name"));
+      await user.type(screen.getByPlaceholderText("Enter upstream model name"), "gpt-4o");
       await user.clear(screen.getByPlaceholderText("Enter API base"));
       await user.type(screen.getByPlaceholderText("Enter API base"), "https://example.test/v1");
       await user.clear(screen.getByPlaceholderText("Enter custom LLM provider"));
@@ -2007,7 +2007,7 @@ describe("ModelInfoView", () => {
       const user = userEvent.setup();
       await enterEditMode(user);
 
-      const extraParams = screen.getByRole("textbox", { name: "LiteLLM Params" });
+      const extraParams = screen.getByRole("textbox", { name: "Model Call Parameters" });
       await user.clear(extraParams);
       await user.paste('{"drop_params":true}');
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/contexts/LocaleContext";
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
 import { ChevronRight } from "lucide-react";
 import * as React from "react";
 
@@ -24,15 +26,18 @@ const HoverChevron = () => (
 );
 
 export function IdentityCell({ title, subtitle, badge, onClick, href, className, titleClassName }: IdentityCellProps) {
+  const { locale } = useLocale();
+  const displayTitle = typeof title === "string" ? systemResourceLabel(title, locale) : title;
+  const displaySubtitle = typeof subtitle === "string" ? systemResourceLabel(subtitle, locale) : subtitle;
   const hasSubtitleRow = (subtitle != null && subtitle !== "") || badge != null;
 
   const body = (
     <div className="flex min-w-0 flex-col gap-0.5">
-      <span className={cn("truncate text-sm font-medium text-foreground", titleClassName)}>{title}</span>
+      <span className={cn("truncate text-sm font-medium text-foreground", titleClassName)}>{displayTitle}</span>
       {hasSubtitleRow && (
         <span className="flex min-w-0 items-center gap-2">
           {subtitle != null && subtitle !== "" && (
-            <span className="truncate font-mono text-xs text-muted-foreground">{subtitle}</span>
+            <span className="truncate font-mono text-xs text-muted-foreground">{displaySubtitle}</span>
           )}
           {badge}
         </span>

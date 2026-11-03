@@ -1,3 +1,4 @@
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
 import React from "react";
 import { LocalizedText } from "@/contexts/LocaleContext";
 import CopyButton from "@/components/shared/CopyButton";
@@ -27,7 +28,7 @@ export default function LabeledField({
 }: LabeledFieldProps) {
   const isEmpty = !value;
   const isDefaultUser = defaultUserIdCheck && value === DEFAULT_PROXY_ADMIN_USER_ID;
-  const displayValue = isEmpty ? "-" : value;
+  const displayValue = isEmpty ? "-" : systemResourceLabel(value);
   const isCopyable = copyable && !isEmpty && !isDefaultUser;
   const isLink = href != null && !isEmpty && !isDefaultUser;
 

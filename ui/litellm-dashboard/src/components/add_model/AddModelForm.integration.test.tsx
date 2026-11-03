@@ -925,7 +925,7 @@ describe("AddModelForm", () => {
     it("runs the connection test for an Azure deployment name", async () => {
       const { user, clickTestConnect } = await renderForm(Providers.Azure);
       await pickProvider(user, /Azure/);
-      fireEvent.change(screen.getByLabelText(/LiteLLM Model Name/), { target: { value: "my-deployment" } });
+      fireEvent.change(screen.getByLabelText(/Upstream Model Name/), { target: { value: "my-deployment" } });
 
       await clickTestConnect();
       await expectBlockedWith("Required");

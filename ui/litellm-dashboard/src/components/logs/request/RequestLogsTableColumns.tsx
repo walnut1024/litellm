@@ -1,5 +1,6 @@
 "use client";
 
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
 import { LocalizedText as L } from "@/contexts/LocaleContext";
 
 import type { ColumnDef } from "@tanstack/react-table";
@@ -38,10 +39,12 @@ function RequestIdWithCallIdTooltip({ requestId, callId }: { requestId: string; 
     <span className="flex flex-col gap-0.5">
       <span>{requestId}</span>
       <span className="inline-flex items-center gap-1">
-        <span>x-litellm-call-id: {callId}</span>
+        <span>
+          <L>Call ID:</L> {callId}
+        </span>
         <button
           type="button"
-          aria-label="Copy x-litellm-call-id"
+          aria-label="Copy call ID"
           className="shrink-0 cursor-pointer opacity-70 hover:opacity-100"
           onClick={(event) => {
             event.stopPropagation();
@@ -59,7 +62,7 @@ const getLogoUrl = (row: LogEntry, provider: string): string =>
   readMcpLogoUrl(row.metadata) ?? (provider ? getProviderLogoAndName(provider).logo : "");
 
 function TruncatedText({ value, tooltip }: { value: string | undefined; tooltip?: string }) {
-  const display = value ?? "-";
+  const display = systemResourceLabel(value ?? "-");
   return (
     <CellTooltip
       content={tooltip ?? display}

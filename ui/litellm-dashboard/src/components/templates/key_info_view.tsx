@@ -795,8 +795,8 @@ export default function KeyInfoView({
                         </HoverCardTrigger>
                         <HoverCardContent className="w-80">
                           <L>
-                            Lifetime tracking started with LiteLLM v1.103.0 on September 19, 2026 and was not
-                            backfilled, so this key&apos;s lifetime spend only counts usage since that upgrade.
+                            Lifetime tracking was introduced after this key was created. Earlier usage was not
+                            backfilled, so lifetime spend may be lower than current-period spend.
                           </L>
                         </HoverCardContent>
                       </HoverCard>

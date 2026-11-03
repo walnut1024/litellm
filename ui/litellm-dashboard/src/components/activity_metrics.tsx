@@ -1,3 +1,4 @@
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
 import {
   AreaChart,
   BarChart,
@@ -217,14 +218,14 @@ const ModelTopKeys = ({
     <TopKeysPanel>
       <ol className="divide-y divide-border/60">
         {rows.map((keyData) => {
-          const keyLabel = keyData.key_alias || `${keyData.api_key.substring(0, 10)}...`;
+          const keyLabel = systemResourceLabel(keyData.key_alias || `${keyData.api_key.substring(0, 10)}...`);
           return (
             <li key={keyData.api_key} className="flex items-center justify-between gap-4 py-2.5">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">{keyLabel}</p>
                 {keyData.team_id && (
                   <p className="truncate text-xs text-muted-foreground">
-                    <L>Team:</L> {keyData.team_id}
+                    <L>Team:</L> {systemResourceLabel(keyData.team_id)}
                   </p>
                 )}
                 {keyData.user && keyData.user !== keyLabel && (
@@ -674,7 +675,9 @@ export const formatKeyLabel = (
   const teamId = modelData.metadata.team_id;
   if (teamId) {
     const teamAlias = resolveTeamAliasFromTeamID(teamId, teams);
-    return teamAlias ? `${keyAlias} (team: ${teamAlias})` : `${keyAlias} (team_id: ${teamId})`;
+    return teamAlias
+      ? `${keyAlias} (team: ${systemResourceLabel(teamAlias)})`
+      : `${keyAlias} (team_id: ${systemResourceLabel(teamId)})`;
   }
   return keyAlias;
 };

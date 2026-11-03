@@ -166,7 +166,7 @@ describe("deployment banner", () => {
     renderHealth();
 
     const banner = await screen.findByRole("alert", { name: "Deployment alert" });
-    expect(banner).toHaveTextContent("Your LiteLLM Enterprise license expires in 3 days (Oct 17, 2026)");
+    expect(banner).toHaveTextContent("Your enterprise license expires in 3 days (Oct 17, 2026)");
     expect(banner).not.toHaveTextContent("No Redis configured");
     expect(banner).not.toHaveTextContent("more");
   });
@@ -224,15 +224,7 @@ describe("deployment health panel", () => {
         .getAllByRole("article")
         .map((item) => item.getAttribute("aria-label")),
     ).toEqual(["No Redis configured"]);
-    expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute(
-      "href",
-      "https://docs.litellm.ai/docs/proxy/redis_requirements",
-    );
-    expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute("target", "_blank");
-    expect(within(warnings).getByRole("link", { name: "Read the docs" })).toHaveAttribute(
-      "rel",
-      expect.stringContaining("noopener"),
-    );
+    expect(within(warnings).queryByRole("link")).not.toBeInTheDocument();
     expect(within(panel).queryByRole("article", { name: "Detailed debug logging is on" })).not.toBeInTheDocument();
 
     await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 2" }));
@@ -242,7 +234,7 @@ describe("deployment health panel", () => {
     expect(within(debug).getByText(/^Until/)).toHaveTextContent(/^Until Oct 2[12], 2026/);
     expect(debug).toHaveTextContent("by admin-2");
     const expired = within(panel).getByRole("article", {
-      name: "Your LiteLLM Enterprise license expired on Oct 1, 2026",
+      name: "Your enterprise license expired on Oct 1, 2026",
     });
     expect(expired).toHaveTextContent("by admin-3");
 
@@ -305,11 +297,11 @@ describe("deployment health panel", () => {
     await user.click(within(panel).getByRole("button", { name: "Ignored and snoozed 1" }));
 
     const item = within(panel).getByRole("article", { name: "No Redis configured" });
-    expect(item).toHaveTextContent("By env var LITELLM_DISABLE_NO_REDIS_WARNING");
+    expect(item).toHaveTextContent("Ignored by environment configuration");
     expect(within(item).queryByRole("button")).not.toBeInTheDocument();
   });
 
-  it("should leave only the docs link when no database is connected", async () => {
+  it("keeps warning guidance readable without actions when no database is connected", async () => {
     const user = userEvent.setup();
     proxy.warnings = [NO_REDIS];
     proxy.ignoreAvailable = false;
@@ -317,7 +309,7 @@ describe("deployment health panel", () => {
     const panel = await openPanel(user);
 
     const item = within(panel).getByRole("article", { name: "No Redis configured" });
-    expect(within(item).getByRole("link", { name: "Read the docs" })).toBeVisible();
+    expect(within(item).queryByRole("link")).not.toBeInTheDocument();
     expect(within(item).queryByRole("button")).not.toBeInTheDocument();
   });
 

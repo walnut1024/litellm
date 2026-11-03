@@ -127,14 +127,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 <span>
                   Attached Knowledge Bases (RAG){" "}
                   <SimpleTooltip content="Vector stores to use for RAG. Every request to this model will automatically retrieve context from these knowledge bases.">
-                    <a
-                      href="https://docs.litellm.ai/docs/completion/knowledgebase"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Info className="ml-1 inline size-3.5 align-text-bottom" />
-                    </a>
+                    <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
                 </span>
               }
@@ -157,14 +150,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 <span>
                   Guardrails{" "}
                   <SimpleTooltip content="Apply safety guardrails to this key to filter content or enforce policies">
-                    <a
-                      href="https://docs.litellm.ai/docs/proxy/guardrails/quick_start"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()} // Prevent accordion from collapsing when clicking link
-                    >
-                      <Info className="ml-1 inline size-3.5 align-text-bottom" />
-                    </a>
+                    <Info className="ml-1 inline size-3.5 align-text-bottom" />
                   </SimpleTooltip>
                 </span>
               }
@@ -442,15 +428,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               label={labelWithHint(
                 "Use in pass through routes",
                 <span>
-                  Allow using these credentials in pass through routes.{" "}
-                  <a
-                    href="https://docs.litellm.ai/docs/pass_through/vertex_ai"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary underline-offset-4 hover:underline"
-                  >
-                    <L>Learn more</L>
-                  </a>
+                  Allow using these credentials in pass through routes. <L>Learn more</L>
                 </span>,
               )}
               className="mb-4 mt-4"
@@ -465,7 +443,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
               label={labelWithHint(
                 "Kubernetes pod discovery",
                 "Treat the API Base hostname as a Kubernetes headless service: resolve it to its ready pod IPs " +
-                  "and spread requests across the pods. LiteLLM must run inside the same cluster.",
+                  "and spread requests across the pods. gateway must run inside the same cluster.",
               )}
               className="mb-4"
             >
@@ -504,8 +482,8 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
             <MountedFormField
               name="litellm_extra_params"
               label={labelWithHint(
-                "LiteLLM Params",
-                "Optional litellm params used for making a litellm.completion() call.",
+                "Model Call Parameters",
+                "Optional litellm params used for making a model request call.",
               )}
               className="mb-4 mt-4"
               rules={{ validate: validatorRules({ validator: formItemValidateJSON }) }}
@@ -527,15 +505,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
             </MountedFormField>
             <div className="mb-4">
               <p className="text-muted-foreground text-sm">
-                <L>Pass JSON of litellm supported params</L>{" "}
-                <a
-                  href="https://docs.litellm.ai/docs/completion/input"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary underline-offset-4 hover:underline"
-                >
-                  <L>litellm.completion() call</L>
-                </a>
+                <L>Pass supported model call parameters as JSON</L>{" "}
               </p>
             </div>
             <MountedFormField

@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "@/contexts/LocaleContext";
+import { systemResourceLabel } from "@/utils/systemResourceLabel";
 import { Copy } from "lucide-react";
 import * as React from "react";
 
@@ -51,6 +53,8 @@ export function IdCell({
   dataTestId,
   className,
 }: IdCellProps) {
+  const { locale } = useLocale();
+  const displayValue = value ? systemResourceLabel(value, locale) : value;
   if (!value) {
     return <span className="text-muted-foreground">{fallback}</span>;
   }
@@ -67,23 +71,28 @@ export function IdCell({
 
   const unlinkedElement = clickable ? (
     <button type="button" className={classes} data-testid={dataTestId} onClick={() => onClick(value)}>
-      {value}
+      {displayValue}
     </button>
   ) : (
     <span className={classes} data-testid={dataTestId}>
-      {value}
+      {displayValue}
     </span>
   );
 
   const idElement = linked ? (
     <IdLink href={href} className={classes} dataTestId={dataTestId}>
-      {value}
+      {displayValue}
     </IdLink>
   ) : (
     unlinkedElement
   );
 
-  const withTooltip = <CellTooltip content={tooltip ?? value} trigger={idElement} />;
+  const withTooltip = (
+    <CellTooltip
+      content={typeof tooltip === "string" ? systemResourceLabel(tooltip, locale) : tooltip ?? displayValue}
+      trigger={idElement}
+    />
+  );
 
   if (!copyable) {
     return withTooltip;

@@ -16,6 +16,7 @@ import {
 } from "../common_components/MountedFormField";
 import { authTypesFor, hiddenAuthFieldKeys, inferAuthTypeId } from "./provider_auth_types";
 import { ProviderCredentialFieldMetadata } from "../networking";
+import { MOMA_PROVIDER } from "./modelProviders";
 import { Providers } from "../provider_info_helpers";
 import { labelWithHint } from "@/components/shared/form/LabelWithHint";
 import type { ProviderFieldValidators } from "../model_add/credential_federation";
@@ -170,7 +171,7 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
     Object.assign(providerFieldsByDisplayName, cacheEntries);
   }, [cacheEntries]);
 
-  const providerFields = React.useMemo(() => {
+  const originalProviderFields = React.useMemo(() => {
     if (selectedProvider === null) return [];
     // First try to resolve from the in-memory cache. We support both the
     // enum/display-name form and the raw provider slug (e.g. "petals").
@@ -204,6 +205,14 @@ const ProviderSpecificFieldsContent: React.FC<ProviderSpecificFieldsProps> = ({
     }
     return mapped;
   }, [selectedProviderEnum, selectedProvider, providerMetadata]);
+
+  const providerFields = React.useMemo(
+    () =>
+      context === "model" && selectedProvider === MOMA_PROVIDER
+        ? originalProviderFields.map((field) => (field.key === "api_key" ? { ...field, label: "API Key" } : field))
+        : originalProviderFields,
+    [context, originalProviderFields, selectedProvider],
+  );
 
   const authTypeHiddenFieldKeys = React.useMemo(
     () => hiddenAuthFieldKeys(authTypes, selectedAuthType?.id ?? ""),

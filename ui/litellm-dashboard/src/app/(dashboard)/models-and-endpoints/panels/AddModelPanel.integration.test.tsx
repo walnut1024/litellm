@@ -57,9 +57,18 @@ vi.mock("@/app/(dashboard)/hooks/providers/useProviderFields", () => ({
   useProviderFields: () => ({
     data: [
       {
-        provider: "OpenAI",
-        provider_display_name: "OpenAI",
+        provider: "OpenAI_Compatible",
+        provider_display_name: "OpenAI-compatible",
         litellm_provider: "openai",
+        credential_fields: [
+          { key: "api_base", label: "API Base", field_type: "text", required: true },
+          { key: "api_key", label: "OpenAI API Key", field_type: "password", required: true },
+        ],
+      },
+      {
+        provider: "Deepseek",
+        provider_display_name: "Deepseek",
+        litellm_provider: "deepseek",
         default_model_placeholder: "gpt-4o",
         credential_fields: [
           { key: "api_key", label: "API Key", field_type: "password", required: false },
@@ -67,16 +76,16 @@ vi.mock("@/app/(dashboard)/hooks/providers/useProviderFields", () => ({
         ],
       },
       {
-        provider: "Anthropic",
-        provider_display_name: "Anthropic",
-        litellm_provider: "anthropic",
+        provider: "MOONSHOT",
+        provider_display_name: "MOONSHOT",
+        litellm_provider: "moonshot",
         default_model_placeholder: "claude-3-opus",
         credential_fields: [{ key: "api_key", label: "API Key", field_type: "password", required: false }],
       },
       {
-        provider: "TypeSafe",
-        provider_display_name: "TypeSafe",
-        litellm_provider: "typesafe",
+        provider: "Qwen_AI_Platform",
+        provider_display_name: "Qwen_AI_Platform",
+        litellm_provider: "qwen_ai_platform",
         default_model_placeholder: "jev-latest",
         credential_fields: [{ key: "api_key", label: "API Key", field_type: "password", required: false }],
       },
@@ -126,7 +135,7 @@ const PROXY_ADMIN = {
 const alwaysMounted = {
   api_key: undefined,
   api_base: undefined,
-  custom_llm_provider: "openai",
+  custom_llm_provider: "deepseek",
   model: "gpt-4o",
 };
 
@@ -159,7 +168,7 @@ const setup = async (searchParams?: string, onUrlUpdate?: OnUrlUpdateFunction) =
 
   const fillRequired = async (modelName = "gpt-4o") => {
     await user.click(screen.getByRole("combobox", { name: /provider/i }));
-    await user.click(await screen.findByText("OpenAI"));
+    await user.click(await screen.findByText("DeepSeek（深度求索）"));
     await user.type(await screen.findByPlaceholderText("gpt-3.5-turbo"), modelName);
   };
 
@@ -170,7 +179,7 @@ const setup = async (searchParams?: string, onUrlUpdate?: OnUrlUpdateFunction) =
 
   const submitExpectingRejection = async (message: string) => {
     await user.click(screen.getByTestId("add-model-btn"));
-    await screen.findByText(message);
+    await screen.findAllByText(message);
   };
 
   return { user, openAdvanced, closeAdvanced, fillRequired, submit, submitExpectingRejection };
@@ -184,22 +193,52 @@ describe("AddModelPanel submit payload contract", () => {
     mockAuthorized.mockReturnValue(PROXY_ADMIN);
   });
 
+  it("defaults to MoMA, requires its address, and submits unchanged model IDs through the compatible adapter", async () => {
+    const { user, submit } = await setup();
+    expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("移动云 MoMA");
+    expect(screen.getByLabelText(/API Base/)).toHaveValue("");
+    await user.type(screen.getByPlaceholderText("Enter upstream model name"), "supplier/model-id");
+    await user.type(screen.getByLabelText(/^API Key/), "test-key");
+    await user.click(screen.getByTestId("add-model-btn"));
+    expect(await screen.findByText("Required")).toBeInTheDocument();
+    expect(modelCreateCall).not.toHaveBeenCalled();
+    await user.type(screen.getByLabelText(/API Base/), "https://gateway.example.test/v1");
+    await submit();
+    expect(lastCreatedModel()).toMatchObject({
+      model_name: "supplier/model-id",
+      litellm_params: {
+        custom_llm_provider: "openai",
+        model: "supplier/model-id",
+        api_base: "https://gateway.example.test/v1",
+        api_key: "test-key",
+      },
+    });
+    expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("移动云 MoMA");
+    expect(screen.getByLabelText(/API Base/)).toHaveValue("");
+  });
+
+  it("ignores a prefill for a provider outside the domestic catalog", async () => {
+    await setup("?provider=anthropic&litellm_model=foreign-model");
+    expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("移动云 MoMA");
+    expect(screen.getByPlaceholderText("Enter upstream model name")).toHaveValue("");
+  });
+
   it("lists catalog models in the model picker, not entries registered at runtime for deployments", async () => {
     mockUseModelCostMap.mockImplementation((_enabled: boolean, catalogOnly: boolean) => ({
       data: catalogOnly
-        ? { "gpt-4o-2024-08-06": { litellm_provider: "openai" } }
+        ? { "gpt-4o-2024-08-06": { litellm_provider: "deepseek" } }
         : {
-            "gpt-4o-2024-08-06": { litellm_provider: "openai" },
-            "openai-gpt-4o-deployment-id": { litellm_provider: "openai" },
+            "gpt-4o-2024-08-06": { litellm_provider: "deepseek" },
+            "deepseek-gpt-4o-deployment-id": { litellm_provider: "deepseek" },
           },
     }));
     const { user } = await setup();
     await user.click(screen.getByRole("combobox", { name: /provider/i }));
-    await user.click(await screen.findByText("OpenAI"));
+    await user.click(await screen.findByText("DeepSeek（深度求索）"));
     await user.click(await screen.findByPlaceholderText("Select models"));
 
     expect(await screen.findByText("gpt-4o-2024-08-06")).toBeInTheDocument();
-    expect(screen.queryByText("openai-gpt-4o-deployment-id")).not.toBeInTheDocument();
+    expect(screen.queryByText("deepseek-gpt-4o-deployment-id")).not.toBeInTheDocument();
   });
 
   it("offers the catalog models once the catalog arrives after the provider was picked", async () => {
@@ -207,10 +246,10 @@ describe("AddModelPanel submit payload contract", () => {
     mockUseModelCostMap.mockImplementation(() => catalog.useData());
     const { user } = await setup();
     await user.click(screen.getByRole("combobox", { name: /provider/i }));
-    await user.click(await screen.findByText("OpenAI"));
+    await user.click(await screen.findByText("DeepSeek（深度求索）"));
     expect(await screen.findByPlaceholderText("gpt-3.5-turbo")).toBeInTheDocument();
 
-    act(() => catalog.publish({ "gpt-4o-2024-08-06": { litellm_provider: "openai" } }));
+    act(() => catalog.publish({ "gpt-4o-2024-08-06": { litellm_provider: "deepseek" } }));
     await user.click(await screen.findByPlaceholderText("Select models"));
 
     expect(await screen.findByText("gpt-4o-2024-08-06")).toBeInTheDocument();
@@ -221,10 +260,10 @@ describe("AddModelPanel submit payload contract", () => {
     mockUseModelCostMap.mockImplementation(() => catalog.useData());
     const { user } = await setup();
     await user.click(screen.getByRole("combobox", { name: /provider/i }));
-    await user.click(await screen.findByText("OpenAI"));
+    await user.click(await screen.findByText("DeepSeek（深度求索）"));
     await user.type(await screen.findByPlaceholderText("gpt-3.5-turbo"), "my-fine-tune");
 
-    act(() => catalog.publish({ "gpt-4o-2024-08-06": { litellm_provider: "openai" } }));
+    act(() => catalog.publish({ "gpt-4o-2024-08-06": { litellm_provider: "deepseek" } }));
 
     await waitFor(() => expect(screen.getByPlaceholderText("gpt-3.5-turbo")).toHaveValue("my-fine-tune"));
     expect(screen.queryByPlaceholderText("Select models")).not.toBeInTheDocument();
@@ -235,12 +274,12 @@ describe("AddModelPanel submit payload contract", () => {
     mockUseModelCostMap.mockImplementation(() => catalog.useData());
     const { user } = await setup();
     await user.click(screen.getByRole("combobox", { name: /provider/i }));
-    await user.click(await screen.findByText("OpenAI"));
+    await user.click(await screen.findByText("DeepSeek（深度求索）"));
     const typed = await screen.findByPlaceholderText("gpt-3.5-turbo");
     await user.type(typed, "my-fine-tune");
     await user.clear(typed);
 
-    act(() => catalog.publish({ "gpt-4o-2024-08-06": { litellm_provider: "openai" } }));
+    act(() => catalog.publish({ "gpt-4o-2024-08-06": { litellm_provider: "deepseek" } }));
     await user.click(await screen.findByPlaceholderText("Select models"));
 
     expect(await screen.findByText("gpt-4o-2024-08-06")).toBeInTheDocument();
@@ -249,17 +288,17 @@ describe("AddModelPanel submit payload contract", () => {
   it("swaps the offered models when the provider changes while the catalog stays the same", async () => {
     const catalog = createCatalogFeed();
     catalog.publish({
-      "gpt-4o-2024-08-06": { litellm_provider: "openai" },
-      "claude-sonnet-4-5": { litellm_provider: "anthropic" },
+      "gpt-4o-2024-08-06": { litellm_provider: "deepseek" },
+      "claude-sonnet-4-5": { litellm_provider: "moonshot" },
     });
     mockUseModelCostMap.mockImplementation(() => catalog.useData());
     const { user } = await setup();
     const provider = screen.getByRole("combobox", { name: /provider/i });
     await user.click(provider);
-    await user.click(await screen.findByText("OpenAI"));
+    await user.click(await screen.findByText("DeepSeek（深度求索）"));
     await user.clear(provider);
-    await user.type(provider, "Anthropic");
-    await user.click(await screen.findByText("Anthropic"));
+    await user.type(provider, "MOONSHOT");
+    await user.click(await screen.findByText("月之暗面 Moonshot"));
     await user.click(await screen.findByPlaceholderText("Select models"));
 
     expect(await screen.findByText("claude-sonnet-4-5")).toBeInTheDocument();
@@ -295,7 +334,7 @@ describe("AddModelPanel submit payload contract", () => {
     const { user, openAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("LiteLLM Params"), '{{"rpm": 7}');
+    await user.type(screen.getByLabelText("Model Call Parameters"), '{{"rpm": 7}');
     await submit();
 
     expect(lastCreatedModel()).toStrictEqual({
@@ -327,7 +366,7 @@ describe("AddModelPanel submit payload contract", () => {
     const { user, openAdvanced, closeAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("LiteLLM Params"), '{{"rpm": 7}');
+    await user.type(screen.getByLabelText("Model Call Parameters"), '{{"rpm": 7}');
     await closeAdvanced();
     await submit();
 
@@ -342,10 +381,10 @@ describe("AddModelPanel submit payload contract", () => {
     const { user, openAdvanced, closeAdvanced, fillRequired, submit } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("LiteLLM Params"), '{{"rpm": 7}');
+    await user.type(screen.getByLabelText("Model Call Parameters"), '{{"rpm": 7}');
     await closeAdvanced();
     await openAdvanced();
-    expect(screen.getByLabelText("LiteLLM Params")).toHaveValue('{"rpm": 7}');
+    expect(screen.getByLabelText("Model Call Parameters")).toHaveValue('{"rpm": 7}');
 
     await submit();
 
@@ -498,7 +537,7 @@ describe("AddModelPanel validation gates", () => {
   it("requires a model before anything is sent", async () => {
     const { user, submitExpectingRejection } = await setup();
     await user.click(screen.getByRole("combobox", { name: /provider/i }));
-    await user.click(await screen.findByText("OpenAI"));
+    await user.click(await screen.findByText("DeepSeek（深度求索）"));
     await submitExpectingRejection("Please enter at least one model.");
 
     expect(modelCreateCall).not.toHaveBeenCalled();
@@ -509,7 +548,7 @@ describe("AddModelPanel validation gates", () => {
     const { user, openAdvanced, fillRequired, submitExpectingRejection } = await setup();
     await fillRequired();
     await openAdvanced();
-    await user.type(screen.getByLabelText("LiteLLM Params"), "rpm: 7");
+    await user.type(screen.getByLabelText("Model Call Parameters"), "rpm: 7");
     await submitExpectingRejection("Please enter valid JSON");
 
     expect(modelCreateCall).not.toHaveBeenCalled();
@@ -529,7 +568,7 @@ describe("AddModelPanel behaviours the removed Advanced Settings form instance n
     await fillRequired();
     await openAdvanced();
     await user.click(screen.getByRole("switch", { name: "Use in pass through routes" }));
-    expect(screen.getByLabelText("LiteLLM Params")).toHaveValue("");
+    expect(screen.getByLabelText("Model Call Parameters")).toHaveValue("");
 
     await submit();
 
@@ -568,10 +607,10 @@ describe("AddModelPanel behaviours the removed Advanced Settings form instance n
 
 describe("AddModelPanel decision models", () => {
   const DECISION_COST_MAP = {
-    "typesafe/jev-latest": { litellm_provider: "typesafe", mode: "evaluation" },
-    "gpt-4o-2024-08-06": { litellm_provider: "openai", mode: "chat" },
-    "gpt-6-luna": { litellm_provider: "openai", mode: "chat", supported_endpoints: ["/v1/decisions"] },
-    "claude-sonnet-4-5": { litellm_provider: "anthropic", mode: "chat" },
+    "qwen_ai_platform/jev-latest": { litellm_provider: "qwen_ai_platform", mode: "evaluation" },
+    "gpt-4o-2024-08-06": { litellm_provider: "deepseek", mode: "chat" },
+    "gpt-6-luna": { litellm_provider: "deepseek", mode: "chat", supported_endpoints: ["/v1/decisions"] },
+    "claude-sonnet-4-5": { litellm_provider: "moonshot", mode: "chat" },
   };
 
   beforeEach(() => {
@@ -585,8 +624,8 @@ describe("AddModelPanel decision models", () => {
 
   it("points a decision-only provider at the decision routes, the docs, and the playground", async () => {
     const { user } = await setup();
-    await user.type(screen.getByRole("combobox", { name: /provider/i }), "TypeSafe");
-    await user.click(await screen.findByRole("option", { name: /TypeSafe/ }));
+    await user.click(screen.getByRole("combobox", { name: /provider/i }));
+    await user.click(await screen.findByRole("option", { name: /阿里云百炼/ }));
 
     const note = await screen.findByRole("note", { name: "Decision model notice" });
     expect(note).toHaveTextContent("/v1/decisions");
@@ -603,7 +642,7 @@ describe("AddModelPanel decision models", () => {
   it("shows the notice on a chat provider only once one of its decision models is picked", async () => {
     const { user } = await setup();
     await user.click(screen.getByRole("combobox", { name: /provider/i }));
-    await user.click(await screen.findByRole("option", { name: /OpenAI/ }));
+    await user.click(await screen.findByRole("option", { name: /DeepSeek/ }));
     await user.click(await screen.findByPlaceholderText("Select models"));
     await user.click(await screen.findByText("gpt-4o-2024-08-06"));
     expect(decisionNotice()).not.toBeInTheDocument();
@@ -618,8 +657,8 @@ describe("AddModelPanel decision models", () => {
 
 describe("AddModelPanel prefill from the URL", () => {
   const COST_MAP = {
-    "typesafe/jev-latest": { litellm_provider: "typesafe", mode: "evaluation" },
-    "gpt-4o-2024-08-06": { litellm_provider: "openai", mode: "chat" },
+    "qwen_ai_platform/jev-latest": { litellm_provider: "qwen_ai_platform", mode: "evaluation" },
+    "gpt-4o-2024-08-06": { litellm_provider: "deepseek", mode: "chat" },
   };
 
   beforeEach(() => {
@@ -630,26 +669,33 @@ describe("AddModelPanel prefill from the URL", () => {
   });
 
   it("preselects the provider and model named in the URL and submits that model", async () => {
-    const { submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest");
+    const { submit } = await setup("?provider=qwen_ai_platform&litellm_model=qwen_ai_platform%2Fjev-latest");
 
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("TypeSafe"));
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("阿里云百炼"));
     expect(screen.getByRole("combobox", { name: "Select models" })).toBeInTheDocument();
-    expect(screen.getByDisplayValue("typesafe/jev-latest")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("qwen_ai_platform/jev-latest")).toBeInTheDocument();
     expect(await screen.findByRole("note", { name: "Decision model notice" })).toBeInTheDocument();
 
     await submit();
 
     expect(lastCreatedModel()).toStrictEqual({
-      model_name: "typesafe/jev-latest",
-      litellm_params: { api_key: undefined, custom_llm_provider: "typesafe", model: "typesafe/jev-latest" },
+      model_name: "qwen_ai_platform/jev-latest",
+      litellm_params: {
+        api_key: undefined,
+        custom_llm_provider: "qwen_ai_platform",
+        model: "qwen_ai_platform/jev-latest",
+      },
       model_info: { ...baseModelInfo },
     });
   });
 
   it("drops the prefill params from the URL once the prefilled model is added", async () => {
     const onUrlUpdate = vi.fn<OnUrlUpdateFunction>();
-    const { submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest", onUrlUpdate);
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("TypeSafe"));
+    const { submit } = await setup(
+      "?provider=qwen_ai_platform&litellm_model=qwen_ai_platform%2Fjev-latest",
+      onUrlUpdate,
+    );
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("阿里云百炼"));
 
     await submit();
 
@@ -661,10 +707,12 @@ describe("AddModelPanel prefill from the URL", () => {
   });
 
   it("leaves the form on its defaults when the provider slug matches no provider, model included", async () => {
-    const { submitExpectingRejection } = await setup("?provider=unknownslug&litellm_model=typesafe%2Fjev-latest");
+    const { submitExpectingRejection } = await setup(
+      "?provider=unknownslug&litellm_model=qwen_ai_platform%2Fjev-latest",
+    );
 
-    expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("");
-    expect(screen.queryByDisplayValue("typesafe/jev-latest")).not.toBeInTheDocument();
+    expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("移动云 MoMA");
+    expect(screen.queryByDisplayValue("qwen_ai_platform/jev-latest")).not.toBeInTheDocument();
 
     await submitExpectingRejection("Required");
 
@@ -672,13 +720,13 @@ describe("AddModelPanel prefill from the URL", () => {
   });
 
   it("keeps a provider the user picks after the prefill instead of re-applying the URL", async () => {
-    const { user, submit } = await setup("?provider=typesafe&litellm_model=typesafe%2Fjev-latest");
-    await waitFor(() => expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("TypeSafe"));
+    const { user, submit } = await setup("?provider=qwen_ai_platform&litellm_model=qwen_ai_platform%2Fjev-latest");
+    await waitFor(() => expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("阿里云百炼"));
 
     const provider = screen.getByRole("combobox", { name: /provider/i });
     await user.clear(provider);
-    await user.type(provider, "OpenAI");
-    await user.click(await screen.findByRole("option", { name: /OpenAI/ }));
+    await user.type(provider, "DeepSeek");
+    await user.click(await screen.findByRole("option", { name: /DeepSeek/ }));
     await user.click(await screen.findByPlaceholderText("Select models"));
     await user.click(await screen.findByText("gpt-4o-2024-08-06"));
     await submit();

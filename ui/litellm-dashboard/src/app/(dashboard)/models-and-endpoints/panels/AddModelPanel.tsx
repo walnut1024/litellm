@@ -11,27 +11,30 @@ import {
   useMountRegistry,
   type MountedFormValues,
 } from "@/components/common_components/MountedFormField";
-import { Providers, getPlaceholder, getProviderModels } from "@/components/provider_info_helpers";
+import { getPlaceholder, getProviderModels } from "@/components/provider_info_helpers";
 import { useModelCostMap } from "@/app/(dashboard)/hooks/models/useModelCostMap";
 import { useCredentials } from "@/app/(dashboard)/hooks/credentials/useCredentials";
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
+import { getModelProviders, MOMA_PROVIDER } from "@/components/add_model/modelProviders";
+import { useTranslation } from "@/contexts/LocaleContext";
 import { buildDecisionCatalog } from "@/lib/decisionModels";
 
-const INITIAL_VALUES: MountedFormValues = { litellm_credential_name: null };
+const INITIAL_VALUES: MountedFormValues = { litellm_credential_name: null, custom_llm_provider: MOMA_PROVIDER };
 
 const PREFILL_URL_PARAMS = { provider: parseAsString, litellm_model: parseAsString };
 
 export default function AddModelPanel() {
   const { accessToken } = useAuthorized();
+  const t = useTranslation();
   const form = useForm<MountedFormValues>({ mode: "onChange", defaultValues: INITIAL_VALUES });
   const registry = useMountRegistry();
   const queryClient = useQueryClient();
   const { data: modelCostMapData } = useModelCostMap(true, true);
   const { data: credentialsResponse } = useCredentials();
   const { data: teams } = useTeams();
-  const [selectedProvider, setSelectedProvider] = useState<string | null>(Providers.Anthropic);
+  const [selectedProvider, setSelectedProvider] = useState<string | null>(MOMA_PROVIDER);
   const [{ provider: prefillProviderSlug, litellm_model: prefillModel }, setPrefillParams] =
     useQueryStates(PREFILL_URL_PARAMS);
   const { data: providerMetadata } = useProviderFields();
@@ -39,7 +42,8 @@ export default function AddModelPanel() {
     () =>
       prefillProviderSlug === null
         ? null
-        : providerMetadata?.find((info) => info.litellm_provider === prefillProviderSlug)?.provider ?? null,
+        : getModelProviders(providerMetadata).find((info) => info.litellm_provider === prefillProviderSlug)?.provider ??
+          null,
     [prefillProviderSlug, providerMetadata],
   );
   const prefillApplied = useRef(false);
@@ -59,7 +63,10 @@ export default function AddModelPanel() {
 
   const pickedProvider = useWatch({ control: form.control, name: "custom_llm_provider" });
   const providerModels = useMemo(
-    () => (typeof pickedProvider === "string" ? getProviderModels(pickedProvider, modelCostMapData) : []),
+    () =>
+      typeof pickedProvider === "string" && pickedProvider !== MOMA_PROVIDER
+        ? getProviderModels(pickedProvider, modelCostMapData)
+        : [],
     [pickedProvider, modelCostMapData],
   );
   const decisionCatalog = useMemo(() => buildDecisionCatalog(modelCostMapData), [modelCostMapData]);
@@ -80,6 +87,7 @@ export default function AddModelPanel() {
       {
         resetFields: () => {
           form.reset(INITIAL_VALUES);
+          setSelectedProvider(MOMA_PROVIDER);
           void setPrefillParams({ provider: null, litellm_model: null });
         },
       },
@@ -97,7 +105,9 @@ export default function AddModelPanel() {
       selectedProvider={selectedProvider}
       setSelectedProvider={setSelectedProvider}
       providerModels={providerModels}
-      getPlaceholder={getPlaceholder}
+      getPlaceholder={(provider) =>
+        provider === MOMA_PROVIDER ? t("Enter upstream model name") : getPlaceholder(provider)
+      }
       showAdvancedSettings={showAdvancedSettings}
       setShowAdvancedSettings={setShowAdvancedSettings}
       teams={teams ?? null}

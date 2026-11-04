@@ -2513,5 +2513,6 @@
   "Copy value": "复制内容",
   "This action cannot be undone.": "此操作无法撤销",
   "Loading SSO configuration": "正在加载单点登录配置",
-  "{name} logo": "{name} 标志"
+  "{name} logo": "{name} 标志",
+  "Select a domestic provider. MoMA uses an OpenAI-compatible API with an administrator-provided address.": "选择国产供应商。移动云 MoMA 使用 OpenAI 兼容协议，API 地址由管理员填写。"
 }

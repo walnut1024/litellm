@@ -28,7 +28,7 @@ import {
   type MountedFormValues,
 } from "../common_components/MountedFormField";
 import type { Team } from "../key_team_helpers/key_list";
-import { type CredentialItem, type ProviderCreateInfo, credentialCreateCall, modelAvailableCall } from "../networking";
+import { type CredentialItem, credentialCreateCall, modelAvailableCall } from "../networking";
 import CredentialModal from "../model_add/CredentialModal";
 import { federatedProviderOf } from "../model_add/credential_federation";
 import { buildCredential, type CredentialSubmission } from "../model_add/credential_form_helpers";
@@ -40,6 +40,7 @@ import LiteLLMModelNameField from "./litellm_model_name";
 import ConnectionErrorDisplay from "./model_connection_test";
 import ProviderSpecificFields from "./provider_specific_fields";
 import { authTypesFor } from "./provider_auth_types";
+import { getModelProviders, MOMA_PROVIDER } from "./modelProviders";
 import { TEST_MODES } from "./add_model_modes";
 import DecisionModelNote from "./DecisionModelNote";
 import { type DecisionCatalog } from "@/lib/decisionModels";
@@ -170,19 +171,17 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
     fetchModelAccessGroups();
   }, [accessToken]);
 
-  const sortedProviderMetadata: ProviderCreateInfo[] = useMemo(() => {
-    if (!providerMetadata) {
-      return [];
-    }
-    return [...providerMetadata].sort((a, b) => a.provider_display_name.localeCompare(b.provider_display_name));
-  }, [providerMetadata]);
+  const sortedProviderMetadata = useMemo(() => getModelProviders(providerMetadata), [providerMetadata]);
 
   const providerOptions: SearchSelectOption[] = useMemo(
     () =>
       sortedProviderMetadata.map((providerInfo) => ({
         label: providerInfo.provider_display_name,
         value: providerInfo.provider,
-        icon: <ProviderLogo provider={providerInfo.provider} className="w-5 h-5" />,
+        icon:
+          providerInfo.provider === MOMA_PROVIDER ? undefined : (
+            <ProviderLogo provider={providerInfo.provider} className="w-5 h-5" />
+          ),
       })),
     [sortedProviderMetadata],
   );
@@ -271,7 +270,10 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                   {(isAdmin || (isTeamAdmin && teamAdminSelectedTeam)) && (
                     <>
                       <MountedFormField
-                        label={labelWithHint("Provider", "E.g. OpenAI, Azure OpenAI, Anthropic, Bedrock, etc.")}
+                        label={labelWithHint(
+                          "Provider",
+                          "Select a domestic provider. MoMA uses an OpenAI-compatible API with an administrator-provided address.",
+                        )}
                         name="custom_llm_provider"
                         required
                         rules={{ validate: { required: requiredRule("Required") } }}

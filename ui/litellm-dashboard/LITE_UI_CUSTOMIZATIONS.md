@@ -79,6 +79,8 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 
 ## 新增模型的供应商目录
 
+管理员接入步骤见 [README 的模型接入说明](../../README.md#模型接入)
+
 新增模型的供应商下拉仅保留现有国产供应商，包含 DeepSeek、阿里云百炼及其 DashScope 和 QwenCloud 适配、MiniMax、月之暗面、腾讯云和火山引擎。移动云 MoMA 位于首项，初次进入及成功添加后的表单均默认选中。MoMA 复用 OpenAI 兼容适配器，上游模型名称由管理员输入，API 地址不预置且必填，API 密钥字段使用通用中文名称。各供应商原有认证字段与适配协议保留
 
 目录由 `src/components/add_model/modelProviders.ts` 维护，`AddModelForm.tsx` 展示选项，`models-and-endpoints/panels/AddModelPanel.tsx` 管理默认值、模型提示和表单重置，`provider_specific_fields.tsx` 调整 MoMA 模型表单中的密钥标签。URL 预填同样限定在此目录，已有模型、供应商凭据、后端支持范围与 API 权限不受前端目录筛选影响。该目录不是后端供应商白名单

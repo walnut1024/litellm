@@ -12,26 +12,20 @@ afterEach(() => {
 
 function Controls() {
   const { logoUrl, logoUrlDark, setLogoUrl, setLogoUrlDark, setFaviconUrl } = useTheme();
+  const customize = () => {
+    setLogoUrl("https://assets.example.test/custom.png");
+    setLogoUrlDark("https://assets.example.test/custom-dark.png");
+    setFaviconUrl("https://assets.example.test/custom.ico");
+  };
+  const reset = () => {
+    setLogoUrl(null);
+    setLogoUrlDark(null);
+    setFaviconUrl(null);
+  };
   return (
     <>
-      <button
-        onClick={() => {
-          setLogoUrl("https://assets.example.test/custom.png");
-          setLogoUrlDark("https://assets.example.test/custom-dark.png");
-          setFaviconUrl("https://assets.example.test/custom.ico");
-        }}
-      >
-        自定义
-      </button>
-      <button
-        onClick={() => {
-          setLogoUrl(null);
-          setLogoUrlDark(null);
-          setFaviconUrl(null);
-        }}
-      >
-        恢复
-      </button>
+      <button onClick={customize}>自定义</button>
+      <button onClick={reset}>恢复</button>
       <output aria-label="普通标志">{logoUrl ?? "默认"}</output>
       <output aria-label="深色标志">{logoUrlDark ?? "默认"}</output>
     </>

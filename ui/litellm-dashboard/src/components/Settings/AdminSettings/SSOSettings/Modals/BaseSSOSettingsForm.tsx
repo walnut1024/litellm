@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { FormProvider, useFormContext, useWatch, type UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { ssoProviderLogoMap, ssoProviderDisplayNames } from "../constants";
@@ -351,7 +352,7 @@ export const SSOProviderSelectField = () => {
             aria-describedby={rest["aria-describedby"]}
             className="w-full"
           >
-            <SelectValue>{(provider: string) => (provider ? providerOptionLabel(provider) : "")}</SelectValue>
+            <SelectValue>{(provider: string) => <L>{provider ? providerOptionLabel(provider) : ""}</L>}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {Object.entries(ssoProviderLogoMap).map(([optionValue, logo]) => (
@@ -364,7 +365,9 @@ export const SSOProviderSelectField = () => {
                       className="h-6 w-6 mr-3 object-contain"
                     />
                   )}
-                  <span>{providerOptionLabel(optionValue)}</span>
+                  <span>
+                    <L>{providerOptionLabel(optionValue)}</L>
+                  </span>
                 </span>
               </SelectItem>
             ))}
@@ -464,13 +467,13 @@ export const RoleMappingTeamFields = () => {
               className="w-full"
             >
               <SelectValue>
-                {(role: string) => DEFAULT_ROLE_OPTIONS.find((option) => option.value === role)?.label ?? role}
+                {(role: string) => <L>{DEFAULT_ROLE_OPTIONS.find((option) => option.value === role)?.label ?? role}</L>}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {DEFAULT_ROLE_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
-                  {option.label}
+                  <L>{option.label}</L>
                 </SelectItem>
               ))}
             </SelectContent>

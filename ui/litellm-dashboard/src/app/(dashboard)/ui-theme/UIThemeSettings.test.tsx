@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { toast } from "@/lib/toast";
 
 import UIThemeSettings from "./UIThemeSettings";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 const setLogoUrl = vi.fn();
 const setLogoUrlDark = vi.fn();
@@ -49,6 +50,26 @@ describe("UIThemeSettings", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    localStorage.clear();
+  });
+
+  it("shows Chinese theme controls while preserving entered URLs and API fields", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    render(
+      <LocaleProvider>
+        <UIThemeSettings userID="user-1" userRole="Admin" accessToken="test-session" />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("heading", { name: "界面主题" })).toBeInTheDocument();
+    expect(screen.getByLabelText("深色模式品牌标志地址")).toBeInTheDocument();
+    expect(screen.getByLabelText("浏览器图标地址")).toBeInTheDocument();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+    const url = "https://assets.example.test/中文标志.png?name=logo";
+    fireEvent.change(screen.getByLabelText("品牌标志地址", { exact: true }), { target: { value: url } });
+    await userEvent.setup().click(screen.getByRole("button", { name: "保存更改" }));
+    await waitFor(() => expect(patchCalls()).toHaveLength(1));
+    expect(bodyOf(patchCalls()[0])).toEqual({ logo_url: url, logo_url_dark: null, favicon_url: null });
+    expect(screen.getByRole("button", { name: "恢复默认" })).toBeInTheDocument();
   });
 
   it("should render nothing without an access token", () => {

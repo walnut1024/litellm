@@ -386,8 +386,26 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ proxySettings }) => {
     },
     {
       key: "scim",
-      label: "SCIM",
-      children: <SCIMConfig accessToken={accessToken} userID={userID} proxySettings={proxySettings} />,
+      label: "SCIM User Sync",
+      children: (
+        <div className="space-y-4">
+          {!premiumUser && (
+            <Alert variant="info">
+              <Info />
+              <AlertTitle>
+                <L>SCIM license requirement</L>
+              </AlertTitle>
+              <AlertDescription>
+                <L>
+                  SCIM user and group synchronization requires an enterprise license. Configuration is available here;
+                  synchronization requests remain subject to backend license checks.
+                </L>
+              </AlertDescription>
+            </Alert>
+          )}
+          <SCIMConfig accessToken={accessToken} userID={userID} proxySettings={proxySettings} />
+        </div>
+      ),
     },
     {
       key: "ui-settings",

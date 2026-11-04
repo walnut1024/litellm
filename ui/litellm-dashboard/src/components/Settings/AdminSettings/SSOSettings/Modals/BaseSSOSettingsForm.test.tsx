@@ -10,6 +10,7 @@ import BaseSSOSettingsForm, {
   useSSOSettingsForm,
 } from "./BaseSSOSettingsForm";
 import { expectControlBesideLabel } from "../../../../../../tests/fieldOrientation";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 const user = () => userEvent.setup({ pointerEventsCheck: 0 });
 
@@ -20,6 +21,53 @@ const openProviderDropdown = async () => {
 describe("BaseSSOSettingsForm", () => {
   afterEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
+  });
+
+  it("localizes provider and role choices while retaining their original submitted values", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const onSubmit = vi.fn();
+    function Form() {
+      const form = useSSOSettingsForm("sso-settings", {
+        ...emptySSOSettingsFormValues,
+        sso_provider: "generic",
+        generic_client_id: "client-id",
+        generic_client_secret: "client-value",
+        generic_authorization_endpoint: "https://idp.example.test/authorize",
+        generic_token_endpoint: "https://idp.example.test/token",
+        generic_userinfo_endpoint: "https://idp.example.test/userinfo",
+        user_email: "admin@example.test",
+        proxy_base_url: "https://proxy.example.test",
+        use_role_mappings: true,
+        group_claim: "groups",
+        default_role: "internal_user",
+      });
+      return (
+        <>
+          <BaseSSOSettingsForm form={form} onFormSubmit={onSubmit} />
+          <button onClick={submitMountedSSOValues(form, "sso-settings", onSubmit)}>提交</button>
+        </>
+      );
+    }
+    renderWithProviders(
+      <LocaleProvider>
+        <Form />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("combobox", { name: "单点登录提供方" })).toHaveTextContent("通用单点登录");
+    await user().click(screen.getByRole("combobox", { name: "默认角色" }));
+    await user().click(await screen.findByRole("option", { name: "平台管理员" }));
+    await user().click(screen.getByRole("button", { name: "提交" }));
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sso_provider: "generic",
+          default_role: "proxy_admin",
+          generic_client_id: "client-id",
+          group_claim: "groups",
+        }),
+      ),
+    );
   });
 
   it("should render", () => {

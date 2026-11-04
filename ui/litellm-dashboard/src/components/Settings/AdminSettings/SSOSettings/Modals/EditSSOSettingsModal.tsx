@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import React, { useMemo } from "react";
 import BaseSSOSettingsForm, {
   emptySSOSettingsFormValues,
@@ -74,6 +76,7 @@ export const toSSOFormValues = (values: SSOSettingsValues): SSOSettingsFormValue
 };
 
 const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, onCancel, onSuccess }) => {
+  const t = useTranslation();
   const ssoSettings = useSSOSettings();
   const { mutateAsync, isPending } = useEditSSOSettings();
 
@@ -94,11 +97,11 @@ const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, 
           onSuccess();
         },
         onError: (error) => {
-          toast.fromError("Failed to save SSO settings: " + parseErrorMessage(error));
+          toast.fromError(t("Failed to save SSO settings: {error}", { error: String(parseErrorMessage(error)) }));
         },
       });
     } catch (error) {
-      toast.fromError("Failed to process SSO settings: " + parseErrorMessage(error));
+      toast.fromError(t("Failed to process SSO settings: {error}", { error: String(parseErrorMessage(error)) }));
     }
   };
 
@@ -111,13 +114,15 @@ const EditSSOSettingsModal: React.FC<EditSSOSettingsModalProps> = ({ isVisible, 
     <Dialog open={isVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>Edit SSO Settings</DialogTitle>
+          <DialogTitle>
+            <L>{"Edit SSO Settings"}</L>
+          </DialogTitle>
         </DialogHeader>
         <BaseSSOSettingsForm form={form} onFormSubmit={handleFormSubmit} />
         <DialogFooter>
           <div className="flex items-center justify-end gap-2">
             <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
-              Cancel
+              <L>{"Cancel"}</L>
             </Button>
             <Button
               type="button"

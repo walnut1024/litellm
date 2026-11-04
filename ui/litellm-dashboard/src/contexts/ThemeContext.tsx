@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getProxyBaseUrl } from "@/components/networking";
 import { z } from "zod";
+import { uiHref } from "@/utils/uiHref";
 
 interface ThemeContextType {
   logoUrl: string | null;
@@ -79,18 +80,17 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, accessTo
   }, []);
 
   useEffect(() => {
-    if (faviconUrl) {
-      const existingLinks = document.querySelectorAll("link[rel*='icon']");
-      if (existingLinks.length > 0) {
-        existingLinks.forEach((link) => {
-          (link as HTMLLinkElement).href = faviconUrl;
-        });
-      } else {
-        const link = document.createElement("link");
-        link.rel = "icon";
-        link.href = faviconUrl;
-        document.head.appendChild(link);
-      }
+    const iconUrl = faviconUrl || uiHref("favicon.ico");
+    const existingLinks = document.querySelectorAll("link[rel*='icon']");
+    if (existingLinks.length > 0) {
+      existingLinks.forEach((link) => {
+        (link as HTMLLinkElement).href = iconUrl;
+      });
+    } else {
+      const link = document.createElement("link");
+      link.rel = "icon";
+      link.href = iconUrl;
+      document.head.appendChild(link);
     }
   }, [faviconUrl]);
 

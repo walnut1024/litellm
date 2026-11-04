@@ -4,6 +4,7 @@ import { chooseSelectOption } from "@/../tests/test-utils";
 import userEvent from "@testing-library/user-event";
 import UISettings from "./UISettings";
 import { toast } from "@/lib/toast";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 const mockUseAuthorized = vi.hoisted(() => vi.fn());
 const mockUseUISettings = vi.hoisted(() => vi.fn());
@@ -97,6 +98,20 @@ describe("UISettings", () => {
     expect(screen.getByRole("switch", { name: "Disable model add for internal users" })).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Disable team admin delete team user" })).toBeInTheDocument();
     expect(screen.getByRole("switch", { name: "Require authentication for public AI Hub" })).toBeInTheDocument();
+  });
+
+  it("hides dividers belonging to masked settings and keeps updates scoped to the visible setting", () => {
+    const mutate = vi.fn();
+    mockUseUpdateUISettings.mockReturnValue({ mutate, isPending: false, error: null });
+    render(
+      <LiteUiContext.Provider value={{ route: "admin-panel", admin: true }}>
+        <UISettings />
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.getAllByRole("separator")).toHaveLength(2);
+    expect(screen.queryByRole("switch", { name: "Disable agents for internal users" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("switch", { name: /custom Virtual key values/ }));
+    expect(mutate).toHaveBeenCalledWith({ disable_custom_api_keys: true }, expect.any(Object));
   });
 
   it("should toggle setting and call update", () => {

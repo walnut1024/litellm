@@ -50,7 +50,8 @@ describe("MomaNavigation", () => {
     expect(accessControl.getByRole("link", { name: "访问组" })).toHaveAttribute("href", "/ui/access-groups");
     expect(accessControl.getByRole("link", { name: "预算" })).toHaveAttribute("href", "/ui/budgets");
     const systemSettings = within(screen.getByRole("region", { name: "系统设置" }));
-    expect(systemSettings.getAllByRole("link")).toHaveLength(3);
+    expect(systemSettings.getAllByRole("link")).toHaveLength(4);
+    expect(systemSettings.getByRole("link", { name: "界面主题" })).toHaveAttribute("href", "/ui/ui-theme");
     expect(systemSettings.getByRole("link", { name: "路由设置" })).toHaveAttribute("href", "/ui/router-settings");
     expect(systemSettings.getByRole("link", { name: "日志与告警" })).toHaveAttribute("href", "/ui/logging-and-alerts");
     expect(systemSettings.getByRole("link", { name: "系统设置" })).toHaveAttribute("href", "/ui/admin-panel");

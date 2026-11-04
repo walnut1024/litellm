@@ -5,6 +5,7 @@ import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 
 import { ToolbarSeparator } from "@/components/shared/ToolbarSeparator";
+import { MomaBrand } from "@/components/MomaBrand";
 import Link from "next/link";
 import { uiHref } from "@/utils/uiHref";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -52,8 +53,8 @@ export function DashboardHeader({
   return (
     <header className="moma-header flex flex-none items-center border-b border-border bg-background">
       {navigationTrigger}
-      <Link href={uiHref("home")} className="moma-brand">
-        MoMA 轻量版
+      <Link href={uiHref("home")} className="moma-brand" aria-label="MoMA 轻量版">
+        <MomaBrand />
       </Link>
 
       <div className="ml-auto flex shrink-0 items-center gap-1">

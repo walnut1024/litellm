@@ -4,6 +4,7 @@ import { LiteUiContext } from "@/contexts/LiteUiContext";
 import { DashboardHeader } from "./DashboardHeader";
 const state = vi.hoisted(() => ({ desktop: false, logout: vi.fn() }));
 vi.mock("usehooks-ts", () => ({ useMediaQuery: () => state.desktop }));
+vi.mock("@/contexts/ThemeContext", () => ({ useTheme: () => ({ logoUrl: null, logoUrlDark: null }) }));
 vi.mock("@/app/(dashboard)/hooks/useLogout", () => ({ useLogout: () => state.logout }));
 vi.mock("@/hooks/useWorker", () => ({ useWorker: () => ({ isControlPlane: false, selectedWorker: null }) }));
 vi.mock("@/app/(dashboard)/hooks/useDisableShowPrompts", () => ({ useDisableShowPrompts: () => false }));

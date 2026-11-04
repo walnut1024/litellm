@@ -166,7 +166,7 @@ describe("Sidebar (leftnav)", () => {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     fireEvent.click(screen.getByRole("button", { name: "Settings" }));
-    for (const label of ["Router Settings", "Logging & Alerts", "Admin Settings"]) {
+    for (const label of ["Router Settings", "Logging & Alerts", "Admin Settings", "UI Theme"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     for (const label of [
@@ -174,7 +174,6 @@ describe("Sidebar (leftnav)", () => {
       "Guardrails",
       "AI Hub",
       "Cost Tracking",
-      "UI Theme",
       "Playground",
       "Projects Beta",
       "API Reference",

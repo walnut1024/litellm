@@ -25,13 +25,22 @@ describe("lightweight UI visibility", () => {
     expect(litePageAllowed(page, "Internal User")).toBe(true),
   );
 
-  it.each(["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel"])(
+  it.each(["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel", "ui-theme"])(
     "reserves %s for administrators",
     (page) => {
       expect(litePageAllowed(page, "Internal User")).toBe(false);
       expect(litePageAllowed(page, "Admin")).toBe(true);
     },
   );
+
+  it("restores administrator theme routes and identity settings without allowing employee settings routes", () => {
+    expect(liteRouteAllowed("ui-theme", "Admin")).toBe(true);
+    expect(liteRouteAllowed("ui-theme", "Internal User")).toBe(false);
+    expect(liteRouteAllowed("admin-panel", "Internal User")).toBe(false);
+    expect(liteTabAllowed("admin-panel", "sso-settings", true)).toBe(true);
+    expect(liteTabAllowed("admin-panel", "scim", true)).toBe(true);
+    expect(liteTabAllowed("admin-panel", "security-settings", true)).toBe(false);
+  });
 
   it.each([
     "organizations",

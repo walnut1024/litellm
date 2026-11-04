@@ -31,22 +31,22 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 
 以下“保留”均受社区原有角色、页面可见性和接口权限继续约束，不会因为轻量版白名单而给员工增加管理员权限
 
-| 区域               | 员工端                                        | 管理员端                                                              |
-| ------------------ | --------------------------------------------- | --------------------------------------------------------------------- |
-| Home               | 保留个人概览和创建 Key 等核心入口             | 保留核心概览                                                          |
-| Virtual Keys       | 保留本人有权访问的 Key 列表、创建、查看和管理 | 保留 Key 日常管理以及用户、团队归属                                   |
-| Models + Endpoints | 保留获授权模型的列表和基础信息                | 保留添加、编辑、删除模型、凭据、健康检查、重试配置                    |
-| Usage              | 保留原权限允许的本人和团队用量                | 保留全局、本人、用户、团队用量                                        |
-| Logs               | 不开放，延续轻量版角色限制                    | 保留 Request Logs                                                     |
-| Teams              | 保留原权限允许的团队查看和操作                | 保留团队、成员分配与角色编辑、模型权限、预算、TPM/RPM                 |
-| Internal Users     | 延续社区管理员角色限制                        | 保留员工创建、查看、编辑、预算和权限管理                              |
-| Access Groups      | 延续社区角色限制                              | 保留分组及其原有管理流程                                              |
-| Budgets            | 延续社区管理员角色限制                        | 保留原有预算管理页面                                                  |
-| Organizations      | 屏蔽                                          | 屏蔽，已确认不保留 Enterprise 授权介绍页                              |
-| Projects Beta      | 屏蔽                                          | 屏蔽                                                                  |
-| Settings           | 屏蔽管理员菜单和对应页面                      | 保留 Router Settings、Logging & Alerts、Admin Settings 的下述开源部分 |
+| 区域               | 员工端                                        | 管理员端                                                           |
+| ------------------ | --------------------------------------------- | ------------------------------------------------------------------ |
+| Home               | 保留个人概览和创建 Key 等核心入口             | 保留核心概览                                                       |
+| Virtual Keys       | 保留本人有权访问的 Key 列表、创建、查看和管理 | 保留 Key 日常管理以及用户、团队归属                                |
+| Models + Endpoints | 保留获授权模型的列表和基础信息                | 保留添加、编辑、删除模型、凭据、健康检查、重试配置                 |
+| Usage              | 保留原权限允许的本人和团队用量                | 保留全局、本人、用户、团队用量                                     |
+| Logs               | 不开放，延续轻量版角色限制                    | 保留 Request Logs                                                  |
+| Teams              | 保留原权限允许的团队查看和操作                | 保留团队、成员分配与角色编辑、模型权限、预算、TPM/RPM              |
+| Internal Users     | 延续社区管理员角色限制                        | 保留员工创建、查看、编辑、预算和权限管理                           |
+| Access Groups      | 延续社区角色限制                              | 保留分组及其原有管理流程                                           |
+| Budgets            | 延续社区管理员角色限制                        | 保留原有预算管理页面                                               |
+| Organizations      | 屏蔽                                          | 屏蔽，已确认不保留 Enterprise 授权介绍页                           |
+| Projects Beta      | 屏蔽                                          | 屏蔽                                                               |
+| Settings           | 屏蔽管理员菜单和对应页面                      | 保留 Router Settings、Logging & Alerts、Admin Settings 和 UI Theme |
 
-两类用户都屏蔽 Playground、API Reference、Agents、Workflow Runs、Memory、MCP Servers、Skills、Guardrails、Policies、Search Tools、Vector Stores、Tool Policies、Model Insights、Cost Optimization、Lens、Guardrails Monitor、AI Hub、Learning Resources、Response Cache、Experimental 及其子入口，以及不在页面白名单内的其他独立页面，例如 Chat、Moyai、Cost Tracking、UI Theme
+两类用户都屏蔽 Playground、API Reference、Agents、Workflow Runs、Memory、MCP Servers、Skills、Guardrails、Policies、Search Tools、Vector Stores、Tool Policies、Model Insights、Cost Optimization、Lens、Guardrails Monitor、AI Hub、Learning Resources、Response Cache、Experimental 及其子入口，以及不在页面白名单内的其他独立页面，例如 Chat、Moyai、Cost Tracking
 
 侧栏、移动导航和命令搜索共用菜单过滤。直接访问被屏蔽的页面 URL 会显示当前版本不可用，不会展示原功能。登录、onboarding、修改密码和既有 MCP 回调路由继续保留，MCP 管理页面仍被屏蔽
 
@@ -70,10 +70,12 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | Logging & Alerts         | Logging Callbacks、CloudZero、MS Teams Alerts 页签、Region Outage 企业告警                                                                              | 告警类型、可用的普通告警设置、Email 设置。默认打开 Alerting Types                                                   |
 | 告警参数表               | 后端标记 `premium_field=true` 的整行，包括付费控件、说明和升级链接                                                                                      | 普通参数继续编辑和重置，重置使用原始配置索引                                                                        |
 | Email 设置               | `EMAIL_LOGO_URL`、`EMAIL_SUPPORT_CONTACT` 品牌定制                                                                                                      | SMTP、测试邮件和普通邮件事件                                                                                        |
-| Admin Settings           | SSO Settings、Security Settings、SCIM、Hashicorp Vault、CyberArk、Plugins、Web Search Interception                                                      | UI Settings、Logging Settings。默认打开 UI Settings                                                                 |
-| Security Settings 原区块 | SSO 管理、IP 白名单、UI Access Control 弹窗入口                                                                                                         | 随所属页签整体屏蔽，后端安全配置和现有登录不变                                                                      |
+| Admin Settings           | Security Settings、Hashicorp Vault、CyberArk、Plugins、Web Search Interception                                                                          | SSO Settings、SCIM、UI Settings、Logging Settings。默认打开 UI Settings，SCIM 同步继续受后端企业许可证校验          |
+| Security Settings 原区块 | 旧 SSO 管理、IP 白名单、UI Access Control 弹窗入口                                                                                                      | 随所属页签整体屏蔽，后端安全配置和现有登录不变                                                                      |
 | UI Settings              | Projects、Chat、Agents、Vector Stores 相关开关、公开 AI Hub 认证设置、组织搜索作用域、客户端 Header 转发、供应商认证 Header 转发、Moyai 整个连接区域    | 其余原有开源设置，仍保留社区限制                                                                                    |
 | 顶栏                     | View Switcher、Lite Admin、Docs、Blog、Community 等非核心入口                                                                                           | 原有导航、搜索、账号及基础状态                                                                                      |
+
+界面设置内的 Moyai、智能体、向量库与组织搜索区块分隔线随对应区块一起隐藏，避免被裁剪功能留下连续空白横线。单点登录设置补齐提供方、角色映射、字段、校验、创建与编辑弹窗及删除确认的中文，保留原提交值与密钥遮罩。SCIM 配置页补齐地址、令牌创建和结果提示的中文，并在未持有企业许可证时说明同步接口的授权限制。开放管理员配置页不改变后端鉴权、许可证或同步接口
 
 ## 字段与表格
 
@@ -145,9 +147,9 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 
 ## MoMA 主题与国际化
 
-控制台使用左侧分组导航。桌面分为模型服务、用量与配额、访问控制和系统设置，顶部保留纯文字品牌、语言、搜索、主题、状态和账号。访问控制与系统设置直接复用社区菜单的对应分组，前者包含团队、用户管理、访问组和预算，后者包含路由设置、日志与告警和系统设置。小于 1100px 时将同一份导航放入抽屉。菜单数据、角色判断、用户页面设置和页面白名单继续复用社区过滤函数，未新增管理员权限或放开已屏蔽页面。员工仅在访问控制中看到原有团队入口，没有可见设置项时不显示系统设置分组
+控制台使用左侧分组导航。桌面分为模型服务、用量与配额、访问控制和系统设置，顶部保留品牌、语言、搜索、主题、状态和账号。访问控制与系统设置直接复用社区菜单的对应分组，前者包含团队、用户管理、访问组和预算，后者包含路由设置、日志与告警、系统设置和界面主题。小于 1100px 时将同一份导航放入抽屉。菜单数据、角色判断、用户页面设置和页面白名单继续复用社区过滤函数，未新增管理员权限或放开已屏蔽页面。员工仅在访问控制中看到原有团队入口，没有可见设置项时不显示系统设置分组
 
-品牌在控制台页头、窄屏导航、登录、开通账户、加载页和账户菜单中改为纯文字 MoMA 轻量版。页面标题同时更新。供应商标识、模型名称和技术参数保留原值。保留页面的社区推广与文档链接按下述品牌清理规则移除
+默认品牌在控制台页头、窄屏导航、登录、开通账户、加载页和账户菜单中为纯文字 MoMA 轻量版。管理员可在界面主题配置普通、深色 Logo 和浏览器图标的 HTTP(S) 地址。页头和登录页通过 `MomaBrand.tsx` 显示已配置 Logo，深色标志缺失或加载失败时使用普通标志，全部不可用时显示默认文字。`ThemeContext.tsx` 同步图标预览与恢复默认，配置字段、保存接口和权限保持原实现，未新增文件上传入口。页面标题同时更新。供应商标识、模型名称和技术参数保留原值。保留页面的社区推广与文档链接按下述品牌清理规则移除
 
 浅蓝灰背景、白色侧栏与卡片、蓝紫色强调色集中在 `src/app/moma-theme.css`，同时保留深色模式。当前统一规范记录在 [DESIGN.md](DESIGN.md)，后续调整样式应先核对该规范。字号继续为相邻 1.5 倍的 `47.25 / 31.5 / 21 / 14px` 四档，页面标题和核心指标为 31.5px，区块标题、弹窗标题及桌面品牌为 21px，普通正文、模型名称、导航、表格和控件统一为 14px。47.25px 仅保留为确有需要时使用的展示档。桌面页头高 56px、侧栏宽 208px、内容内边距 20px。模型卡片按最小 240px 自动排布，间距 12px、内边距 16px，手机保持单列和导航抽屉
 
@@ -178,6 +180,8 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | `src/components/` 下 UsagePage、Teams、TeamsPage、team、organisms/create_key_button、templates/key_info_view、templates/key_edit_view、model_info_view、CreateUserButton、bulk_create_users_button、settings、router_settings、email_settings、Settings/AdminSettings/UISettings、Settings/AdminSettings/UserBannerSettings | 保留表单、详情与管理区域的界面文案                     |
 | `src/components/CommandPalette/CommandPaletteTrigger.tsx`、`ThemeToggle/ThemeToggle.tsx`、`DeploymentHealth/DeploymentHealth.tsx`、`common_components/budget_duration_dropdown.tsx`                                                                                                                                         | 紧凑搜索入口、主题切换、告警标题、预算周期的界面文案   |
 | `src/app/login`、`src/app/onboarding`、`src/app/(dashboard)/change-password`、leftnav、navbar、SidebarAccountMenu、common_components/LoadingScreen                                                                                                                                                                          | 文字品牌与账户流程文案                                 |
+
+`src/app/(dashboard)/ui-theme/UIThemeSettings.tsx`、`src/components/MomaBrand.tsx`、`DashboardHeader.tsx`、`src/app/login/LoginPage.tsx` 和 `src/contexts/ThemeContext.tsx` 负责主题配置与品牌展示，`SSOSettings/`、`SCIM.tsx`、`AdminPanel.tsx` 和 `liteUi.ts` 负责恢复身份配置入口及中文显示
 
 共享组合框通过 `dismissLabel` 将屏幕阅读器关闭按钮接入词典，中文为“关闭”，语言切换时同步更新。`scripts/localize-base-ui.mjs` 在安装依赖和构建前为固定版本 `@base-ui/react@1.6.0` 应用最小补丁，覆盖 ESM、CommonJS 和类型声明。补丁保留原关闭事件与焦点管理，不扫描或改写 DOM。依赖版本或补丁锚点不匹配时停止安装或构建，升级前须核对补丁及共享组合框回归
 

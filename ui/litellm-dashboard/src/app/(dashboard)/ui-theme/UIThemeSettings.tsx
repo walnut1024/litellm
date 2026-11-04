@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { PageHeader, PageHeaderTitle, PageHeaderDescription } from "@/components/shared/PageHeader";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -123,18 +125,16 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
   }
 
   return (
-    <div className="w-full mx-auto max-w-4xl px-6 py-8">
-      <div className="mb-8">
-        <h1 className="mb-2 text-2xl font-bold">UI Theme Customization</h1>
-        <p className="text-sm text-muted-foreground">
-          Customize your LiteLLM admin dashboard with a custom logo and favicon.
-        </p>
-      </div>
+    <div className="w-full max-w-4xl">
+      <PageHeader className="mb-6">
+        <PageHeaderTitle>UI Theme</PageHeaderTitle>
+        <PageHeaderDescription>Customize your dashboard logo and favicon.</PageHeaderDescription>
+      </PageHeader>
       <Card>
         <CardContent className="space-y-6">
           <div>
             <Label htmlFor="ui-theme-logo-url" className="mb-2">
-              Custom Logo URL
+              <L>Custom Logo URL</L>
             </Label>
             <Input
               id="ui-theme-logo-url"
@@ -146,12 +146,12 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
               }}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Enter a URL for your custom logo or leave empty for default
+              <L>Enter a URL for your custom logo or leave empty for default</L>
             </p>
           </div>
           <div>
             <Label htmlFor="ui-theme-logo-url-dark" className="mb-2">
-              Custom Logo URL (dark mode)
+              <L>Custom Logo URL (dark mode)</L>
             </Label>
             <Input
               id="ui-theme-logo-url-dark"
@@ -163,12 +163,12 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
               }}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Enter a URL for a logo suited to dark backgrounds, or leave empty to reuse the logo above
+              <L>Enter a URL for a logo suited to dark backgrounds, or leave empty to reuse the logo above</L>
             </p>
           </div>
           <div>
             <Label htmlFor="ui-theme-favicon-url" className="mb-2">
-              Custom Favicon URL
+              <L>Custom Favicon URL</L>
             </Label>
             <Input
               id="ui-theme-favicon-url"
@@ -180,17 +180,17 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
               }}
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Enter a URL for your custom favicon (.ico, .png, or .svg) or leave empty for default
+              <L>Enter a URL for your custom favicon (.ico, .png, or .svg) or leave empty for default</L>
             </p>
           </div>
           <div className="flex gap-3 pt-4">
             <Button onClick={handleSave} disabled={loading}>
               {loading && <UiLoadingSpinner className="size-4" />}
-              Save Changes
+              <L>Save Changes</L>
             </Button>
             <Button variant="outline" onClick={handleReset} disabled={loading}>
               {loading && <UiLoadingSpinner className="size-4" />}
-              Reset to Default
+              <L>Reset to Default</L>
             </Button>
           </div>
         </CardContent>

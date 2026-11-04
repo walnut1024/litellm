@@ -1,3 +1,4 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -22,7 +23,9 @@ export default function RedactableField({
             value
           )
         ) : (
-          <span className="text-muted-foreground italic">Not configured</span>
+          <span className="text-muted-foreground italic">
+            <L>{"Not configured"}</L>
+          </span>
         )}
       </span>
       {value && (

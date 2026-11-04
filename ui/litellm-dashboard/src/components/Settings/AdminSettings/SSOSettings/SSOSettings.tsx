@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { Copy, Edit, Shield, Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -21,13 +23,19 @@ import { ssoProviderDisplayNames, ssoProviderLogoMap } from "./constants";
 import { detectSSOProvider } from "./utils";
 
 function NotConfigured() {
-  return <span className="text-muted-foreground italic">Not configured</span>;
+  return (
+    <span className="text-muted-foreground italic">
+      <L>{"Not configured"}</L>
+    </span>
+  );
 }
 
 function DetailRow({ children, label }: { children: React.ReactNode; label: string }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3">
-      <dt className="bg-muted/50 px-4 py-3 text-sm font-medium text-foreground">{label}</dt>
+      <dt className="bg-muted/50 px-4 py-3 text-sm font-medium text-foreground">
+        <L>{label}</L>
+      </dt>
       <dd className="min-w-0 px-4 py-3 text-sm text-foreground sm:col-span-2">{children}</dd>
     </div>
   );
@@ -176,7 +184,13 @@ export default function SSOSettings() {
         {
           label: "IdP Metadata XML",
           render: (values: SSOSettingsValues) =>
-            values.saml_idp_metadata_xml ? <Badge variant="secondary">Provided</Badge> : <NotConfigured />,
+            values.saml_idp_metadata_xml ? (
+              <Badge variant="secondary">
+                <L>{"Provided"}</L>
+              </Badge>
+            ) : (
+              <NotConfigured />
+            ),
         },
         {
           label: "SP Entity ID",
@@ -186,7 +200,7 @@ export default function SSOSettings() {
           label: "Allow IdP-initiated (unsolicited) responses",
           render: (values: SSOSettingsValues) => (
             <Badge variant={values.saml_allow_unsolicited === "true" ? "default" : "secondary"}>
-              {values.saml_allow_unsolicited === "true" ? "Enabled" : "Disabled"}
+              <L>{values.saml_allow_unsolicited === "true" ? "Enabled" : "Disabled"}</L>
             </Badge>
           ),
         },
@@ -211,7 +225,9 @@ export default function SSOSettings() {
                 className="size-6 object-contain"
               />
             )}
-            <span>{config.providerText}</span>
+            <span>
+              <L>{config.providerText}</L>
+            </span>
           </div>
         </DetailRow>
         {config.fields.map(
@@ -238,20 +254,24 @@ export default function SSOSettings() {
                 <Shield className="size-6 text-muted-foreground" />
                 <div>
                   <CardTitle>
-                    <h3>SSO Configuration</h3>
+                    <h3>
+                      <L>{"SSO Configuration"}</L>
+                    </h3>
                   </CardTitle>
-                  <CardDescription>Manage Single Sign-On authentication settings</CardDescription>
+                  <CardDescription>
+                    <L>{"Manage Single Sign-On authentication settings"}</L>
+                  </CardDescription>
                 </div>
               </div>
               {isSSOConfigured && (
                 <CardAction className="flex gap-2">
                   <Button type="button" variant="outline" onClick={() => setIsEditModalVisible(true)}>
                     <Edit />
-                    Edit SSO Settings
+                    <L>{"Edit SSO Settings"}</L>
                   </Button>
                   <Button type="button" variant="destructive" onClick={() => setIsDeleteModalVisible(true)}>
                     <Trash2 />
-                    Delete SSO Settings
+                    <L>{"Delete SSO Settings"}</L>
                   </Button>
                 </CardAction>
               )}

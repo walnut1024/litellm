@@ -1,7 +1,10 @@
+import { renderWithProviders } from "@/../tests/test-utils";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AdminPanel from "./AdminPanel";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 const mockGetSSOSettings = vi.fn();
 const mockGetAllowedIPs = vi.fn();
@@ -60,6 +63,23 @@ describe("AdminPanel", () => {
     mockGetAllowedIPs.mockResolvedValue([]);
     mockAddAllowedIP.mockResolvedValue({});
     mockDeleteAllowedIP.mockResolvedValue({});
+  });
+
+  it("restores Chinese SSO and SCIM tabs and explains backend license requirements", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    renderWithProviders(
+      <LocaleProvider>
+        <LiteUiContext.Provider value={{ route: "admin-panel", admin: true }}>
+          <AdminPanel />
+        </LiteUiContext.Provider>
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("tab", { name: "单点登录设置" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Security Settings" })).not.toBeInTheDocument();
+    await userEvent.setup().click(screen.getByRole("tab", { name: "SCIM 用户同步" }));
+    expect(screen.getByText("SCIM 授权要求")).toBeInTheDocument();
+    expect(screen.getByText(/SCIM 用户和用户组同步需要企业许可证/)).toBeInTheDocument();
+    localStorage.clear();
   });
 
   it("should render the admin panel", () => {

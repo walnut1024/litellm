@@ -473,8 +473,8 @@ export default function UISettings() {
               />
             </LiteUiMask>
 
-            <Separator />
             <LiteUiMask>
+              <Separator />
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-foreground">Moyai</p>
@@ -494,8 +494,8 @@ export default function UISettings() {
               </div>
             </LiteUiMask>
 
-            <Separator />
             <LiteUiMask>
+              <Separator />
               <SettingRow
                 checked={isAgentsDisabled}
                 disabled={isUpdating}
@@ -518,8 +518,8 @@ export default function UISettings() {
               />
             </LiteUiMask>
 
-            <Separator />
             <LiteUiMask>
+              <Separator />
               <SettingRow
                 checked={isVectorStoresDisabled}
                 disabled={isUpdating}
@@ -542,9 +542,8 @@ export default function UISettings() {
               />
             </LiteUiMask>
 
-            <Separator />
-
             <LiteUiMask>
+              <Separator />
               <SettingRow
                 checked={Boolean(values.scope_user_search_to_org)}
                 disabled={isUpdating}

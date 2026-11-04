@@ -2,7 +2,7 @@ import { isAdminRole } from "./roles";
 
 const employeePages = ["home", "api-keys", "models", "new_usage"];
 const accessControlPages = ["teams", "users", "access-groups", "budgets"];
-const adminPages = ["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel"];
+const adminPages = ["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel", "ui-theme"];
 
 const routePages: Readonly<Record<string, string>> = {
   "": "home",
@@ -19,6 +19,7 @@ const routePages: Readonly<Record<string, string>> = {
   "router-settings": "router-settings",
   "logging-and-alerts": "logging-and-alerts",
   "admin-panel": "admin-panel",
+  "ui-theme": "ui-theme",
 };
 
 export const litePageAllowed = (page: string, userRole: string): boolean =>
@@ -38,15 +39,7 @@ const hiddenTabs: Readonly<Record<string, readonly string[]>> = {
   teams: ["default-settings"],
   "access-groups": ["mcp-servers", "mcp", "agents", "skills"],
   "logging-and-alerts": ["logging-callbacks", "cloudzero-cost-tracking", "ms-teams-alerts"],
-  "admin-panel": [
-    "sso-settings",
-    "security-settings",
-    "scim",
-    "hashicorp-vault",
-    "cyberark",
-    "plugins",
-    "web-search-interception",
-  ],
+  "admin-panel": ["security-settings", "hashicorp-vault", "cyberark", "plugins", "web-search-interception"],
 };
 
 export const liteTabAllowed = (route: string, tab: string, admin: boolean): boolean => {

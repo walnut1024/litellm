@@ -4,6 +4,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import BudgetModal from "./BudgetModal";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { chooseSelectOption } from "../../../../../tests/test-utils";
 
 const { createMock } = vi.hoisted(() => ({ createMock: vi.fn() }));
@@ -17,7 +18,7 @@ const renderModal = () => render(<BudgetModal isModalVisible={true} setIsModalVi
 const create = async (user: ReturnType<typeof userEvent.setup>) =>
   user.click(screen.getByRole("button", { name: "Create budget" }));
 
-const resetPeriod = () => screen.getByRole("combobox", { name: "Reset period" });
+const resetPeriod = () => screen.getByRole("combobox", { name: "Reset period (budget_duration)" });
 
 describe("BudgetModal", () => {
   beforeEach(() => {
@@ -88,5 +89,27 @@ describe("BudgetModal", () => {
 
     await waitFor(() => expect(screen.getByLabelText("Budget ID")).toHaveAttribute("aria-invalid", "true"));
     expect(createMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["每天", "24h"],
+    ["每周", "7d"],
+    ["每月", "30d"],
+  ])("shows %s and submits the original reset period", async (label, value) => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const user = userEvent.setup();
+    render(
+      <LocaleProvider>
+        <BudgetModal isModalVisible={true} setIsModalVisible={vi.fn()} />
+      </LocaleProvider>,
+    );
+
+    fireEvent.change(screen.getByLabelText("预算 ID"), { target: { value: "budget-alpha" } });
+    const period = screen.getByRole("combobox", { name: "重置周期" });
+    await chooseSelectOption(user, period, label);
+    expect(period).toHaveTextContent(label);
+    await user.click(screen.getByRole("button", { name: "创建预算" }));
+
+    await waitFor(() => expect(createMock).toHaveBeenCalledWith({ budget_id: "budget-alpha", budget_duration: value }));
   });
 });

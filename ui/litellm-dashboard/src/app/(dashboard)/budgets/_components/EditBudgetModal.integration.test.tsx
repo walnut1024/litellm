@@ -4,6 +4,7 @@ import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { components } from "@/lib/http/schema";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 import EditBudgetModal from "./EditBudgetModal";
 import { chooseSelectOption } from "../../../../../tests/test-utils";
@@ -35,7 +36,7 @@ const renderModal = () =>
 const save = async (user: ReturnType<typeof userEvent.setup>) =>
   user.click(screen.getByRole("button", { name: "Save" }));
 
-const resetPeriod = () => screen.getByRole("combobox", { name: "Reset period" });
+const resetPeriod = () => screen.getByRole("combobox", { name: "Reset period (budget_duration)" });
 
 describe("EditBudgetModal", () => {
   beforeEach(() => {
@@ -107,5 +108,23 @@ describe("EditBudgetModal", () => {
     renderModal();
 
     expect(screen.getByLabelText("Budget ID")).toBeDisabled();
+  });
+
+  it("localizes the stored period and submits only the changed period", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const user = userEvent.setup();
+    render(
+      <LocaleProvider>
+        <EditBudgetModal isModalVisible={true} setIsModalVisible={vi.fn()} existingBudget={EXISTING_BUDGET} />
+      </LocaleProvider>,
+    );
+
+    const period = screen.getByRole("combobox", { name: "重置周期" });
+    expect(period).toHaveTextContent("每周");
+    await chooseSelectOption(user, period, "每月");
+    expect(period).toHaveTextContent("每月");
+    await user.click(screen.getByRole("button", { name: "保存" }));
+
+    await waitFor(() => expect(updateMock).toHaveBeenCalledWith({ budget_id: "budget-alpha", budget_duration: "30d" }));
   });
 });

@@ -2511,5 +2511,6 @@
   "Show value": "显示内容",
   "Hide value": "隐藏内容",
   "Copy value": "复制内容",
-  "This action cannot be undone.": "此操作无法撤销"
+  "This action cannot be undone.": "此操作无法撤销",
+  "Loading SSO configuration": "正在加载单点登录配置"
 }

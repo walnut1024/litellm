@@ -2,8 +2,20 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "../../../../../tests/test-utils";
 import SSOSettingsLoadingSkeleton from "./SSOSettingsLoadingSkeleton";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 describe("SSOSettingsLoadingSkeleton", () => {
+  it("localizes the loading heading and accessible status", () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    renderWithProviders(
+      <LocaleProvider>
+        <SSOSettingsLoadingSkeleton />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("heading", { name: "单点登录配置" })).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: "正在加载单点登录配置" })).toBeInTheDocument();
+    localStorage.clear();
+  });
   it("should render", () => {
     renderWithProviders(<SSOSettingsLoadingSkeleton />);
 

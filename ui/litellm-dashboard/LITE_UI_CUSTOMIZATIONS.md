@@ -177,6 +177,8 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | `src/components/CommandPalette/CommandPaletteTrigger.tsx`、`ThemeToggle/ThemeToggle.tsx`、`DeploymentHealth/DeploymentHealth.tsx`、`common_components/budget_duration_dropdown.tsx`                                                                                                                                         | 紧凑搜索入口、主题切换、告警标题、预算周期的界面文案   |
 | `src/app/login`、`src/app/onboarding`、`src/app/(dashboard)/change-password`、leftnav、navbar、SidebarAccountMenu、common_components/LoadingScreen                                                                                                                                                                          | 文字品牌与账户流程文案                                 |
 
+共享组合框通过 `dismissLabel` 将屏幕阅读器关闭按钮接入词典，中文为“关闭”，语言切换时同步更新。`scripts/localize-base-ui.mjs` 在安装依赖和构建前为固定版本 `@base-ui/react@1.6.0` 应用最小补丁，覆盖 ESM、CommonJS 和类型声明。补丁保留原关闭事件与焦点管理，不扫描或改写 DOM。依赖版本或补丁锚点不匹配时停止安装或构建，升级前须核对补丁及共享组合框回归
+
 英文源码文案作为词典键，中文词典位于一个 JSON 文件。`LocalizedText` 只翻译显式包裹的界面字符串，不扫描或改写 DOM，不递归翻译用户数据。字段的 name、选项 value、请求参数、模型 ID、用户邮箱和密钥值保持原样。模型通配选项、角色选项等只翻译显示标签，提交值保持原值
 
 语言偏好保存在浏览器 `moma.locale`，不发送到后端。支持 `zh-CN` 与 `en`，默认中文，刷新时恢复已保存语言。语言切换不重新挂载页面或表单。日期显示可以本地化，时间戳和时区语义保持原逻辑。货币标识默认人民币，金额数值和接口提交值保持原样
@@ -420,7 +422,7 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 
 ### 已知限制与后续复核
 
-历史定向回归仍包含已屏蔽用量视图、旧货币或标签断言失败，以及三态 PATCH 表单的既有预期失败，没有通过全套前端测试。员工部分管理员配置请求仍可能返回 403，用量图表加载时曾出现宽高为零警告，未通过放宽权限或隐藏错误解决。访问组空状态已补齐中文。Base UI 组合框内置的屏幕阅读器关闭按钮仍使用 Dismiss，该依赖未提供文本配置入口，未通过修改依赖或改写 DOM 处理。浏览器原生日期按钮的语言由浏览器环境决定，未知供应商动态字段、上游错误及原始 JSON 不承诺翻译
+历史定向回归仍包含已屏蔽用量视图、旧货币或标签断言失败，以及三态 PATCH 表单的既有预期失败，没有通过全套前端测试。员工部分管理员配置请求仍可能返回 403，用量图表加载时曾出现宽高为零警告，未通过放宽权限或隐藏错误解决。访问组空状态已补齐中文。浏览器原生日期按钮的语言由浏览器环境决定，未知供应商动态字段、上游错误及原始 JSON 不承诺翻译
 
 既有验收不包含完整跨浏览器、可访问性、生产 SSO、实际邮件投递、所有模态、供应商账单及持续负载验证。社区升级或功能变更后应重跑受影响测试、构建和角色走查，定向 Vitest 必须传入明确文件，不运行整个前端套件
 

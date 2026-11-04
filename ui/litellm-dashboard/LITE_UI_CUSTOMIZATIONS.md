@@ -264,19 +264,18 @@ SMTP、邮件事件、动态告警参数和日志设置接入现有翻译。事�
 
 ## Docker 与演示数据
 
-| 文件，相对仓库根目录                                               | 用途                                              |
-| ------------------------------------------------------------------ | ------------------------------------------------- |
-| `Dockerfile`                                                       | 从源码完整构建 Python、Rust、Prisma 与 Dashboard  |
-| `docker/Dockerfile.lite-ui`                                        | 在已有源码运行时镜像上替换静态 Dashboard 导出物   |
-| `docker/docker-compose.lite-ui.yml`                                | 独立 Compose 项目、数据库卷和 localhost 4001 端口 |
-| `docker/lite-ui-preview.yaml`                                      | 空 model_list，模型及供应商凭据由外部数据库管理   |
-| [docker/lite-ui-preview.md](../../docker/lite-ui-preview.md)       | 构建、启动、停止及私有配置说明                    |
-| [docker/moma-model-catalog.md](../../docker/moma-model-catalog.md) | 已停用环境的历史模型配置清单，不代表当前接入范围  |
-| [README.md](../../README.md)                                       | 轻量版能力、构建入口、上游来源与许可证说明        |
+| 文件，相对仓库根目录                                         | 用途                                              |
+| ------------------------------------------------------------ | ------------------------------------------------- |
+| `Dockerfile`                                                 | 从源码完整构建 Python、Rust、Prisma 与 Dashboard  |
+| `docker/Dockerfile.lite-ui`                                  | 在已有源码运行时镜像上替换静态 Dashboard 导出物   |
+| `docker/docker-compose.lite-ui.yml`                          | 独立 Compose 项目、数据库卷和 localhost 4001 端口 |
+| `docker/lite-ui-preview.yaml`                                | 空 model_list，模型及供应商凭据由外部数据库管理   |
+| [docker/lite-ui-preview.md](../../docker/lite-ui-preview.md) | 构建、启动、停止及私有配置说明                    |
+| [README.md](../../README.md)                                 | 轻量版能力、构建入口、上游来源与许可证说明        |
 
 上述部署文件不是后端裁剪。新数据库需要通过原生模型管理接口配置模型，镜像不内置账户、密钥或数据库中的模型记录。环境文件、数据库备份和上游凭据不加入源码或镜像。界面更新先完成 `npm run build`，再重建 Compose，不能读取尚未完成的静态导出目录
 
-2026-11-03 的全新环境从 main 完整构建运行层，使用独立 Compose 项目与新数据库，没有导入此前的 Mock 或 41 项渠道模型。通过 DeepSeek 官方目录确认后，使用原生 `deepseek/` 适配器接入 `deepseek-flash` 和 `deepseek-v4-pro`，上游为 `https://api.deepseek.com`。人民币费用按配置费率估算，不代表完整折扣或实际账单已核对。具体部署版本和运行清单维护在仓库外，后续重启应沿用对应项目、环境文件和镜像覆盖文件
+部署示例支持从 main 完整构建运行层，使用独立 Compose 项目及数据库，模型通过原生管理流程配置。具体部署版本、数据卷、供应商接入、账户和调用记录由部署方私有维护，不作为仓库默认状态或公开库存清单。后续重启应沿用对应项目、环境文件和镜像覆盖文件
 
 预览配置将 `general_settings.password_policy_check_breached_passwords` 设为 `false`，仅供本机测试。最少 12 位及其他密码强度要求仍使用原策略，不改变后端默认值。此配置不应作为生产部署模板，实际账户和密码操作不记录在本指南中
 
@@ -315,7 +314,7 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 
 ## 验证记录与限制
 
-以下汇总既有实现的验证结果，保留影响维护判断的覆盖与失败，不将各轮重叠用例相加，也不代表当前提交重新运行了所有检查。视觉证据及对应界面版本见 [design-qa.md](design-qa.md)，布局与字号以 [DESIGN.md](DESIGN.md) 为准
+以下汇总既有实现的验证结果，保留影响维护判断的覆盖与失败，不将各轮重叠用例相加，也不代表当前提交重新运行了所有检查。具体执行记录与截图保存在仓库外，通用检查范围见 [design-qa.md](design-qa.md)，布局与字号以 [DESIGN.md](DESIGN.md) 为准
 
 ### 页面屏蔽与数据保留验证
 
@@ -371,7 +370,7 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 
 ### 全新环境与供应商调用验证
 
-2026-11-03 完整镜像构建及健康检查通过，安装后的两个后端源码文件哈希与构建提交一致。两个 DeepSeek 官方模型各一次普通请求、Flash 一次流式请求均经本地网关返回 HTTP 200，流式收到 `[DONE]`，日志确认 3 条成功、39 Token。浏览器确认管理员登录、模型、测试密钥和请求日志。该环境重新初始化后未沿用旧员工会话验证，未进行完整计费、长文本、工具调用或并发验收
+2026-11-03 的完整镜像构建及健康检查通过，两个安装后的后端源码文件哈希与构建提交一致。真实供应商的普通请求与流式请求经本地网关返回 HTTP 200，流式正常结束，日志可查询。浏览器确认管理员登录、模型、测试密钥和请求日志。该次新数据库验收未沿用旧员工会话结论，也未覆盖完整计费、长文本、工具调用或并发。供应商库存、具体测试账户、Token 与费用记录不作为公开部署配置
 
 ### 已知限制与后续复核
 

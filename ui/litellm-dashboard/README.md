@@ -1,38 +1,24 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# MoMA 轻量版 Dashboard
 
-For lightweight dashboard changes and the upstream merge checklist, see [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md)
+基于 Next.js 的控制台，生产构建静态导出后由网关服务提供。角色边界、页面裁剪和合并要求见 [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md)，界面规范见 [DESIGN.md](DESIGN.md)
 
-## Getting Started
+## 开发与构建
 
-First, run the development server:
+在本目录执行，依赖版本以项目配置和锁文件为准
 
 ```bash
+npm ci --no-audit --no-fund
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+开发页面默认位于 [localhost:3000](http://localhost:3000)。前端需要配套的后端服务及有效登录会话，启动页面不代表业务接口已经配置
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+默认构建输出为 `out`，完整应用与仅替换前端的部署方式见[本地部署说明](../../docker/lite-ui-preview.md)。测试应传入明确的受影响文件，检查范围与限制见[维护指南](LITE_UI_CUSTOMIZATIONS.md#验证记录与限制)
 
-## Learn More
+## 页面检查
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+按[界面验收清单](design-qa.md)检查员工与管理员、保留页面、弹窗、悬停提示、条件显示和屏蔽页回退。测试截图与执行日志保存在部署方的私有资料中，公开说明只维护通用规则与必要的验证边界

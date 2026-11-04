@@ -42,17 +42,9 @@ docker build -t litellm-moma:local .
 
 本地部署使用独立 PostgreSQL 数据库，示例 Compose 仅绑定 `127.0.0.1`。将管理员密码、主密钥、加密 salt、数据库密码保存在仓库外的私有环境文件中，供应商凭据通过原生模型管理流程保存。镜像不包含已接入的模型记录或凭据
 
-部署步骤、Compose 镜像覆盖方式、重启和数据保留要求见[本地部署说明](docker/lite-ui-preview.md)。使用根 Dockerfile 构建的镜像时，通过覆盖文件指定镜像，并使用 `--no-build` 启动，避免触发示例 Compose 的旧版 UI 覆盖构建流程
+部署步骤、Compose 镜像覆盖方式、重启和数据保留要求见[本地部署说明](docker/lite-ui-preview.md)。使用根 Dockerfile 构建的镜像时，通过覆盖文件指定镜像，并使用 `--no-build` 启动，避免触发示例 Compose 的 UI 叠加构建流程
 
 示例配置 [lite-ui-preview.yaml](docker/lite-ui-preview.yaml) 的模型列表为空，并按本地测试要求关闭泄露密码校验。该配置用于本地预览，部署到其他环境时需核对密码策略和访问范围。数据库与加密 salt 必须配套保留，日常重启不要删除数据卷
-
-## 当前本地验证
-
-2026-11-03，4001 服务已从 `main` 完整构建并使用新数据库初始化。当前仅配置 DeepSeek 官方 `deepseek-flash` 和 `deepseek-v4-pro`，采用原生 `deepseek/` 供应商适配和 `https://api.deepseek.com`，没有导入此前的转售渠道模型清单
-
-管理员已验证登录、模型列表、用户列表、密钥与请求日志。两个模型的普通调用和 Flash 的流式调用均返回 HTTP 200 与“测试成功”，流式请求正常收到 `[DONE]`，三次调用共记录 39 Token。镜像构建、前端生产构建、TypeScript、静态导出和服务健康检查通过
-
-这份验证记录对应本机环境，不代表克隆仓库后自动获得模型权限或供应商凭据。新数据库没有预置员工账号，管理员可按需创建。未完成并发压测、复杂工具调用或完整计费核对
 
 ## 维护文档
 
@@ -60,9 +52,8 @@ docker build -t litellm-moma:local .
 | ---------------------------------------------------------------------- | ---------------------------------------------------------- |
 | [轻量版差异与合并指南](ui/litellm-dashboard/LITE_UI_CUSTOMIZATIONS.md) | 社区基线、角色边界、屏蔽清单、修改位置、升级检查与验证限制 |
 | [界面设计规范](ui/litellm-dashboard/DESIGN.md)                         | 字号、间距、布局和共享控件规范                             |
-| [界面验收记录](ui/litellm-dashboard/design-qa.md)                      | 已执行的页面检查和覆盖范围                                 |
-| [本地部署说明](docker/lite-ui-preview.md)                              | 镜像构建、Compose、私有配置与部署历史                      |
-| [历史模型清单](docker/moma-model-catalog.md)                           | 原渠道模型接入记录，当前全新环境未导入                     |
+| [界面验收清单](ui/litellm-dashboard/design-qa.md)                      | 角色、弹窗、条件内容及布局的检查范围                       |
+| [本地部署说明](docker/lite-ui-preview.md)                              | 镜像构建、Compose、私有配置与数据保留                      |
 
 后续修改继续在 `main` 维护，并同步更新轻量版差异指南。合并社区版本时，以记录的社区提交为对比基线，逐项核对自定义界面、权限边界及部署配置
 

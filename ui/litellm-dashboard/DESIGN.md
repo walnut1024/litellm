@@ -54,4 +54,4 @@
 
 令牌和统一规则在 `src/app/moma-theme.css`，页面骨架复用 `Page` 和 `PageHeader`，图表面板使用 `Primitives`。新增页面优先接入这些组件，不能复制一份局部样式或新增任意字号。页面有不同信息结构时保留必要的展示差异
 
-实际修改范围、社区基线、测试和容器证据记录在 [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md)，视觉前后对比记录在 [design-qa.md](design-qa.md)。本轮按桌面 Web 验收，检查保留页面的标题左边界、控件高度、字体角色、卡片内边距、表格密度、表单滚动，以及 1280×720、1536×900 和 900px 窄桌面窗口下的溢出。手机端沿用共享响应式规则，不作为本轮专项设计与验收范围
+实际修改范围、社区基线与验证限制见 [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md)，页面检查范围见 [design-qa.md](design-qa.md)。设计以桌面 Web 为主，验收时核对标题左边界、控件高度、字体角色、卡片内边距、表格密度、表单滚动，以及 1280×720、1536×900 和 900px 窄桌面窗口下的溢出。手机端使用共享响应式规则，实际专项覆盖范围应单独记录

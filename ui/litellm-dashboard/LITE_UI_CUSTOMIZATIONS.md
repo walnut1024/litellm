@@ -38,7 +38,7 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | Models + Endpoints | 保留获授权模型的列表和基础信息                | 保留添加、编辑、删除模型、凭据、健康检查、重试配置                    |
 | Usage              | 保留原权限允许的本人和团队用量                | 保留全局、本人、用户、团队用量                                        |
 | Logs               | 不开放，延续轻量版角色限制                    | 保留 Request Logs                                                     |
-| Teams              | 保留原权限允许的团队查看和操作                | 保留团队、普通成员、模型权限、基本预算、TPM/RPM                       |
+| Teams              | 保留原权限允许的团队查看和操作                | 保留团队、成员分配与角色编辑、模型权限、预算、TPM/RPM                 |
 | Internal Users     | 延续社区管理员角色限制                        | 保留员工创建、查看、编辑、预算和权限管理                              |
 | Access Groups      | 延续社区角色限制                              | 保留分组及其原有管理流程                                              |
 | Budgets            | 延续社区管理员角色限制                        | 保留原有预算管理页面                                                  |
@@ -52,27 +52,27 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 
 ## 页签与页面内区块
 
-| 页面                     | 屏蔽项                                                                                                                                                  | 保留项和说明                                                              |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Home                     | Lite Admin 入口、新闻、榜单和更新推广区域                                                                                                               | 核心用量与日常操作                                                        |
-| Models + Endpoints       | Auto Routers、Pass Through、Model Group Alias、Model Access Group Budgets Beta、Price Data、Decision Models 推广、User Connections                      | 管理员的模型配置和供应商凭据正常保留                                      |
-| 员工模型详情             | 新增模型、凭据、健康检查、重试、Raw 页签，以及编辑等管理动作和上游配置展示                                                                              | 模型可用性和基础信息                                                      |
-| 模型新增表单             | Team-BYOK 专属模型开关和对应团队选择区域                                                                                                                | 原有必需团队作用域、模型访问组和供应商认证字段保留                        |
-| Virtual Keys 详情        | Savings、Auto Router Usage、Regenerate Key、组织和项目展示、独立日志、自动轮换、Guardrails、Policies、Prompts、路由权限、标签及原始 Metadata 等高级区块 | 基本信息、模型、用量、预算、过期时间、编辑、删除及原权限允许的其他动作    |
-| Key 创建                 | Agent 所有者、非 AI API 类型及高级配置区块                                                                                                              | You、Service Account、Another User 按原角色提供，团队和访问组配置保留     |
-| Logs                     | Audit Logs、Deleted Keys、Deleted Teams，连同 Enterprise 预览和升级说明                                                                                 | Request Logs 及请求详情                                                   |
-| Teams                    | Default Team Settings 页签、创建团队中的独立 Logging Settings、组织与密钥管理展示、单模型预算编辑和展示                                                 | 团队基本预算和成员预算保留，成员表中的原始限额数据不重算                  |
-| 团队成员添加或编辑       | 新分配团队 Admin 角色、单模型预算                                                                                                                       | 新成员默认普通角色。已有 Admin 成员编辑时保留原角色选项，避免改写已有授权 |
-| 访问组创建、编辑及详情   | MCP Servers、Agents、Skills 页签及对应内容                                                                                                              | 创建和编辑保留基本信息与模型，详情保留模型，隐藏项已有授权不会被清空      |
-| Usage                    | MCP、Endpoints 页签、Aria 自然语言查询、Top Agents，以及 Customer、Tag、Agent、User Agent Activity、Organization 统计视角                               | 全局、本人、用户、团队统计按原权限提供                                    |
-| Router Settings          | 路由策略选择、标签过滤、基于延迟的高级配置                                                                                                              | 原有基础重试等设置                                                        |
-| Logging & Alerts         | Logging Callbacks、CloudZero、MS Teams Alerts 页签、Region Outage 企业告警                                                                              | 告警类型、可用的普通告警设置、Email 设置。默认打开 Alerting Types         |
-| 告警参数表               | 后端标记 `premium_field=true` 的整行，包括付费控件、说明和升级链接                                                                                      | 普通参数继续编辑和重置，重置使用原始配置索引                              |
-| Email 设置               | `EMAIL_LOGO_URL`、`EMAIL_SUPPORT_CONTACT` 品牌定制                                                                                                      | SMTP、测试邮件和普通邮件事件                                              |
-| Admin Settings           | SSO Settings、Security Settings、SCIM、Hashicorp Vault、CyberArk、Plugins、Web Search Interception                                                      | UI Settings、Logging Settings。默认打开 UI Settings                       |
-| Security Settings 原区块 | SSO 管理、IP 白名单、UI Access Control 弹窗入口                                                                                                         | 随所属页签整体屏蔽，后端安全配置和现有登录不变                            |
-| UI Settings              | Projects、Chat、Agents、Vector Stores 相关开关、公开 AI Hub 认证设置、组织搜索作用域、客户端 Header 转发、供应商认证 Header 转发、Moyai 整个连接区域    | 其余原有开源设置，仍保留社区限制                                          |
-| 顶栏                     | View Switcher、Lite Admin、Docs、Blog、Community 等非核心入口                                                                                           | 原有导航、搜索、账号及基础状态                                            |
+| 页面                     | 屏蔽项                                                                                                                                                  | 保留项和说明                                                                                                        |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Home                     | Lite Admin 入口、新闻、榜单和更新推广区域                                                                                                               | 核心用量与日常操作                                                                                                  |
+| Models + Endpoints       | Auto Routers、Pass Through、Model Group Alias、Model Access Group Budgets Beta、Price Data、Decision Models 推广、User Connections                      | 管理员的模型配置和供应商凭据正常保留                                                                                |
+| 员工模型详情             | 新增模型、凭据、健康检查、重试、Raw 页签，以及编辑等管理动作和上游配置展示                                                                              | 模型可用性和基础信息                                                                                                |
+| 模型新增表单             | Team-BYOK 专属模型开关和对应团队选择区域                                                                                                                | 原有必需团队作用域、模型访问组和供应商认证字段保留                                                                  |
+| Virtual Keys 详情        | Savings、Auto Router Usage、Regenerate Key、组织和项目展示、独立日志、自动轮换、Guardrails、Policies、Prompts、路由权限、标签及原始 Metadata 等高级区块 | 基本信息、模型、用量、预算、过期时间、编辑、删除及原权限允许的其他动作                                              |
+| Key 创建                 | Agent 所有者、非 AI API 类型及高级配置区块                                                                                                              | You、Service Account、Another User 按原角色提供，团队和访问组配置保留                                               |
+| Logs                     | Audit Logs、Deleted Keys、Deleted Teams，连同 Enterprise 预览和升级说明                                                                                 | Request Logs 及请求详情                                                                                             |
+| Teams                    | Default Team Settings 页签、创建团队中的独立 Logging Settings、组织与密钥管理展示、单模型预算编辑和展示                                                 | 团队基本预算和成员预算保留，成员表中的原始限额数据不重算                                                            |
+| 团队成员添加或编辑       | 无额外裁剪                                                                                                                                              | 添加成员默认 User，可选择 Admin。编辑保留角色、模型范围、预算、周期、临时预算、TPM/RPM 和按原许可证开放的单模型预算 |
+| 访问组创建、编辑及详情   | MCP Servers、Agents、Skills 页签及对应内容                                                                                                              | 创建和编辑保留基本信息与模型，详情保留模型，隐藏项已有授权不会被清空                                                |
+| Usage                    | MCP、Endpoints 页签、Aria 自然语言查询、Top Agents，以及 Customer、Tag、Agent、User Agent Activity、Organization 统计视角                               | 全局、本人、用户、团队统计按原权限提供                                                                              |
+| Router Settings          | 路由策略选择、标签过滤、基于延迟的高级配置                                                                                                              | 原有基础重试等设置                                                                                                  |
+| Logging & Alerts         | Logging Callbacks、CloudZero、MS Teams Alerts 页签、Region Outage 企业告警                                                                              | 告警类型、可用的普通告警设置、Email 设置。默认打开 Alerting Types                                                   |
+| 告警参数表               | 后端标记 `premium_field=true` 的整行，包括付费控件、说明和升级链接                                                                                      | 普通参数继续编辑和重置，重置使用原始配置索引                                                                        |
+| Email 设置               | `EMAIL_LOGO_URL`、`EMAIL_SUPPORT_CONTACT` 品牌定制                                                                                                      | SMTP、测试邮件和普通邮件事件                                                                                        |
+| Admin Settings           | SSO Settings、Security Settings、SCIM、Hashicorp Vault、CyberArk、Plugins、Web Search Interception                                                      | UI Settings、Logging Settings。默认打开 UI Settings                                                                 |
+| Security Settings 原区块 | SSO 管理、IP 白名单、UI Access Control 弹窗入口                                                                                                         | 随所属页签整体屏蔽，后端安全配置和现有登录不变                                                                      |
+| UI Settings              | Projects、Chat、Agents、Vector Stores 相关开关、公开 AI Hub 认证设置、组织搜索作用域、客户端 Header 转发、供应商认证 Header 转发、Moyai 整个连接区域    | 其余原有开源设置，仍保留社区限制                                                                                    |
+| 顶栏                     | View Switcher、Lite Admin、Docs、Blog、Community 等非核心入口                                                                                           | 原有导航、搜索、账号及基础状态                                                                                      |
 
 ## 字段与表格
 
@@ -85,7 +85,7 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | Key 和模型表单的高级预算与限流       | `soft_budget`、`budget_windows`、`budget_fallbacks`、`end_user_budget_id`、`tpd_limit`、`tpm_limit_type`、`rpm_limit_type`、`model_tpm_limit`、`model_rpm_limit`、`throttle_on_budget_exceeded`、`default_estimated_output_tokens`、`default_estimated_output_tokens_per_model`             |
 | Key 和模型表单的缓存、路由与成本参数 | `enable_prompt_caching`、`use_in_pass_through`、`kubernetes_pod_discovery`、`cache_control`、`cache_control_injection_points`、`litellm_extra_params`、`model_info_params`、`ptu_count`、`cost_per_ptu_per_hour`、`ptu_effective_from`、`ptu_effective_to`                                  |
 
-共享 `ModelMaxBudgetField` 另行屏蔽整个区块，覆盖 Key、用户、团队和默认成员预算，不依赖当前是否有 Enterprise 许可证。独立 `PremiumLoggingSettings` 同样不展示付费介绍或配置
+共享 `ModelMaxBudgetField` 另行屏蔽整个区块，覆盖 Key、用户、团队和默认成员预算，不依赖当前是否有 Enterprise 许可证。成员编辑表单的附加字段恢复社区完整展示，不受上述字段屏蔽影响，单模型预算仍受原许可证校验约束。独立 `PremiumLoggingSettings` 同样不展示付费介绍或配置
 
 `max_budget`、`budget_duration`、`tpm_limit`、`rpm_limit`、模型选择、供应商 `api_key` 等认证字段不在上述屏蔽列表。`team_id`、`access_group_ids`、`model_access_group` 继续保留
 
@@ -120,7 +120,7 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | Usage 下的 `UsagePageView.tsx`、`UsageViewSelect.tsx`                                               | 非核心统计和查询入口屏蔽                                                                                                     |
 | `src/components/key_team_helpers/ModelMaxBudgetEditor.tsx`                                          | 共享单模型预算字段区块屏蔽                                                                                                   |
 | `src/components/common_components/PremiumLoggingSettings.tsx`                                       | Key 和团队独立日志的付费介绍及控件屏蔽                                                                                       |
-| `src/components/Teams.tsx`、`team/TeamInfo.tsx`、`team/EditMembership.tsx`                          | 团队日志、预算展示和成员角色选项调整                                                                                         |
+| `src/components/Teams.tsx`、`team/TeamInfo.tsx`、`team/EditMembership.tsx`                          | 团队日志与预算展示屏蔽，成员添加和编辑保留完整角色及附加字段                                                                 |
 | `src/components/settings.tsx`、`alerting/dynamic_form.tsx`、`email_settings.tsx`                    | 默认告警页签、企业告警行和邮件品牌字段屏蔽                                                                                   |
 | `src/components/router_settings/RouterSettingsForm.tsx`                                             | 高级路由区块屏蔽                                                                                                             |
 | AdminPanel 和 `src/components/Settings/AdminSettings/UISettings/UISettings.tsx`                     | 管理设置默认页签和隐藏功能开关、关联入口。`TeamAdminEditableFieldsSettings.tsx` 另外隐藏 Projects 权限复选框，保留已有选择值 |
@@ -129,7 +129,7 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 
 `LiteUiMask` 和共享字段用 `hidden` 与 `display:none` 隐藏区块，通常保留子组件挂载，避免表单编辑把原来存有的配置清空。屏蔽的页签内容则不渲染，即使有 `keepMounted` 或旧 URL 参数也不展示
 
-共享字段对必填项和当前校验错误保留原有保护。例如 Team Admin 添加模型仍需要的团队作用域不能隐藏，否则原表单无法提交。已有团队 Admin 成员的角色也不会被强制改为普通成员
+共享字段对必填项和当前校验错误保留原有保护。例如 Team Admin 添加模型仍需要的团队作用域不能隐藏，否则原表单无法提交。团队成员表单保留原始角色选项和默认值，编辑时不会强制改写已有角色
 
 隐藏字段的已有值可能继续随原表单提交，或按社区原有 diff 逻辑不发送未改动字段。这不负责撤销已经启用的后端能力。若需要停用配置，必须另外评估并授权相应的数据或后端修改
 
@@ -302,7 +302,7 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 | 新增 Enterprise 控件      | 检查 `premiumUser`、`premium_field`、`Enterprise`、`Upgrade`、`license`，区分真正付费功能与普通供应商文字 |
 | Key、用户、团队和模型表单 | 新的字段组件是否绕过共享 `FormField` 或 `MountedFormField`，创建、详情、编辑三处都要看                    |
 | 已有隐藏值                | 改普通字段不会清空已有组织、项目、日志、单模型预算等配置，必填校验仍能完成                                |
-| 成员角色                  | 新建成员不能默认提交被隐藏的 Admin 角色，已有 Admin 编辑不改授权                                          |
+| 成员角色                  | 添加和编辑均保留 Admin/User 选项及原始提交值，新增成员默认 User，其他成员配置及许可证限制沿用社区逻辑     |
 | 表格及筛选                | 社区新增列 ID、列选择器或修改筛选标签后仍保持屏蔽，清空筛选不会带出隐藏控件                               |
 | 告警参数元数据            | `premium_field` 的含义和重置接口索引仍与原配置一致                                                        |
 | 关联入口                  | Home、模型详情、Key 详情、设置开关没有留下通往被屏蔽页面的按钮或链接                                      |
@@ -321,6 +321,10 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 ### 页面屏蔽与数据保留验证
 
 2026-10-31 定向检查 26 个文件，845 项普通通过、3 项社区已有预期失败。生产构建、TypeScript、静态导出及适用前端检查通过。自动化覆盖菜单、命令搜索、页面白名单、隐藏页签不渲染、隐藏列不可恢复、表单已有值保留、必填作用域、普通告警重置索引及成员角色。管理员与员工浏览器核对核心页面、创建表单和屏蔽页回退，未提交新密钥
+
+### 团队成员分配恢复验证
+
+2026-11-04 恢复成员编辑表单的 Admin/User 角色选项与全部附加字段，成员新增继续使用原有搜索与默认 User 角色。独立源码快照中，成员新增、编辑、成员表格和轻量屏蔽边界 5 个定向文件共 94 项通过，覆盖 Admin 提交、原预算与限额保留及其他表单继续屏蔽。生产构建、TypeScript、58 个页面静态导出和适用前端检查通过，未修改后端授权或许可证校验
 
 ### 人民币单位验证
 

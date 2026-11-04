@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import UserSearchModal from "./user_search_modal";
 import { userFilterUICall } from "@/components/networking";
 import { DEBOUNCE_WAIT_MS } from "@/utils/debounceConstants";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 vi.mock("@/components/networking", () => ({
   userFilterUICall: vi.fn().mockResolvedValue([]),
@@ -88,7 +89,11 @@ describe("UserSearchModal submit payload", () => {
   const setup = () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
-    render(<UserSearchModal isVisible onCancel={vi.fn()} onSubmit={onSubmit} accessToken="sk-test" />);
+    render(
+      <LiteUiContext.Provider value={{ route: "teams", admin: true }}>
+        <UserSearchModal isVisible onCancel={vi.fn()} onSubmit={onSubmit} accessToken="sk-test" />
+      </LiteUiContext.Provider>,
+    );
     return { user, onSubmit };
   };
 

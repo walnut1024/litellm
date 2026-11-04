@@ -77,7 +77,7 @@ describe("EditMembership submit payload", () => {
     vi.clearAllMocks();
   });
 
-  it("keeps member budgets editable and stored paid limits intact while masking team-admin assignment", async () => {
+  it("assigns a lightweight team admin while preserving the member's stored limits", async () => {
     const user = userEvent.setup();
     const storedBudget = { "preview-text": { budget_limit: 5, time_period: "1d" } };
     renderWithProviders(
@@ -98,19 +98,18 @@ describe("EditMembership submit payload", () => {
         />
       </LiteUiContext.Provider>,
     );
-    expect(screen.getByText("Per-Model Budgets")).not.toBeVisible();
+    expect(screen.getByText("Per-Model Budgets")).toBeVisible();
     await user.click(screen.getByRole("combobox", { name: /Role/ }));
-    expect(screen.queryByRole("option", { name: "Admin" })).not.toBeInTheDocument();
-    await user.keyboard("{Escape}");
+    await user.click(await screen.findByRole("option", { name: "Admin" }));
     fireEvent.change(screen.getByRole("spinbutton", { name: "Team Member Budget (CNY)" }), { target: { value: "20" } });
     save();
     await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
     expect(submitted()).toEqual(
-      expect.objectContaining({ role: "user", max_budget_in_team: "20", model_max_budget: storedBudget }),
+      expect.objectContaining({ role: "admin", max_budget_in_team: "20", model_max_budget: storedBudget }),
     );
   });
 
-  it("defaults new lightweight team members to an available role", async () => {
+  it("preserves the configured default role for new lightweight team members", async () => {
     renderWithProviders(
       <LiteUiContext.Provider value={{ route: "teams", admin: true }}>
         <EditMembership
@@ -122,10 +121,10 @@ describe("EditMembership submit payload", () => {
         />
       </LiteUiContext.Provider>,
     );
-    expect(screen.getByRole("combobox", { name: "Role" })).toHaveTextContent("User");
+    expect(screen.getByRole("combobox", { name: "Role" })).toHaveTextContent("Admin");
     fireEvent.click(screen.getByRole("button", { name: "Add Member" }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
-    expect(submitted()).toEqual(expect.objectContaining({ role: "user" }));
+    expect(submitted()).toEqual(expect.objectContaining({ role: "admin" }));
   });
 
   it("submits only the fields the config renders, never the rest of the member record", async () => {

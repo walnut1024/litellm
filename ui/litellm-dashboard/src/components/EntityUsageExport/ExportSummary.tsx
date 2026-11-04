@@ -1,3 +1,4 @@
+import { useLocale, useTranslation } from "@/contexts/LocaleContext";
 import React from "react";
 import type { DateRangePickerValue } from "@/components/shared/date_picker_types";
 
@@ -7,10 +8,14 @@ interface ExportSummaryProps {
 }
 
 const ExportSummary: React.FC<ExportSummaryProps> = ({ dateRange, selectedFilters }) => {
+  const { locale } = useLocale();
+  const t = useTranslation();
+  const dateLocale = locale === "en" ? "en-US" : locale;
   return (
     <div className="text-sm text-muted-foreground">
-      {dateRange.from?.toLocaleDateString()} - {dateRange.to?.toLocaleDateString()}
-      {selectedFilters.length > 0 && ` · ${selectedFilters.length} filter${selectedFilters.length > 1 ? "s" : ""}`}
+      {dateRange.from?.toLocaleDateString(dateLocale)} - {dateRange.to?.toLocaleDateString(dateLocale)}
+      {selectedFilters.length > 0 &&
+        ` · ${t(selectedFilters.length === 1 ? "{count} filter" : "{count} filters", { count: selectedFilters.length })}`}
     </div>
   );
 };

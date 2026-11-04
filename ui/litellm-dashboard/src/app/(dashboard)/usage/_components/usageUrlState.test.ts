@@ -1,3 +1,4 @@
+import { liteTabAllowed } from "@/utils/liteUi";
 import moment from "moment";
 import { createLoader, createSerializer } from "nuqs";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -6,6 +7,7 @@ import { UsageClient } from "./components/overview/agentCatalog";
 import type { UsageOption } from "./components/UsageViewSelect/UsageViewSelect";
 import { USAGE_OPTIONS } from "./components/UsageViewSelect/UsageViewSelect";
 import {
+  USAGE_TABS,
   cleanUsageUrl,
   clientDateRangeFromParams,
   clientDateRangePatch,
@@ -259,6 +261,22 @@ describe("cleanUsageUrl", () => {
 
   it("denies another user's usage to a non-admin", () => {
     expect(clean("?user=someone-else&tab=models", internalUserAccess)).toEqual({ query: "", deniedAccess: true });
+  });
+});
+
+describe("edition-hidden usage tabs", () => {
+  it.each([true, false])("falls back and clears hidden tabs without losing filters for admin=%s", (isAdmin) => {
+    const allowedTabs = USAGE_TABS.filter((tab) => liteTabAllowed("usage", tab, isAdmin));
+    const hiddenTabs = USAGE_TABS.filter((tab) => !allowedTabs.includes(tab));
+    expect(hiddenTabs.length).toBeGreaterThan(0);
+    for (const tab of hiddenTabs) {
+      const params = load(`?tab=${tab}&range=7d&client=claude-desktop`);
+      expect(usageTabFromParams(params, isAdmin, allowedTabs)).toBe("cost");
+      const cleanup = cleanUsageUrl(params, { ...adminAccess, isAdmin, allowedTabs });
+      expect(cleanup?.deniedAccess).toBe(false);
+      expect(applyPatch(serialize(params), cleanup!.patch)).toBe("?range=7d&client=claude-desktop");
+    }
+    expect(usageTabFromParams(load("?tab=models"), isAdmin, allowedTabs)).toBe("models");
   });
 });
 

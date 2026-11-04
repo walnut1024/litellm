@@ -92,8 +92,13 @@ const hasEntityValue = (params: UsageUrlParams, key: EntityKey): boolean =>
 export const usageViewFromParams = (params: UsageUrlParams): UsageOption =>
   isUsageOption(params.view) ? params.view : DEFAULT_USAGE_VIEW;
 
-export const usageTabFromParams = (params: UsageUrlParams, isAdmin = true): UsageTab => {
-  return isUsageTab(params.tab) && (params.tab !== "errors" || isAdmin) ? params.tab : DEFAULT_USAGE_TAB;
+export const usageTabFromParams = (
+  params: UsageUrlParams,
+  isAdmin = true,
+  allowedTabs: readonly UsageTab[] = USAGE_TABS,
+): UsageTab => {
+  if (!isUsageTab(params.tab) || !allowedTabs.includes(params.tab)) return DEFAULT_USAGE_TAB;
+  return params.tab !== "errors" || isAdmin ? params.tab : DEFAULT_USAGE_TAB;
 };
 
 export const usageViewPatch = (view: UsageOption): UsageUrlPatch => ({
@@ -198,6 +203,7 @@ const invalidDatePatch = (params: DateParams): UsageUrlPatch => {
 export interface UsageUrlAccess {
   readonly allowedViews: readonly UsageOption[];
   readonly isAdmin: boolean;
+  readonly allowedTabs?: readonly UsageTab[];
   readonly canViewTeamClients?: boolean;
 }
 
@@ -220,7 +226,7 @@ export const cleanUsageUrl = (params: UsageUrlParams, access: UsageUrlAccess): U
   );
   const invalidTab =
     params.tab !== null &&
-    (!TABBED_VIEWS.includes(view) || !isUsageTab(params.tab) || (!access.isAdmin && params.tab === "errors"));
+    (!TABBED_VIEWS.includes(view) || usageTabFromParams(params, access.isAdmin, access.allowedTabs) !== params.tab);
   const panelOpen = CLIENT_USAGE_VIEWS.includes(view) && params.client !== null;
   const canFilterClientUser = access.isAdmin || Boolean(access.canViewTeamClients && params.client_team);
   const panelDates = clientDateParams(params);

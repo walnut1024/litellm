@@ -1,3 +1,4 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -18,19 +19,25 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
   selectedFilters = [],
   customTitle,
 }) => {
+  const t = useTranslation();
   const [exportFormat, setExportFormat] = useState<ExportFormat>("csv");
   const [exportType, setExportType] = useState<ExportType>("daily");
   const [isExporting, setIsExporting] = useState(false);
 
   const entityLabel = entityType.charAt(0).toUpperCase() + entityType.slice(1);
-  const modalTitle = customTitle || `Export ${entityLabel} Usage`;
+  const modalTitle = customTitle || t("Export {entity} Usage", { entity: t(entityLabel) });
 
   const handleExport = async () => {
     setIsExporting(true);
     try {
       const blob = await onExport(exportType, exportFormat);
       downloadBlob(blob, exportFilename(entityType, exportType, exportFormat, dateRange));
-      toast.success(`${entityLabel} usage data exported successfully as ${exportFormat.toUpperCase()}`);
+      toast.success(
+        t("{entity} usage data exported successfully as {format}", {
+          entity: t(entityLabel),
+          format: exportFormat.toUpperCase(),
+        }),
+      );
       onClose();
     } catch (error) {
       console.error("Error exporting data:", error);
@@ -49,7 +56,9 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
     >
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold">{modalTitle}</DialogTitle>
+          <DialogTitle className="text-base font-semibold">
+            <L>{modalTitle}</L>
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-5 py-2">
           <ExportSummary dateRange={dateRange} selectedFilters={selectedFilters} />
@@ -57,11 +66,11 @@ const EntityUsageExportModal: React.FC<EntityUsageExportModalProps> = ({
           <ExportFormatSelector value={exportFormat} onChange={setExportFormat} />
           <div className="flex items-center justify-end gap-2 pt-4 border-t">
             <Button variant="outline" onClick={onClose} disabled={isExporting}>
-              Cancel
+              <L>Cancel</L>
             </Button>
             <Button onClick={handleExport} disabled={isExporting}>
               {isExporting && <Loader2 className="animate-spin" />}
-              {isExporting ? "Exporting..." : `Export ${exportFormat.toUpperCase()}`}
+              {isExporting ? t("Exporting...") : t("Export {format}", { format: exportFormat.toUpperCase() })}
             </Button>
           </div>
         </div>

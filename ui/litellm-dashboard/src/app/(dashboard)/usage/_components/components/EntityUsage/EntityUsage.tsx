@@ -1,5 +1,7 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
+import { useLiteUi } from "@/contexts/LiteUiContext";
+import { liteTabAllowed } from "@/utils/liteUi";
 import useTeams from "@/app/(dashboard)/hooks/useTeams";
 import { StackedUsageChart, type StackedUsageScale } from "@/components/shared/charts";
 import { DataTable } from "@/components/shared/DataTable";
@@ -146,6 +148,9 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   selectedEntities: selectedTags,
   onSelectedEntitiesChange: setSelectedTags,
 }) => {
+  const t = useTranslation();
+  const { locale } = useLocale();
+  const lite = useLiteUi();
   const { teams } = useTeams();
   const teamList = useMemo(() => teams ?? [], [teams]);
   const [modelViewType, setModelViewType] = useState<ModelViewType>("groups");
@@ -159,7 +164,8 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   const api = ENTITY_API[entityType];
   const entityCapability = ENTITY_CAPABILITIES[entityType];
   const canViewEntity = entityCapability === undefined || hasCapability(userRole, entityCapability, isOrgAdmin);
-  const showAgentBreakdown = entityType === "team" && hasCapability(userRole, "viewAgentUsage");
+  const canViewTeamAgents = entityType === "team" && hasCapability(userRole, "viewAgentUsage");
+  const showAgentBreakdown = canViewTeamAgents && (!lite || liteTabAllowed(lite.route, "agents", lite.admin));
   const hasRequestWindow = !!accessToken && !!startTime && !!endTime;
   const enabled = hasRequestWindow && canViewEntity;
 
@@ -343,11 +349,11 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
   );
 
   const getFilterLabel = (entityType: string) => {
-    return `Filter by ${entityType}`;
+    return t("Filter by {entity}", { entity: t(entityType.charAt(0).toUpperCase() + entityType.slice(1)) });
   };
 
   const getFilterPlaceholder = (entityType: string) => {
-    return `Select ${entityType} to filter...`;
+    return t("Select {entity} to filter...", { entity: t(entityType.charAt(0).toUpperCase() + entityType.slice(1)) });
   };
 
   const entityFilterSlots: Partial<Record<EntityType, ReactNode>> = {
@@ -428,11 +434,15 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
 
   const tileLabel = ({ title, tooltip, expandable }: SummaryTile) => (
     <>
-      <span>{title}</span>
+      <span>
+        <L>{title}</L>
+      </span>
       {tooltip ? (
         <Tooltip>
           <TooltipTrigger render={<Info className="size-3.5 text-muted-foreground hover:text-foreground" />} />
-          <TooltipContent>{tooltip}</TooltipContent>
+          <TooltipContent>
+            <L>{tooltip}</L>
+          </TooltipContent>
         </Tooltip>
       ) : null}
       {expandable ? expandIcon : null}
@@ -485,8 +495,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
     <div className="grid gap-3">
       <section className="grid gap-2">
         <h2 className="text-sm font-medium text-foreground">
-          {capitalizedEntityLabel}
-          <L> Spend Overview</L>
+          {t("{entity} Spend Overview", { entity: t(capitalizedEntityLabel) })}
         </h2>
         <div
           className={cn(
@@ -511,14 +520,17 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
         <header className="flex flex-wrap items-start justify-between gap-3 px-5 pt-4">
           <div>
             <h3 className="text-sm font-medium text-foreground">
-              {METRIC_TITLE[breakdown.metric]}
-              <L> by </L>
-              {modelViewType === "groups" ? "model" : "deployment"}
+              {t("{metric} by {dimension}", {
+                metric: t(METRIC_TITLE[breakdown.metric]),
+                dimension: t(modelViewType === "groups" ? "Model" : "Deployment"),
+              })}
             </h3>
             <p className="text-xs text-muted-foreground">
-              <L>{granularity === "day" ? "Daily" : "Weekly"}</L> {breakdown.metric}
-              <L>, top 8 stacked</L>
-              {stackFlatCost ? ", flat cost on top" : ""}
+              {t("{frequency} {metric}, top 8 stacked", {
+                frequency: t(granularity === "day" ? "Daily" : "Weekly"),
+                metric: t(METRIC_TITLE[breakdown.metric]),
+              })}
+              {stackFlatCost ? t(", flat cost on top") : ""}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -536,10 +548,10 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           <StackedUsageChart
             data={chartSeries.data}
             series={chartSeries.keys}
-            labels={chartSeries.labels}
+            labels={chartSeries.labels.map((label) => (label === FLAT_COST_SERIES ? t(label) : label))}
             colors={chartSeries.colors}
             xKey="date"
-            xLabel={(date) => labelForDate(chartSeries, date)}
+            xLabel={(date) => labelForDate(chartSeries, date, locale)}
             scale={scale}
             format={chartFormat}
             totalFor={(date) => chartTotals.get(date)}
@@ -560,16 +572,18 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
 
       <Panel
         icon={Layers}
-        title={`Spend Per ${capitalizedEntityLabel}`}
+        title={t("Spend Per {entity}", { entity: t(capitalizedEntityLabel) })}
         action={
-          <a
-            href="https://docs.litellm.ai/docs/proxy/enterprise#spend-tracking"
-            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-          >
-            <L>Track cost per </L>
-            {entityType}
-            <ExternalLink aria-hidden="true" className="size-3" />
-          </a>
+          !lite && (
+            <a
+              href="https://docs.litellm.ai/docs/proxy/enterprise#spend-tracking"
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <L>Track cost per </L>
+              {entityType}
+              <ExternalLink aria-hidden="true" className="size-3" />
+            </a>
+          )
         }
       >
         <DataTable
@@ -577,7 +591,7 @@ const EntityUsage: React.FC<EntityUsageProps> = ({
           data={entityRows}
           getRowId={(row) => row.metadata.id}
           maxBodyHeight={280}
-          noDataMessage={`No ${entityType} spend data`}
+          noDataMessage={t("No {entity} spend data", { entity: t(capitalizedEntityLabel) })}
           size="compact"
         />
       </Panel>

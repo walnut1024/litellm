@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { useState, type ComponentProps } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -407,5 +408,45 @@ describe("ClientUsagePanel", () => {
     expect(await screen.findByText(/Model usage does not match these client totals/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Retry model breakdown" }));
     expect(await screen.findByText("test-model")).toBeInTheDocument();
+  });
+  it.each([
+    { summary: null, message: "此时间范围内暂无 Claude Desktop 用量记录" },
+    { summary: { ...agent, requests: 0 }, message: "所选时间范围内暂无 Claude Desktop 请求，请选择其他时间范围" },
+  ])("localizes client scope and empty state for $message", async ({ summary, message }) => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    try {
+      renderWithProviders(
+        <LocaleProvider>
+          <ClientUsagePanel
+            {...defaultProps}
+            agent={summary}
+            teams={[{ value: "engineering", label: "Engineering" }]}
+            onTeamChange={vi.fn()}
+          />
+        </LocaleProvider>,
+      );
+      expect(await screen.findByText(message, { exact: false })).toBeInTheDocument();
+      expect(screen.getByRole("combobox", { name: "统计范围" })).toHaveValue("全部用户");
+    } finally {
+      localStorage.removeItem("moma.locale");
+    }
+  });
+  it.each(["zh-CN", "en"])("formats panel dates for %s without changing its range", (locale) => {
+    localStorage.setItem("moma.locale", locale);
+    const onDateChange = vi.fn();
+    try {
+      const view = renderWithProviders(
+        <LocaleProvider>
+          <ClientUsagePanel {...defaultProps} onDateChange={onDateChange} />
+        </LocaleProvider>,
+      );
+      const dateLocale = locale === "en" ? "en-US" : locale;
+      const label = defaultProps.startTime!.toLocaleDateString(dateLocale, { month: "short", day: "numeric" });
+      expect(screen.getByText(new RegExp(label))).toBeInTheDocument();
+      expect(onDateChange).not.toHaveBeenCalled();
+      view.unmount();
+    } finally {
+      localStorage.removeItem("moma.locale");
+    }
   });
 });

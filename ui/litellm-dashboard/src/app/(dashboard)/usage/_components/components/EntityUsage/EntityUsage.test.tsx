@@ -1,3 +1,5 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -870,7 +872,7 @@ describe("EntityUsage", () => {
     expect(showingCount("metrics-source:model_groups")).toBeGreaterThan(0);
 
     act(() => {
-      fireEvent.click(showingText("Litellm Model Name"));
+      fireEvent.click(showingText("Upstream Model Name"));
     });
 
     expect(showingCount("metrics-source:models")).toBeGreaterThan(0);
@@ -1497,5 +1499,34 @@ describe("EntityUsage", () => {
         );
       });
     });
+  });
+  it("retains team usage while hiding agent views and avoiding agent requests in the lightweight edition", async () => {
+    render(
+      <LiteUiContext.Provider value={{ route: "usage", admin: true }}>
+        <StatefulEntityUsage {...defaultProps} entityType="team" />
+      </LiteUiContext.Provider>,
+    );
+    await waitFor(() => expect(mockDailyActivityAggregatedCall).toHaveBeenCalledWith("team", expect.anything()));
+    expect(screen.queryByRole("tab", { name: "Agent Activity" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Top Agents Driving Spend" })).not.toBeInTheDocument();
+    expect(mockDailyActivityAggregatedCall.mock.calls.filter((call) => call[0] === "agent")).toHaveLength(0);
+  });
+
+  it("uses complete localized team headings and summary labels", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    try {
+      render(
+        <LocaleProvider>
+          <LiteUiContext.Provider value={{ route: "usage", admin: true }}>
+            <StatefulEntityUsage {...defaultProps} entityType="team" />
+          </LiteUiContext.Provider>
+        </LocaleProvider>,
+      );
+      expect(await screen.findByRole("heading", { name: "团队花费概览" })).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: "按模型统计花费" })).toBeInTheDocument();
+      expect(screen.getAllByText("总花费").length).toBeGreaterThan(0);
+    } finally {
+      localStorage.removeItem("moma.locale");
+    }
   });
 });

@@ -34,7 +34,7 @@ export const liteRouteAllowed = (route: string, userRole: string): boolean =>
 const hiddenTabs: Readonly<Record<string, readonly string[]>> = {
   "models-and-endpoints": ["auto-routers", "pass-through", "model-group-alias", "access-group-budgets", "price-data"],
   "api-keys": ["savings", "auto-router-usage"],
-  usage: ["mcp", "endpoints"],
+  usage: ["mcp", "endpoints", "agents"],
   logs: ["audit logs", "deleted keys", "deleted teams"],
   teams: ["default-settings"],
   "access-groups": ["mcp-servers", "mcp", "agents", "skills"],

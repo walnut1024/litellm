@@ -1,3 +1,4 @@
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 import { useAgents } from "@/app/(dashboard)/hooks/agents/useAgents";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useIsOrgAdmin from "@/app/(dashboard)/hooks/useIsOrgAdmin";
@@ -2027,5 +2028,17 @@ describe("UsagePage", () => {
 
       expect(await screen.findByRole("button", { name: "Copy Share Link" })).toBeInTheDocument();
     });
+  });
+  it.each(["mcp", "endpoints"])("opens the overview from a masked %s URL and preserves its range", async (tab) => {
+    const onUrlUpdate = vi.fn<(event: UrlUpdateEvent) => void>();
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "usage", admin: true }}>
+        <UsagePage {...defaultProps} />
+      </LiteUiContext.Provider>,
+      { searchParams: `?tab=${tab}&range=7d`, onUrlUpdate, resetUrlUpdateQueueOnMount: false },
+    );
+    expect(screen.getByRole("tab", { name: "Overview" })).toHaveAttribute("aria-selected", "true");
+    await waitFor(() => expect(onUrlUpdate.mock.lastCall?.[0].queryString).toBe("?range=7d"));
+    expect(screen.getByRole("tabpanel", { name: "Overview" })).toBeVisible();
   });
 });

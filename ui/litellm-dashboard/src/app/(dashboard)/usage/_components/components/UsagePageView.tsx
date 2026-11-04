@@ -1,6 +1,7 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
-import { LiteUiMask } from "@/contexts/LiteUiContext";
+import { liteTabAllowed } from "@/utils/liteUi";
+import { LiteUiMask, useLiteUi } from "@/contexts/LiteUiContext";
 /**
  * New Usage Page
  *
@@ -79,6 +80,7 @@ import { AriaUsageComposer, AriaUsageTrigger } from "@/components/liteadmin/Lite
 import { allowedUsageOptions, UsageViewSelect } from "./UsageViewSelect/UsageViewSelect";
 import UserRecordLink from "./UserRecordLink";
 import {
+  USAGE_TABS,
   CLIENT_USAGE_VIEWS,
   cleanUsageUrl,
   clientDateRangeFromParams,
@@ -97,8 +99,7 @@ import {
   usageViewPatch,
 } from "../usageUrlState";
 import { overviewTotals, rollUpBreakdown } from "./overview/overviewData";
-import TopAgents from "./overview/TopAgents";
-import { parseUsageClient, topAgents, type AgentRow } from "./overview/agentCatalog";
+import { topAgents } from "./overview/agentCatalog";
 import ClientUsagePanel from "./ClientUsagePanel";
 import { resolveClientUsageScope } from "../hooks/clientUsageScope";
 import { useUsagePanelContext } from "../hooks/useUsagePanelContext";
@@ -116,6 +117,12 @@ interface UsagePageProps {
 }
 
 const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoading = false, defaultTimeRange }) => {
+  const t = useTranslation();
+  const lite = useLiteUi();
+  const allowedTabs = useMemo(
+    () => (lite ? USAGE_TABS.filter((tab) => liteTabAllowed(lite.route, tab, lite.admin)) : USAGE_TABS),
+    [lite],
+  );
   const { accessToken, userRole, userId: userID, premiumUser, isLoading: authorizationLoading } = useAuthorized();
   const [gatewayActivityData, setGatewayActivityData] = useState<FetchedGatewayActivity | null>(null);
 
@@ -157,7 +164,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
   const [isCloudZeroModalOpen, setIsCloudZeroModalOpen] = useState(false);
   const [isGlobalExportModalOpen, setIsGlobalExportModalOpen] = useState(false);
   const selectedUsageView = usageViewFromParams(urlParams);
-  const selectedTab = usageTabFromParams(urlParams, isAdmin);
+  const selectedTab = usageTabFromParams(urlParams, isAdmin, allowedTabs);
   const usageView = allowedViews.includes(selectedUsageView) ? selectedUsageView : DEFAULT_USAGE_VIEW;
 
   const selectedClient = CLIENT_USAGE_VIEWS.includes(usageView) ? urlParams.client : null;
@@ -195,12 +202,13 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
   const accessSettled = authorizationSettled && !organizationsLoading && !teamsLoading;
   useEffect(() => {
     if (!accessSettled) return;
-    const cleanup = cleanUsageUrl(urlParams, { allowedViews, isAdmin, canViewTeamClients });
+    const access = { allowedViews, isAdmin, canViewTeamClients, allowedTabs };
+    const cleanup = cleanUsageUrl(urlParams, access);
     if (!cleanup) return;
     if (cleanup.deniedAccess)
       toast.warning("You don't have access to that usage view", { id: "usage-url-access-denied" });
     void setUrlParams(cleanup.patch);
-  }, [accessSettled, urlParams, allowedViews, isAdmin, canViewTeamClients, setUrlParams]);
+  }, [accessSettled, urlParams, allowedViews, isAdmin, canViewTeamClients, allowedTabs, setUrlParams]);
 
   const entitySelection = (entityType: EntityType) => ({
     selectedEntities: selectedEntitiesFromParams(urlParams, entityType),
@@ -272,38 +280,18 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
     enabled: dailyActivityRequest !== null,
     deps: [accessToken, startTime, endTime, effectiveUserId],
   });
-  // Tag data is deployment-wide with no per-user dimension, so Top agents only appears where the
-  // rest of the page is deployment-wide too: an admin's global view with no user selected.
-  const showTopAgents = false;
   const globalClientScope = clientUserId === null && clientTeamId === null && !clientScope.error;
   const globalClientSelected = isAdmin && selectedClient !== null && globalClientScope;
-  const needsAgentSummary = showTopAgents || globalClientSelected;
   const tagDailyRequest = useMemo<DailyActivityRequest | null>(
     () => (accessToken && startTime && endTime ? { accessToken, startTime, endTime, entityIds: null } : null),
     [accessToken, startTime, endTime],
   );
   const { data: tagDailyRaw, loading: tagDailyLoading } = useAggregatedDailyActivity({
     fetch: () => ENTITY_API.tag.aggregated(tagDailyRequest as DailyActivityRequest),
-    enabled: tagDailyRequest !== null && needsAgentSummary,
-    deps: [accessToken, startTime, endTime, needsAgentSummary],
+    enabled: tagDailyRequest !== null && globalClientSelected,
+    deps: [accessToken, startTime, endTime, globalClientSelected],
   });
   const tagDaily = useMemo(() => toDailyData(tagDailyRaw), [tagDailyRaw]);
-  const openAgentActivity = useCallback(
-    (agent: AgentRow) => {
-      const client = parseUsageClient(agent.id);
-      if (client) {
-        rememberUsageContext();
-        void setUrlParams(clientPanelPatch(client), { scroll: false });
-        return;
-      }
-      void setUrlParams({
-        ...usageViewPatch("user-agent-activity"),
-        ...entitySelectionPatch("tag", agent.tags),
-      });
-    },
-    [setUrlParams, rememberUsageContext],
-  );
-
   // Gateway request counts (SGR). Admin-only: the source table is
   // deployment-wide, so a non-admin must not see it.
   const gatewayRequest = useMemo(
@@ -387,7 +375,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
     isLoading: tagSummaryLoading,
     isError: tagSummaryFailed,
     refetch: reloadTagSummary,
-  } = useTagSummary(startTime, endTime, needsAgentSummary);
+  } = useTagSummary(startTime, endTime, globalClientSelected);
 
   const clientAgent = useMemo(
     () => topAgents(tagSummary ?? []).find((agent) => agent.id === selectedClient) ?? null,
@@ -581,6 +569,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                               Failed: row.failed_requests,
                             }))}
                             series={["Successful", "Failed"]}
+                            labels={[t("Successful"), t("Failed")]}
                             colors={["#2b3fd6", "#ef4444"]}
                             xKey="route"
                             format={(value) => value.toLocaleString()}
@@ -589,17 +578,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                         </Panel>
                       ) : null
                     }
-                    topAgents={
-                      showTopAgents ? (
-                        <TopAgents
-                          rows={tagSummary}
-                          daily={tagDaily}
-                          loading={tagSummaryLoading || tagDailyLoading}
-                          totalTokens={totals.tokens}
-                          onOpenAgent={openAgentActivity}
-                        />
-                      ) : null
-                    }
+                    topAgents={null}
                     providerBreakdown={
                       <SpendByProvider loading={loading} isDateChanging={false} providerSpend={providerSpend} />
                     }

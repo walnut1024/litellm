@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -79,6 +79,7 @@ const columns: ColumnDef<TeamUserSpendRow>[] = [
 ];
 
 const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, startTime, endTime, teamIds }) => {
+  const t = useTranslation();
   const hasTeams = teamIds.length > 0;
   const { data, isLoading } = useQuery({
     queryKey: ["teamSpendByUser", startTime?.toISOString(), endTime?.toISOString(), teamIds],
@@ -113,7 +114,7 @@ const TeamUserSpendCard: React.FC<TeamUserSpendCardProps> = ({ accessToken, star
         getRowId={teamUserSpendRowId}
         isLoading={isLoading}
         maxBodyHeight={320}
-        noDataMessage={teamIds.length === 0 ? "Select a team to see spend per user" : "No user spend in this range"}
+        noDataMessage={t(teamIds.length === 0 ? "Select a team to see spend per user" : "No user spend in this range")}
         size="compact"
       />
     </Panel>

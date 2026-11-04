@@ -1,3 +1,4 @@
+import { LocalizedText as L, useTranslation, useLocale } from "@/contexts/LocaleContext";
 import type { DateRangePickerValue } from "@/components/shared/date_picker_types";
 import { Download } from "lucide-react";
 import React, { useState } from "react";
@@ -51,6 +52,8 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
   compactLayout = false,
   teams = [],
 }) => {
+  const t = useTranslation();
+  const { locale } = useLocale();
   const anchor = useComboboxAnchor();
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
@@ -58,14 +61,18 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
   const optionValues = filterOptions.map((option) => option.value);
   const labelOf = (value: string) => filterOptions.find((option) => option.value === value)?.label ?? value;
   const hasNoOptions = filterOptions.length === 0;
-  const emptyPlaceholder = `No ${entityType}s with usage in this range`;
+  const emptyPlaceholder = t("No {entities} with usage in this range", {
+    entities: locale === "en" ? `${entityType}s` : t(entityType.charAt(0).toUpperCase() + entityType.slice(1)),
+  });
   // A selection carried over from a range that did have options still scopes
   // the data below, so the control has to stay usable long enough to clear it.
   const isFilterDisabled = hasNoOptions && selectedFilters.length === 0;
 
   const filterList = (
     <ComboboxContent anchor={anchor}>
-      <ComboboxEmpty>No options found</ComboboxEmpty>
+      <ComboboxEmpty>
+        <L>No options found</L>
+      </ComboboxEmpty>
       <ComboboxList>
         {(value: string) => (
           <ComboboxItem key={value} value={value}>
@@ -98,7 +105,9 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
           placeholder={hasNoOptions ? emptyPlaceholder : filterPlaceholder}
           aria-label={hasNoOptions ? emptyPlaceholder : filterPlaceholder}
         />
-        {selectedFilters.length > 0 && <ComboboxClear aria-label={`Clear ${filterLabel ?? "filters"}`} />}
+        {selectedFilters.length > 0 && (
+          <ComboboxClear aria-label={t("Clear {filter}", { filter: filterLabel ?? t("filters") })} />
+        )}
       </ComboboxChips>
       {filterList}
     </Combobox>
@@ -115,7 +124,11 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
         <div className={`grid ${hasFilters ? "grid-cols-[1fr_auto]" : "grid-cols-[auto]"} items-end gap-3`}>
           {hasFilters && (
             <div>
-              {filterLabel && <label className="text-sm font-medium text-foreground block mb-2">{filterLabel}</label>}
+              {filterLabel && (
+                <label className="text-sm font-medium text-foreground block mb-2">
+                  <L>{filterLabel}</L>
+                </label>
+              )}
               {filterSlot ?? builtInFilter}
             </div>
           )}
@@ -123,7 +136,7 @@ const UsageExportHeader: React.FC<UsageExportHeaderProps> = ({
           <div className="justify-self-end">
             <Button variant="outline" size="sm" onClick={() => setIsExportModalOpen(true)}>
               <Download />
-              Export Data
+              <L>Export Data</L>
             </Button>
           </div>
         </div>

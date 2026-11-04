@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
 import { useMemo } from "react";
 import { ArrowLeft, Coins } from "lucide-react";
@@ -54,7 +54,8 @@ interface ClientUsagePanelProps {
   onRetry?: () => void;
 }
 
-const dateLabel = (date: Date | null) => date?.toLocaleDateString("en-US", { month: "short", day: "numeric" }) ?? "—";
+const dateLabel = (date: Date | null, locale: string) =>
+  date?.toLocaleDateString(locale === "en" ? "en-US" : locale, { month: "short", day: "numeric" }) ?? "—";
 const countLabel = (value: number | null) => (value === null ? "Unavailable" : value.toLocaleString());
 
 export default function ClientUsagePanel({
@@ -82,6 +83,8 @@ export default function ClientUsagePanel({
   summaryFailed = false,
   onRetry,
 }: ClientUsagePanelProps) {
+  const { locale } = useLocale();
+  const t = useTranslation();
   const label = client === "claude-desktop" ? "Claude Desktop" : "Claude Code";
   const scopedRequest = Boolean(userId || teamId) && !accessError;
   const personRequest = {
@@ -95,11 +98,11 @@ export default function ClientUsagePanel({
   const personUsage = useClientUsage(personRequest);
   const allUsersEnabled = canChooseUser && !scopedRequest && !accessError;
   const teamLabel = teams.find((team) => team.value === teamId)?.label ?? teamId;
-  const personLabel = members.find((member) => member.value === userId)?.label ?? "Selected user";
+  const personLabel = members.find((member) => member.value === userId)?.label ?? t("Selected user");
   const selectedScopeLabel = (() => {
-    if (teamId) return `${teamLabel} · ${userId ? personLabel : "All members"}`;
-    if (!canChooseUser) return "My usage";
-    return userId ? "Selected user" : "All users";
+    if (teamId) return `${teamLabel} · ${userId ? personLabel : t("All members")}`;
+    if (!canChooseUser) return t("My usage");
+    return userId ? t("Selected user") : t("All users");
   })();
   const summaryQuery = useTagSummary(startTime, endTime, allUsersEnabled && agent === null);
   const activeAgent = useMemo(
@@ -162,7 +165,7 @@ export default function ClientUsagePanel({
             <div>
               <SheetTitle className="text-sm font-medium">{label}</SheetTitle>
               <SheetDescription className="mt-0.5 text-xs">
-                {dateLabel(startTime)} – {dateLabel(endTime)} · {selectedScopeLabel}
+                {dateLabel(startTime, locale)} – {dateLabel(endTime, locale)} · {selectedScopeLabel}
               </SheetDescription>
             </div>
           </div>
@@ -186,7 +189,7 @@ export default function ClientUsagePanel({
                 aria-label="Usage scope"
                 value={teamId ? `team:${teamId}` : "default"}
                 options={[
-                  { value: "default", label: defaultScopeLabel },
+                  { value: "default", label: t(defaultScopeLabel) },
                   ...teams.map((team) => ({ ...team, value: `team:${team.value}` })),
                 ]}
                 allowClear={false}
@@ -204,7 +207,7 @@ export default function ClientUsagePanel({
                 aria-label="Team member"
                 value={userId ? `user:${userId}` : "all"}
                 options={[
-                  { value: "all", label: "All members" },
+                  { value: "all", label: t("All members") },
                   ...members.map((member) => ({ ...member, value: `user:${member.value}` })),
                 ]}
                 allowClear={false}
@@ -258,9 +261,7 @@ export default function ClientUsagePanel({
           )}
           {ready && !summary && (
             <p className="rounded-lg border p-4 text-muted-foreground">
-              <L>No </L>
-              {label}
-              <L> usage recorded in this date range.</L>
+              {t("No {client} usage recorded in this date range.", { client: label })}
             </p>
           )}
           {ready && summary && (
@@ -272,10 +273,13 @@ export default function ClientUsagePanel({
               </div>
               {summary.requests === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  <L>No </L>
-                  {label}
-                  <L> requests in the selected range. Try another date range.</L>
-                  {(canChooseUser || teamId) && " You can also choose another person."}
+                  {t("No {client} requests in the selected range. Try another date range.", { client: label })}
+                  {(canChooseUser || teamId) && (
+                    <>
+                      {" "}
+                      <L>You can also choose another person.</L>
+                    </>
+                  )}
                 </p>
               ) : (
                 <>

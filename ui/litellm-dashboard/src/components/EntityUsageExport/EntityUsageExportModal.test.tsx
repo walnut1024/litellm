@@ -1,3 +1,5 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { toast } from "@/lib/toast";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithProviders } from "../../../tests/test-utils";
@@ -63,5 +65,26 @@ describe("EntityUsageExportModal", () => {
     expect(baseProps.onExport).toHaveBeenCalled();
     expect(downloadBlob).not.toHaveBeenCalled();
     expect(baseProps.onClose).not.toHaveBeenCalled();
+  });
+  it("localizes export options and feedback without changing the format or exported content", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const success = vi.spyOn(toast, "success");
+    try {
+      const user = userEvent.setup();
+      renderWithProviders(
+        <LocaleProvider>
+          <EntityUsageExportModal {...baseProps} customTitle={undefined} entityType="team" />
+        </LocaleProvider>,
+      );
+      expect(screen.getByRole("heading", { name: "导出团队用量" })).toBeInTheDocument();
+      await user.click(screen.getByRole("radio", { name: /按团队与模型逐日导出/ }));
+      await user.click(screen.getByRole("button", { name: "导出 CSV" }));
+      expect(baseProps.onExport).toHaveBeenCalledWith("daily_with_models", "csv");
+      expect(success).toHaveBeenCalledWith("团队用量已导出为 CSV");
+      expect(baseProps.onClose).toHaveBeenCalled();
+    } finally {
+      success.mockRestore();
+      localStorage.removeItem("moma.locale");
+    }
   });
 });

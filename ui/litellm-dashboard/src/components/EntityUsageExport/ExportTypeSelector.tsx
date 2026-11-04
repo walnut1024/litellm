@@ -1,3 +1,4 @@
+import { LocalizedText as L, useTranslation, useLocale } from "@/contexts/LocaleContext";
 import React from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { ExportType, EntityType } from "./types";
@@ -9,33 +10,38 @@ interface ExportTypeSelectorProps {
 }
 
 const ExportTypeSelector: React.FC<ExportTypeSelectorProps> = ({ value, onChange, entityType }) => {
+  const t = useTranslation();
+  const { locale } = useLocale();
+  const entity = locale === "en" ? entityType : t(entityType.charAt(0).toUpperCase() + entityType.slice(1));
   const allScopes: { value: ExportType; title: string; description: string }[] = [
     {
       value: "daily",
-      title: `Day-by-day breakdown by ${entityType}`,
-      description: `Daily metrics for each ${entityType}`,
+      title: t("Day-by-day breakdown by {entity}", { entity }),
+      description: t("Daily metrics for each {entity}", { entity }),
     },
     {
       value: "daily_with_keys",
-      title: `Day-by-day breakdown by ${entityType} and key`,
-      description: `Daily metrics for each ${entityType}, split by API key`,
+      title: t("Day-by-day breakdown by {entity} and key", { entity }),
+      description: t("Daily metrics for each {entity}, split by API key", { entity }),
     },
     {
       value: "daily_with_models",
-      title: `Day-by-day by ${entityType} and model`,
+      title: t("Day-by-day by {entity} and model", { entity }),
       description: "Daily metrics split by model",
     },
     {
       value: "daily_with_users",
-      title: `Day-by-day breakdown by ${entityType} and user`,
-      description: `Daily metrics for each ${entityType}, split by key owner`,
+      title: t("Day-by-day breakdown by {entity} and user", { entity }),
+      description: t("Daily metrics for each {entity}, split by key owner", { entity }),
     },
   ];
   const scopes = allScopes.filter((scope) => scope.value !== "daily_with_users" || entityType !== "user");
 
   return (
     <div>
-      <label className="text-sm font-medium text-foreground block mb-2">Export type</label>
+      <label className="text-sm font-medium text-foreground block mb-2">
+        <L>Export type</L>
+      </label>
       <RadioGroup value={value} onValueChange={(next) => onChange(next as ExportType)} className="gap-2">
         {scopes.map((scope) => (
           <label
@@ -44,8 +50,12 @@ const ExportTypeSelector: React.FC<ExportTypeSelectorProps> = ({ value, onChange
           >
             <RadioGroupItem value={scope.value} className="mt-0.5" />
             <div className="ml-3 flex-1">
-              <div className="font-medium text-sm">{scope.title}</div>
-              <div className="text-xs text-muted-foreground mt-0.5">{scope.description}</div>
+              <div className="font-medium text-sm">
+                <L>{scope.title}</L>
+              </div>
+              <div className="text-xs text-muted-foreground mt-0.5">
+                <L>{scope.description}</L>
+              </div>
             </div>
           </label>
         ))}

@@ -1,7 +1,6 @@
 "use client";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { MomaBrand } from "@/components/MomaBrand";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LocalizedText as L } from "@/contexts/LocaleContext";
 
@@ -208,9 +207,7 @@ function LoginPageContent() {
           <CardContent>
             <div className="flex w-full flex-col gap-4">
               <div className="text-center">
-                <h2 className="text-3xl font-semibold text-foreground">
-                  <MomaBrand className="mx-auto h-12 max-w-64 object-contain" />
-                </h2>
+                <h2 className="text-3xl font-semibold text-foreground">模型服务平台 MoMA</h2>
               </div>
 
               <Alert variant="warning">
@@ -247,9 +244,7 @@ function LoginPageContent() {
           <TooltipProvider>
             <div className="flex w-full flex-col gap-4">
               <div className="text-center">
-                <h2 className="text-3xl font-semibold text-foreground">
-                  <MomaBrand className="mx-auto h-12 max-w-64 object-contain" />
-                </h2>
+                <h2 className="text-3xl font-semibold text-foreground">模型服务平台 MoMA</h2>
               </div>
 
               <div className="text-center">

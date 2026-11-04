@@ -116,7 +116,7 @@ describe("LoginPage", () => {
     mockReplace.mockClear();
   });
 
-  it("should render", async () => {
+  it("shows the platform name as text on the login form", async () => {
     (useUIConfig as ReturnType<typeof vi.fn>).mockReturnValue({
       data: {
         auto_redirect_to_sso: false,
@@ -138,6 +138,8 @@ describe("LoginPage", () => {
     await waitFor(() => {
       expect(screen.getByRole("heading", { name: "Login" })).toBeInTheDocument();
     });
+    expect(screen.getByRole("heading", { name: "模型服务平台 MoMA" })).toBeVisible();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 
   it("should call router.replace to dashboard when jwt is valid", async () => {
@@ -273,6 +275,8 @@ describe("LoginPage", () => {
       expect(screen.getByText("Admin UI Disabled")).toBeInTheDocument();
     });
 
+    expect(screen.getByRole("heading", { name: "模型服务平台 MoMA" })).toBeVisible();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
     expect(mockPush).not.toHaveBeenCalled();
     expect(mockReplace).not.toHaveBeenCalled();
   });

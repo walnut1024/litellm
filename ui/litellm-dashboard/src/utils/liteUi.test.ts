@@ -2,6 +2,25 @@ import { describe, expect, it } from "vitest";
 import { liteColumnAllowed, liteFieldHidden, litePageAllowed, liteRouteAllowed, liteTabAllowed } from "./liteUi";
 
 describe("lightweight UI visibility", () => {
+  it.each(["teams", "users", "api-keys"])(
+    "hides non-model permission fields in %s while retaining model allocation",
+    (route) => {
+      for (const field of [
+        "mcp_servers_and_groups",
+        "mcp_tool_permissions",
+        "agents_and_groups",
+        "skills",
+        "object_permission_search_tools",
+        "object_permission_skills",
+      ]) {
+        expect(liteFieldHidden(route, field)).toBe(true);
+      }
+      expect(liteFieldHidden(route, "models")).toBe(false);
+      expect(liteFieldHidden(route, "access_group_ids")).toBe(false);
+      expect(liteFieldHidden(route, "max_budget")).toBe(false);
+    },
+  );
+
   it.each(["home", "api-keys", "models", "new_usage"])("keeps the core employee page %s", (page) =>
     expect(litePageAllowed(page, "Internal User")).toBe(true),
   );
@@ -21,6 +40,8 @@ describe("lightweight UI visibility", () => {
     "playground",
     "agents",
     "mcp-servers",
+    "search-tools",
+    "skills",
     "guardrails",
     "chat",
     "moyai",

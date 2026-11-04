@@ -1,7 +1,7 @@
 import { LocalizedText as L } from "@/contexts/LocaleContext";
 
 import { Page, PageTabs, PageTabsList, PageTabsTrigger } from "@/components/shared/Page";
-import { LiteUiMask } from "@/contexts/LiteUiContext";
+import { LiteUiMask, useLiteUi } from "@/contexts/LiteUiContext";
 import { useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import AvailableTeamsPanel from "@/components/team/AvailableTeamsPanel";
@@ -219,6 +219,7 @@ const getAdminOrganizations = (
 
 // @deprecated
 const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly = false, premiumUser = false }) => {
+  const lite = useLiteUi();
   const { data: organizationsData } = useOrganizations();
   const organizations = organizationsData ?? null;
   const { data: teamMetadataSchemaFields = [], isLoading: isTeamMetadataSchemaLoading } = useTeamMetadataSchema();
@@ -1041,10 +1042,14 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                             control={form.control}
                             name="require_trace_id"
                             className="mt-4"
-                            label={labelWithHint(
-                              "Require Trace ID",
-                              "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)",
-                            )}
+                            label={
+                              lite
+                                ? "Require Trace ID"
+                                : labelWithHint(
+                                    "Require Trace ID",
+                                    "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)",
+                                  )
+                            }
                           >
                             {({ id, value, onChange }) => (
                               <Switch id={id} checked={value === true} onCheckedChange={onChange} />
@@ -1077,10 +1082,14 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                           control={form.control}
                           name="access_group_ids"
                           className="mt-4"
-                          label={labelWithHint(
-                            "Access Groups",
-                            "Assign access groups to this team. Access groups control which models, MCP servers, and agents this team can use",
-                          )}
+                          label={
+                            lite
+                              ? "Access Groups"
+                              : labelWithHint(
+                                  "Access Groups",
+                                  "Assign access groups to this team. Access groups control which models, MCP servers, and agents this team can use",
+                                )
+                          }
                           description="Select access groups to assign to this team"
                         >
                           {({ value, onChange }) => (
@@ -1142,153 +1151,155 @@ const Teams: React.FC<TeamProps> = ({ accessToken, userID, userRole, isViewOnly 
                     </CollapsibleContent>
                   </Collapsible>
 
-                  <Collapsible
-                    open={mcpSettingsOpen}
-                    onOpenChange={setMcpSettingsOpen}
-                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
-                  >
-                    <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>
-                        <L>MCP Settings</L>
-                      </b>
-                      <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-3">
-                      <FormField
-                        control={form.control}
-                        name="allowed_mcp_servers_and_groups"
-                        className="mt-4"
-                        label={labelWithHint(
-                          "Allowed MCP Servers",
-                          "Select which MCP servers or access groups this team can access",
-                        )}
-                        description="Select MCP servers or access groups this team can access"
-                      >
-                        {({ value, onChange }) => (
-                          <MCPServerSelector
-                            onChange={onChange}
-                            value={value}
-                            accessToken={accessToken || ""}
-                            placeholder="Select MCP servers or access groups (optional)"
-                            allowAllProxyMcpServers={isProxyAdminRole(userRole || "")}
-                          />
-                        )}
-                      </FormField>
+                  <LiteUiMask>
+                    <Collapsible
+                      open={mcpSettingsOpen}
+                      onOpenChange={setMcpSettingsOpen}
+                      className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                    >
+                      <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
+                        <b>
+                          <L>MCP Settings</L>
+                        </b>
+                        <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-4 pb-3">
+                        <FormField
+                          control={form.control}
+                          name="allowed_mcp_servers_and_groups"
+                          className="mt-4"
+                          label={labelWithHint(
+                            "Allowed MCP Servers",
+                            "Select which MCP servers or access groups this team can access",
+                          )}
+                          description="Select MCP servers or access groups this team can access"
+                        >
+                          {({ value, onChange }) => (
+                            <MCPServerSelector
+                              onChange={onChange}
+                              value={value}
+                              accessToken={accessToken || ""}
+                              placeholder="Select MCP servers or access groups (optional)"
+                              allowAllProxyMcpServers={isProxyAdminRole(userRole || "")}
+                            />
+                          )}
+                        </FormField>
 
-                      <div className="mt-6">
-                        <MCPToolPermissions
-                          accessToken={accessToken || ""}
-                          selectedServers={watchedMcpSelection?.servers || []}
-                          selectedAccessGroups={watchedMcpSelection?.accessGroups || []}
-                          selectedToolsets={watchedMcpSelection?.toolsets || []}
-                          toolPermissions={watchedToolPermissions || {}}
-                          onChange={(toolPerms) => form.setValue("mcp_tool_permissions", toolPerms)}
-                        />
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <Collapsible
-                    open={agentSettingsOpen}
-                    onOpenChange={setAgentSettingsOpen}
-                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
-                  >
-                    <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>
-                        <L>Agent Settings</L>
-                      </b>
-                      <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-3">
-                      <FormField
-                        control={form.control}
-                        name="allowed_agents_and_groups"
-                        className="mt-4"
-                        label={labelWithHint(
-                          "Allowed Agents",
-                          "Select which agents or access groups this team can access",
-                        )}
-                        description="Select agents or access groups this team can access"
-                      >
-                        {({ value, onChange }) => (
-                          <AgentSelector
-                            onChange={onChange}
-                            value={value}
+                        <div className="mt-6">
+                          <MCPToolPermissions
                             accessToken={accessToken || ""}
-                            placeholder="Select agents or access groups (optional)"
+                            selectedServers={watchedMcpSelection?.servers || []}
+                            selectedAccessGroups={watchedMcpSelection?.accessGroups || []}
+                            selectedToolsets={watchedMcpSelection?.toolsets || []}
+                            toolPermissions={watchedToolPermissions || {}}
+                            onChange={(toolPerms) => form.setValue("mcp_tool_permissions", toolPerms)}
                           />
-                        )}
-                      </FormField>
-                    </CollapsibleContent>
-                  </Collapsible>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
 
-                  <Collapsible
-                    open={searchToolSettingsOpen}
-                    onOpenChange={setSearchToolSettingsOpen}
-                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
-                  >
-                    <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>
-                        <L>Search Tool Settings</L>
-                      </b>
-                      <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-3">
-                      <FormField
-                        control={form.control}
-                        name="object_permission_search_tools"
-                        className="mt-4"
-                        label={labelWithHint(
-                          "Allowed Search Tools",
-                          "Select which search tools this team can access. Leave empty to allow all search tools.",
-                        )}
-                        description="Restrict which configured search tools keys on this team may call."
-                      >
-                        {({ value, onChange }) => (
-                          <SearchToolSelector
-                            onChange={onChange}
-                            value={value}
-                            accessToken={accessToken || ""}
-                            placeholder="Select search tools (optional, empty = all allowed)"
-                          />
-                        )}
-                      </FormField>
-                    </CollapsibleContent>
-                  </Collapsible>
+                    <Collapsible
+                      open={agentSettingsOpen}
+                      onOpenChange={setAgentSettingsOpen}
+                      className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                    >
+                      <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
+                        <b>
+                          <L>Agent Settings</L>
+                        </b>
+                        <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-4 pb-3">
+                        <FormField
+                          control={form.control}
+                          name="allowed_agents_and_groups"
+                          className="mt-4"
+                          label={labelWithHint(
+                            "Allowed Agents",
+                            "Select which agents or access groups this team can access",
+                          )}
+                          description="Select agents or access groups this team can access"
+                        >
+                          {({ value, onChange }) => (
+                            <AgentSelector
+                              onChange={onChange}
+                              value={value}
+                              accessToken={accessToken || ""}
+                              placeholder="Select agents or access groups (optional)"
+                            />
+                          )}
+                        </FormField>
+                      </CollapsibleContent>
+                    </Collapsible>
 
-                  <Collapsible
-                    open={skillSettingsOpen}
-                    onOpenChange={setSkillSettingsOpen}
-                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
-                  >
-                    <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>
-                        <L>Skill Settings</L>
-                      </b>
-                      <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-3">
-                      <FormField
-                        control={form.control}
-                        name="object_permission_skills"
-                        className="mt-4"
-                        label={labelWithHint(
-                          "Allowed Skills",
-                          "Enabled skills are visible to every team. Grant disabled (private) Claude Code plugins to this team here.",
-                        )}
-                        description="Private skills keys on this team may see in the Claude Code marketplace."
-                      >
-                        {({ value, onChange }) => (
-                          <SkillSelector
-                            onChange={onChange}
-                            value={value}
-                            accessToken={accessToken || ""}
-                            placeholder="Select skills (optional)"
-                          />
-                        )}
-                      </FormField>
-                    </CollapsibleContent>
-                  </Collapsible>
+                    <Collapsible
+                      open={searchToolSettingsOpen}
+                      onOpenChange={setSearchToolSettingsOpen}
+                      className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                    >
+                      <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
+                        <b>
+                          <L>Search Tool Settings</L>
+                        </b>
+                        <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-4 pb-3">
+                        <FormField
+                          control={form.control}
+                          name="object_permission_search_tools"
+                          className="mt-4"
+                          label={labelWithHint(
+                            "Allowed Search Tools",
+                            "Select which search tools this team can access. Leave empty to allow all search tools.",
+                          )}
+                          description="Restrict which configured search tools keys on this team may call."
+                        >
+                          {({ value, onChange }) => (
+                            <SearchToolSelector
+                              onChange={onChange}
+                              value={value}
+                              accessToken={accessToken || ""}
+                              placeholder="Select search tools (optional, empty = all allowed)"
+                            />
+                          )}
+                        </FormField>
+                      </CollapsibleContent>
+                    </Collapsible>
+
+                    <Collapsible
+                      open={skillSettingsOpen}
+                      onOpenChange={setSkillSettingsOpen}
+                      className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                    >
+                      <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
+                        <b>
+                          <L>Skill Settings</L>
+                        </b>
+                        <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-4 pb-3">
+                        <FormField
+                          control={form.control}
+                          name="object_permission_skills"
+                          className="mt-4"
+                          label={labelWithHint(
+                            "Allowed Skills",
+                            "Enabled skills are visible to every team. Grant disabled (private) Claude Code plugins to this team here.",
+                          )}
+                          description="Private skills keys on this team may see in the Claude Code marketplace."
+                        >
+                          {({ value, onChange }) => (
+                            <SkillSelector
+                              onChange={onChange}
+                              value={value}
+                              accessToken={accessToken || ""}
+                              placeholder="Select skills (optional)"
+                            />
+                          )}
+                        </FormField>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </LiteUiMask>
 
                   <LiteUiMask>
                     <Collapsible className="mt-4 mb-4 overflow-hidden rounded-lg border">

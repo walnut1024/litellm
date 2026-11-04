@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, testQueryClient } from "../../../../../tests/test-utils";
 import { UserEditView } from "./user_edit_view";
 import * as networking from "@/components/networking";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 vi.mock("@/components/networking");
 
@@ -78,6 +79,23 @@ describe("UserEditView", () => {
     await waitFor(() => {
       expect(screen.getByRole("button", { name: /save changes/i })).toBeInTheDocument();
     });
+  });
+
+  it("saves ordinary lightweight user edits without reading or rewriting the user's MCP permissions", async () => {
+    const onSubmit = vi.fn();
+    const objectPermission = { mcp_servers: ["server-a"], mcp_tool_permissions: { "server-a": ["read"] } };
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "users", admin: true }}>
+        <UserEditView {...defaultProps} onSubmit={onSubmit} objectPermission={objectPermission} />
+      </LiteUiContext.Provider>,
+    );
+    fireEvent.change(await screen.findByLabelText("User Alias"), { target: { value: "New Alias" } });
+    expect(screen.queryByLabelText(/MCP Servers/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /save changes/i }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledOnce());
+    expect(onSubmit.mock.calls[0][0]).toMatchObject({ user_alias: "New Alias" });
+    expect(onSubmit.mock.calls[0][0]).not.toHaveProperty("mcp_servers_and_groups");
+    expect(onSubmit.mock.calls[0][0]).not.toHaveProperty("mcp_tool_permissions");
   });
 
   it("should display user ID field when not in bulk edit mode", async () => {

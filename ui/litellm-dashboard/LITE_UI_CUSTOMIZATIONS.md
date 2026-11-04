@@ -61,9 +61,10 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | Virtual Keys 详情        | Savings、Auto Router Usage、Regenerate Key、组织和项目展示、独立日志、自动轮换、Guardrails、Policies、Prompts、路由权限、标签及原始 Metadata 等高级区块 | 基本信息、模型、用量、预算、过期时间、编辑、删除及原权限允许的其他动作                                              |
 | Key 创建                 | Agent 所有者、非 AI API 类型及高级配置区块                                                                                                              | You、Service Account、Another User 按原角色提供，团队和访问组配置保留                                               |
 | Logs                     | Audit Logs、Deleted Keys、Deleted Teams，连同 Enterprise 预览和升级说明                                                                                 | Request Logs 及请求详情                                                                                             |
-| Teams                    | Default Team Settings 页签、创建团队中的独立 Logging Settings、组织与密钥管理展示、单模型预算编辑和展示                                                 | 团队基本预算和成员预算保留，成员表中的原始限额数据不重算                                                            |
+| Teams                    | Default Team Settings 页签、MCP/智能体/搜索工具/技能配置与资源权限概览、创建团队中的独立 Logging Settings、组织与密钥管理展示、单模型预算编辑和展示     | 团队基本预算和成员预算保留，成员表中的原始限额数据不重算                                                            |
 | 团队成员添加或编辑       | 无额外裁剪                                                                                                                                              | 添加成员默认 User，可选择 Admin。编辑保留角色、模型范围、预算、周期、临时预算、TPM/RPM 和按原许可证开放的单模型预算 |
-| 访问组创建、编辑及详情   | MCP Servers、Agents、Skills 页签及对应内容                                                                                                              | 创建和编辑保留基本信息与模型，详情保留模型，隐藏项已有授权不会被清空                                                |
+| 访问组创建、编辑及详情   | MCP Servers、Agents、Skills 页签、对应内容及列表中的资源数量标记                                                                                        | 创建和编辑保留基本信息与模型，详情保留模型，隐藏项已有授权不会被清空                                                |
+| 用户详情及编辑           | MCP 权限展示、MCP 服务器选择和工具权限配置                                                                                                              | 用户身份、平台角色、团队、模型、预算和限流继续保留                                                                  |
 | Usage                    | MCP、Endpoints 页签、Aria 自然语言查询、Top Agents，以及 Customer、Tag、Agent、User Agent Activity、Organization 统计视角                               | 全局、本人、用户、团队统计按原权限提供                                                                              |
 | Router Settings          | 路由策略选择、标签过滤、基于延迟的高级配置                                                                                                              | 原有基础重试等设置                                                                                                  |
 | Logging & Alerts         | Logging Callbacks、CloudZero、MS Teams Alerts 页签、Region Outage 企业告警                                                                              | 告警类型、可用的普通告警设置、Email 设置。默认打开 Alerting Types                                                   |
@@ -81,6 +82,7 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | 生效位置                             | 屏蔽字段                                                                                                                                                                                                                                                                                    |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 使用共享表单的页面                   | `organization_id`、`organization_ids`、`secret_manager_settings`、`model_max_budget`、`team_member_model_max_budget`、`allowed_passthrough_routes`、`logging_settings`、`disable_global_guardrails`                                                                                         |
+| 保留页面的资源授权表单               | `allowed_mcp_servers_and_groups`、`mcp_servers_and_groups`、`mcp_tool_permissions`、`allowed_agents_and_groups`、`agents_and_groups`、`allowed_skills`、`skills`、`object_permission_search_tools`、`object_permission_skills`、`vector_stores`、`allowed_vector_store_ids`                 |
 | Key 和模型表单的资源扩展             | `project_id`、`metadata`、`tags`、`guardrails`、`policies`、`prompts`、`vector_stores`、`vector_store_ids`、`allowed_vector_store_ids`、`allowed_routes`、`allowed_mcp_servers_and_groups`、`mcp_servers_and_groups`、`mcp_tool_permissions`、`allowed_agents_and_groups`、`allowed_skills` |
 | Key 和模型表单的高级预算与限流       | `soft_budget`、`budget_windows`、`budget_fallbacks`、`end_user_budget_id`、`tpd_limit`、`tpm_limit_type`、`rpm_limit_type`、`model_tpm_limit`、`model_rpm_limit`、`throttle_on_budget_exceeded`、`default_estimated_output_tokens`、`default_estimated_output_tokens_per_model`             |
 | Key 和模型表单的缓存、路由与成本参数 | `enable_prompt_caching`、`use_in_pass_through`、`kubernetes_pod_discovery`、`cache_control`、`cache_control_injection_points`、`litellm_extra_params`、`model_info_params`、`ptu_count`、`cost_per_ptu_per_hour`、`ptu_effective_from`、`ptu_effective_to`                                  |
@@ -121,6 +123,10 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 | `src/components/key_team_helpers/ModelMaxBudgetEditor.tsx`                                          | 共享单模型预算字段区块屏蔽                                                                                                   |
 | `src/components/common_components/PremiumLoggingSettings.tsx`                                       | Key 和团队独立日志的付费介绍及控件屏蔽                                                                                       |
 | `src/components/Teams.tsx`、`team/TeamInfo.tsx`、`team/EditMembership.tsx`                          | 团队日志与预算展示屏蔽，成员添加和编辑保留完整角色及附加字段                                                                 |
+| `src/components/object_permissions_view.tsx`                                                        | 轻量版不挂载资源权限概览，覆盖团队概览与设置详情及复用位置                                                                   |
+| `src/app/(dashboard)/users/_components/user_edit_view.tsx`、`view_users/user_info_view.tsx`         | 隐藏用户 MCP 配置与展示，普通用户配置保存不提交 MCP 授权                                                                     |
+| `src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx`                        | 轻量版资源数量仅展示模型，已有 MCP、智能体和技能授权不变                                                                     |
+| `src/components/logs/request/RequestLogsFilters.tsx`                                                | 保留公开模型查询及原后端参数，轻量版不展示搜索工具专属文案                                                                   |
 | `src/components/settings.tsx`、`alerting/dynamic_form.tsx`、`email_settings.tsx`                    | 默认告警页签、企业告警行和邮件品牌字段屏蔽                                                                                   |
 | `src/components/router_settings/RouterSettingsForm.tsx`                                             | 高级路由区块屏蔽                                                                                                             |
 | AdminPanel 和 `src/components/Settings/AdminSettings/UISettings/UISettings.tsx`                     | 管理设置默认页签和隐藏功能开关、关联入口。`TeamAdminEditableFieldsSettings.tsx` 另外隐藏 Projects 权限复选框，保留已有选择值 |
@@ -132,6 +138,10 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 共享字段对必填项和当前校验错误保留原有保护。例如 Team Admin 添加模型仍需要的团队作用域不能隐藏，否则原表单无法提交。团队成员表单保留原始角色选项和默认值，编辑时不会强制改写已有角色
 
 隐藏字段的已有值可能继续随原表单提交，或按社区原有 diff 逻辑不发送未改动字段。这不负责撤销已经启用的后端能力。若需要停用配置，必须另外评估并授权相应的数据或后端修改
+
+团队和密钥在轻量版中保存普通配置时，不再重算或提交隐藏的资源授权。用户编辑也不提交 MCP 授权字段，避免改名、改预算时覆盖已有授权，或被不可用的 MCP 目录阻塞。资源权限概览不渲染，创建团队的资源折叠区和编辑团队的对应字段整体屏蔽，模型、预算、限流及成员 Admin/User 角色继续保留
+
+历史请求的实际类型、费用、模型响应和原始 JSON 继续保留，不按资源类型删除或漏算记录。日志中的公开模型筛选保留原查询字段，仅移除搜索工具专属文案。模型本身的工具调用参数不参与屏蔽。前端隐藏不会停用后端能力，已有配置、访问组授权、密钥或外部客户端仍可能发起相关请求
 
 ## MoMA 主题与国际化
 
@@ -335,6 +345,12 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 2026-11-04 恢复成员编辑表单的 Admin/User 角色选项与全部附加字段，成员新增继续使用原有搜索与默认 User 角色。独立源码快照中，成员新增、编辑、成员表格和轻量屏蔽边界 5 个定向文件共 94 项通过，覆盖 Admin 提交、原预算与限额保留及其他表单继续屏蔽。生产构建、TypeScript、58 个页面静态导出和适用前端检查通过，未修改后端授权或许可证校验
 
 本地 4001 应用容器已更新静态前端并重建启动，沿用现有运行层、数据库和私有配置，存活与就绪接口均返回 200，数据库连接正常。浏览器在空演示团队中检查新增成员的 Admin/User 选项、编辑成员的完整配置与未授权时禁用的单模型预算，1280×720 桌面未出现框架错误或控制台错误。演示团队自动包含创建者，未给其他账号添加团队归属或提交角色变更，未运行全量前端、移动端、计费或真实权限变更回归
+
+### 非模型资源屏蔽复核
+
+2026-11-04 复核 MCP、智能体、搜索工具和技能的菜单、直达路由、团队与密钥表单、用户详情和编辑、访问组、用量视图、系统设置及日志展示。补齐团队创建的四个折叠区、团队编辑的资源授权、团队资源概览、用户 MCP 区块、访问组数量标记和共享字段别名，保留模型分配、预算、限流、成员角色及真实历史日志
+
+21 个定向文件共 557 项通过，覆盖资源入口屏蔽、模型和预算提交、已有隐藏授权不重写、MCP 目录失败时普通团队保存、成员角色、访问组编辑、菜单搜索和历史日志。生产构建、TypeScript、58 个页面静态导出和适用前端检查通过，未修改后端 API、鉴权、数据库或许可证规则。一个旧策略字段用例在修改前也失败，已将内部 label 结构查询改为用户可见的输入占位检查，继续验证原角色条件
 
 ### 人民币单位验证
 

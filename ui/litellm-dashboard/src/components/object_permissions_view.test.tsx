@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import ObjectPermissionsView from "./object_permissions_view";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 vi.mock("./permissions/VectorStorePermissions", () => ({ default: () => <div data-testid="vector-stores" /> }));
 vi.mock("./permissions/MCPServerPermissions", () => ({ default: () => <div data-testid="mcp-servers" /> }));
@@ -9,6 +10,17 @@ vi.mock("./permissions/AgentPermissions", () => ({ default: () => <div data-test
 const objectPermission = { object_permission_id: "perm-1", skills: [] as string[] };
 
 describe("ObjectPermissionsView skills card", () => {
+  it.each(["card", "inline"] as const)("does not mount resource displays in the lightweight %s view", (variant) => {
+    render(
+      <LiteUiContext.Provider value={{ route: "teams", admin: true }}>
+        <ObjectPermissionsView objectPermission={objectPermission} variant={variant} />
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.queryByText("Object Permissions")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("mcp-servers")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("agents")).not.toBeInTheDocument();
+  });
+
   it("shows plugin names granted only through access groups with their source", () => {
     render(
       <ObjectPermissionsView

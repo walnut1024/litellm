@@ -68,6 +68,20 @@ const enterpriseFields = [
   "disable_global_guardrails",
 ];
 
+export const liteResourceFields: readonly string[] = [
+  "allowed_mcp_servers_and_groups",
+  "mcp_servers_and_groups",
+  "mcp_tool_permissions",
+  "allowed_agents_and_groups",
+  "agents_and_groups",
+  "allowed_skills",
+  "skills",
+  "object_permission_search_tools",
+  "object_permission_skills",
+  "vector_stores",
+  "allowed_vector_store_ids",
+];
+
 const hiddenFields = [
   "project_id",
   "metadata",
@@ -76,16 +90,9 @@ const hiddenFields = [
   "disable_global_guardrails",
   "policies",
   "prompts",
-  "vector_stores",
   "vector_store_ids",
-  "allowed_vector_store_ids",
   "allowed_passthrough_routes",
   "allowed_routes",
-  "allowed_mcp_servers_and_groups",
-  "mcp_servers_and_groups",
-  "mcp_tool_permissions",
-  "allowed_agents_and_groups",
-  "allowed_skills",
   "logging_settings",
   "soft_budget",
   "budget_windows",
@@ -113,8 +120,10 @@ const hiddenFields = [
   "ptu_effective_to",
 ];
 
+const commonHiddenFields = [...enterpriseFields, ...liteResourceFields];
+
 export const liteFieldHidden = (route: string, name: string): boolean =>
-  enterpriseFields.includes(name) ||
+  commonHiddenFields.includes(name) ||
   (["api-keys", "models-and-endpoints"].includes(route) && hiddenFields.includes(name));
 
 export const liteColumnAllowed = (route: string, column: string, admin: boolean): boolean => {

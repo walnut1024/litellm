@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import UserInfoView from "./user_info_view";
 import { extractMcpEntitlement } from "@/components/mcp_server_management/mcpEntitlement";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 const mockTeamMemberAddCall = vi.fn();
 const mockTeamMemberDeleteCall = vi.fn();
@@ -122,6 +123,16 @@ describe("UserInfoView", () => {
     const emails = await screen.findAllByText("test@example.com");
     expect(emails.length).toBeGreaterThan(0);
     expect(screen.queryByText("Loading user data...")).not.toBeInTheDocument();
+  });
+
+  it("keeps user settings visible while hiding the MCP permissions section in the lightweight view", async () => {
+    render(
+      <LiteUiContext.Provider value={{ route: "users", admin: true }}>
+        <UserInfoView {...defaultProps} userRole="proxy_admin" initialTab={1} />
+      </LiteUiContext.Provider>,
+    );
+    expect(await screen.findByText("User Settings")).toBeVisible();
+    expect(screen.getByText("MCP Permissions")).not.toBeVisible();
   });
 
   it("should render the user alias after loading", async () => {

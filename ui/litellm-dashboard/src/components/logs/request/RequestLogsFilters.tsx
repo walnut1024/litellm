@@ -3,6 +3,7 @@
 import { systemResourceLabel } from "@/utils/systemResourceLabel";
 
 import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 
 import { useMemo, useState } from "react";
 
@@ -337,6 +338,7 @@ interface RequestLogsFiltersProps {
 
 export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsFiltersProps) {
   const t = useTranslation();
+  const lite = useLiteUi();
   const valueOf = (id: string): string => asString(get(id));
   const setter = (id: string) => (next: string | undefined) => set(id, next);
 
@@ -476,11 +478,12 @@ export function RequestLogsFilters({ get, set, teams, logsWindow }: RequestLogsF
 
       <ModelFilterField value={valueOf(LOG_FILTER_IDS.MODEL_ID)} onChange={setter(LOG_FILTER_IDS.MODEL_ID)} />
 
-      <DataTableFilterField label="Public model / search tool">
+      <DataTableFilterField label={lite ? "Public Model Name" : "Public model / search tool"}>
         <Input
+          aria-label={t(lite ? "Public Model Name" : "Public model / search tool")}
           value={valueOf(LOG_FILTER_IDS.PUBLIC_MODEL_OR_SEARCH_TOOL)}
           onChange={(event) => set(LOG_FILTER_IDS.PUBLIC_MODEL_OR_SEARCH_TOOL, emptyToUndefined(event.target.value))}
-          placeholder="Enter public model or search tool…"
+          placeholder={lite ? t("Public Model Name") : "Enter public model or search tool…"}
         />
       </DataTableFilterField>
     </>

@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import { toast } from "@/lib/toast";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 import type { Member } from "@/components/networking";
 import type { EffectiveMcpServer } from "../mcp_server_management/effectiveMcpServers";
 import type { MCPServer } from "../mcp_tools/types";
@@ -896,7 +897,7 @@ describe("TeamInfoView", () => {
   });
 
   describe("settings and editing", () => {
-    const policiesFormFieldLabel = () => screen.queryByText("Policies", { selector: "label" });
+    const policiesFormField = () => screen.queryByPlaceholderText("Select or enter policies");
 
     it("should offer the policies field and load it for a caller with the viewPolicies capability", async () => {
       const user = userEvent.setup({ delay: null });
@@ -913,7 +914,7 @@ describe("TeamInfoView", () => {
       await user.click(await screen.findByRole("button", { name: /edit settings/i }));
 
       await waitFor(() => {
-        expect(policiesFormFieldLabel()).toBeInTheDocument();
+        expect(policiesFormField()).toBeInTheDocument();
       });
     });
 
@@ -930,7 +931,7 @@ describe("TeamInfoView", () => {
       expect(await screen.findByLabelText("Team Name")).toBeInTheDocument();
 
       expect(networking.getPoliciesList).not.toHaveBeenCalled();
-      expect(policiesFormFieldLabel()).not.toBeInTheDocument();
+      expect(policiesFormField()).not.toBeInTheDocument();
     });
 
     it("should open edit mode when edit button is clicked", async () => {
@@ -2901,6 +2902,52 @@ describe("TeamInfo MCP permission retention", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("saves a lightweight team without rewriting hidden grants or requiring an MCP inventory", async () => {
+    const user = userEvent.setup({ delay: null });
+    const objectPermission = {
+      mcp_servers: ["server-a"],
+      mcp_tool_permissions: { "server-a": ["read"] },
+      agents: ["agent-a"],
+      search_tools: ["search-a"],
+      skills: ["skill-a"],
+    };
+    mockUseMCPServers.mockReturnValue({ data: [], isLoading: false, isError: true } as never);
+    vi.mocked(networking.teamInfoCall).mockResolvedValue(
+      createMockTeamData({ object_permission: objectPermission, models: ["model-a"], max_budget: 20 }),
+    );
+    vi.mocked(networking.teamUpdateCall).mockResolvedValue({ data: {}, team_id: "123" } as never);
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "teams", admin: true }}>
+        <TeamInfoView
+          teamId="123"
+          onUpdate={vi.fn()}
+          onClose={vi.fn()}
+          accessToken="test-token"
+          is_team_admin
+          is_proxy_admin
+          userModels={["model-a"]}
+        />
+      </LiteUiContext.Provider>,
+    );
+    await screen.findByRole("heading", { name: "Test Team" });
+    expect(screen.queryByText("Object Permissions")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Settings" }));
+    await user.click(await screen.findByRole("button", { name: /edit settings/i }));
+    expect(
+      screen.queryByRole("combobox", { name: /MCP Servers|Agents \/ Access Groups|Skills/ }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Search Tool Settings" })).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Team Name"), { target: { value: "Renamed Team" } });
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await waitFor(() => expect(networking.teamUpdateCall).toHaveBeenCalledOnce());
+    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1]).toMatchObject({
+      team_alias: "Renamed Team",
+      models: ["model-a"],
+      max_budget: 20,
+    });
+    expect(vi.mocked(networking.teamUpdateCall).mock.calls[0][1]).not.toHaveProperty("object_permission");
   });
 
   const server = (serverId: string, serverName: string, alias?: string): MCPServer =>

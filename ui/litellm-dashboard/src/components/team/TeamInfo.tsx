@@ -1,7 +1,7 @@
 import { LocalizedText as L } from "@/contexts/LocaleContext";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { LiteUiMask } from "@/contexts/LiteUiContext";
+import { LiteUiMask, useLiteUi } from "@/contexts/LiteUiContext";
 import type { components } from "@/lib/http/schema";
 import useCan from "@/app/(dashboard)/hooks/useCan";
 import { organizationKeys, useOrganizations } from "@/app/(dashboard)/hooks/organizations/useOrganizations";
@@ -644,6 +644,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const routerSettingsRef = React.useRef<RouterSettingsAccordionRef>(null);
   const [organization, setOrganization] = useState<Organization | null>(null);
   const { userRole, isViewOnly } = useAuthorized();
+  const lite = useLiteUi();
   const accessGroupNames = useModelAccessGroupNames();
   const { data: allMcpServers = [], isError: mcpServersFailed, isLoading: mcpServersLoading } = useMCPServers();
   const { data: allMcpToolsets = [], isError: mcpToolsetsFailed, isLoading: mcpToolsetsLoading } = useMCPToolsets();
@@ -1119,99 +1120,101 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
         updateData.team_member_rpm_limit = numberOrNull(values.team_member_rpm_limit);
       }
 
-      // Handle object_permission updates
-      const { servers, accessGroups, toolsets } = values.mcp_servers_and_groups || {
-        servers: [],
-        accessGroups: [],
-        toolsets: [],
-      };
-      const submittedToolPermissions: Record<string, string[]> = values.mcp_tool_permissions || {};
-      const effectiveMcpInput = {
-        allServers: allMcpServers,
-        selectedServers: servers || [],
-        selectedAccessGroups: accessGroups || [],
-        selectedToolsets: toolsets || [],
-        toolsets: allMcpToolsets,
-        toolPermissions: submittedToolPermissions,
-      };
-      const loadedObjectPermission = info.object_permission ?? {};
-      const loadedMcpInput = {
-        allServers: allMcpServers,
-        selectedServers: loadedObjectPermission.mcp_servers ?? [],
-        selectedAccessGroups: loadedObjectPermission.mcp_access_groups ?? [],
-        selectedToolsets: loadedObjectPermission.mcp_toolsets ?? [],
-        toolsets: allMcpToolsets,
-        toolPermissions: loadedObjectPermission.mcp_tool_permissions ?? {},
-      };
-      const loadedEffectiveMcpServers = resolveEffectiveMcpServers(loadedMcpInput);
-      const standingServerIds = standingToolPermissionServerIds(
-        loadedEffectiveMcpServers,
-        info.access_group_ids ?? [],
-        allAccessGroups,
-        info.access_group_mcp_server_ids ?? [],
-      );
-      const mcpGrantInput: McpGrantInput = {
-        effectiveServers: resolveEffectiveMcpServers(effectiveMcpInput),
-        selectedAccessGroupIds: values.access_group_ids || [],
-        accessGroups: allAccessGroups,
-        standingServerIds,
-        loadTeamGroups: async () => {
-          const teamInfo = await teamInfoCall(accessToken, teamId);
-          return {
-            ids: teamInfo.team_info.access_group_ids ?? [],
-            serverIds: teamInfo.team_info.access_group_mcp_server_ids ?? [],
-          };
-        },
-      };
-      const mcpResolution: McpGrantResolution =
-        mcpLookupFailure !== null
-          ? { kind: "unresolvable", reason: mcpLookupFailure }
-          : await grantedMcpServerIds(mcpGrantInput);
-      if (mcpResolution.kind === "unresolvable" && Object.keys(submittedToolPermissions).length > 0) {
-        toast.fromError(mcpUnresolvableSaveError(mcpResolution.reason));
-        return;
-      }
-      const mcpToolPermissions =
-        mcpResolution.kind === "resolved"
-          ? retainedMcpToolPermissions(submittedToolPermissions, mcpResolution.serverIds, allMcpServers)
-          : submittedToolPermissions;
+      if (!lite) {
+        // Handle object_permission updates
+        const { servers, accessGroups, toolsets } = values.mcp_servers_and_groups || {
+          servers: [],
+          accessGroups: [],
+          toolsets: [],
+        };
+        const submittedToolPermissions: Record<string, string[]> = values.mcp_tool_permissions || {};
+        const effectiveMcpInput = {
+          allServers: allMcpServers,
+          selectedServers: servers || [],
+          selectedAccessGroups: accessGroups || [],
+          selectedToolsets: toolsets || [],
+          toolsets: allMcpToolsets,
+          toolPermissions: submittedToolPermissions,
+        };
+        const loadedObjectPermission = info.object_permission ?? {};
+        const loadedMcpInput = {
+          allServers: allMcpServers,
+          selectedServers: loadedObjectPermission.mcp_servers ?? [],
+          selectedAccessGroups: loadedObjectPermission.mcp_access_groups ?? [],
+          selectedToolsets: loadedObjectPermission.mcp_toolsets ?? [],
+          toolsets: allMcpToolsets,
+          toolPermissions: loadedObjectPermission.mcp_tool_permissions ?? {},
+        };
+        const loadedEffectiveMcpServers = resolveEffectiveMcpServers(loadedMcpInput);
+        const standingServerIds = standingToolPermissionServerIds(
+          loadedEffectiveMcpServers,
+          info.access_group_ids ?? [],
+          allAccessGroups,
+          info.access_group_mcp_server_ids ?? [],
+        );
+        const mcpGrantInput: McpGrantInput = {
+          effectiveServers: resolveEffectiveMcpServers(effectiveMcpInput),
+          selectedAccessGroupIds: values.access_group_ids || [],
+          accessGroups: allAccessGroups,
+          standingServerIds,
+          loadTeamGroups: async () => {
+            const teamInfo = await teamInfoCall(accessToken, teamId);
+            return {
+              ids: teamInfo.team_info.access_group_ids ?? [],
+              serverIds: teamInfo.team_info.access_group_mcp_server_ids ?? [],
+            };
+          },
+        };
+        const mcpResolution: McpGrantResolution =
+          mcpLookupFailure !== null
+            ? { kind: "unresolvable", reason: mcpLookupFailure }
+            : await grantedMcpServerIds(mcpGrantInput);
+        if (mcpResolution.kind === "unresolvable" && Object.keys(submittedToolPermissions).length > 0) {
+          toast.fromError(mcpUnresolvableSaveError(mcpResolution.reason));
+          return;
+        }
+        const mcpToolPermissions =
+          mcpResolution.kind === "resolved"
+            ? retainedMcpToolPermissions(submittedToolPermissions, mcpResolution.serverIds, allMcpServers)
+            : submittedToolPermissions;
 
-      updateData.object_permission = {};
-      if (servers) {
-        updateData.object_permission.mcp_servers = servers;
-      }
-      if (accessGroups) {
-        updateData.object_permission.mcp_access_groups = accessGroups;
-      }
-      if (mcpToolPermissions) {
-        updateData.object_permission.mcp_tool_permissions = mcpToolPermissions;
-      }
-      if (toolsets) {
-        updateData.object_permission.mcp_toolsets = toolsets;
-      }
-      delete values.mcp_servers_and_groups;
-      delete values.mcp_tool_permissions;
+        updateData.object_permission = {};
+        if (servers) {
+          updateData.object_permission.mcp_servers = servers;
+        }
+        if (accessGroups) {
+          updateData.object_permission.mcp_access_groups = accessGroups;
+        }
+        if (mcpToolPermissions) {
+          updateData.object_permission.mcp_tool_permissions = mcpToolPermissions;
+        }
+        if (toolsets) {
+          updateData.object_permission.mcp_toolsets = toolsets;
+        }
+        delete values.mcp_servers_and_groups;
+        delete values.mcp_tool_permissions;
 
-      // Handle agent permissions
-      const { agents, accessGroups: agentAccessGroups } = values.agents_and_groups || {
-        agents: [],
-        accessGroups: [],
-      };
-      updateData.object_permission.agents = agents;
-      updateData.object_permission.agent_access_groups = agentAccessGroups;
-      delete values.agents_and_groups;
+        // Handle agent permissions
+        const { agents, accessGroups: agentAccessGroups } = values.agents_and_groups || {
+          agents: [],
+          accessGroups: [],
+        };
+        updateData.object_permission.agents = agents;
+        updateData.object_permission.agent_access_groups = agentAccessGroups;
+        delete values.agents_and_groups;
 
-      // Handle vector stores permissions
-      if (values.vector_stores) {
-        updateData.object_permission.vector_stores = values.vector_stores;
-      }
+        // Handle vector stores permissions
+        if (values.vector_stores) {
+          updateData.object_permission.vector_stores = values.vector_stores;
+        }
 
-      if (Array.isArray(values.object_permission_search_tools)) {
-        updateData.object_permission.search_tools = values.object_permission_search_tools;
-      }
+        if (Array.isArray(values.object_permission_search_tools)) {
+          updateData.object_permission.search_tools = values.object_permission_search_tools;
+        }
 
-      if (Array.isArray(values.object_permission_skills)) {
-        updateData.object_permission.skills = values.object_permission_skills;
+        if (Array.isArray(values.object_permission_skills)) {
+          updateData.object_permission.skills = values.object_permission_skills;
+        }
       }
 
       // Pass access_group_ids to the update request
@@ -2130,10 +2133,14 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     <FormField
                       control={form.control}
                       name="require_trace_id"
-                      label={labelWithHint(
-                        "Require Trace ID",
-                        "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)",
-                      )}
+                      label={
+                        lite
+                          ? "Require Trace ID"
+                          : labelWithHint(
+                              "Require Trace ID",
+                              "Reject LLM, MCP and agent requests from this team that do not send a trace ID (x-litellm-trace-id header, LLM requests can also use traceparent or metadata.trace_id)",
+                            )
+                      }
                     >
                       {({ id, value, onChange }) => (
                         <Switch id={id} checked={value === true} onCheckedChange={onChange} />
@@ -2165,10 +2172,14 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                   <FormField
                     control={form.control}
                     name="access_group_ids"
-                    label={labelWithHint(
-                      "Access Groups",
-                      "Assign access groups to this team. Access groups control which models, MCP servers, and agents this team can use",
-                    )}
+                    label={
+                      lite
+                        ? "Access Groups"
+                        : labelWithHint(
+                            "Access Groups",
+                            "Assign access groups to this team. Access groups control which models, MCP servers, and agents this team can use",
+                          )
+                    }
                   >
                     {({ value, onChange }) => (
                       <AccessGroupSelector
@@ -2218,89 +2229,91 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     )}
                   </FormField>
 
-                  <FormField control={form.control} name="mcp_servers_and_groups" label="MCP Servers / Access Groups">
-                    {({ value, onChange }) => (
-                      <MCPServerSelector
-                        onChange={onChange}
-                        value={value}
+                  <LiteUiMask>
+                    <FormField control={form.control} name="mcp_servers_and_groups" label="MCP Servers / Access Groups">
+                      {({ value, onChange }) => (
+                        <MCPServerSelector
+                          onChange={onChange}
+                          value={value}
+                          accessToken={accessToken || ""}
+                          placeholder="Select MCP servers or access groups (optional)"
+                          allowAllProxyMcpServers={is_proxy_admin}
+                        />
+                      )}
+                    </FormField>
+
+                    <div className="mb-6">
+                      <MCPToolPermissions
                         accessToken={accessToken || ""}
-                        placeholder="Select MCP servers or access groups (optional)"
-                        allowAllProxyMcpServers={is_proxy_admin}
+                        selectedServers={watchedMcpSelection?.servers || []}
+                        selectedAccessGroups={watchedMcpSelection?.accessGroups || []}
+                        selectedToolsets={watchedMcpSelection?.toolsets || []}
+                        toolPermissions={watchedToolPermissions || {}}
+                        onChange={(toolPerms) => form.setValue("mcp_tool_permissions", toolPerms)}
                       />
-                    )}
-                  </FormField>
+                    </div>
 
-                  <div className="mb-6">
-                    <MCPToolPermissions
-                      accessToken={accessToken || ""}
-                      selectedServers={watchedMcpSelection?.servers || []}
-                      selectedAccessGroups={watchedMcpSelection?.accessGroups || []}
-                      selectedToolsets={watchedMcpSelection?.toolsets || []}
-                      toolPermissions={watchedToolPermissions || {}}
-                      onChange={(toolPerms) => form.setValue("mcp_tool_permissions", toolPerms)}
-                    />
-                  </div>
+                    <FormField control={form.control} name="agents_and_groups" label="Agents / Access Groups">
+                      {({ value, onChange }) => (
+                        <AgentSelector
+                          onChange={onChange}
+                          value={value}
+                          accessToken={accessToken || ""}
+                          placeholder="Select agents or access groups (optional)"
+                        />
+                      )}
+                    </FormField>
 
-                  <FormField control={form.control} name="agents_and_groups" label="Agents / Access Groups">
-                    {({ value, onChange }) => (
-                      <AgentSelector
-                        onChange={onChange}
-                        value={value}
-                        accessToken={accessToken || ""}
-                        placeholder="Select agents or access groups (optional)"
-                      />
-                    )}
-                  </FormField>
+                    <Collapsible
+                      open={searchToolSettingsOpen}
+                      onOpenChange={setSearchToolSettingsOpen}
+                      className="mt-4 mb-4 overflow-hidden rounded-lg border"
+                    >
+                      <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
+                        <b>
+                          <L>Search Tool Settings</L>
+                        </b>
+                        <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="px-4 pb-3">
+                        <FormField
+                          control={form.control}
+                          name="object_permission_search_tools"
+                          label={labelWithHint(
+                            "Allowed Search Tools",
+                            "Select which search tools this team can access. Leave empty to allow all search tools.",
+                          )}
+                        >
+                          {({ value, onChange }) => (
+                            <SearchToolSelector
+                              onChange={onChange}
+                              value={value}
+                              accessToken={accessToken || ""}
+                              placeholder="Select search tools (optional, empty = all allowed)"
+                            />
+                          )}
+                        </FormField>
+                      </CollapsibleContent>
+                    </Collapsible>
 
-                  <Collapsible
-                    open={searchToolSettingsOpen}
-                    onOpenChange={setSearchToolSettingsOpen}
-                    className="mt-4 mb-4 overflow-hidden rounded-lg border"
-                  >
-                    <CollapsibleTrigger className="group/section flex w-full items-center justify-between px-4 py-3 text-left">
-                      <b>
-                        <L>Search Tool Settings</L>
-                      </b>
-                      <ChevronDown className="size-5 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/section:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-3">
-                      <FormField
-                        control={form.control}
-                        name="object_permission_search_tools"
-                        label={labelWithHint(
-                          "Allowed Search Tools",
-                          "Select which search tools this team can access. Leave empty to allow all search tools.",
-                        )}
-                      >
-                        {({ value, onChange }) => (
-                          <SearchToolSelector
-                            onChange={onChange}
-                            value={value}
-                            accessToken={accessToken || ""}
-                            placeholder="Select search tools (optional, empty = all allowed)"
-                          />
-                        )}
-                      </FormField>
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  <FormField
-                    control={form.control}
-                    name="object_permission_skills"
-                    label={labelWithHint(
-                      "Skills",
-                      "Enabled skills are visible to every team. Grant disabled (private) Claude Code plugins to this team here.",
-                    )}
-                  >
-                    {({ value, onChange }) => (
-                      <SkillSelector
-                        onChange={onChange}
-                        value={value}
-                        accessToken={accessToken || ""}
-                        placeholder="Select skills (optional)"
-                      />
-                    )}
-                  </FormField>
+                    <FormField
+                      control={form.control}
+                      name="object_permission_skills"
+                      label={labelWithHint(
+                        "Skills",
+                        "Enabled skills are visible to every team. Grant disabled (private) Claude Code plugins to this team here.",
+                      )}
+                    >
+                      {({ value, onChange }) => (
+                        <SkillSelector
+                          onChange={onChange}
+                          value={value}
+                          accessToken={accessToken || ""}
+                          placeholder="Select skills (optional)"
+                        />
+                      )}
+                    </FormField>
+                  </LiteUiMask>
 
                   <FormField control={form.control} name="organization_id" label="Organization">
                     {({ id, value, onChange }) => (

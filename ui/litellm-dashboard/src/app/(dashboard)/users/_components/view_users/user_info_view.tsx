@@ -1,3 +1,4 @@
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useState } from "react";
@@ -92,6 +93,7 @@ export default function UserInfoView({
   startInEditMode = false,
 }: UserInfoViewProps) {
   const t = useTranslation();
+  const lite = useLiteUi();
   const { locale } = useLocale();
   const formatTimestamp = (value: string) => new Date(value).toLocaleString(locale === "zh-CN" ? "zh-CN" : "en-US");
   const { premiumUser, userId: signedInUserId } = useAuthorized();
@@ -718,7 +720,7 @@ export default function UserInfoView({
                   </pre>
                 </div>
 
-                <div>
+                <div hidden={Boolean(lite)} style={lite ? { display: "none" } : undefined}>
                   <p className="font-medium mb-2">{t("MCP Permissions")}</p>
                   <MCPServerPermissions
                     mcpServers={userData.object_permission?.mcp_servers || []}

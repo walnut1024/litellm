@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, testQueryClient } from "../../tests/test-utils";
 import Teams from "./Teams";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 const sessionCookie = () => {
   const encode = (value: object) =>
@@ -47,6 +48,28 @@ afterEach(() => {
 });
 
 describe("Teams creation integration", () => {
+  it("creates a lightweight model team without exposing or submitting non-model resource settings", async () => {
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "teams", admin: true }}>
+        <Teams accessToken="sk-session-test" userID="test-admin" userRole="Admin" premiumUser />
+      </LiteUiContext.Provider>,
+    );
+    fireEvent.click(screen.getAllByRole("button", { name: /create team/i })[0]);
+    fireEvent.change(await screen.findByLabelText(/team name/i), { target: { value: "Model Team" } });
+    fireEvent.change(screen.getByLabelText(/max budget/i), { target: { value: "25" } });
+    expect(
+      screen.queryByRole("button", { name: /MCP Settings|Agent Settings|Search Tool Settings|Skill Settings/ }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getAllByRole("button", { name: /create team/i }).at(-1)!);
+    await waitFor(() =>
+      expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes("/team/new"))).toBe(true),
+    );
+    const request = vi.mocked(fetch).mock.calls.find(([url]) => String(url).includes("/team/new"));
+    const payload = JSON.parse(String(request?.[1]?.body));
+    expect(payload).toMatchObject({ team_alias: "Model Team", models: ["no-default-models"], max_budget: "25" });
+    expect(payload).not.toHaveProperty("object_permission");
+  });
+
   it("sends a configured default member per-model budget", async () => {
     const user = userEvent.setup({ delay: null });
     renderWithProviders(<Teams accessToken="sk-session-test" userID="test-admin" userRole="Admin" premiumUser />);

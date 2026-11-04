@@ -1,6 +1,7 @@
 "use client";
 
 import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Bot, Layers, MoreHorizontal, Server, Sparkles, Trash2 } from "lucide-react";
@@ -40,6 +41,7 @@ const RESOURCE_TONES: Record<"models" | "mcpServers" | "agents" | "skills", Reso
 
 function ResourcesCell({ group }: { group: AccessGroup }) {
   const t = useTranslation();
+  const lite = useLiteUi();
   const items = [
     { key: "models" as const, label: "Models", count: group.modelIds.length },
     { key: "mcpServers" as const, label: "MCP Servers", count: group.mcpServerIds.length },
@@ -49,23 +51,25 @@ function ResourcesCell({ group }: { group: AccessGroup }) {
 
   return (
     <div className="flex items-center gap-1.5">
-      {items.map((item) => {
-        const tone = RESOURCE_TONES[item.key];
-        const Icon = tone.icon;
-        return (
-          <span
-            key={item.key}
-            title={`${item.count} ${t(item.label)}`}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset [&_svg]:size-3.5",
-              tone.className,
-            )}
-          >
-            <Icon />
-            <span className="tabular-nums">{item.count}</span>
-          </span>
-        );
-      })}
+      {items
+        .filter((item) => !lite || item.key === "models")
+        .map((item) => {
+          const tone = RESOURCE_TONES[item.key];
+          const Icon = tone.icon;
+          return (
+            <span
+              key={item.key}
+              title={`${item.count} ${t(item.label)}`}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset [&_svg]:size-3.5",
+                tone.className,
+              )}
+            >
+              <Icon />
+              <span className="tabular-nums">{item.count}</span>
+            </span>
+          );
+        })}
     </div>
   );
 }

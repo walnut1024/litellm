@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AccessGroupsPage } from "./AccessGroupsPage";
 import type { AccessGroupResponse } from "@/app/(dashboard)/hooks/accessGroups/useAccessGroups";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 const mockAccessGroups: AccessGroupResponse[] = [
   {
@@ -132,6 +133,18 @@ describe("AccessGroupsPage", () => {
     expect(within(adminRow).getByTitle("2 Models")).toHaveTextContent("2");
     expect(within(adminRow).getByTitle("1 MCP Servers")).toHaveTextContent("1");
     expect(within(adminRow).getByTitle("1 Agents")).toHaveTextContent("1");
+  });
+
+  it("shows model counts without advertising hidden resources in the lightweight list", () => {
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "access-groups", admin: true }}>
+        <AccessGroupsPage />
+      </LiteUiContext.Provider>,
+    );
+    expect(screen.getByTitle("2 Models")).toHaveTextContent("2");
+    expect(screen.queryByTitle("1 MCP Servers")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("1 Agents")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("0 Skills")).not.toBeInTheDocument();
   });
 
   it("shows the expected column headers", () => {

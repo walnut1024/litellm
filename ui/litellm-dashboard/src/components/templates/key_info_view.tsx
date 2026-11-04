@@ -1,7 +1,8 @@
 import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { LiteUiMask } from "@/contexts/LiteUiContext";
+import { LiteUiMask, useLiteUi } from "@/contexts/LiteUiContext";
+import { liteResourceFields } from "@/utils/liteUi";
 import { useModelAccessGroupNames } from "@/app/(dashboard)/hooks/models/useModels";
 import { useProjects } from "@/app/(dashboard)/hooks/projects/useProjects";
 import { useUISettings } from "@/app/(dashboard)/hooks/uiSettings/useUISettings";
@@ -108,6 +109,7 @@ export default function KeyInfoView({
 }: KeyInfoViewProps) {
   const { locale } = useLocale();
   const t = useTranslation();
+  const lite = useLiteUi();
   const { accessToken, userId: userID, userRole, premiumUser } = useAuthorized();
   const accessGroupNames = useModelAccessGroupNames();
   const activityDateRange = useActivityDateRange();
@@ -213,7 +215,10 @@ export default function KeyInfoView({
     );
   }
 
-  const handleKeyUpdate = async (formValues: Record<string, any>, dirtyFields: readonly string[] = []) => {
+  const handleKeyUpdate = async (submittedValues: Record<string, any>, dirtyFields: readonly string[] = []) => {
+    const formValues = Object.fromEntries(
+      Object.entries(submittedValues).filter(([name]) => !lite || !liteResourceFields.includes(name)),
+    );
     try {
       if (!accessToken) return;
 
@@ -397,20 +402,19 @@ export default function KeyInfoView({
         teamMembers: teamsData?.find((team) => team.team_id === currentKeyData.team_id)?.members_with_roles,
       };
       const editingMemberKeyAsTeamAdmin = isTeamAdminEditingMemberKey(memberKeyEditContext);
-      if (editingMemberKeyAsTeamAdmin) {
-        const trimmed = teamAdminMemberKeyPayload(formValues, dirtyFields);
-        if (trimmed.kind === "blocked") {
-          toast.error(
-            t("Team admins can only change budget fields on other members' keys, not {fields}", {
-              fields: trimmed.fields.join(", "),
-            }),
-          );
-          return;
-        }
-        formValues = trimmed.payload;
+      const trimmed = editingMemberKeyAsTeamAdmin
+        ? teamAdminMemberKeyPayload(formValues, dirtyFields)
+        : { kind: "ok" as const, payload: formValues };
+      if (trimmed.kind === "blocked") {
+        toast.error(
+          t("Team admins can only change budget fields on other members' keys, not {fields}", {
+            fields: trimmed.fields.join(", "),
+          }),
+        );
+        return;
       }
 
-      const newKeyValues = await keyUpdateCall(accessToken, formValues);
+      const newKeyValues = await keyUpdateCall(accessToken, trimmed.payload);
 
       setCurrentKeyData((prevData) =>
         prevData ? { ...prevData, ...newKeyValues, org_id: newKeyValues.organization_id } : undefined,

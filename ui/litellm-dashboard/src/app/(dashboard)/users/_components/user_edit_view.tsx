@@ -9,6 +9,7 @@ import { modelMaxBudgetUpdate } from "@/components/key_team_helpers/modelMaxBudg
 import { useSeededState } from "@/components/key_team_helpers/useSeededState";
 import { getModelDisplayName } from "@/components/key_team_helpers/fetch_available_models_team_key";
 import MCPServerSelector from "@/components/mcp_server_management/MCPServerSelector";
+import { useLiteUi } from "@/contexts/LiteUiContext";
 import MCPToolPermissions from "@/components/mcp_server_management/MCPToolPermissions";
 import type { ObjectPermission } from "@/components/object_permission_types";
 import { MultiSelect } from "@/components/shared/MultiSelect";
@@ -165,7 +166,8 @@ export function UserEditView({
   premiumUser = false,
 }: UserEditViewProps) {
   const t = useTranslation();
-  const canEditMcpPermissions = !isBulkEdit && all_admin_roles.includes(userRole || "");
+  const lite = useLiteUi();
+  const canEditMcpPermissions = [!lite, !isBulkEdit, all_admin_roles.includes(userRole || "")].every(Boolean);
   const [unlimitedBudget, setUnlimitedBudget] = useState(false);
   const [modelMaxBudget, setModelMaxBudget] = useSeededState<ModelMaxBudget>(
     userData.user_id,

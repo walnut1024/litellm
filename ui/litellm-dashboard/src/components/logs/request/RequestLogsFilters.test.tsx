@@ -1,4 +1,5 @@
 import { LocaleProvider } from "@/contexts/LocaleContext";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
@@ -63,6 +64,18 @@ function StatefulFilters() {
 }
 
 describe("RequestLogsFilters", () => {
+  it("keeps the public model filter usable without advertising search tools in the lightweight view", () => {
+    const set = vi.fn();
+    renderWithProviders(
+      <LiteUiContext.Provider value={{ route: "logs", admin: true }}>
+        <RequestLogsFilters get={() => ""} set={set} teams={[]} logsWindow={LOGS_WINDOW} />
+      </LiteUiContext.Provider>,
+    );
+    fireEvent.change(screen.getByRole("textbox", { name: "Public Model Name" }), { target: { value: "model-a" } });
+    expect(set).toHaveBeenCalledWith(LOG_FILTER_IDS.PUBLIC_MODEL_OR_SEARCH_TOOL, "model-a");
+    expect(screen.queryByLabelText("Public model / search tool")).not.toBeInTheDocument();
+  });
+
   it("translates selected status labels and submits the original status value", async () => {
     const user = userEvent.setup();
     const set = vi.fn();

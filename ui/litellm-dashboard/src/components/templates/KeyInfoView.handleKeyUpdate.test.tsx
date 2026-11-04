@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { toast } from "@/lib/toast";
 import type { KeyResponse } from "../key_team_helpers/key_list";
+import { LiteUiContext } from "@/contexts/LiteUiContext";
 
 vi.mock("@/lib/toast", () => ({
   toast: { error: vi.fn(), success: vi.fn() },
@@ -229,7 +230,7 @@ const baseKeyData = {
   next_rotation_at: null as any,
 };
 
-const renderView = (premiumUser: boolean) => {
+const renderView = (premiumUser: boolean, lite = false) => {
   // Configure the mock for this test
   mockUseAuthorized.mockReturnValue({
     accessToken: "access_abc",
@@ -243,13 +244,15 @@ const renderView = (premiumUser: boolean) => {
   });
 
   return render(
-    <KeyInfoView
-      keyId="tok_123"
-      onClose={() => {}}
-      keyData={baseKeyData as any}
-      onKeyDataUpdate={() => {}}
-      teams={[]}
-    />,
+    <LiteUiContext.Provider value={lite ? { route: "api-keys", admin: true } : null}>
+      <KeyInfoView
+        keyId="tok_123"
+        onClose={() => {}}
+        keyData={baseKeyData as any}
+        onKeyDataUpdate={() => {}}
+        teams={[]}
+      />
+    </LiteUiContext.Provider>,
   );
 };
 
@@ -395,6 +398,29 @@ describe("KeyInfoView handleKeyUpdate cache sync", () => {
 });
 
 describe("KeyInfoView handleKeyUpdate skills", () => {
+  it("updates a lightweight key without resubmitting hidden resource grants", async () => {
+    renderView(true, true);
+    fireEvent.click(screen.getByText("Settings"));
+    fireEvent.click(screen.getByText("Edit Settings"));
+    const values = {
+      token: "tok_123",
+      key_alias: "Renamed Key",
+      max_budget: 25,
+      vector_stores: ["vector-a"],
+      mcp_servers_and_groups: { servers: ["server-a"], accessGroups: [], toolsets: [] },
+      mcp_tool_permissions: { "server-a": ["read"] },
+      agents_and_groups: { agents: ["agent-a"], accessGroups: [] },
+      skills: ["skill-a"],
+    };
+    Reflect.set(globalThis, "__TEST_FORM_VALUES", values);
+    fireEvent.click(screen.getByText("Mock Submit"));
+    await waitFor(() => expect(keyUpdateCallMock).toHaveBeenCalledOnce());
+    expect(keyUpdateCallMock.mock.calls[0][1]).toMatchObject({ key_alias: "Renamed Key", max_budget: 25 });
+    expect(keyUpdateCallMock.mock.calls[0][1]).not.toHaveProperty("object_permission");
+    expect(keyUpdateCallMock.mock.calls[0][1]).not.toHaveProperty("mcp_tool_permissions");
+    expect(values.mcp_tool_permissions).toEqual({ "server-a": ["read"] });
+  });
+
   it("should forward the skills the edit form supplies into object_permission and drop the form key", async () => {
     renderView(true);
 

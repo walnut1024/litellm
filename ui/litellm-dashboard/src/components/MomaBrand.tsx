@@ -6,7 +6,7 @@ import { useTheme as useColorTheme } from "next-themes";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "@/contexts/LocaleContext";
 
-export function MomaBrand({ className = "h-7 max-w-40 object-contain" }: { className?: string }) {
+export function MomaBrand({ className = "h-7 w-auto max-w-full object-contain sm:max-w-40" }: { className?: string }) {
   const { logoUrl, logoUrlDark } = useTheme();
   const { resolvedTheme } = useColorTheme();
   const t = useTranslation();

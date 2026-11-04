@@ -250,7 +250,7 @@
 | 修改 | 密钥和团队创建弹窗宽 800px，模型参数与默认用户设置使用两列网格，去除重复缩进，动作可换行，窄屏保留内部滚动                                                                                                                   |
 | 保留 | 表格原排序、筛选、列宽调整、横向滚动与翻页回调。表格高度随内容结束，窄桌面可能需要横向滚动，不因布局删掉其他可用字段                                                                                                         |
 
-默认完整 Logo 使用[移动云官网](https://ecloud.10086.cn/portal)引用的[官方横版图片](https://ecloud.eos-guangzhou-1.cmecloud.cn/op-portal-static/static/images/home/ecloud-logo.png)，原图保存在 `public/assets/logos/ecloud-brand.png` 并随镜像打包。供应商选项继续使用独立的云形小图标。配置的图片保持原始比例，近方形图片会按页头高度缩小，不拉伸为横版标志
+默认完整 Logo 使用[移动云官网](https://ecloud.10086.cn/portal)引用的[官方横版图片](https://ecloud.eos-guangzhou-1.cmecloud.cn/op-portal-static/static/images/home/ecloud-logo.png)，原图保存在 `public/assets/logos/ecloud-brand.png` 并随镜像打包。供应商选项继续使用独立的云形小图标。配置的图片保持原始比例，近方形图片会按页头高度缩小，不拉伸为横版标志。窄屏页头同时受容器宽度约束，避免裁切标志
 
 `ThemeContext.tsx` 忽略用户编辑后迟到的初始配置响应，避免旧 Logo 覆盖实时预览或恢复默认结果。`ui-theme/UIThemeSettings.tsx` 在读取配置与保存期间禁用输入和操作，恢复默认仅在后端确认成功后清空表单与预览，失败时保留原值
 

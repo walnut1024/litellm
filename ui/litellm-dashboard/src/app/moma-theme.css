@@ -127,6 +127,7 @@ body {
   font-size: var(--moma-text-caption);
   line-height: 20px;
   color: var(--muted-foreground);
+  font-weight: 500;
 }
 .moma-nav-link {
   display: flex;
@@ -285,6 +286,14 @@ body {
   min-height: var(--moma-control-height);
   height: auto;
   padding-block: 4px;
+  border-radius: 6px;
+  box-shadow: none;
+}
+:is(.moma-content, [data-slot="dialog-content"], [data-slot="sheet-content"]) [data-slot="combobox-chip-remove"] {
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  padding: 0;
 }
 [data-slot="field-group"],
 [data-slot="field-set"] {
@@ -382,7 +391,7 @@ body {
   background: var(--card);
 }
 .moma-content [data-slot="data-table-toolbar"] {
-  padding: var(--moma-space-2) var(--moma-space-3);
+  padding: var(--moma-space-3);
 }
 .moma-content [data-slot="data-table-toolbar"] input[data-slot="input"] {
   width: min(280px, 65vw);
@@ -421,6 +430,7 @@ body {
   padding: 8px 12px;
   font-size: var(--moma-text-caption);
   line-height: 20px;
+  font-variant-numeric: tabular-nums;
 }
 .moma-content [data-slot="table-cell"] .text-xs,
 .moma-content [data-slot="table-cell"] .text-sm {
@@ -442,10 +452,13 @@ body {
 }
 .moma-content [data-slot="table-pagination"] {
   padding: var(--moma-space-3) 0 0;
+  gap: var(--moma-space-3);
+}
+.moma-content [data-slot="data-table-frame"] [data-slot="table-pagination"] {
+  padding: var(--moma-space-3);
 }
 .moma-content [data-slot="table-pagination"] [data-slot="select-trigger"] {
   width: 72px;
-  margin-left: 8px;
 }
 .moma-content [data-slot="table-pagination"] [data-slot="button"],
 .moma-content [data-slot="pagination-current"] {
@@ -461,8 +474,17 @@ body {
   background: var(--accent);
   color: var(--primary);
 }
-.moma-console :focus-visible {
+:is(.moma-console, [data-slot="dialog-content"], [data-slot="sheet-content"]) :focus-visible {
+  outline: 2px solid var(--ring);
   outline-offset: 3px;
+}
+:is(.moma-content, [data-slot="dialog-content"], [data-slot="sheet-content"])
+  :is([data-slot="input-group"], [data-slot="combobox-chips"]):focus-within {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+:is([data-slot="input-group"], [data-slot="combobox-chips"]) input:focus-visible {
+  outline: none;
 }
 .moma-console ::selection {
   background: var(--accent);
@@ -470,7 +492,7 @@ body {
 }
 .moma-model-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
   gap: var(--moma-space-3);
 }
 .moma-model-card {
@@ -604,9 +626,6 @@ body {
   }
   .moma-content [data-slot="data-table-toolbar"] input[data-slot="input"] {
     width: min(280px, calc(100vw - 50px));
-  }
-  .moma-content [data-slot="table-pagination"] [data-slot="select-trigger"] {
-    margin-left: 0;
   }
   .moma-content [data-slot="table-pagination-summary"] {
     flex: 1;

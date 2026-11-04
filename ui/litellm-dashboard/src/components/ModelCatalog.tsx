@@ -32,27 +32,29 @@ export function ModelCatalog({
                 </h3>
               </div>
             </div>
-            <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-              <div className="flex min-w-0 justify-between gap-1">
-                <dt>
+            <dl className="grid gap-2 text-sm text-muted-foreground">
+              <div className="flex min-w-0 justify-between gap-4">
+                <dt className="shrink-0">
                   <L>Provider</L>
                 </dt>
-                <dd className="min-w-0 break-words text-right">{model.provider}</dd>
+                <dd className="min-w-0 wrap-anywhere text-right text-foreground">{model.provider}</dd>
               </div>
-              <div className="flex justify-between gap-1">
-                <dt>
+              <div className="flex min-w-0 justify-between gap-4">
+                <dt className="shrink-0">
                   <L>Status</L>
                 </dt>
-                <dd>
+                <dd className="text-right text-foreground">
                   <L>{model.model_info.blocked ? "Paused" : "Available"}</L>
                 </dd>
               </div>
               {(model.max_input_tokens ?? model.max_tokens) != null && (
-                <div className="col-span-2 flex justify-between gap-4">
-                  <dt>
+                <div className="flex min-w-0 justify-between gap-4">
+                  <dt className="shrink-0">
                     <L>Context window</L>
                   </dt>
-                  <dd>{(model.max_input_tokens ?? model.max_tokens)?.toLocaleString()} Token</dd>
+                  <dd className="min-w-0 text-right text-foreground tabular-nums">
+                    {(model.max_input_tokens ?? model.max_tokens)?.toLocaleString()} Token
+                  </dd>
                 </div>
               )}
             </dl>

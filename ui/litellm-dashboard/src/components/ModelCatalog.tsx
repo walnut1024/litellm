@@ -6,6 +6,7 @@ import { ProviderLogo } from "@/components/molecules/models/ProviderLogo";
 import { getDisplayModelName } from "@/components/view_model/model_name_display";
 import type { ModelData } from "@/components/model_dashboard/types";
 import { Button } from "@/components/ui/button";
+import CopyButton from "@/components/shared/CopyButton";
 import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { uiHref } from "@/utils/uiHref";
 
@@ -47,16 +48,15 @@ export function ModelCatalog({
                   <L>{model.model_info.blocked ? "Paused" : "Available"}</L>
                 </dd>
               </div>
-              {(model.max_input_tokens ?? model.max_tokens) != null && (
-                <div className="flex min-w-0 justify-between gap-4">
-                  <dt className="shrink-0">
-                    <L>Context window</L>
-                  </dt>
-                  <dd className="min-w-0 text-right text-foreground tabular-nums">
-                    {(model.max_input_tokens ?? model.max_tokens)?.toLocaleString()} Token
-                  </dd>
-                </div>
-              )}
+              <div className="flex min-w-0 items-center justify-between gap-4">
+                <dt className="shrink-0">
+                  <L>API model ID</L>
+                </dt>
+                <dd className="flex min-w-0 items-center gap-1 text-foreground">
+                  <code className="min-w-0 wrap-anywhere text-right">{modelName}</code>
+                  <CopyButton value={modelName} label="Copy model ID" className="shrink-0" />
+                </dd>
+              </div>
             </dl>
             <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t pt-2">
               <Button variant="ghost" size="sm" onClick={() => onModelClick(model.model_info.id)}>

@@ -1,4 +1,5 @@
 import { fireEvent, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
 import { LocaleProvider } from "@/contexts/LocaleContext";
@@ -69,6 +70,29 @@ describe("direct model use", () => {
     expect(screen.getByRole("button", { name: "Use model" })).toBeDisabled();
   });
 
+  it.each([undefined, "team-public-chat"])("copies the callable model name with public name %s", async (publicName) => {
+    const user = userEvent.setup();
+    const onModelClick = vi.fn();
+    const apiModelName = "proxy/chat-model";
+    renderWithProviders(
+      <ModelCatalog
+        models={[
+          {
+            ...model,
+            model_name: apiModelName,
+            model_info: { ...model.model_info, team_public_model_name: publicName },
+          },
+        ]}
+        onModelClick={onModelClick}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Copy model ID" }));
+
+    expect(await navigator.clipboard.readText()).toBe(publicName ?? apiModelName);
+    expect(onModelClick).not.toHaveBeenCalled();
+  });
+
   it("shows direct use in Chinese without requiring a key query", () => {
     localStorage.setItem("moma.locale", "zh-CN");
     const fetcher = vi.fn();
@@ -81,6 +105,8 @@ describe("direct model use", () => {
 
     expect(screen.getByRole("link", { name: "立即使用" })).toHaveAttribute("href", "/ui/api-keys");
     expect(screen.getByText("可用")).toBeInTheDocument();
+    expect(screen.getByText("调用模型 ID")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "复制模型 ID" })).toBeInTheDocument();
     expect(fetcher).not.toHaveBeenCalled();
   });
 });

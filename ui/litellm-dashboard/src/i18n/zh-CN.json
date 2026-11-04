@@ -1790,6 +1790,7 @@
   "tokens": "Token",
   "Delete model": "删除模型",
   "Copy model ID": "复制模型 ID",
+  "API model ID": "调用模型 ID",
   "Resume model": "恢复模型",
   "Pause model": "暂停模型",
   "About credential types": "关于凭据类型",

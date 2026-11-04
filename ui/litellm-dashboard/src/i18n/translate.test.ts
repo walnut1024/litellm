@@ -4,6 +4,8 @@ import { translate } from "./translate";
 describe("translate", () => {
   it.each([
     ["Model ID", "模型 ID"],
+    ["No providers found", "未找到供应商"],
+    ["Loading providers...", "正在加载供应商…"],
     ["API Base", "API 地址"],
     ["SMTP_HOST", "邮件服务器地址"],
     ["max_request_size_mb", "请求大小上限（兆字节）"],

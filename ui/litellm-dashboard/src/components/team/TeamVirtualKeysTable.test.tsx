@@ -463,7 +463,7 @@ describe("TeamVirtualKeysTable", () => {
     });
   });
 
-  it("should open Key Info View when key is clicked", async () => {
+  it.each(["sk-click-me", "clickable_key"])("opens the selected key from %s", async (name) => {
     mockUseKeys.mockReturnValue({
       data: {
         keys: [createMockKey({ token: "sk-click-me", key_alias: "clickable_key" })],
@@ -482,11 +482,15 @@ describe("TeamVirtualKeysTable", () => {
       expect(screen.getByText("clickable_key")).toBeInTheDocument();
     });
 
-    const keyButton = screen.getByRole("button", { name: /sk-click-me|clickable_key/ });
+    const keyButton = screen.getByRole("button", { name, exact: true });
     await userEvent.click(keyButton);
 
     await waitFor(() => {
       expect(screen.getByText("Key Info View")).toBeInTheDocument();
+    });
+    expect(vi.mocked(KeyInfoView).mock.lastCall?.[0].keyData).toMatchObject({
+      token: "sk-click-me",
+      key_alias: "clickable_key",
     });
   });
 

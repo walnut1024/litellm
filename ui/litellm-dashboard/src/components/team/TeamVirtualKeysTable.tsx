@@ -161,7 +161,11 @@ export function TeamVirtualKeysTable({ teamId, teamAlias, organization }: TeamVi
           const value = info.getValue() as string;
           return (
             <SimpleTooltip content={value}>
-              <span className="block max-w-full truncate font-mono text-xs">{value ?? "-"}</span>
+              <IdentityCell
+                title={value || "-"}
+                titleClassName={ENTITY_CELL_TITLE_CLASSES}
+                onClick={() => setSelectedKey(info.row.original)}
+              />
             </SimpleTooltip>
           );
         },

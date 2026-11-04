@@ -226,7 +226,9 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader>
           <DialogTitle>
-            {updateAllUsers ? "Bulk Edit All Users" : `Bulk Edit ${selectedUsers.length} User(s)`}
+            {updateAllUsers
+              ? t("Bulk Edit All Users")
+              : t("Bulk Edit {count} User(s)", { count: selectedUsers.length })}
           </DialogTitle>
         </DialogHeader>
         {allowAllUsers && (
@@ -255,8 +257,7 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
         {!updateAllUsers && (
           <div className="mb-4">
             <h5 className="mb-2 text-sm font-semibold text-foreground">
-              <L>Selected Users (</L>
-              {selectedUsers.length}):
+              {t("Selected Users ({count}):", { count: selectedUsers.length })}
             </h5>
             <div className="max-h-[200px] overflow-y-auto rounded-md border border-border">
               <Table>
@@ -282,7 +283,9 @@ const BulkEditUserModal: React.FC<BulkEditUserModalProps> = ({
                       <TableCell className="text-xs font-medium text-foreground">
                         {user.user_id.length > 20 ? `${user.user_id.slice(0, 20)}...` : user.user_id}
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{user.user_email || "No email"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {user.user_email || t("No email")}
+                      </TableCell>
                       <TableCell className="text-xs text-foreground">
                         <L>{possibleUIRoles?.[user.user_role]?.ui_label || user.user_role}</L>
                       </TableCell>

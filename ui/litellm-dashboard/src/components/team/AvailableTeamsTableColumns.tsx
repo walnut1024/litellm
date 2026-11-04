@@ -1,6 +1,8 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+import type { Locale } from "@/i18n/translate";
+import { translate } from "@/i18n/translate";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, UserPlus } from "lucide-react";
@@ -25,10 +27,11 @@ export interface AvailableTeam {
 }
 
 function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; onJoinTeam: (teamId: string) => void }) {
+  const t = useTranslation();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open team actions"
+        aria-label={t("Open team actions")}
         data-testid={`available-team-actions-${team.team_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >
@@ -46,10 +49,12 @@ function AvailableTeamRowActions({ team, onJoinTeam }: { team: AvailableTeam; on
 
 interface AvailableTeamsTableColumnsDeps {
   onJoinTeam: (teamId: string) => void;
+  locale: Locale;
 }
 
 export const getAvailableTeamsTableColumns = ({
   onJoinTeam,
+  locale,
 }: AvailableTeamsTableColumnsDeps): ColumnDef<AvailableTeam>[] => [
   {
     id: "team_alias",
@@ -73,7 +78,7 @@ export const getAvailableTeamsTableColumns = ({
       const description = row.original.description;
       return (
         <span className="block max-w-72 truncate text-sm text-muted-foreground" title={description || undefined}>
-          {description || "No description available"}
+          {description || translate("No description available", locale)}
         </span>
       );
     },

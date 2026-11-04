@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { chooseSelectOption, renderWithProviders, testQueryClient } from "../../../tests/test-utils";
 import { toast } from "@/lib/toast";
 import { LiteUiContext } from "@/contexts/LiteUiContext";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import type { Member } from "@/components/networking";
 import type { EffectiveMcpServer } from "../mcp_server_management/effectiveMcpServers";
 import type { MCPServer } from "../mcp_tools/types";
@@ -381,11 +382,30 @@ describe("TeamInfoView", () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+    localStorage.removeItem("moma.locale");
     authState.userRole = "Admin";
     authState.isViewOnly = false;
   });
 
   describe("display and rendering", () => {
+    it("preserves a user-defined model name that matches a translation key", async () => {
+      localStorage.setItem("moma.locale", "zh-CN");
+      vi.mocked(networking.teamInfoCall).mockResolvedValue(createMockTeamData({ models: ["Default"] }));
+
+      renderWithProviders(
+        <LocaleProvider>
+          <TeamInfoView {...defaultProps} />
+        </LocaleProvider>,
+      );
+
+      await userEvent.setup({ delay: null }).click(await screen.findByRole("tab", { name: "设置" }));
+      const settings = await screen.findByRole("tabpanel", { name: "设置" });
+      expect(within(settings).getByRole("link", { name: "Default" })).toHaveAttribute(
+        "href",
+        expect.stringMatching(/\?model_group=Default$/),
+      );
+    });
+
     it("links direct model chips to their matching access-group or model filter", async () => {
       vi.mocked(networking.teamInfoCall).mockResolvedValue(
         createMockTeamData({ models: ["repro-access-group", "gpt-4.1"] }),

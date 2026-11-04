@@ -16,6 +16,15 @@ afterEach(() => {
 });
 
 describe("formatBudgetResetUtc", () => {
+  it("localizes the date without changing the UTC reset day", () => {
+    process.env.TZ = "America/Los_Angeles";
+    const resetAt = "2026-10-20T00:00:00Z";
+
+    expect(formatBudgetResetUtc(resetAt, "zh-CN")).toContain("10月 20");
+    expect(formatBudgetReset(resetAt, "zh-CN")).toContain("10月 19");
+    expect(formatBudgetResetUtc(resetAt, "en")).toBe("Oct 20, 2026");
+  });
+
   it("formats the reset date in UTC regardless of the local timezone", () => {
     process.env.TZ = "America/Los_Angeles";
     const resetAt: string = "2026-10-20T00:00:00Z";
@@ -26,6 +35,19 @@ describe("formatBudgetResetUtc", () => {
 });
 
 describe("describeBudgetResetSchedule", () => {
+  it("localizes scheduled, unscheduled and lifetime budgets without changing reset timestamps", () => {
+    const resetAt = localIso(2026, 10, 1, 0);
+    const chinese = describeBudgetResetSchedule("30d", resetAt, "zh-CN");
+    const english = describeBudgetResetSchedule("30d", resetAt, "en");
+
+    expect(chinese.resetAt).toBe(english.resetAt);
+    expect(chinese.period).toContain("10月");
+    expect(chinese.tooltip).toContain("每 30d 重置一次");
+    expect(chinese.tooltip).toContain("结转到下一周期");
+    expect(describeBudgetResetSchedule(null, null, "zh-CN").label).toBe("永不重置");
+    expect(describeBudgetResetSchedule("30d", null, "zh-CN").tooltip).toContain("下次重置时间尚未排定");
+  });
+
   it("reports lifetime spend with no period when the budget has no duration and no scheduled reset", () => {
     const schedule = describeBudgetResetSchedule(null, null);
     expect(schedule.label).toBe("Never resets");

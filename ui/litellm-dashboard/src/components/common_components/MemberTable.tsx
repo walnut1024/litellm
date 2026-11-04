@@ -2,6 +2,8 @@ import type { ColumnDef, ColumnFiltersState, OnChangeFn, PaginationState, Sortin
 import { Crown, Info, User, UserPlus } from "lucide-react";
 import React, { useState } from "react";
 
+import { LocalizedText, useTranslation } from "@/contexts/LocaleContext";
+
 import { Member } from "@/components/networking";
 import {
   DataTable,
@@ -58,11 +60,11 @@ const isAdminRole = (role: string): boolean => {
 };
 
 function RoleHeaderTitle({ title, tooltip }: { title: string; tooltip?: string }) {
-  if (tooltip === undefined) return <>{title}</>;
+  if (tooltip === undefined) return <LocalizedText>{title}</LocalizedText>;
   return (
     <span className="inline-flex items-center gap-2">
-      {title}
-      <SimpleTooltip content={tooltip}>
+      <LocalizedText>{title}</LocalizedText>
+      <SimpleTooltip content={<LocalizedText>{tooltip}</LocalizedText>}>
         <Info className="size-3.5" />
       </SimpleTooltip>
     </span>
@@ -239,6 +241,7 @@ export default function MemberTable({
     pageSize: DEFAULT_PAGE_SIZE_OPTIONS[0],
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const t = useTranslation();
 
   const backToFirstPage =
     <T,>(onChange: OnChangeFn<T>): OnChangeFn<T> =>
@@ -261,7 +264,7 @@ export default function MemberTable({
   };
   const columns = buildColumns(columnDeps);
   const roleFilterItems = [
-    { value: ALL_ROLES, label: "All Roles" },
+    { value: ALL_ROLES, label: t("All Roles") },
     ...memberRoleOptions(members).map((role) => ({ value: role, label: role })),
   ];
 
@@ -270,7 +273,7 @@ export default function MemberTable({
   return (
     <div className="flex w-full flex-col gap-2">
       <span className="inline-flex text-sm text-foreground">
-        {members.length} Member{members.length !== 1 ? "s" : ""}
+        {members.length} {t(members.length !== 1 ? "Members" : "Member")}
       </span>
       <DataTable
         data={members}
@@ -289,7 +292,11 @@ export default function MemberTable({
         onGlobalFilterChange={changeSearch}
         noDataMessage={
           <span className="text-muted-foreground">
-            {isNarrowed ? "No members match your search or filters" : emptyText ?? "No data"}
+            {isNarrowed ? (
+              <LocalizedText>No members match your search or filters</LocalizedText>
+            ) : (
+              emptyText ?? "No data"
+            )}
           </span>
         }
         toolbar={(table) => (
@@ -298,7 +305,7 @@ export default function MemberTable({
               table={table}
               searchValue={globalFilter}
               onSearchChange={changeSearch}
-              searchPlaceholder="Search by name, email, or user ID"
+              searchPlaceholder={t("Search by name, email, or user ID")}
               onOpenFilters={() => setFiltersOpen(true)}
               showViewOptions={false}
             />
@@ -306,8 +313,8 @@ export default function MemberTable({
               table={table}
               open={filtersOpen}
               onOpenChange={setFiltersOpen}
-              title="Filters"
-              description="Narrow down members"
+              title={t("Filters")}
+              description={t("Narrow down members")}
             >
               {({ get, set }) => (
                 <DataTableFilterField label={roleColumnTitle}>
@@ -317,7 +324,7 @@ export default function MemberTable({
                     onValueChange={(value) => set("role", value === ALL_ROLES ? undefined : value)}
                   >
                     <SelectTrigger className="w-full" data-testid="filter-role">
-                      <SelectValue placeholder="All Roles" />
+                      <SelectValue placeholder={t("All Roles")} />
                     </SelectTrigger>
                     <SelectContent>
                       {roleFilterItems.map((item) => (
@@ -336,7 +343,7 @@ export default function MemberTable({
       {onAddMember && canEdit && (
         <Button onClick={onAddMember} className="self-start">
           <UserPlus className="size-4" />
-          Add Member
+          <LocalizedText>Add Member</LocalizedText>
         </Button>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { LiteUiMask, useLiteUi } from "@/contexts/LiteUiContext";
@@ -179,6 +179,12 @@ export type McpGrantResolution =
 export type TeamAccessGroupGrants = {
   readonly ids: readonly string[];
   readonly serverIds: readonly string[];
+};
+
+const MODEL_SENTINEL_LABELS: Record<string, string> = {
+  "all-proxy-models": "All Proxy Models",
+  "all-team-models": "All Team Models",
+  "no-default-models": "No Default Models",
 };
 
 const sameIdSelection = (a: readonly string[], b: readonly string[]): boolean => {
@@ -611,6 +617,8 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
   const [teamData, setTeamData] = useState<TeamData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAddMemberModalVisible, setIsAddMemberModalVisible] = useState(false);
+  const t = useTranslation();
+  const { locale } = useLocale();
   const form = useZodForm(teamUpdateSchema, { defaultValues: EMPTY_TEAM_UPDATE_VALUES });
   const {
     fields: modelLimitRows,
@@ -1403,7 +1411,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               <h3 className="text-lg font-medium">¥{formatNumberWithCommas(info.spend, 2)}</h3>
               <p>
                 <L>of </L>
-                {info.max_budget === null ? "Unlimited" : `¥${formatNumberWithCommas(info.max_budget, 2)}`}
+                {info.max_budget === null ? t("Unlimited") : `¥${formatNumberWithCommas(info.max_budget, 2)}`}
               </p>
               {info.budget_duration && (
                 <p className="text-muted-foreground">
@@ -1428,13 +1436,16 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
             <div className="mt-2">
               <p>
                 <L>TPM: </L>
-                {info.tpm_limit ?? "Unlimited"}
+                {info.tpm_limit ?? t("Unlimited")}
               </p>
               <p>
                 <L>RPM: </L>
-                {info.rpm_limit ?? "Unlimited"}
+                {info.rpm_limit ?? t("Unlimited")}
               </p>
-              <p>TPD (batch): {info.tpd_limit ?? "Unlimited"}</p>
+              <p>
+                <L>TPD (batch): </L>
+                {info.tpd_limit ?? t("Unlimited")}
+              </p>
               {info.max_parallel_requests && (
                 <p>
                   <L>Max Parallel Requests: </L>
@@ -1459,12 +1470,15 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                   </div>
                 );
               })()}
-              <p>Estimated Output Tokens: {info.metadata?.default_estimated_output_tokens ?? "Default"}</p>
               <p>
-                Estimated Output Tokens Per Model:{" "}
+                <L>Estimated Output Tokens: </L>
+                {info.metadata?.default_estimated_output_tokens ?? t("Default")}
+              </p>
+              <p>
+                <L>Estimated Output Tokens Per Model: </L>
                 {info.metadata?.default_estimated_output_tokens_per_model
                   ? JSON.stringify(info.metadata.default_estimated_output_tokens_per_model)
-                  : "Default"}
+                  : t("Default")}
               </p>
             </div>
           </Card>
@@ -1486,19 +1500,22 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
               <L>Models</L>
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {computeTeamModelBadges(info.models, info.access_group_models || [], info.access_group_details).map(
-                (badge, index) => (
-                  <SimpleTooltip key={`${badge.kind}-${badge.label}-${index}`} content={badge.tooltip}>
-                    <span>
-                      <StatusBadge
-                        tone={TEAM_MODEL_BADGE_TONES[badge.kind]}
-                        label={badge.label}
-                        href={teamModelBadgeHref(badge, accessGroupNames)}
-                      />
-                    </span>
-                  </SimpleTooltip>
-                ),
-              )}
+              {computeTeamModelBadges(
+                info.models,
+                info.access_group_models || [],
+                info.access_group_details,
+                locale,
+              ).map((badge, index) => (
+                <SimpleTooltip key={`${badge.kind}-${badge.label}-${index}`} content={t(badge.tooltip)}>
+                  <span>
+                    <StatusBadge
+                      tone={TEAM_MODEL_BADGE_TONES[badge.kind]}
+                      label={badge.label}
+                      href={teamModelBadgeHref(badge, accessGroupNames)}
+                    />
+                  </span>
+                </SimpleTooltip>
+              ))}
             </div>
           </Card>
 
@@ -1532,51 +1549,57 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
             accessToken={accessToken}
           />
 
-          <Card className="block p-6">
-            <GuardrailSettingsView
-              globalGuardrailNames={globalGuardrailNames}
-              teamGuardrails={Array.isArray(info.metadata?.guardrails) ? info.metadata.guardrails : []}
-              optedOutGlobalGuardrails={
-                Array.isArray(info.metadata?.opted_out_global_guardrails)
-                  ? info.metadata.opted_out_global_guardrails
-                  : []
-              }
-              killSwitchOn={initialKillSwitchOn}
-              variant="inline"
-            />
-          </Card>
+          <LiteUiMask>
+            <Card className="block p-6">
+              <GuardrailSettingsView
+                globalGuardrailNames={globalGuardrailNames}
+                teamGuardrails={Array.isArray(info.metadata?.guardrails) ? info.metadata.guardrails : []}
+                optedOutGlobalGuardrails={
+                  Array.isArray(info.metadata?.opted_out_global_guardrails)
+                    ? info.metadata.opted_out_global_guardrails
+                    : []
+                }
+                killSwitchOn={initialKillSwitchOn}
+                variant="inline"
+              />
+            </Card>
+          </LiteUiMask>
 
-          <Card className="block p-6">
-            <p className="font-semibold text-foreground mb-3">Policies</p>
-            {info.policies && info.policies.length > 0 ? (
-              <div className="space-y-4">
-                {info.policies.map((policy: string, index: number) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{policy}</Badge>
-                      {loadingPolicies && <p className="text-xs text-muted-foreground">Loading guardrails...</p>}
-                    </div>
-                    {!loadingPolicies && policyGuardrails[policy] && policyGuardrails[policy].length > 0 && (
-                      <div className="ml-4 pl-3 border-l-2 border-border">
-                        <p className="text-xs text-muted-foreground mb-1">Resolved Guardrails:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {policyGuardrails[policy].map((guardrail: string, gIndex: number) => (
-                            <Badge key={gIndex} variant="secondary">
-                              {guardrail}
-                            </Badge>
-                          ))}
-                        </div>
+          <LiteUiMask>
+            <Card className="block p-6">
+              <p className="font-semibold text-foreground mb-3">Policies</p>
+              {info.policies && info.policies.length > 0 ? (
+                <div className="space-y-4">
+                  {info.policies.map((policy: string, index: number) => (
+                    <div key={index} className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary">{policy}</Badge>
+                        {loadingPolicies && <p className="text-xs text-muted-foreground">Loading guardrails...</p>}
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">No policies configured</p>
-            )}
-          </Card>
+                      {!loadingPolicies && policyGuardrails[policy] && policyGuardrails[policy].length > 0 && (
+                        <div className="ml-4 pl-3 border-l-2 border-border">
+                          <p className="text-xs text-muted-foreground mb-1">Resolved Guardrails:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {policyGuardrails[policy].map((guardrail: string, gIndex: number) => (
+                              <Badge key={gIndex} variant="secondary">
+                                {guardrail}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">No policies configured</p>
+              )}
+            </Card>
+          </LiteUiMask>
 
-          <LoggingSettingsView loggingConfigs={info.metadata?.logging || []} disabledCallbacks={[]} variant="card" />
+          <LiteUiMask>
+            <LoggingSettingsView loggingConfigs={info.metadata?.logging || []} disabledCallbacks={[]} variant="card" />
+          </LiteUiMask>
         </div>
       ),
     },
@@ -2391,7 +2414,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 <p className="font-medium">
                   <L>Created At</L>
                 </p>
-                <div>{new Date(info.created_at).toLocaleString()}</div>
+                <div>{new Date(info.created_at).toLocaleString(locale === "zh-CN" ? "zh-CN" : undefined)}</div>
               </div>
               <div>
                 <p className="font-medium">
@@ -2400,7 +2423,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 <div className="flex flex-wrap gap-2 mt-1">
                   {info.models.map((model, index) => (
                     <BadgeLink key={index} href={modelOrAccessGroupHref(model, accessGroupNames)}>
-                      {model}
+                      {MODEL_SENTINEL_LABELS[model] ? t(MODEL_SENTINEL_LABELS[model]) : model}
                     </BadgeLink>
                   ))}
                 </div>
@@ -2451,13 +2474,16 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 </p>
                 <div>
                   <L>TPM: </L>
-                  {info.tpm_limit ?? "Unlimited"}
+                  {info.tpm_limit ?? t("Unlimited")}
                 </div>
                 <div>
                   <L>RPM: </L>
-                  {info.rpm_limit ?? "Unlimited"}
+                  {info.rpm_limit ?? t("Unlimited")}
                 </div>
-                <div>TPD (batch): {info.tpd_limit ?? "Unlimited"}</div>
+                <div>
+                  <L>TPD (batch): </L>
+                  {info.tpd_limit ?? t("Unlimited")}
+                </div>
                 {(() => {
                   const modelTpm = (info.metadata?.model_tpm_limit ?? {}) as Record<string, number>;
                   const modelRpm = (info.metadata?.model_rpm_limit ?? {}) as Record<string, number>;
@@ -2476,12 +2502,15 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     </div>
                   );
                 })()}
-                <div>Estimated Output Tokens: {info.metadata?.default_estimated_output_tokens ?? "Default"}</div>
                 <div>
-                  Estimated Output Tokens Per Model:{" "}
+                  <L>Estimated Output Tokens: </L>
+                  {info.metadata?.default_estimated_output_tokens ?? t("Default")}
+                </div>
+                <div>
+                  <L>Estimated Output Tokens Per Model: </L>
                   {info.metadata?.default_estimated_output_tokens_per_model
                     ? JSON.stringify(info.metadata.default_estimated_output_tokens_per_model)
-                    : "Default"}
+                    : t("Default")}
                 </div>
               </div>
               <div>
@@ -2490,17 +2519,17 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 </p>
                 <div>
                   <L>Max Budget: </L>
-                  {info.max_budget !== null ? `¥${formatNumberWithCommas(info.max_budget, 4)}` : "No Limit"}
+                  {info.max_budget !== null ? `¥${formatNumberWithCommas(info.max_budget, 4)}` : t("No Limit")}
                 </div>
                 <div>
                   <L>Soft Budget:</L>{" "}
                   {info.soft_budget !== null && info.soft_budget !== undefined
                     ? `¥${formatNumberWithCommas(info.soft_budget, 4)}`
-                    : "No Limit"}
+                    : t("No Limit")}
                 </div>
                 <div>
                   <L>Budget Reset: </L>
-                  {info.budget_duration || "Never"}
+                  {info.budget_duration || t("Never")}
                 </div>
                 <LiteUiMask>
                   {modelMaxBudgetToEntries(info.model_max_budget as ModelMaxBudget | null | undefined).map(
@@ -2535,11 +2564,11 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 </p>
                 <div>
                   <L>Max Budget: </L>
-                  {info.team_member_budget_table?.max_budget ?? "No Limit"}
+                  {info.team_member_budget_table?.max_budget ?? t("No Limit")}
                 </div>
                 <div>
                   <L>Budget Duration: </L>
-                  {info.team_member_budget_table?.budget_duration || "No Limit"}
+                  {info.team_member_budget_table?.budget_duration || t("No Limit")}
                 </div>
                 <LiteUiMask>
                   {modelMaxBudgetToEntries(
@@ -2554,19 +2583,19 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 </LiteUiMask>
                 <div>
                   <L>Key Duration: </L>
-                  {info.metadata?.team_member_key_duration || "No Limit"}
+                  {info.metadata?.team_member_key_duration || t("No Limit")}
                 </div>
                 <div>
                   <L>TPM Limit: </L>
-                  {info.team_member_budget_table?.tpm_limit ?? "No Limit"}
+                  {info.team_member_budget_table?.tpm_limit ?? t("No Limit")}
                 </div>
                 <div>
                   <L>RPM Limit: </L>
-                  {info.team_member_budget_table?.rpm_limit ?? "No Limit"}
+                  {info.team_member_budget_table?.rpm_limit ?? t("No Limit")}
                 </div>
                 <div>
                   <L>Budget Alert Thresholds: </L>
-                  {teamMemberBudgetAlertSummary(info.metadata).join("; ") || "None"}
+                  {teamMemberBudgetAlertSummary(info.metadata).join("; ") || t("None")}
                 </div>
               </div>
               <div>

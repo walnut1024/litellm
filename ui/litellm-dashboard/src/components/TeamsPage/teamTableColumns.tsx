@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Copy, KeyRound, Layers, MoreHorizontal, Pencil, Trash2, Users } from "lucide-react";
@@ -44,10 +44,19 @@ const teamModelCount = (team: Team): number => team.models?.length ?? 0;
 const teamKeyCount = (team: Team): number => team.keys_count ?? team.keys?.length ?? 0;
 
 function ResourcesCell({ team }: { team: Team }) {
+  const t = useTranslation();
   const items = [
-    { key: "members" as const, label: "members", count: teamMemberCount(team) },
-    { key: "models" as const, label: "models", count: teamModelCount(team) },
-    { key: "keys" as const, label: "keys", count: teamKeyCount(team) },
+    {
+      key: "members" as const,
+      title: t("{count} members", { count: teamMemberCount(team) }),
+      count: teamMemberCount(team),
+    },
+    {
+      key: "models" as const,
+      title: t("{count} models", { count: teamModelCount(team) }),
+      count: teamModelCount(team),
+    },
+    { key: "keys" as const, title: t("{count} keys", { count: teamKeyCount(team) }), count: teamKeyCount(team) },
   ];
 
   return (
@@ -58,7 +67,7 @@ function ResourcesCell({ team }: { team: Team }) {
         return (
           <span
             key={item.key}
-            title={`${item.count} ${item.label}`}
+            title={item.title}
             className={cn(
               "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset [&_svg]:size-3.5",
               tone.className,
@@ -74,10 +83,11 @@ function ResourcesCell({ team }: { team: Team }) {
 }
 
 function RateLimitLine({ label, value }: { label: string; value: number | null }) {
+  const t = useTranslation();
   return (
     <div>
       <span className="text-[10px] font-semibold text-muted-foreground">{label} </span>
-      <span className="tabular-nums">{value != null ? formatNumberWithCommas(value) : "Unlimited"}</span>
+      <span className="tabular-nums">{value != null ? formatNumberWithCommas(value) : t("Unlimited")}</span>
     </div>
   );
 }
@@ -90,14 +100,15 @@ interface TeamRowActionsProps {
 }
 
 function TeamRowActions({ team, canManage, onEditTeam, onDeleteTeam }: TeamRowActionsProps) {
+  const t = useTranslation();
   const handleCopy = () => {
-    void copyToClipboard(team.team_id, "Team ID copied");
+    void copyToClipboard(team.team_id, t("Team ID copied"));
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        aria-label="Open team actions"
+        aria-label={t("Open team actions")}
         data-testid={`team-actions-${team.team_id}`}
         className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "text-muted-foreground")}
       >

@@ -1,20 +1,28 @@
 import dayjs, { Dayjs } from "dayjs";
+import "dayjs/locale/zh-cn";
 import utc from "dayjs/plugin/utc";
+
+import type { Locale } from "@/i18n/translate";
+import { translate } from "@/i18n/translate";
 
 dayjs.extend(utc);
 
-export function formatBudgetReset(iso: string | null | undefined): string | null {
+const dayjsLocale = (locale: Locale): string => (locale === "zh-CN" ? "zh-cn" : "en");
+const tr = (message: string, locale: Locale, values?: Readonly<Record<string, string | number>>): string =>
+  translate(message, locale, values);
+
+export function formatBudgetReset(iso: string | null | undefined, locale: Locale = "en"): string | null {
   if (!iso) return null;
   const resetDate = dayjs(iso);
   if (!resetDate.isValid()) return null;
-  return resetDate.format("MMM D, YYYY");
+  return resetDate.locale(dayjsLocale(locale)).format("MMM D, YYYY");
 }
 
-export function formatBudgetResetUtc(iso: string | null | undefined): string | null {
+export function formatBudgetResetUtc(iso: string | null | undefined, locale: Locale = "en"): string | null {
   if (!iso) return null;
   const resetDate = dayjs.utc(iso);
   if (!resetDate.isValid()) return null;
-  return resetDate.format("MMM D, YYYY");
+  return resetDate.locale(dayjsLocale(locale)).format("MMM D, YYYY");
 }
 
 export interface BudgetResetSchedule {
@@ -59,51 +67,66 @@ export function getBudgetPeriodStart(budgetDuration: string, resetAt: Dayjs): Da
   }
 }
 
-export function formatBudgetPeriod(start: Dayjs, end: Dayjs): string {
+export function formatBudgetPeriod(start: Dayjs, end: Dayjs, locale: Locale = "en"): string {
+  const dayjsLc = dayjsLocale(locale);
   const windowSeconds = end.diff(start, "second");
   if (windowSeconds < 24 * 60 * 60) {
     const time = windowSeconds < 60 ? "HH:mm:ss" : "HH:mm";
     const endFormat = start.isSame(end, "day") ? time : `MMM D, YYYY ${time}`;
-    return `${start.format(`MMM D, YYYY ${time}`)} - ${end.format(endFormat)}`;
+    return `${start.locale(dayjsLc).format(`MMM D, YYYY ${time}`)} - ${end.locale(dayjsLc).format(endFormat)}`;
   }
-  if (start.isSame(end, "year")) return `${start.format("MMM D")} - ${end.format("MMM D, YYYY")}`;
-  return `${start.format("MMM D, YYYY")} - ${end.format("MMM D, YYYY")}`;
+  if (start.isSame(end, "year"))
+    return `${start.locale(dayjsLc).format("MMM D")} - ${end.locale(dayjsLc).format("MMM D, YYYY")}`;
+  return `${start.locale(dayjsLc).format("MMM D, YYYY")} - ${end.locale(dayjsLc).format("MMM D, YYYY")}`;
 }
 
 export function describeBudgetResetSchedule(
   budgetDuration: string | null | undefined,
   budgetResetAt: string | null | undefined,
+  locale: Locale = "en",
 ): BudgetResetSchedule {
   const resetDate = budgetResetAt ? dayjs(budgetResetAt) : null;
   if (resetDate?.isValid()) {
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const label = resetDate.format("MMM D, YYYY HH:mm");
+    const label = resetDate.locale(dayjsLocale(locale)).format("MMM D, YYYY HH:mm");
     const period = budgetDuration
-      ? formatBudgetPeriod(getBudgetPeriodStart(budgetDuration, resetDate.utc()).local(), resetDate)
+      ? formatBudgetPeriod(getBudgetPeriodStart(budgetDuration, resetDate.utc()).local(), resetDate, locale)
       : null;
     const coverage = period
-      ? `Current Period Spend covers ${period} and resets every ${budgetDuration}.`
-      : "Current Period Spend resets on a schedule.";
+      ? tr("Current Period Spend covers {period} and resets every {duration}.", locale, {
+          period,
+          duration: String(budgetDuration),
+        })
+      : tr("Current Period Spend resets on a schedule.", locale);
     return {
       label,
       resetAt: resetDate.toISOString(),
       period,
-      tooltip: `${coverage} Next reset ${label} (${timeZone}). ${ROLLOVER_NOTE}`,
+      tooltip: `${coverage} ${tr("Next reset {label} ({timeZone}). {note}", locale, {
+        label,
+        timeZone,
+        note: tr(ROLLOVER_NOTE, locale),
+      })}`,
     };
   }
   if (!budgetDuration) {
     return {
-      label: "Never resets",
+      label: tr("Never resets", locale),
       resetAt: null,
       period: null,
-      tooltip: "This budget has no reset window, so this is lifetime spend for as long as the membership exists.",
+      tooltip: tr(
+        "This budget has no reset window, so this is lifetime spend for as long as the membership exists.",
+        locale,
+      ),
     };
   }
   return {
-    label: "Unknown",
+    label: tr("Unknown", locale),
     resetAt: null,
     period: null,
-    tooltip: `Resets every ${budgetDuration}, but the next reset time has not been scheduled yet. ${ROLLOVER_NOTE}`,
+    tooltip: `${tr("Resets every {duration}, but the next reset time has not been scheduled yet.", locale, {
+      duration: budgetDuration,
+    })} ${tr(ROLLOVER_NOTE, locale)}`,
   };
 }
 

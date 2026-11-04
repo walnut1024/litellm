@@ -24,6 +24,17 @@ describe("normalizeTeamModelSelection", () => {
 });
 
 describe("computeTeamModelBadges", () => {
+  it("localizes grant explanations while preserving model and access group names", () => {
+    const grants = [{ access_group_id: "group", access_group_name: "Default", models: ["Default"] }];
+    const english = computeTeamModelBadges(["Default"], [], grants, "en");
+    const chinese = computeTeamModelBadges(["Default"], [], grants, "zh-CN");
+
+    expect(chinese.map(({ label, kind }) => ({ label, kind }))).toEqual(
+      english.map(({ label, kind }) => ({ label, kind })),
+    );
+    expect(chinese[0].tooltip).toBe("由团队模型列表直接授予，同时经 访问组 Default 授予");
+  });
+
   it("attributes group-only models to the groups granting them", () => {
     const badges = computeTeamModelBadges(["sonnet-direct"], [], GRANTS);
     expect(badges).toEqual([

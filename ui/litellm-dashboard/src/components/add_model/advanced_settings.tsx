@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import React from "react";
 import { MultiSelect } from "@/components/shared/MultiSelect";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -61,20 +61,20 @@ const PRICING_MODEL_ITEMS = [
   { value: "per_second", label: "Per Second" },
 ] as const;
 
-const validateNumber = (_: unknown, value: unknown) => {
+const validateNumberWith = (t: ReturnType<typeof useTranslation>) => (_: unknown, value: unknown) => {
   if (!value) {
     return Promise.resolve();
   }
   if (isNaN(Number(value)) || Number(value) < 0) {
-    return Promise.reject("Please enter a valid positive number");
+    return Promise.reject(t("Please enter a valid positive number"));
   }
   return Promise.resolve();
 };
 
-const usageCostRules = {
+const usageCostRulesWith = (t: ReturnType<typeof useTranslation>) => ({
   deps: [PTU_COUNT_FIELD],
-  validate: validatorRules({ validator: validateNumber }, ptuNoUsageCostRule(PTU_COUNT_FIELD)),
-};
+  validate: validatorRules({ validator: validateNumberWith(t) }, ptuNoUsageCostRule(PTU_COUNT_FIELD)),
+});
 
 const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   showAdvancedSettings,
@@ -84,6 +84,9 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   tagsList,
   accessToken,
 }) => {
+  const t = useTranslation();
+  const validateNumber = validateNumberWith(t);
+  const usageCostRules = usageCostRulesWith(t);
   const [customPricing, setCustomPricing] = React.useState(false);
   const [pricingModel, setPricingModel] = React.useState<"per_token" | "per_second">("per_token");
   const [showCacheControl, setShowCacheControl] = React.useState(false);
@@ -308,7 +311,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                       <SelectContent>
                         {PRICING_MODEL_ITEMS.map((item) => (
                           <SelectItem key={item.value} value={item.value}>
-                            {item.label}
+                            <L>{item.label}</L>
                           </SelectItem>
                         ))}
                       </SelectContent>

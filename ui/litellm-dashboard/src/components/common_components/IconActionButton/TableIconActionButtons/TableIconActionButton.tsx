@@ -1,4 +1,5 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { LocalizedText } from "@/contexts/LocaleContext";
 import {
   PencilAltIcon,
   PlayIcon,
@@ -59,7 +60,9 @@ export default function TableIconActionButton({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger render={<span tabIndex={disabled ? 0 : undefined} />}>{button}</TooltipTrigger>
-        <TooltipContent>{title}</TooltipContent>
+        <TooltipContent>
+          <LocalizedText>{title}</LocalizedText>
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

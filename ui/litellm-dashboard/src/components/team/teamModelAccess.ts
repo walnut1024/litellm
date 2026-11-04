@@ -1,3 +1,6 @@
+import type { Locale } from "@/i18n/translate";
+import { translate } from "@/i18n/translate";
+
 import { unfurlWildcardModelsInList } from "../key_team_helpers/fetch_available_models_team_key";
 
 export const ALL_PROXY_MODELS = "all-proxy-models";
@@ -42,20 +45,26 @@ export function normalizeTeamModelSelection(models: string[] | undefined): strin
   return models && models.length > 0 ? models : [NO_DEFAULT_MODELS];
 }
 
-export const describeGroups = (names: string[]): string =>
-  names.length > 1 ? `access groups ${names.join(", ")}` : `access group ${names[0]}`;
+const tr = (message: string, locale: Locale, values?: Readonly<Record<string, string | number>>): string =>
+  translate(message, locale, values);
+
+export const describeGroups = (names: string[], locale: Locale = "en"): string =>
+  names.length > 1
+    ? tr("access groups {names}", locale, { names: names.join(", ") })
+    : tr("access group {name}", locale, { name: names[0] });
 
 export function computeTeamModelBadges(
   models: string[],
   accessGroupModels: string[],
   accessGroupDetails: TeamAccessGroupModelGrant[] | undefined,
+  locale: Locale = "en",
 ): TeamModelBadge[] {
   const grants = accessGroupDetails ?? [];
   const groupNamesFor = (model: string): string[] =>
     grants.filter((g) => g.models.includes(model)).map((g) => g.access_group_name);
   const viaGroups = (model: string): string => {
     const names = groupNamesFor(model);
-    return names.length > 0 ? describeGroups(names) : "an access group";
+    return names.length > 0 ? describeGroups(names, locale) : tr("an access group", locale);
   };
 
   const allProxy = models.length === 0 || models.includes(ALL_PROXY_MODELS);
@@ -68,13 +77,13 @@ export function computeTeamModelBadges(
     label: "All proxy models",
     kind: "all-proxy",
     tooltip: models.includes(ALL_PROXY_MODELS)
-      ? "Granted by the All Proxy Models entry in the team's model list"
-      : "The team's model list is empty, so it can access every model on the proxy",
+      ? tr("Granted by the All Proxy Models entry in the team's model list", locale)
+      : tr("The team's model list is empty, so it can access every model on the proxy", locale),
   };
   const noDefaultBadge: TeamModelBadge = {
     label: "No default models",
     kind: "no-default",
-    tooltip: "No models are granted directly. Access comes only from access groups",
+    tooltip: tr("No models are granted directly. Access comes only from access groups", locale),
   };
   const headBadge = (): TeamModelBadge[] => {
     if (allProxy) return [allProxyBadge];
@@ -90,15 +99,17 @@ export function computeTeamModelBadges(
         kind: "direct",
         tooltip:
           groupNamesFor(m).length > 0
-            ? `Granted directly in the team's model list, and also via ${viaGroups(m)}`
-            : "Granted directly in the team's model list",
+            ? tr("Granted directly in the team's model list, and also via {groups}", locale, {
+                groups: viaGroups(m),
+              })
+            : tr("Granted directly in the team's model list", locale),
       }),
     ),
     ...groupModels.map(
       (m): TeamModelBadge => ({
         label: m,
         kind: "access-group",
-        tooltip: `Granted via ${viaGroups(m)}`,
+        tooltip: tr("Granted via {groups}", locale, { groups: viaGroups(m) }),
       }),
     ),
   ];

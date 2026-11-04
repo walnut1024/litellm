@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
 import { BudgetResetSchedule, describeBudgetResetSchedule } from "@/utils/budgetUtils";
 import { formatNumberWithCommas } from "@/utils/dataUtils";
@@ -13,11 +13,11 @@ interface MyUserTabProps {
   teamId: string;
 }
 
-const labelWithTooltip = (label: string, tooltip: string) => (
+const labelWithTooltip = (label: React.ReactNode, tooltip: string) => (
   <span className="flex items-center gap-1 text-muted-foreground">
     {label}
     <SimpleTooltip content={tooltip}>
-      <CircleHelp className="size-4" aria-label={`${label} information`} />
+      <CircleHelp className="size-4" aria-label="label information" />
     </SimpleTooltip>
   </span>
 );
@@ -27,18 +27,20 @@ const formatNumber = (value: number | null | undefined, digits = 4): string => {
   return formatNumberWithCommas(value, digits);
 };
 
-const formatRateLimit = (value: number | null | undefined): string => {
-  if (value === null || value === undefined) return "Unlimited";
+const formatRateLimit = (value: number | null | undefined, t: ReturnType<typeof useTranslation>): string => {
+  if (value === null || value === undefined) return t("Unlimited");
   return formatNumberWithCommas(value, 0);
 };
 
-function describePeriodLine(schedule: BudgetResetSchedule): string {
-  if (schedule.period) return `${schedule.period} (resets ${schedule.label})`;
-  if (schedule.resetAt) return `Resets ${schedule.label}`;
+function describePeriodLine(schedule: BudgetResetSchedule, t: ReturnType<typeof useTranslation>): string {
+  if (schedule.period) return t("{period} (resets {label})", { period: schedule.period, label: schedule.label });
+  if (schedule.resetAt) return t("Resets {label}", { label: schedule.label });
   return schedule.label;
 }
 
 export default function MyUserTab({ teamId }: MyUserTabProps) {
+  const t = useTranslation();
+  const { locale } = useLocale();
   const { data, isLoading, error } = useMyTeamMember(teamId);
 
   if (isLoading) {
@@ -77,7 +79,7 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
   const totalSpend = data.total_spend ?? 0;
   const tpmLimit = budgetTable?.tpm_limit ?? null;
   const rpmLimit = budgetTable?.rpm_limit ?? null;
-  const budgetReset = describeBudgetResetSchedule(budgetTable?.budget_duration, budgetTable?.budget_reset_at);
+  const budgetReset = describeBudgetResetSchedule(budgetTable?.budget_duration, budgetTable?.budget_reset_at, locale);
   const allowedModels = budgetTable?.allowed_models ?? null;
 
   return (
@@ -107,30 +109,30 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card>
           <CardContent>
-            {labelWithTooltip("Current Period Spend (CNY)", budgetReset.tooltip)}
+            {labelWithTooltip(<L>Current Period Spend (CNY)</L>, t(budgetReset.tooltip))}
             <div className="mt-2">
               <h3 className="text-2xl font-semibold">¥{formatNumber(spend, 4)}</h3>
               <span className="text-muted-foreground">
                 <L>of </L>
-                {maxBudget === null ? "Unlimited" : `¥${formatNumber(maxBudget, 4)}`}
+                {maxBudget === null ? t("Unlimited") : `¥${formatNumber(maxBudget, 4)}`}
               </span>
             </div>
-            <div className="mt-1 text-muted-foreground">{describePeriodLine(budgetReset)}</div>
+            <div className="mt-1 text-muted-foreground">{describePeriodLine(budgetReset, t)}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent>
-            {labelWithTooltip("Rate Limits", "Your per-member rate limits within this team.")}
+            {labelWithTooltip(<L>Rate Limits</L>, t("Your per-member rate limits within this team."))}
             <div className="mt-2">
               <span>
                 <L>TPM: </L>
-                {formatRateLimit(tpmLimit)}
+                {formatRateLimit(tpmLimit, t)}
               </span>
               <br />
               <span>
                 <L>RPM: </L>
-                {formatRateLimit(rpmLimit)}
+                {formatRateLimit(rpmLimit, t)}
               </span>
             </div>
           </CardContent>
@@ -139,8 +141,10 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
         <Card>
           <CardContent>
             {labelWithTooltip(
-              "Total Spend (CNY)",
-              "Cumulative spend within this team across budget periods. This is a lower bound: lifetime tracking began 2026-04-21, so periods that reset before then are not included. It is never less than Current Period Spend.",
+              <L>Total Spend (CNY)</L>,
+              t(
+                "Cumulative spend within this team across budget periods. This is a lower bound: lifetime tracking began 2026-04-21, so periods that reset before then are not included. It is never less than Current Period Spend.",
+              ),
             )}
             <h4 className="mt-2 text-xl font-semibold">¥{formatNumber(totalSpend, 4)}</h4>
           </CardContent>
@@ -148,7 +152,7 @@ export default function MyUserTab({ teamId }: MyUserTabProps) {
 
         <Card>
           <CardContent>
-            {labelWithTooltip("Model Scope", "Models you can access within this team.")}
+            {labelWithTooltip(<L>Model Scope</L>, t("Models you can access within this team."))}
             <div className="mt-2">
               {allowedModels && allowedModels.length > 0 ? (
                 <div className="flex flex-wrap gap-1">

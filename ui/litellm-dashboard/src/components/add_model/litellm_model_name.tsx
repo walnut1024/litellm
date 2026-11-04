@@ -1,5 +1,5 @@
 import React from "react";
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { MultiSelect } from "@/components/shared/MultiSelect";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,7 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
   providerModels,
   getPlaceholder,
 }) => {
+  const t = useTranslation();
   const form = useFormContext<MountedFormValues>();
   const modelValue = useWatch({ control: form.control, name: "model" });
   const selectedModels = Array.isArray(modelValue) ? modelValue : [modelValue];
@@ -110,7 +111,11 @@ const LiteLLMModelNameField: React.FC<LiteLLMModelNameFieldProps> = ({
         rules={{
           validate: {
             required: requiredRule(
-              `Please enter ${selectedProvider === Providers.Azure ? "a deployment name" : "at least one model"}.`,
+              t(
+                selectedProvider === Providers.Azure
+                  ? "Please enter a deployment name."
+                  : "Please enter at least one model.",
+              ),
             ),
           },
         }}

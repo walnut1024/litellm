@@ -629,13 +629,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
           <TabsContent value="alerting-types" keepMounted>
             <Card className="p-6">
               <p className="my-2">
-                <L>
-                  Alerts are sent to any Slack-compatible incoming webhook URL (Slack, Rocket.Chat, Mattermost, etc.).
-                  Get Slack webhook urls from
-                </L>{" "}
-                <a href="https://api.slack.com/messaging/webhooks" target="_blank" style={{ color: "blue" }}>
-                  <L>here</L>
-                </a>
+                <L>Alerts are sent to the webhook URL configured in the table below.</L>
               </p>
               <Table>
                 <TableHeader>
@@ -643,7 +637,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                     <TableHead></TableHead>
                     <TableHead></TableHead>
                     <TableHead>
-                      <L>Webhook URL (Slack-compatible)</L>
+                      <L>Webhook URL</L>
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -706,9 +700,7 @@ const Settings: React.FC<SettingsPageProps> = ({ accessToken, userRole, userID, 
                 onClick={async () => {
                   try {
                     await serviceHealthCheck(accessToken, "slack");
-                    toast.success(
-                      "Alert test triggered. Test request to slack made - check logs/alerts on slack to verify",
-                    );
+                    toast.success("Alert test triggered. Check your webhook endpoint for the test message.");
                   } catch (error) {
                     toast.fromError(parseErrorMessage(error));
                   }

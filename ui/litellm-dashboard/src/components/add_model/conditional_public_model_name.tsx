@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import React, { useEffect, useMemo } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -21,19 +21,19 @@ const sameMappings = (left: readonly ModelMapping[], right: readonly ModelMappin
       mapping.public_name === right[index].public_name && mapping.litellm_model === right[index].litellm_model,
   );
 
-const modelMappingsRule = {
+const modelMappingsRule = (t: ReturnType<typeof useTranslation>) => ({
   validator: async (_: unknown, value: unknown) => {
     if (!value || (value as ModelMapping[]).length === 0) {
-      throw new Error("At least one model mapping is required");
+      throw new Error(t("At least one model mapping is required"));
     }
     const invalidMappings = (value as ModelMapping[]).filter(
       (mapping) => !mapping.public_name || mapping.public_name.trim() === "",
     );
     if (invalidMappings.length > 0) {
-      throw new Error("All model mappings must have valid public names");
+      throw new Error(t("All model mappings must have valid public names"));
     }
   },
-};
+});
 
 const tooltipCodeClassName = "rounded-sm bg-background/20 px-1 py-0.5 font-mono text-xs";
 
@@ -132,6 +132,7 @@ const columns: ColumnDef<ModelMapping>[] = [
 ];
 
 const ConditionalPublicModelName: React.FC = () => {
+  const t = useTranslation();
   const form = useFormContext<MountedFormValues>();
 
   const modelValue = useWatch({ control: form.control, name: "model" }) || [];
@@ -229,7 +230,7 @@ const ConditionalPublicModelName: React.FC = () => {
         </span>
       }
       required
-      rules={{ validate: validatorRules(modelMappingsRule) }}
+      rules={{ validate: validatorRules(modelMappingsRule(t)) }}
       className="mb-4"
     >
       {(control) => (

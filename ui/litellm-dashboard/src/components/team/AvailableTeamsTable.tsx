@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale } from "@/contexts/LocaleContext";
 
 import { SortingState } from "@tanstack/react-table";
 import { Users } from "lucide-react";
@@ -37,7 +37,8 @@ function EmptyState() {
 const AvailableTeamsTable: React.FC<AvailableTeamsTableProps> = ({ teams, isLoading, onJoinTeam }) => {
   const [sorting, setSorting] = useState<SortingState>(DEFAULT_SORTING);
 
-  const columns = useMemo(() => getAvailableTeamsTableColumns({ onJoinTeam }), [onJoinTeam]);
+  const { locale } = useLocale();
+  const columns = useMemo(() => getAvailableTeamsTableColumns({ onJoinTeam, locale }), [onJoinTeam, locale]);
 
   return (
     <DataTable

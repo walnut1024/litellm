@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { getTeamPermissionsCall, teamPermissionsUpdateCall } from "@/components/networking";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ interface MemberPermissionsProps {
 }
 
 const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessToken, canEditTeam }) => {
+  const t = useTranslation();
   const [permissions, setPermissions] = useState<string[]>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -142,7 +143,13 @@ const MemberPermissions: React.FC<MemberPermissionsProps> = ({ teamId, accessTok
                     <TableCell>
                       <span className="font-mono text-sm text-foreground">{permInfo.endpoint}</span>
                     </TableCell>
-                    <TableCell className="text-foreground">{permInfo.description}</TableCell>
+                    <TableCell className="text-foreground">
+                      {permInfo.description.startsWith("Access ") ? (
+                        t("Access {endpoint}", { endpoint: permInfo.description.slice("Access ".length) })
+                      ) : (
+                        <L>{permInfo.description}</L>
+                      )}
+                    </TableCell>
                     <TableCell className="sticky right-0 bg-card shadow-[-4px_0_4px_-4px_rgba(0,0,0,0.1)] text-center">
                       <Checkbox
                         className="mx-auto"

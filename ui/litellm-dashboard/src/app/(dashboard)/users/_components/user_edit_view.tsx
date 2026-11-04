@@ -327,7 +327,7 @@ export function UserEditView({
                 id={id}
                 value={value}
                 onChange={onChange}
-                placeholder={isBulkEdit ? "No change" : undefined}
+                placeholder={isBulkEdit ? t("No change") : undefined}
               />
             )}
           </FormField>

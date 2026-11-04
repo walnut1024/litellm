@@ -1,5 +1,5 @@
 import { CircleAlert } from "lucide-react";
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import React, { useState, useEffect } from "react";
 import { Alert, AlertTitle } from "@/components/shared/Alert";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ export default function DeleteResourceModal({
   confirmLoading,
   requiredConfirmation,
 }: DeleteResourceModalProps) {
+  const t = useTranslation();
   const [requiredConfirmationInput, setRequiredConfirmationInput] = useState("");
 
   useEffect(() => {
@@ -48,25 +49,25 @@ export default function DeleteResourceModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && !confirmLoading && onCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle>{t(title)}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           {alertMessage && (
             <Alert variant="warning">
-              <AlertTitle>{alertMessage}</AlertTitle>
+              <AlertTitle>{t(alertMessage)}</AlertTitle>
             </Alert>
           )}
           <Card size="sm" className="mt-4">
             {resourceInformationTitle && (
               <CardHeader className="border-b">
-                <CardTitle>{resourceInformationTitle}</CardTitle>
+                <CardTitle>{t(resourceInformationTitle)}</CardTitle>
               </CardHeader>
             )}
             <CardContent>
               <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1">
                 {resourceInformation?.map(({ label, value, code }) => (
                   <React.Fragment key={label}>
-                    <dt className="font-semibold">{label}</dt>
+                    <dt className="font-semibold">{t(label)}</dt>
                     <dd className="min-w-0 break-words">{code ? <code>{value ?? "-"}</code> : value ?? "-"}</dd>
                   </React.Fragment>
                 ))}
@@ -74,12 +75,12 @@ export default function DeleteResourceModal({
             </CardContent>
           </Card>
           <div>
-            <span>{message}</span>
+            <span>{t(message)}</span>
           </div>
           {requiredConfirmation && (
             <div className="mb-6 mt-4 pt-4 border-t border-border">
               <p className="block text-base font-medium text-foreground mb-2">
-                Type <span className="font-semibold text-destructive">{requiredConfirmation}</span> to confirm deletion:
+                {t("Type {word} to confirm deletion:", { word: requiredConfirmation })}
               </p>
               <InputGroup className="rounded-md">
                 <InputGroupAddon>

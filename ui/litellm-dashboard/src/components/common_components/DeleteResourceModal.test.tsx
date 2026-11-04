@@ -197,9 +197,7 @@ describe("DeleteResourceModal", () => {
 
   it("should render required confirmation prompt with correct text", () => {
     renderWithProviders(<DeleteResourceModal {...defaultProps} requiredConfirmation="DELETE" />);
-    expect(screen.getByText(/Type/i)).toBeInTheDocument();
-    expect(screen.getByText("DELETE")).toBeInTheDocument();
-    expect(screen.getByText(/to confirm deletion/i)).toBeInTheDocument();
+    expect(screen.getByText("Type DELETE to confirm deletion:")).toBeInTheDocument();
   });
 
   it("should not render required confirmation section when not provided", () => {

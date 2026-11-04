@@ -864,7 +864,9 @@ export default function KeyInfoView({
                 </Card>
 
                 <Card className="block p-6">
-                  <p className="text-sm font-medium mb-3">Guardrails</p>
+                  <p className="text-sm font-medium mb-3">
+                    <L>Guardrails</L>
+                  </p>
                   {Array.isArray(currentKeyData.metadata?.guardrails) &&
                   currentKeyData.metadata.guardrails.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
@@ -875,18 +877,24 @@ export default function KeyInfoView({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">No guardrails configured</p>
+                    <p className="text-sm text-muted-foreground">
+                      <L>No guardrails configured</L>
+                    </p>
                   )}
                   {typeof currentKeyData.metadata?.disable_global_guardrails === "boolean" &&
                     currentKeyData.metadata.disable_global_guardrails === true && (
                       <div className="mt-3 pt-3 border-t border-border">
-                        <Badge variant="destructive">Global Guardrails Disabled</Badge>
+                        <Badge variant="destructive">
+                        <L>Global Guardrails Disabled</L>
+                      </Badge>
                       </div>
                     )}
                 </Card>
 
                 <Card className="block p-6">
-                  <p className="text-sm font-medium mb-3">Policies</p>
+                  <p className="text-sm font-medium mb-3">
+                  <L>Policies</L>
+                </p>
                   {Array.isArray(currentKeyData.metadata?.policies) && currentKeyData.metadata.policies.length > 0 ? (
                     <div className="space-y-4">
                       {currentKeyData.metadata.policies.map((policy: string, index: number) => (
@@ -895,11 +903,15 @@ export default function KeyInfoView({
                             <Badge variant="secondary" className="min-w-0 break-words">
                               {policy}
                             </Badge>
-                            {loadingPolicies && <p className="text-xs text-muted-foreground">Loading guardrails...</p>}
+                            {loadingPolicies && <p className="text-xs text-muted-foreground">
+                              <L>Loading guardrails...</L>
+                            </p>}
                           </div>
                           {!loadingPolicies && policyGuardrails[policy] && policyGuardrails[policy].length > 0 && (
                             <div className="ml-4 pl-3 border-l-2 border-border">
-                              <p className="text-xs text-muted-foreground mb-1">Resolved Guardrails:</p>
+                              <p className="text-xs text-muted-foreground mb-1">
+                                <L>Resolved Guardrails:</L>
+                              </p>
                               <div className="flex flex-wrap gap-1">
                                 {policyGuardrails[policy].map((guardrail: string, gIndex: number) => (
                                   <Badge key={gIndex} variant="secondary" className="min-w-0 break-words">
@@ -913,7 +925,9 @@ export default function KeyInfoView({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">No policies configured</p>
+                    <p className="text-sm text-muted-foreground">
+                    <L>No policies configured</L>
+                  </p>
                   )}
                 </Card>
 

@@ -301,7 +301,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 <MountedFormField name="pricing_model" label="Pricing Model" className="mb-4">
                   {(control) => (
                     <Select
-                      items={PRICING_MODEL_ITEMS}
+                      items={PRICING_MODEL_ITEMS.map((item) => ({ ...item, label: t(item.label) }))}
                       value={(control.value as "per_token" | "per_second" | undefined) ?? "per_token"}
                       onValueChange={handlePricingModelChange(control.onChange)}
                     >

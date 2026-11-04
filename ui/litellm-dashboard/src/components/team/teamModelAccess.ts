@@ -74,14 +74,14 @@ export function computeTeamModelBadges(
   );
 
   const allProxyBadge: TeamModelBadge = {
-    label: "All proxy models",
+    label: tr("All proxy models", locale),
     kind: "all-proxy",
     tooltip: models.includes(ALL_PROXY_MODELS)
       ? tr("Granted by the All Proxy Models entry in the team's model list", locale)
       : tr("The team's model list is empty, so it can access every model on the proxy", locale),
   };
   const noDefaultBadge: TeamModelBadge = {
-    label: "No default models",
+    label: tr("No default models", locale),
     kind: "no-default",
     tooltip: tr("No models are granted directly. Access comes only from access groups", locale),
   };

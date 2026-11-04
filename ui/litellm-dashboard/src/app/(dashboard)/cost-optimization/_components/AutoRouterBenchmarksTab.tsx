@@ -184,7 +184,7 @@ const StackedTurnBar: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => {
             key={b.key}
             className={`${b.fill} first:rounded-l-sm last:rounded-r-sm`}
             style={{ width: `${b.sharePct}%` }}
-            title={`$<L>{b.label}</L>: ${b.turns.toLocaleString()} turns`}
+            title={t("{bucket}: {count} turns", { bucket: t(b.label), count: b.turns.toLocaleString() })}
           />
         ))}
       </div>
@@ -222,7 +222,7 @@ const BucketTable: React.FC<{ buckets: BucketRow[] }> = ({ buckets }) => (
             <span className="flex items-center gap-2">
               <span className={`inline-block size-2 shrink-0 rounded-sm ${b.fill}`} aria-hidden />
               <span>
-                {b.label}
+                <L>{b.label}</L>
                 <span className="block text-xs font-normal text-muted-foreground">
                   <L>{b.sublabel}</L>
                 </span>

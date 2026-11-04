@@ -305,9 +305,11 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
             )}
 
             <p className="text-xs text-muted-foreground">
-              {selectedStrategy === "priority"
-                ? "Direct requests to a member model keep their existing routing behavior."
-                : "<L>Models outside non-priority groups use the proxy's top-level routing strategy.</L>"}
+              <L>
+                {selectedStrategy === "priority"
+                  ? "Direct requests to a member model keep their existing routing behavior."
+                  : "Models outside non-priority groups use the proxy's top-level routing strategy."}
+              </L>
             </p>
           </FieldGroup>
         </form>

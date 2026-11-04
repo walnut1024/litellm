@@ -37,6 +37,7 @@ describe("BulkCreateUsersButton", () => {
     await user.click(screen.getByText("批量邀请用户"));
     expect(screen.getByText("下载并填写模板")).toBeVisible();
     expect(screen.getByText("user_role")).toBeVisible();
+    expect(screen.getByText("或")).toBeVisible();
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     fireEvent.change(input, {
       target: { files: [new File(["user_email,user_role"], "empty.csv", { type: "text/csv" })] },

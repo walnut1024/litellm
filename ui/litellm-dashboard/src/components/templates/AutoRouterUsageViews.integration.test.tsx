@@ -124,6 +124,8 @@ describe("Auto-router usage views", () => {
     expect(region.getByText("自动路由实际花费")).toBeVisible();
     expect(region.getByText("(¥62.50 / 千轮)")).toBeVisible();
     expect(await screen.findByText("上一轮与本轮处于相同档位")).toBeVisible();
+    expect(screen.getByText("相同模型")).toBeVisible();
+    expect(screen.getByTitle("相同模型，2 轮")).toBeVisible();
     expect(screen.getByRole("table", { name: "路由用量与节省" })).toBeVisible();
     expect(screen.getByText("1月1日 – 1月31日 (UTC)")).toBeVisible();
     localStorage.removeItem("moma.locale");

@@ -2378,5 +2378,10 @@
   "internal_user_viewer": "普通用户（只读）",
   "proxy_admin": "管理员（全部权限）",
   "proxy_admin_viewer": "管理员（只读）",
-  "Requests that failed to route to a provider": "未能路由到供应商的请求"
+  "Requests that failed to route to a provider": "未能路由到供应商的请求",
+  "All": "全部",
+  "Organization ID": "组织 ID",
+  "Direct requests to a member model keep their existing routing behavior.": "直接调用成员模型时，保留其现有路由行为",
+  "call ID": "调用 ID",
+  "Copy email": "复制邮箱"
 }

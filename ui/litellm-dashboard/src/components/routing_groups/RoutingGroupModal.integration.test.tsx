@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import userEvent from "@testing-library/user-event";
 import { fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -107,6 +108,33 @@ const save = async (user: ReturnType<typeof userEvent.setup>, name: string) =>
   await user.click(screen.getByRole("button", { name }));
 
 describe("RoutingGroupModal", () => {
+  it("localizes routing notes and both priority states", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocaleProvider>
+        <RoutingGroupModal
+          open
+          mode="create"
+          initialValue={null}
+          availableStrategies={STRATEGIES}
+          strategyDescriptions={STRATEGY_DESCRIPTIONS}
+          modelOptions={MODEL_OPTIONS}
+          existingGroupNames={[]}
+          groupNameByModel={{}}
+          onClose={vi.fn()}
+          onSubmit={vi.fn()}
+        />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("heading", { name: "创建路由分组" })).toBeVisible();
+    expect(screen.getByText("未加入非优先级分组的模型使用网关的全局路由策略")).toBeVisible();
+    await user.click(screen.getByRole("combobox", { name: "路由策略" }));
+    await user.click(await screen.findByRole("option", { name: "按优先级" }));
+    expect(screen.getByText("直接调用成员模型时，保留其现有路由行为")).toBeVisible();
+    localStorage.removeItem("moma.locale");
+  });
+
   it("creates a priority group with editable defaults and members already used by another group", async () => {
     const user = userEvent.setup();
     const { onSubmit } = renderModal({ groupNameByModel: { "gpt-4o": "legacy-group" } });

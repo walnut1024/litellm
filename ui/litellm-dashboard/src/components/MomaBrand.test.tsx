@@ -17,11 +17,10 @@ afterEach(() => {
 });
 
 describe("MomaBrand", () => {
-  it("uses the text brand when no custom light logo is configured", () => {
+  it("uses the bundled official brand when no custom light logo is configured", () => {
     state.logoUrlDark = "https://assets.example.test/dark.png";
     render(<MomaBrand />);
-    expect(screen.getByText("MoMA 轻量版")).toBeInTheDocument();
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByRole("img")).toHaveAttribute("src", "/_next/static/media/ecloud-brand.png");
   });
   it("previews new URLs and follows the active color theme", () => {
     state.logoUrl = "https://assets.example.test/light.png";
@@ -46,14 +45,27 @@ describe("MomaBrand", () => {
       </LocaleProvider>,
     );
     expect(screen.getByRole("img")).toHaveAttribute("src", state.logoUrlDark);
+    state.logoUrl = null;
+    state.logoUrlDark = null;
+    rerender(
+      <LocaleProvider>
+        <MomaBrand />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("img", { name: "移动云 标志" })).toHaveAttribute(
+      "src",
+      "/_next/static/media/ecloud-brand.png",
+    );
   });
-  it("falls back from a failed dark logo to the light logo and then to text", () => {
+  it("falls back from a failed dark logo through the light and bundled logos to text", () => {
     state.theme = "dark";
     state.logoUrl = "https://assets.example.test/light.png";
     state.logoUrlDark = "https://assets.example.test/dark.png";
     render(<MomaBrand />);
     fireEvent.error(screen.getByRole("img"));
     expect(screen.getByRole("img")).toHaveAttribute("src", state.logoUrl);
+    fireEvent.error(screen.getByRole("img"));
+    expect(screen.getByRole("img")).toHaveAttribute("src", "/_next/static/media/ecloud-brand.png");
     fireEvent.error(screen.getByRole("img"));
     expect(screen.getByText("MoMA 轻量版")).toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();

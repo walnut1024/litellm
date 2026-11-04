@@ -53,9 +53,7 @@ export function UserPopoverCell({ userAlias, userEmail, userId, width }: UserPop
 
   return (
     <HoverCard>
-      <HoverCardTrigger render={<span className="block" style={{ maxWidth: width }} />}>
-        {trigger}
-      </HoverCardTrigger>
+      <HoverCardTrigger render={<span className="block" style={{ maxWidth: width }} />}>{trigger}</HoverCardTrigger>
       <HoverCardContent align="start">{popoverContent}</HoverCardContent>
     </HoverCard>
   );

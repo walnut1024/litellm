@@ -1,3 +1,5 @@
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { labelWithHint } from "@/components/shared/form/LabelWithHint";
@@ -41,9 +43,13 @@ const selectItems = (field: FederationField, value: unknown) => [
   ...(field.options ?? []).map((option) => ({ value: option, label: option })),
 ];
 
-const renderControl = (field: FederationField, control: MountedFieldControlProps) => {
+const renderControl = (
+  field: FederationField,
+  control: MountedFieldControlProps,
+  t: ReturnType<typeof useTranslation>,
+) => {
   if (field.control === "select") {
-    const items = selectItems(field, control.value);
+    const items = selectItems(field, control.value).map((item) => ({ ...item, label: t(item.label) }));
     return (
       <Select
         items={items}
@@ -54,10 +60,12 @@ const renderControl = (field: FederationField, control: MountedFieldControlProps
           <SelectValue placeholder="Proxy default" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={null}>Proxy default</SelectItem>
+          <SelectItem value={null}>
+            <L>Proxy default</L>
+          </SelectItem>
           {items.map((item) => (
             <SelectItem key={item.value} value={item.value}>
-              {item.label}
+              <L>{item.label}</L>
             </SelectItem>
           ))}
         </SelectContent>
@@ -84,6 +92,7 @@ interface FederationFieldInputProps {
 }
 
 function FederationFieldInput({ field, storedValue, validators }: FederationFieldInputProps) {
+  const t = useTranslation();
   return (
     <MountedFormField
       label={labelWithHint(field.label, field.tooltip)}
@@ -98,7 +107,7 @@ function FederationFieldInput({ field, storedValue, validators }: FederationFiel
       }}
       className="mb-4"
     >
-      {(control) => renderControl(field, control)}
+      {(control) => renderControl(field, control, t)}
     </MountedFormField>
   );
 }
@@ -114,7 +123,8 @@ function AnthropicFederationFields({
   onIdentitySourceChange,
   storedValues,
 }: AnthropicFederationFieldsProps) {
-  const identitySourceItems = identitySourceOptions(storedValues);
+  const t = useTranslation();
+  const identitySourceItems = identitySourceOptions(storedValues).map((item) => ({ ...item, label: t(item.label) }));
   const renderField = (field: FederationField) => (
     <FederationFieldInput
       key={field.key}
@@ -152,13 +162,15 @@ function AnthropicFederationFields({
         </Select>
         {identitySource === "unrecognized" && (
           <p className="text-sm text-muted-foreground">
-            This form does not offer the stored identity source. Saving keeps it and its settings as stored. Pick
-            another source to replace it.
+            <L>
+              This form does not offer the stored identity source. Saving keeps it and its settings as stored. Pick
+              another source to replace it.
+            </L>
           </p>
         )}
         {identitySource === "environment" && (
           <p className="text-sm text-muted-foreground">
-            The proxy reads ANTHROPIC_IDENTITY_TOKEN_FILE or ANTHROPIC_IDENTITY_TOKEN from its own environment.
+            <L>The proxy reads ANTHROPIC_IDENTITY_TOKEN_FILE or ANTHROPIC_IDENTITY_TOKEN from its own environment.</L>
           </p>
         )}
       </div>
@@ -171,8 +183,10 @@ function OpenAIFederationFields({ storedValues }: { storedValues: Record<string,
   return (
     <>
       <p className="mb-4 text-sm text-muted-foreground">
-        The proxy exchanges the identity token for an OpenAI access token only when OPENAI_API_KEY is unset in its
-        environment. Otherwise it sends that key instead.
+        <L>
+          The proxy exchanges the identity token for an OpenAI access token only when OPENAI_API_KEY is unset in its
+          environment. Otherwise it sends that key instead.
+        </L>
       </p>
       {OPENAI_FEDERATION_FIELDS.map((field) => (
         <FederationFieldInput key={field.key} field={field} storedValue={storedValues[field.key]} />

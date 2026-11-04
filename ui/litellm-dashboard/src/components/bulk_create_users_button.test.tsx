@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
@@ -25,6 +26,31 @@ const openUploadStep = async () => {
 };
 
 describe("BulkCreateUsersButton", () => {
+  it("localizes the upload instructions, validation and preview without creating users", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const user = userEvent.setup();
+    render(
+      <LocaleProvider>
+        <BulkCreateUsersButton accessToken="test-token" teams={[]} possibleUIRoles={null} />
+      </LocaleProvider>,
+    );
+    await user.click(screen.getByText("批量邀请用户"));
+    expect(screen.getByText("下载并填写模板")).toBeVisible();
+    expect(screen.getByText("user_role")).toBeVisible();
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [new File(["user_email,user_role"], "empty.csv", { type: "text/csv" })] },
+    });
+    expect(await screen.findByText("CSV 文件只有表头，请添加用户数据")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "移除" }));
+    fireEvent.change(document.querySelector('input[type="file"]') as HTMLInputElement, {
+      target: { files: [csvFile()] },
+    });
+    expect(await screen.findByText("new.hire@example.com")).toBeVisible();
+    expect(screen.getByRole("button", { name: "创建 1 位用户" })).toBeVisible();
+    localStorage.removeItem("moma.locale");
+  });
+
   it("should render", () => {
     render(<BulkCreateUsersButton accessToken="test-token" teams={[]} possibleUIRoles={null} />);
     expect(screen.getByText("+ Bulk Invite Users")).toBeInTheDocument();

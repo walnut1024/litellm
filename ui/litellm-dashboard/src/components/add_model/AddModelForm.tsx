@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import { useProviderFields } from "@/app/(dashboard)/hooks/providers/useProviderFields";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
@@ -90,6 +90,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
   credentials,
   decisionCatalog,
 }) => {
+  const t = useTranslation();
   const [testMode, setTestMode] = useState<string>("chat");
   const [isResultModalVisible, setIsResultModalVisible] = useState<boolean>(false);
   const [isTestingConnection, setIsTestingConnection] = useState<boolean>(false);
@@ -304,7 +305,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                       <MountedFormField label="Mode" name="mode" className="mb-1">
                         {(control) => (
                           <Select
-                            items={TEST_MODES}
+                            items={TEST_MODES.map((mode) => ({ ...mode, label: t(mode.label) }))}
                             value={(control.value as string | undefined) ?? null}
                             onValueChange={(value: string | null) => {
                               control.onChange(value);
@@ -317,7 +318,7 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
                             <SelectContent>
                               {TEST_MODES.map((mode) => (
                                 <SelectItem key={mode.value} value={mode.value}>
-                                  {mode.label}
+                                  {t(mode.label)}
                                 </SelectItem>
                               ))}
                             </SelectContent>

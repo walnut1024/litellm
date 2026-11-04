@@ -43,7 +43,9 @@ export const ValueTooltip = ({
           >
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ backgroundColor: item.color }} />
-              <span className="text-muted-foreground">{String(item.name ?? item.dataKey ?? "")}</span>
+              <span className="text-muted-foreground">
+                <L>{String(item.name ?? item.dataKey ?? "")}</L>
+              </span>
             </div>
             <span className="font-mono font-medium tabular-nums text-foreground">{formatValue(item.value)}</span>
           </div>

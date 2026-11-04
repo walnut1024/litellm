@@ -422,13 +422,20 @@ const CACHE_KEY_TOOLTIP =
   "The key the gateway computed for this request in the response cache. Requests with the same cache key share a cached response; a different key means the request content did not match any cached entry.";
 
 function MetricLabel({ label, tooltip }: { label: string; tooltip: string }) {
+  const t = useTranslation();
   return (
     <span className="inline-flex items-center gap-1">
       <L>{label}</L>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger
-            render={<span role="img" aria-label={`${label} info`} className="inline-flex text-muted-foreground" />}
+            render={
+              <span
+                role="img"
+                aria-label={t("About {label}", { label: t(label) })}
+                className="inline-flex text-muted-foreground"
+              />
+            }
           >
             <Info className="size-3.5" />
           </TooltipTrigger>

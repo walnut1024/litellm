@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+
 import React from "react";
 
 import type { AutoRouterDeployment } from "@/app/(dashboard)/hooks/models/useModels";
@@ -84,6 +86,7 @@ interface TierTurnsChartProps {
 }
 
 const TierTurnsChart: React.FC<TierTurnsChartProps> = ({ view, autoRouters }) => {
+  const t = useTranslation();
   const group = viewGroup(view);
   const entries = Object.entries(group?.tier_turns ?? {}).filter(([, turns]) => turns > 0);
   if (!group || entries.length === 0) return null;
@@ -100,10 +103,14 @@ const TierTurnsChart: React.FC<TierTurnsChartProps> = ({ view, autoRouters }) =>
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Routing by tier</CardTitle>
+        <CardTitle>
+          <L>Routing by tier</L>
+        </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Turns each tier served. Turns the classifier sent to the default model belong to no tier and are not counted
-          here, so this can total less than the router&apos;s turns.
+          <L>
+            Turns each tier served. Turns the classifier sent to the default model belong to no tier and are not counted
+            here, so this can total less than the router&apos;s turns.
+          </L>
         </p>
       </CardHeader>
       <CardContent>
@@ -116,7 +123,7 @@ const TierTurnsChart: React.FC<TierTurnsChartProps> = ({ view, autoRouters }) =>
             colors={colors}
             valueFormatter={(value) => value.toLocaleString()}
             showLabel
-            label={`${total.toLocaleString()} total turns`}
+            label={t("{count} total turns", { count: total.toLocaleString() })}
           />
           <ul className="flex flex-col gap-6">
             {slices.map((slice, idx) => (

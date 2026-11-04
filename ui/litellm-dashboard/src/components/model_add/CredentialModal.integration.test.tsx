@@ -443,7 +443,7 @@ describe("CredentialModal with Anthropic workload identity federation", () => {
     const user = userEvent.setup();
     const onSubmit = renderModal({ initialProvider: "Anthropic", initialAuthMethod: "federation" });
     await screen.findByLabelText("Upstream API Base");
-    await chooseOption(user, /Identity Source/, "Token signed by LiteLLM (internal issuer)");
+    await chooseOption(user, /Identity Source/, "Token signed by gateway (internal issuer)");
     fill("Credential Name:", "anthropic-issuer");
     fill(/Federation Rule ID/, "fdrl_new");
     fill(/Organization ID/, "org-new");
@@ -687,7 +687,7 @@ describe("CredentialModal public JWKS for a LiteLLM-signed Anthropic credential"
     await screen.findByLabelText("Upstream API Base");
     expect(screen.queryByText(/copy the public JWKS/)).not.toBeInTheDocument();
 
-    await chooseOption(user, /Identity Source/, "Token signed by LiteLLM (internal issuer)");
+    await chooseOption(user, /Identity Source/, "Token signed by gateway (internal issuer)");
 
     expect(await screen.findByText(/Once saved, reopen this credential/)).toBeInTheDocument();
     expect(screen.queryByLabelText("Public JWKS")).not.toBeInTheDocument();

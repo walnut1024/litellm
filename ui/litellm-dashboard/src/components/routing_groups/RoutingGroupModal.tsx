@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import React, { useEffect, useMemo } from "react";
 import { useWatch } from "react-hook-form";
@@ -67,13 +67,14 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
   onSubmit,
   saving,
 }) => {
+  const t = useTranslation();
   const modelsAnchor = useComboboxAnchor();
   const selectableStrategies =
     mode === "edit" && initialValue
       ? Array.from(new Set([...availableStrategies, initialValue.routing_strategy]))
       : availableStrategies;
   const strategyItems = selectableStrategies.map((strategy) => ({
-    label: strategy === "priority" ? "Priority" : strategy,
+    label: t(strategy === "priority" ? "Priority" : strategy),
     value: strategy,
   }));
 
@@ -127,7 +128,7 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[560px]">
         <DialogHeader>
           <DialogTitle>
-            {mode === "create" ? "Create Routing Group" : `Edit ${initialValue?.group_name ?? ""}`}
+            {mode === "create" ? t("Create Routing Group") : t("Edit {name}", { name: initialValue?.group_name ?? "" })}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={(event) => event.preventDefault()} noValidate>
@@ -224,7 +225,7 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
                   <SelectContent>
                     {strategyItems.map((strategy) => (
                       <SelectItem key={strategy.value} value={strategy.value}>
-                        {strategy.label}
+                        <L>{strategy.label}</L>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -242,14 +243,18 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
                 {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                   <div id={id} className="space-y-2" role="group" aria-label="Model priorities">
                     {value.length === 0 && (
-                      <p className="text-sm text-muted-foreground">Select models to set priorities</p>
+                      <p className="text-sm text-muted-foreground">
+                        <L>Select models to set priorities</L>
+                      </p>
                     )}
                     {value.map((entry, index) => (
                       <div key={entry.model} className="flex items-center justify-between gap-3">
                         <label htmlFor={`${id}-${index}`} className="min-w-0 flex-1 break-words text-sm">
                           {entry.model}
                           {!selectedModels.includes(entry.model) && (
-                            <span className="block text-xs text-destructive">Model is not selected</span>
+                            <span className="block text-xs text-destructive">
+                              <L>Model is not selected</L>
+                            </span>
                           )}
                         </label>
                         <Input
@@ -302,7 +307,7 @@ const RoutingGroupModal: React.FC<RoutingGroupModalProps> = ({
             <p className="text-xs text-muted-foreground">
               {selectedStrategy === "priority"
                 ? "Direct requests to a member model keep their existing routing behavior."
-                : "Models outside non-priority groups use the proxy's top-level routing strategy."}
+                : "<L>Models outside non-priority groups use the proxy's top-level routing strategy.</L>"}
             </p>
           </FieldGroup>
         </form>

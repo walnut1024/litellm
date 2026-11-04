@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 /**
  * SectionHeader - Datadog-style header with icon, label, metrics, and copy
  */
@@ -62,11 +62,14 @@ export function SectionHeader({
       )}
 
       {turnCount !== undefined && turnCount > 0 && (
-        <span className="text-xs text-muted-foreground">Turns: {turnCount}</span>
+        <span className="text-xs text-muted-foreground">
+          <L>Turns:</L> {turnCount}
+        </span>
       )}
     </>
   );
 
+  const t = useTranslation();
   return (
     <div
       className={cn(
@@ -93,7 +96,7 @@ export function SectionHeader({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label={type === "input" ? "Copy input" : "Copy output"}
+              aria-label={t(type === "input" ? "Copy input" : "Copy output")}
               onClick={(e) => {
                 e.stopPropagation();
                 onCopy();

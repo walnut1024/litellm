@@ -157,7 +157,7 @@ export default function AddFallbacks({ accessToken, value = [], onChange, disabl
             </Button>
             <Button variant="outline" onClick={handleSaveAll} disabled={groups.length === 0 || isSaving}>
               {isSaving && <UiLoadingSpinner className="size-4" />}
-              {isSaving ? "Saving Configuration..." : "Save All Configurations"}
+              <L>{isSaving ? "Saving Configuration..." : "Save All Configurations"}</L>
             </Button>
           </div>
         )}

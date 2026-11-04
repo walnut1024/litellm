@@ -186,7 +186,7 @@ export const CostBreakdownViewer: React.FC<CostBreakdownViewerProps> = ({
                       {formatCost(inputCost)}
                       {promptTokens !== undefined && (
                         <span className="text-muted-foreground font-normal ml-1">
-                          ({promptTokens.toLocaleString()} prompt tokens)
+                          (<L>Input tokens</L> {promptTokens.toLocaleString()})
                         </span>
                       )}
                     </span>
@@ -201,7 +201,7 @@ export const CostBreakdownViewer: React.FC<CostBreakdownViewerProps> = ({
                   {formatCost(outputCost)}
                   {completionTokens !== undefined && (
                     <span className="text-muted-foreground font-normal ml-1">
-                      ({completionTokens.toLocaleString()} completion tokens)
+                      (<L>Output tokens</L> {completionTokens.toLocaleString()})
                     </span>
                   )}
                 </span>

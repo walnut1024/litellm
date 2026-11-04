@@ -40,14 +40,6 @@ const SEVERITY_GROUPS = [
   { severity: "warning", label: "Warnings" },
 ] as const;
 
-const LOCAL_DAY_FORMAT = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
-const LOCAL_MINUTE_FORMAT = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
-const FULL_UTC_FORMAT = new Intl.DateTimeFormat("en-US", { dateStyle: "full", timeStyle: "long", timeZone: "UTC" });
-
-const formatLocalMinute = (iso: string): string => LOCAL_MINUTE_FORMAT.format(new Date(iso));
-const formatLocalDay = (iso: string): string => LOCAL_DAY_FORMAT.format(new Date(iso));
-const formatFullUtc = (iso: string): string => FULL_UTC_FORMAT.format(new Date(iso));
-
 interface ItemPermissions {
   canManage: boolean;
   ignoreAvailable: boolean;
@@ -122,6 +114,14 @@ const ItemAction = ({
 };
 
 const IgnoreMeta = ({ ignore }: { ignore: IgnoreState }) => {
+  const { locale } = useLocale();
+  const language = locale === "zh-CN" ? "zh-CN" : "en-US";
+  const day = (iso: string) => new Intl.DateTimeFormat(language, { dateStyle: "medium" }).format(new Date(iso));
+  const minute = (iso: string, utc = false) =>
+    new Intl.DateTimeFormat(
+      language,
+      utc ? { dateStyle: "full", timeStyle: "long", timeZone: "UTC" } : { dateStyle: "medium", timeStyle: "short" },
+    ).format(new Date(iso));
   if (ignore.source === "env_var") {
     return (
       <span>
@@ -132,9 +132,9 @@ const IgnoreMeta = ({ ignore }: { ignore: IgnoreState }) => {
   if (ignore.ignored_until) {
     return (
       <span>
-        <SimpleTooltip content={formatFullUtc(ignore.ignored_until)}>
+        <SimpleTooltip content={minute(ignore.ignored_until, true)}>
           <span className="underline decoration-dotted underline-offset-3">
-            <L>Until</L> {formatLocalMinute(ignore.ignored_until)}
+            <L>Until</L> {minute(ignore.ignored_until)}
           </span>
         </SimpleTooltip>{" "}
         · <L>by</L> {ignore.ignored_by}
@@ -143,7 +143,7 @@ const IgnoreMeta = ({ ignore }: { ignore: IgnoreState }) => {
   }
   return (
     <span>
-      <L>Since</L> {formatLocalDay(ignore.ignored_at)} · by {ignore.ignored_by}
+      <L>Since</L> {day(ignore.ignored_at)} · <L>by</L> {ignore.ignored_by}
     </span>
   );
 };

@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 import { formatCategoryName } from "./chart_tooltip";
 import { chartColorValue, type ChartColor } from "./colors";
@@ -18,7 +20,9 @@ export const CustomLegend = ({
           className="h-2 w-2 shrink-0 rounded-full ring-4 ring-white"
           style={{ backgroundColor: chartColorValue(colors[idx % colors.length]) }}
         />
-        <p className="text-sm text-muted-foreground">{formatCategoryName(category)}</p>
+        <p className="text-sm text-muted-foreground">
+          <L>{formatCategoryName(category)}</L>
+        </p>
       </div>
     ))}
   </div>

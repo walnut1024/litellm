@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React from "react";
 import {
   Combobox,
@@ -75,7 +77,9 @@ export function SearchSelect({
         className={`h-8 w-full text-sm ${className ?? ""}`}
       />
       <ComboboxContent side="bottom" collisionAvoidance={{ side: "shift", align: "shift", fallbackAxisSide: "none" }}>
-        <ComboboxEmpty>{emptyText}</ComboboxEmpty>
+        <ComboboxEmpty>
+          <L>{emptyText}</L>
+        </ComboboxEmpty>
         <ComboboxList>
           {(item: SearchSelectOption) => (
             <ComboboxItem key={item.value} value={item}>

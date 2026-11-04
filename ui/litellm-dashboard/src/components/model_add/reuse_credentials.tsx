@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import React from "react";
 import { z } from "zod";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -36,6 +36,8 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
   existingCredential,
   setIsCredentialModalOpen,
 }) => {
+  const t = useTranslation();
+  const fieldLabels: Readonly<Record<string, string>> = { api_key: t("API Key"), api_base: t("API Base") };
   const fieldIdPrefix = React.useId();
   const storedValues = storedValuesOf(existingCredential);
   const form = useZodForm(reuseCredentialsSchema, {
@@ -57,7 +59,9 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
     <Dialog open={isVisible} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Reuse Credentials</DialogTitle>
+          <DialogTitle>
+            <L>Reuse Credentials</L>
+          </DialogTitle>
         </DialogHeader>
         <TooltipProvider>
           <form onSubmit={form.handleSubmit(handleSubmit)} noValidate>
@@ -70,7 +74,7 @@ const ReuseCredentialsModal: React.FC<ReuseCredentialsModalProps> = ({
 
               {Object.entries(storedValues).map(([key, value]) => (
                 <Field key={key}>
-                  <FieldLabel htmlFor={`${fieldIdPrefix}-${key}`}>{key}</FieldLabel>
+                  <FieldLabel htmlFor={`${fieldIdPrefix}-${key}`}>{fieldLabels[key] ?? key}</FieldLabel>
                   <Input
                     id={`${fieldIdPrefix}-${key}`}
                     value={String(value)}

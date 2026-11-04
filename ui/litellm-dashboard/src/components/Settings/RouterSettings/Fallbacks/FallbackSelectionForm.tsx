@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 /**
  * Form component for selecting and configuring fallback groups
@@ -28,6 +28,7 @@ export function FallbackSelectionForm({
   maxFallbacks = 10,
   maxGroups = 5,
 }: FallbackSelectionFormProps) {
+  const t = useTranslation();
   const [activeKey, setActiveKey] = useState(groups.length > 0 ? groups[0].id : "1");
 
   // Reset activeKey when groups change (e.g., when modal reopens)
@@ -79,7 +80,7 @@ export function FallbackSelectionForm({
   };
 
   const groupLabel = (group: FallbackGroup, index: number) =>
-    group.primaryModel ? group.primaryModel : `Group ${index + 1}`;
+    group.primaryModel ? group.primaryModel : t("Group {number}", { number: index + 1 });
 
   if (groups.length === 0) {
     return (

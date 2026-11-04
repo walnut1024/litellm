@@ -62,7 +62,9 @@ export function DataTableSortHeader<TData, TValue>({
               <button
                 type="button"
                 data-testid={`sort-trigger-${column.id}`}
-                aria-label={t("Sort options for {fields}", { fields: column.id })}
+                aria-label={t("Sort options for {fields}", {
+                  fields: typeof title === "string" ? t(title) : t(column.columnDef.meta?.title ?? column.id),
+                })}
                 onClick={(event) => event.stopPropagation()}
                 className={cn(
                   "inline-flex size-6 items-center justify-center rounded-md hover:bg-muted",

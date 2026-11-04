@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useEffect, useState } from "react";
 import {
   Combobox,
@@ -83,7 +85,9 @@ const SearchToolSelector: React.FC<SearchToolSelectorProps> = ({
         {value && value.length > 0 && <ComboboxClear aria-label="Clear all search tools" disabled={disabled} />}
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>{loading ? "Loading search tools…" : "No search tools found"}</ComboboxEmpty>
+        <ComboboxEmpty>
+          <L>{loading ? "Loading search tools…" : "No search tools found"}</L>
+        </ComboboxEmpty>
         <ComboboxList>
           {(tool: string) => (
             <ComboboxItem key={tool} value={tool}>

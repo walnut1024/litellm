@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import { SortingState } from "@tanstack/react-table";
 import { Layers } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -27,12 +29,14 @@ function EmptyState({ isFiltered }: { isFiltered: boolean }) {
         <Layers className="size-5 text-muted-foreground" />
       </div>
       <div className="text-sm font-medium text-foreground">
-        {isFiltered ? "No matching access groups" : "No access groups yet"}
+        <L>{isFiltered ? "No matching access groups" : "No access groups yet"}</L>
       </div>
       <div className="text-sm text-muted-foreground">
-        {isFiltered
-          ? "Try a different search term."
-          : "Create an access group to manage resource permissions for your organization."}
+        <L>
+          {isFiltered
+            ? "Try a different search term."
+            : "Create an access group to manage resource permissions for your organization."}
+        </L>
       </div>
     </div>
   );

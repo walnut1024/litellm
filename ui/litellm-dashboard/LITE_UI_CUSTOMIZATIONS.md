@@ -231,18 +231,26 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 
 预算创建与编辑共用 `budgets/_components/BudgetFormFields.tsx`。重置周期下拉项和选中值显示为“总计、每天、每周、每月”，词典补齐 `per day`、`per week`、`per month`，英文模式保留原文。提交值仍为 `null`、`24h`、`7d`、`30d`，不改变预算重置规则或已有数据
 
+批量邀请的说明、CSV 校验、预览与结果提示，默认用户的角色和预算周期，模型模式、身份联合认证、路由分组和回退配置均使用中文显示。模型模式保留协议路径，角色、模型、周期、认证来源和路由策略仍提交原始值。模板列名与用户自定义名称不翻译
+
+用户详情的节省与自动路由用量补齐统计卡片、计算说明、缓存类别、空状态和日期。共享资源选择器、图表与用量排行补齐空状态，费用明细、复制操作、排序及筛选移除按钮补齐辅助名称。部署告警的忽略和暂缓时间按当前语言显示，不改变时间点和操作人标识
+
 SMTP、邮件事件、动态告警参数和日志设置接入现有翻译。事件 ID、参数键、原输入和仅提交修改字段的逻辑保留。`getLocale` 为非 React 操作反馈提供当前语言，已知界面提示与校验使用翻译，真实异常通过 `toast.fromError` 提供中文概要并保留技术详情。登录页只额外翻译词典内已知的凭据错误，不改后端响应，其他未知错误继续显示原文
 
-| 实现位置，相对 dashboard                                                                                                                                                | 维护内容                                     |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| `src/components/shared/Page.tsx`、`PageHeader.tsx`、`src/app/moma-theme.css`                                                                                            | 页面对齐、详情、表单、控件与弹窗密度         |
-| 首页 `HomePage.tsx`、用量 `overview/UsageStatStrip.tsx`、`Primitives.tsx`、`UsageOverview.tsx`                                                                          | 概览指标、趋势和统计面板排布                 |
-| `src/contexts/LocaleContext.tsx`、共享 `FormField.tsx`、`MountedFormField.tsx`、`LabeledField.tsx`                                                                      | 中文标签、注册值与语言切换边界               |
-| `src/components/CommandPalette/`、`VirtualKeysPage/VirtualKeysTable.tsx`、`logs/request/RequestLogsFilters.tsx`                                                         | 首次提示、中文搜索、状态筛选与空状态         |
-| `src/components/logs/detail/`、`templates/key_info_view.tsx`、`key_edit_view.tsx`、`ModelInfoEditForm.tsx`、用户 `user_info_view.tsx`                                   | 详情占位、人民币、角色、日期、请求说明与字号 |
-| 用量 `overview/UsageBreakdownChart.tsx`、`overviewData.ts`、`shared/advanced_date_picker.tsx`                                                                           | 图表刻度、提示与日期面板本地化               |
-| `src/components/email_events/email_event_settings.tsx`、`email_settings.tsx`、`alerting/dynamic_form.tsx`、`Settings/AdminSettings/LoggingSettings/LoggingSettings.tsx` | 邮件、告警及日志设置文案，原参数提交不变     |
-| `src/lib/toast.ts`、`src/app/login/LoginPage.tsx`、`src/i18n/zh-CN.json`                                                                                                | 操作反馈、已知登录错误与词典                 |
+| 实现位置，相对 dashboard                                                                                                                                                          | 维护内容                                        |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `src/components/shared/Page.tsx`、`PageHeader.tsx`、`src/app/moma-theme.css`                                                                                                      | 页面对齐、详情、表单、控件与弹窗密度            |
+| 首页 `HomePage.tsx`、用量 `overview/UsageStatStrip.tsx`、`Primitives.tsx`、`UsageOverview.tsx`                                                                                    | 概览指标、趋势和统计面板排布                    |
+| `src/contexts/LocaleContext.tsx`、共享 `FormField.tsx`、`MountedFormField.tsx`、`LabeledField.tsx`                                                                                | 中文标签、注册值与语言切换边界                  |
+| `src/components/CommandPalette/`、`VirtualKeysPage/VirtualKeysTable.tsx`、`logs/request/RequestLogsFilters.tsx`                                                                   | 首次提示、中文搜索、状态筛选与空状态            |
+| `src/components/logs/detail/`、`templates/key_info_view.tsx`、`key_edit_view.tsx`、`ModelInfoEditForm.tsx`、用户 `user_info_view.tsx`                                             | 详情占位、人民币、角色、日期、请求说明与字号    |
+| 用量 `overview/UsageBreakdownChart.tsx`、`overviewData.ts`、`shared/advanced_date_picker.tsx`                                                                                     | 图表刻度、提示与日期面板本地化                  |
+| `src/components/email_events/email_event_settings.tsx`、`email_settings.tsx`、`alerting/dynamic_form.tsx`、`Settings/AdminSettings/LoggingSettings/LoggingSettings.tsx`           | 邮件、告警及日志设置文案，原参数提交不变        |
+| `src/components/bulk_create_users_button.tsx`、`BulkUserTemplateColumns.tsx`、用户 `default-user-settings/`                                                                       | 批量邀请与默认用户选项，原 CSV 列名和提交值保留 |
+| `src/components/ModelSelect/`、`shared/SearchSelect.tsx`、`model_add/FederationFields.tsx`、`add_model/AddModelForm.tsx`、`routing_groups/`、`Settings/RouterSettings/Fallbacks/` | 模型、资源、认证与路由弹窗的选项和说明          |
+| `src/components/shared/ScopedSavingsTab.tsx`、`SavingsTiles.tsx`、`SummaryCard.tsx`、`shared/charts/`、用户复用的 `cost-optimization/_components/`                                | 节省、路由用量和图表条件内容，日期和费用单位    |
+| `src/components/shared/CopyButton.tsx`、`shared/DataTable/`、`ui/sonner.tsx`                                                                                                      | 复制、排序、筛选及通知辅助名称                  |
+| `src/lib/toast.ts`、`src/app/login/LoginPage.tsx`、`src/i18n/zh-CN.json`                                                                                                          | 操作反馈、已知登录错误与词典                    |
 
 ## 品牌文案与系统资源显示名
 
@@ -370,6 +378,12 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 
 2026-11-04 的创建、编辑、预算表格与词典 4 个定向文件共 42 项通过，新增回归验证中文选项、已有周期回显及原周期值提交。补词条前，4 项新增回归均失败，已有英文用例的可读名称按当前控件标签同步修正。生产构建、TypeScript 与静态导出通过，未修改后端、周期计算或真实预算记录
 
+### 弹窗、选项与空状态汉化验证
+
+2026-11-04 的 17 个不同定向文件共 318 项用例最终通过，覆盖中英文模型选项与原值提交、默认用户周期与团队角色、批量邀请 CSV 校验、用户节省和自动路由费用、认证配置、路由、日志、部署告警、图表及资源空状态。生产构建、TypeScript、静态导出和适用前端检查通过，未运行完整前端套件
+
+浏览器走查管理员 12 个保留页面和员工 5 个页面，检查下拉选项、创建与编辑弹窗、用户和模型详情、通知、账户、成功与失败日志、空用量及屏蔽页回退，实测累计花费与响应缓存悬停。没有在浏览器保存业务记录、发送邮件或调用供应商；批量导入结果、未配置的认证来源及缺少用户 ID 等条件由组件用例或源码补核
+
 ### 品牌与条件内容验证
 
 2026-11-03 最终定向回归 19 文件、475 项通过、4 项既有预期失败。模型详情的 PTU 零价格断言在修改前后均失败，旧断言父节点只含标签，未将其记为通过。构建与适用前端检查通过，未放宽规则或预算
@@ -386,7 +400,7 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 
 ### 已知限制与后续复核
 
-历史定向回归仍包含已屏蔽用量视图、旧货币或标签断言失败，以及三态 PATCH 表单的既有预期失败，没有通过全套前端测试。员工部分管理员配置请求仍可能返回 403，用量图表加载时曾出现宽高为零警告，未通过放宽权限或隐藏错误解决。访问组空状态仍有独立英文文案，未知供应商动态字段、上游错误及原始 JSON 不承诺翻译
+历史定向回归仍包含已屏蔽用量视图、旧货币或标签断言失败，以及三态 PATCH 表单的既有预期失败，没有通过全套前端测试。员工部分管理员配置请求仍可能返回 403，用量图表加载时曾出现宽高为零警告，未通过放宽权限或隐藏错误解决。访问组空状态已补齐中文。Base UI 组合框内置的屏幕阅读器关闭按钮仍使用 Dismiss，该依赖未提供文本配置入口，未通过修改依赖或改写 DOM 处理。浏览器原生日期按钮的语言由浏览器环境决定，未知供应商动态字段、上游错误及原始 JSON 不承诺翻译
 
 既有验收不包含完整跨浏览器、可访问性、生产 SSO、实际邮件投递、所有模态、供应商账单及持续负载验证。社区升级或功能变更后应重跑受影响测试、构建和角色走查，定向 Vitest 必须传入明确文件，不运行整个前端套件
 

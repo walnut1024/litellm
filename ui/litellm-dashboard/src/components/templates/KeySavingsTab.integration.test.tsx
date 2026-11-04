@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import KeySavingsTab from "./KeySavingsTab";
@@ -72,6 +73,27 @@ const renderTab = (props: Partial<React.ComponentProps<typeof KeySavingsTab>> = 
 describe("KeySavingsTab", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("localizes empty results and calculation help", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    scopedRange().mockReturnValue(mockActivity());
+    render(
+      <LocaleProvider>
+        <KeySavingsTab
+          accessToken="test-token"
+          keyToken="key-abc123"
+          userId="user-123"
+          userRole="Internal User"
+          activity={activity}
+        />
+      </LocaleProvider>,
+    );
+    expect(screen.getByTestId("key-savings-empty")).toHaveTextContent("此时间范围内暂无该密钥的用量记录");
+    expect(screen.getByText("累计记录节省")).toBeVisible();
+    expect(screen.getByText("1月1日 – 1月31日 (UTC)", { exact: false })).toBeVisible();
+    expect(screen.getByRole("button", { name: "累计记录节省的计算方式" })).toBeVisible();
+    localStorage.removeItem("moma.locale");
   });
 
   it("totals each savings driver across the days in range", () => {

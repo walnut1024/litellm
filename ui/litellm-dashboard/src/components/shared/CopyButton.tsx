@@ -66,8 +66,8 @@ const CopyButton: React.FC<CopyButtonProps> = ({
       variant={showLabel ? "outline" : "ghost"}
       size={showLabel ? "xs" : "icon-xs"}
       onClick={handleCopy}
-      aria-label={label}
-      title={isAction ? undefined : label}
+      aria-label={t(label)}
+      title={isAction ? undefined : t(label)}
       className={cn(variantClassName, showLabel && "gap-1.5", className)}
     >
       {copied ? <Check className={iconSize} /> : <Copy className={iconSize} />}
@@ -80,7 +80,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger render={button} />
-        <TooltipContent>{copied ? copiedLabel : label}</TooltipContent>
+        <TooltipContent>{t(copied ? copiedLabel : label)}</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

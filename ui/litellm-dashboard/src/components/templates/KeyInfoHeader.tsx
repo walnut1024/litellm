@@ -1,4 +1,4 @@
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import React from "react";
 import { LiteUiMask } from "@/contexts/LiteUiContext";
@@ -178,6 +178,7 @@ export function KeyInfoHeader({
   regenerateDisabled = false,
   regenerateTooltip,
 }: KeyInfoHeaderProps) {
+  const t = useTranslation();
   const regenerateButton = (
     <span>
       <Button variant="outline" onClick={onRegenerate} disabled={regenerateDisabled}>
@@ -242,7 +243,7 @@ export function KeyInfoHeader({
               )}
             </LiteUiMask>
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label="More key actions" />}>
+              <DropdownMenuTrigger render={<Button variant="outline" size="icon" aria-label={t("More key actions")} />}>
                 <MoreVertical className="size-3.5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-auto">

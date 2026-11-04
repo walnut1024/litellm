@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
+
 import { useMemo, useState } from "react";
 
 import { AreaChart, BarChart, CustomLegend } from "@/components/shared/charts";
@@ -36,6 +38,8 @@ interface ScopedSavingsTabProps {
 }
 
 const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote }: ScopedSavingsTabProps) => {
+  const { locale } = useLocale();
+  const t = useTranslation();
   const { dateValue, onDateChange, results, loading, failed } = useScopedDailyActivityRange(
     accessToken,
     scope,
@@ -46,18 +50,18 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
 
   const [accumulation, setAccumulation] = useState<SavingsAccumulation>("cumulative");
 
-  const perInterval = useMemo<SavingsPoint[]>(() => savingsSeriesOf(results), [results]);
+  const perInterval = useMemo<SavingsPoint[]>(() => savingsSeriesOf(results, locale), [results, locale]);
 
   const overTime = useMemo(() => {
     if (accumulation !== "cumulative") return perInterval;
-    const startLabel = startTime ? shortDate(localIsoDay(startTime)) : "";
+    const startLabel = startTime ? shortDate(localIsoDay(startTime), locale) : "";
     return withStartAnchor(toCumulative(perInterval), startLabel);
-  }, [accumulation, perInterval, startTime]);
+  }, [accumulation, perInterval, startTime, locale]);
 
   const intervalLabel = "Per day";
-  const rangeLabel = formatRangeLabel(startTime, endTime);
+  const rangeLabel = formatRangeLabel(startTime, endTime, locale);
   const savingsSubtitle = [
-    accumulation === "cumulative" ? "Running total saved" : `Saved ${intervalLabel.toLowerCase()}`,
+    t(accumulation === "cumulative" ? "Running total saved" : "Saved per day"),
     rangeLabel && `${rangeLabel} (UTC)`,
   ]
     .filter(Boolean)
@@ -69,6 +73,10 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
   const hasRows = results.length > 0;
   const showEmpty = !unavailable && (isLoading || !hasRows);
   const showChart = showResults && hasRows;
+  const emptyMessage =
+    entityType === "key"
+      ? "No usage recorded for this key in this range."
+      : "No usage recorded for this user in this range.";
   const chartProps = {
     data: overTime,
     index: "date",
@@ -81,33 +89,41 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-wrap items-center justify-end gap-4">
-        <span className="text-sm text-muted-foreground">Spend is bucketed by UTC day</span>
+        <span className="text-sm text-muted-foreground">
+          <L>Spend is bucketed by UTC day</L>
+        </span>
         <AdvancedDatePicker value={dateValue} onValueChange={onDateChange} />
       </div>
 
       {scopeNote && (
         <p className="text-sm text-muted-foreground" data-testid={`${entityType}-savings-scope-note`}>
-          {scopeNote}
+          <L>{scopeNote}</L>
         </p>
       )}
 
       {unavailable && (
         <p role="alert" className="text-sm text-muted-foreground">
-          Savings are unavailable for this range. Try another date range or reopen this tab.
+          <L>Savings are unavailable for this range. Try another date range or reopen this tab.</L>
         </p>
       )}
       {showResults && <SavingsTiles results={results} isLoading={false} />}
 
       <Card>
         <CardHeader>
-          <CardTitle>Savings</CardTitle>
+          <CardTitle>
+            <L>Savings</L>
+          </CardTitle>
           <CardDescription>{savingsSubtitle}</CardDescription>
           <CardAction className="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
             <CustomLegend categories={SAVINGS_SERIES} colors={SAVINGS_COLORS} />
             <Tabs value={accumulation} onValueChange={(value) => setAccumulation(value as SavingsAccumulation)}>
               <TabsList>
-                <TabsTrigger value="cumulative">Cumulative</TabsTrigger>
-                <TabsTrigger value="per-interval">{intervalLabel}</TabsTrigger>
+                <TabsTrigger value="cumulative">
+                  <L>Cumulative</L>
+                </TabsTrigger>
+                <TabsTrigger value="per-interval">
+                  <L>{intervalLabel}</L>
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </CardAction>
@@ -115,7 +131,7 @@ const ScopedSavingsTab = ({ accessToken, scope, activity, entityType, scopeNote 
         <CardContent>
           {showEmpty && (
             <p className="py-12 text-center text-sm text-muted-foreground" data-testid={`${entityType}-savings-empty`}>
-              {isLoading ? "Loading savings..." : `No usage recorded for this ${entityType} in this range.`}
+              <L>{isLoading ? "Loading savings..." : emptyMessage}</L>
             </p>
           )}
           {showChart &&

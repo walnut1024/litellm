@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText } from "@/contexts/LocaleContext";
+import { LocalizedText, useTranslation } from "@/contexts/LocaleContext";
 
 import { LocalizedText as L } from "@/contexts/LocaleContext";
 
@@ -51,6 +51,7 @@ export function DataTableToolbar<TData>({
   children,
   className,
 }: DataTableToolbarProps<TData>) {
+  const t = useTranslation();
   const filters = table.getState().columnFilters;
 
   const labelFor = (columnId: string): string =>
@@ -81,7 +82,7 @@ export function DataTableToolbar<TData>({
             {valueFor(filter.id, filter.value)}
             <button
               type="button"
-              aria-label={`Remove ${labelFor(filter.id)} filter`}
+              aria-label={t("Remove {field} filter", { field: t(labelFor(filter.id)) })}
               data-testid={`filter-chip-remove-${filter.id}`}
               onClick={() => table.setColumnFilters((previous) => previous.filter((entry) => entry.id !== filter.id))}
               className="ml-0.5 rounded-full text-muted-foreground hover:text-foreground"

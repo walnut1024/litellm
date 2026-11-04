@@ -401,6 +401,7 @@ export default function UserInfoView({
   };
 
   // Build a legacy-compatible shape for UserEditView
+  const displayRole = t(possibleUIRoles?.[userData.user_role ?? ""]?.ui_label || userData.user_role || "Not Set");
   const userDataForEdit = {
     user_id: userData.user_id,
     user_info: {
@@ -666,7 +667,7 @@ export default function UserInfoView({
 
                 <div>
                   <p className="font-medium">{t("Global Proxy Role")}</p>
-                  <p>{userData.user_role || t("Not Set")}</p>
+                  <p>{displayRole}</p>
                 </div>
 
                 <div>
@@ -744,7 +745,7 @@ export default function UserInfoView({
                   scopeNote="Savings for this user across API keys and JWT-authenticated requests."
                 />
               ) : (
-                <p role="alert">Savings are unavailable because this user has no ID.</p>
+                <p role="alert">{t("Savings are unavailable because this user has no ID.")}</p>
               ))}
           </TabsContent>
         )}
@@ -759,7 +760,7 @@ export default function UserInfoView({
                   activity={activityDateRange}
                 />
               ) : (
-                <p role="alert">Auto-router usage is unavailable because this user has no ID.</p>
+                <p role="alert">{t("Auto-router usage is unavailable because this user has no ID.")}</p>
               ))}
           </TabsContent>
         )}

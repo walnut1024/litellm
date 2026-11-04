@@ -1,3 +1,5 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
+import { chooseSelectOption } from "@/../tests/test-utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -92,6 +94,37 @@ const enterEditMode = async (user: ReturnType<typeof userEvent.setup>) => {
 describe("DefaultUserSettingsForm", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("localizes stored period and team role choices and keeps their payload values", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const updateSettings = vi.fn().mockResolvedValue(undefined);
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <LocaleProvider>
+        <QueryClientProvider client={client}>
+          <DefaultUserSettingsForm
+            possibleUIRoles={POSSIBLE_UI_ROLES}
+            fetchSettings={vi.fn().mockResolvedValue(SETTINGS)}
+            updateSettings={updateSettings}
+          />
+        </QueryClientProvider>
+      </LocaleProvider>,
+    );
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name: "编辑设置" }));
+    expect(screen.getByRole("combobox", { name: "预算重置周期" })).toHaveTextContent("每月");
+    await chooseSelectOption(user, screen.getByRole("combobox", { name: "预算重置周期" }), "每周");
+    await chooseSelectOption(user, screen.getByRole("combobox", { name: "团队角色" }), "团队管理员");
+    await user.click(screen.getByRole("button", { name: "保存更改" }));
+    await waitFor(() =>
+      expect(updateSettings).toHaveBeenCalledWith({
+        ...SAVED_BODY,
+        budget_duration: "7d",
+        teams: [{ team_id: "team-alpha", max_budget_in_team: 25, user_role: "admin" }],
+      }),
+    );
+    localStorage.removeItem("moma.locale");
   });
 
   it("shows a read-only summary until Edit Settings is clicked", async () => {

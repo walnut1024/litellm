@@ -1,3 +1,5 @@
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import React, { useEffect, useState } from "react";
 import {
   Combobox,
@@ -89,7 +91,9 @@ const SkillSelector: React.FC<SkillSelectorProps> = ({
         {value && value.length > 0 && <ComboboxClear aria-label="Clear all skills" disabled={disabled} />}
       </ComboboxChips>
       <ComboboxContent anchor={anchor}>
-        <ComboboxEmpty>{loading ? "Loading skills…" : "No skills found"}</ComboboxEmpty>
+        <ComboboxEmpty>
+          <L>{loading ? "Loading skills…" : "No skills found"}</L>
+        </ComboboxEmpty>
         <ComboboxList>
           {(skill: string) => {
             const isPrivate = options.some((option) => option.name === skill && !option.enabled);

@@ -182,19 +182,19 @@ export function AllModelsTable({
 
   const modelGroupOptions = useMemo(
     () => [
-      { label: ALL_PROXY_MODELS_LABEL, value: ALL_MODEL_GROUPS_VALUE },
-      { label: "Wildcard Models (*)", value: WILDCARD_MODEL_GROUP_VALUE },
+      { label: t(ALL_PROXY_MODELS_LABEL), value: ALL_MODEL_GROUPS_VALUE },
+      { label: t("Wildcard Models (*)"), value: WILDCARD_MODEL_GROUP_VALUE },
       ...availableModelGroups.map((group) => ({ label: group, value: group })),
     ],
-    [availableModelGroups],
+    [availableModelGroups, t],
   );
 
   const accessGroupOptions = useMemo(
     () => [
-      { label: "All Model Access Groups", value: ALL_MODEL_GROUPS_VALUE },
+      { label: t("All Model Access Groups"), value: ALL_MODEL_GROUPS_VALUE },
       ...availableModelAccessGroups.map((accessGroup) => ({ label: accessGroup, value: accessGroup })),
     ],
-    [availableModelAccessGroups],
+    [availableModelAccessGroups, t],
   );
 
   const formatFilterValue = (columnId: string, value: unknown): string => {
@@ -426,16 +426,18 @@ export function AllModelsTable({
                     }
                   >
                     <SelectTrigger aria-label="Filter by status" className="w-full">
-                      {ROUTING_STATUS_FILTER_VALUES[
-                        (get(ROUTING_STATUS_FILTER_ID) as keyof typeof ROUTING_STATUS_FILTER_VALUES) ?? "all"
-                      ] ?? ROUTING_STATUS_FILTER_VALUES.all}
+                      <L>
+                        {ROUTING_STATUS_FILTER_VALUES[
+                          (get(ROUTING_STATUS_FILTER_ID) as keyof typeof ROUTING_STATUS_FILTER_VALUES) ?? "all"
+                        ] ?? ROUTING_STATUS_FILTER_VALUES.all}
+                      </L>
                     </SelectTrigger>
                     <SelectContent>
                       {(
                         Object.keys(ROUTING_STATUS_FILTER_VALUES) as Array<keyof typeof ROUTING_STATUS_FILTER_VALUES>
                       ).map((value) => (
                         <SelectItem key={value} value={value}>
-                          {ROUTING_STATUS_FILTER_VALUES[value]}
+                          <L>{ROUTING_STATUS_FILTER_VALUES[value]}</L>
                         </SelectItem>
                       ))}
                     </SelectContent>

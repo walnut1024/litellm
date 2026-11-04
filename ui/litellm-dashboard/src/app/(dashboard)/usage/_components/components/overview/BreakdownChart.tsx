@@ -175,8 +175,7 @@ export function Leaderboard({
                   <span className="block truncate text-sm font-medium text-foreground">{row.key}</span>
                   {providerForModel(row.key) && (
                     <span className="block truncate text-xs text-muted-foreground">
-                      <L>by </L>
-                      {providerForModel(row.key)}
+                      <L>Provider</L> {providerForModel(row.key)}
                     </span>
                   )}
                 </span>

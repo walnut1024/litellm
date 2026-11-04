@@ -1,3 +1,4 @@
+import { useTranslation } from "@/contexts/LocaleContext";
 import { useMCPAccessGroups } from "@/app/(dashboard)/hooks/mcpServers/useMCPAccessGroups";
 import { useMCPServers } from "@/app/(dashboard)/hooks/mcpServers/useMCPServers";
 import { useMCPToolsets } from "@/app/(dashboard)/hooks/mcpServers/useMCPToolsets";
@@ -52,6 +53,7 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
   allowNoMcpServers = false,
   allowAllProxyMcpServers = false,
 }) => {
+  const t = useTranslation();
   const { data: mcpServers = [], isLoading: serversLoading } = useMCPServers(teamId, userId);
   const { data: accessGroups = [], isLoading: groupsLoading } = useMCPAccessGroups();
   const { data: toolsets = [], isLoading: toolsetsLoading } = useMCPToolsets();
@@ -112,7 +114,7 @@ const MCPServerSelector: React.FC<MCPServerSelectorProps> = ({
 
   const selectOptions: MultiSelectOption[] = [
     ...(allowAllProxyMcpServers || hasAllProxyMcpServersSelected
-      ? [{ label: "All Proxy MCP Servers", value: ALL_PROXY_MCP_SERVERS_SENTINEL }]
+      ? [{ label: t("All Proxy MCP Servers"), value: ALL_PROXY_MCP_SERVERS_SENTINEL }]
       : []),
     ...(allowNoMcpServers
       ? [{ label: "No MCP Servers", value: NO_MCP_SERVERS_SENTINEL, description: "Block all" }]

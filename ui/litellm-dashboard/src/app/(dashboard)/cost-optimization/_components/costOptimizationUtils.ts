@@ -11,17 +11,17 @@ export const usd = (value: number): string => {
   return `${value < 0 ? "-" : ""}¥${formatNumberWithCommas(magnitude, decimals)}`;
 };
 
-export const classificationRatePer1kTurns = (classifierCost: number, turns: number): string => {
-  if (turns <= 0) return `(${usd(0)} / 1K turns)`;
+export const classificationRatePer1kTurns = (classifierCost: number, turns: number, unit = "1K turns"): string => {
+  if (turns <= 0) return `(${usd(0)} / ${unit})`;
   const rate = (classifierCost * 1000) / turns;
-  if (rate > 0 && rate < 0.0001) return "(<¥0.0001 / 1K turns)";
-  return `(${usd(rate)} / 1K turns)`;
+  if (rate > 0 && rate < 0.0001) return `(<¥0.0001 / ${unit})`;
+  return `(${usd(rate)} / ${unit})`;
 };
 
 export const pct = (ratio: number): string => `${formatNumberWithCommas(ratio * 100, 1)}%`;
 
-export const shortDate = (iso: string): string =>
-  new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+export const shortDate = (iso: string, locale = "en-US"): string =>
+  new Date(`${iso}T00:00:00`).toLocaleDateString(locale, { month: "short", day: "numeric" });
 
 export const compressionOf = (m: SpendMetrics): number => m.compression_savings_spend ?? 0;
 export const cachingOf = (m: SpendMetrics): number => m.prompt_caching_savings_spend ?? 0;
@@ -270,11 +270,11 @@ export const sumOverDays = (results: readonly DailyData[], of: (m: SpendMetrics)
  * total from the same driver list is what keeps a tile, a timeline and the
  * donut from quietly plotting different metrics for the same driver name.
  */
-export const savingsSeriesOf = (results: readonly DailyData[]): SavingsPoint[] =>
+export const savingsSeriesOf = (results: readonly DailyData[], locale = "en-US"): SavingsPoint[] =>
   [...results]
     .sort((a, b) => a.date.localeCompare(b.date))
     .map((d) => ({
-      date: shortDate(d.date),
+      date: shortDate(d.date, locale),
       ...(Object.fromEntries(SAVINGS_DRIVERS.map(({ name, of }) => [name, of(d.metrics)])) as Record<
         SavingsDriverName,
         number
@@ -313,9 +313,9 @@ export const withStartAnchor = (cumulative: readonly SavingsPoint[], startLabel:
     : [{ date: startLabel, Compression: 0, "Prompt caching": 0, "Auto-router": 0 }, ...cumulative];
 
 /** "Jul 16 – Jul 23", collapsing to a single date when the range is one day. */
-export const formatRangeLabel = (from: Date | undefined, to: Date | undefined): string => {
+export const formatRangeLabel = (from: Date | undefined, to: Date | undefined, locale = "en-US"): string => {
   if (!from || !to) return "";
-  const short = (d: Date) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const short = (d: Date) => d.toLocaleDateString(locale, { month: "short", day: "numeric" });
   const start = short(from);
   const end = short(to);
   return start === end ? start : `${start} – ${end}`;

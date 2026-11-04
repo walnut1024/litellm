@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import type { ProxyModel } from "@/app/(dashboard)/hooks/models/useModels";
 import type { Organization } from "@/components/networking";
 import { screen, within } from "@testing-library/react";
@@ -86,6 +87,25 @@ describe("ModelSelect", () => {
       data: { models: [] },
       isLoading: false,
     } as any);
+  });
+
+  it.each([
+    ["zh-CN", "特殊选项", "不设置默认模型"],
+    ["en", "Special Options", "No Default Models"],
+  ])("localizes sentinel choices in %s and submits their stored values", async (locale, heading, label) => {
+    localStorage.setItem("moma.locale", locale);
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocaleProvider>
+        <ModelSelect onChange={mockOnChange} context="global" options={{ includeSpecialOptions: true }} />
+      </LocaleProvider>,
+    );
+    await openModelList(user);
+    expectOffered(heading);
+    expectOffered("gpt-4");
+    await user.click(screen.getByRole("option", { name: label }));
+    expect(mockOnChange).toHaveBeenLastCalledWith(["no-default-models"]);
+    localStorage.removeItem("moma.locale");
   });
 
   it("should offer every model and wildcard under its group heading", async () => {

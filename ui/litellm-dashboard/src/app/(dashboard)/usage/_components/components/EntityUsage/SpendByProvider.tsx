@@ -149,7 +149,9 @@ function ToggleField({
       {hint && (
         <Tooltip>
           <TooltipTrigger render={<Info className="size-3.5 text-muted-foreground hover:text-foreground" />} />
-          <TooltipContent>{hint}</TooltipContent>
+          <TooltipContent>
+            <L>{hint}</L>
+          </TooltipContent>
         </Tooltip>
       )}
     </div>

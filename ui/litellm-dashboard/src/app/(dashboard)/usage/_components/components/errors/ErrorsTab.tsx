@@ -1,8 +1,8 @@
 "use client";
 
-import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useLocale, useTranslation } from "@/contexts/LocaleContext";
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowUpRight } from "lucide-react";
 import { LineChart, STACKED_USAGE_PALETTE, StackedUsageChart } from "@/components/shared/charts";
@@ -36,9 +36,6 @@ interface ErrorsTabProps {
 }
 
 const ENTITY_OPTIONS = ERROR_ENTITY_KINDS.map((kind) => ({ value: kind, label: ERROR_ENTITY_LABEL[kind].plural }));
-
-const shortDate = (iso: string): string =>
-  new Date(`${iso}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
 const count = (value: number): string => value.toLocaleString();
 
@@ -87,6 +84,11 @@ function rateChartEmpty(rateView: ErrorRateView, series: ErrorSeries, noTraffic:
 
 export default function ErrorsTab({ activity, loading, failed, userScoped = false }: ErrorsTabProps) {
   const t = useTranslation();
+  const { locale } = useLocale();
+  const shortDate = useCallback(
+    (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString(locale, { month: "short", day: "numeric" }),
+    [locale],
+  );
   const [kind, setKind] = useState<ErrorEntityKind>("key");
   const [rateView, setRateView] = useState<ErrorRateView>("total");
   const summary = useMemo(() => (activity ? errorSummary(activity) : null), [activity]);
@@ -100,7 +102,7 @@ export default function ErrorsTab({ activity, loading, failed, userScoped = fals
         ...row,
         date: shortDate(row.date),
       })),
-    [series, rateView],
+    [series, rateView, shortDate],
   );
   const noTraffic = summary !== null && summary.requests === 0;
   const rateEmpty = rateChartEmpty(rateView, series, noTraffic);

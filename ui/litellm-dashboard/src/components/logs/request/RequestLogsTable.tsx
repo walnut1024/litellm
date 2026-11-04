@@ -1,6 +1,6 @@
 "use client";
 
-import { LocalizedText as L } from "@/contexts/LocaleContext";
+import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import type { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
 import { ScrollText } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -40,6 +40,11 @@ interface RequestLogsTableProps {
 }
 
 const formatFilterValue = (columnId: string, value: unknown): string => {
+  if (columnId === LOG_FILTER_IDS.STATUS) {
+    if (value === "success") return "Success";
+    if (value === "failure") return "Failure";
+    return String(value);
+  }
   if (columnId === LOG_FILTER_IDS.SPAN_TYPE) {
     return SPAN_TYPE_LABELS[String(value)] ?? String(value);
   }
@@ -92,6 +97,7 @@ export function RequestLogsTable({
   logsWindow,
   toolbarChildren,
 }: RequestLogsTableProps) {
+  const t = useTranslation();
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const userIds = useMemo(() => data.flatMap((log) => (log.user ? [log.user] : [])), [data]);
@@ -139,7 +145,14 @@ export function RequestLogsTable({
             isRefreshing={isRefreshing}
             onOpenFilters={() => setFiltersOpen(true)}
             filterLabels={LOG_FILTER_LABELS}
-            formatFilterValue={formatFilterValue}
+            formatFilterValue={(columnId, value) => {
+              const label = formatFilterValue(columnId, value);
+              return columnId === LOG_FILTER_IDS.STATUS ||
+                columnId === LOG_FILTER_IDS.SPAN_TYPE ||
+                columnId === LOG_FILTER_IDS.CREDENTIAL
+                ? t(label)
+                : label;
+            }}
             showViewOptions={false}
           >
             {toolbarChildren}

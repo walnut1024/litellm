@@ -1,5 +1,7 @@
 "use client";
 
+import { LocalizedText as L } from "@/contexts/LocaleContext";
+
 import * as React from "react";
 import { Area, AreaChart as RechartsAreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, type ChartConfig } from "@/components/ui/chart";
@@ -46,7 +48,9 @@ export function AreaChart<TDatum extends Record<string, unknown>>({
         className={cn("flex h-80 w-full items-center justify-center rounded-lg border border-dashed", className)}
         style={style}
       >
-        <p className="text-sm text-muted-foreground">No data</p>
+        <p className="text-sm text-muted-foreground">
+          <L>No data</L>
+        </p>
       </div>
     );
   }

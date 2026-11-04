@@ -1,3 +1,4 @@
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -109,6 +110,23 @@ describe("Auto-router usage views", () => {
     mockBenchmarks(benchmarks);
     testQueryClient.clear();
     vi.stubGlobal("fetch", fetchMock);
+  });
+
+  it("localizes router costs, cache buckets and date labels", async () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    const activity = { dateValue: { from: new Date(2025, 0, 1), to: new Date(2025, 0, 31) }, onDateChange: vi.fn() };
+    renderWithProviders(
+      <LocaleProvider>
+        <KeyAutoRouterUsageTab accessToken="test-token" keyToken="key-hash-1" activity={activity} />
+      </LocaleProvider>,
+    );
+    const region = within(await screen.findByRole("region", { name: "自动路由节省" }));
+    expect(region.getByText("自动路由实际花费")).toBeVisible();
+    expect(region.getByText("(¥62.50 / 千轮)")).toBeVisible();
+    expect(await screen.findByText("上一轮与本轮处于相同档位")).toBeVisible();
+    expect(screen.getByRole("table", { name: "路由用量与节省" })).toBeVisible();
+    expect(screen.getByText("1月1日 – 1月31日 (UTC)")).toBeVisible();
+    localStorage.removeItem("moma.locale");
   });
 
   it("renders this key's spend, baseline, savings and per-router filter", async () => {

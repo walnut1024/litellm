@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "@/contexts/LocaleContext";
+
 import React, { useMemo } from "react";
 
 import SummaryCard from "@/components/shared/SummaryCard";
@@ -32,6 +34,7 @@ const useSavingsTotals = (results: DailyData[]) =>
   );
 
 const SavingsTiles = ({ results, isLoading }: { results: DailyData[]; isLoading: boolean }) => {
+  const t = useTranslation();
   const totals = useSavingsTotals(results);
 
   return (
@@ -45,7 +48,7 @@ const SavingsTiles = ({ results, isLoading }: { results: DailyData[]; isLoading:
       <SummaryCard
         label="Compression savings"
         value={usd(totals.compression)}
-        hint={`${formatNumberWithCommas(totals.savedTokens)} tokens compressed`}
+        hint={t("{count} tokens compressed", { count: formatNumberWithCommas(totals.savedTokens) })}
         info="Tokens Headroom removed before the call, priced at the model's input rate."
       />
       <SummaryCard

@@ -51,7 +51,7 @@ const TopUsersView: React.FC<TopUsersViewProps> = ({ fetchUserPage }) => {
   if (current?.failed) {
     return (
       <p className="px-1 py-6 text-center text-sm text-muted-foreground">
-        Could not load top users.{" "}
+        <L>Could not load top users.</L>{" "}
         <button
           type="button"
           className="font-medium text-foreground underline"
@@ -70,7 +70,11 @@ const TopUsersView: React.FC<TopUsersViewProps> = ({ fetchUserPage }) => {
     );
   }
   if (current.rows.length === 0) {
-    return <p className="px-1 py-6 text-center text-sm text-muted-foreground">No user activity in this date range</p>;
+    return (
+      <p className="px-1 py-6 text-center text-sm text-muted-foreground">
+        <L>No user activity in this date range</L>
+      </p>
+    );
   }
   const maxSpend = Math.max(0, ...current.rows.map((row) => row.spend));
   return (

@@ -40,8 +40,8 @@ const BUDGET_DURATION_OPTIONS = [
 ] as const;
 
 const TEAM_ROLE_OPTIONS = [
-  { value: "user", label: "User" },
-  { value: "admin", label: "Admin" },
+  { value: "user", label: "Team Member" },
+  { value: "admin", label: "Team Admin" },
 ] as const;
 
 const MODEL_SENTINEL_LABELS: ReadonlyMap<string, string> = new Map(
@@ -115,6 +115,8 @@ const TeamPickerField = ({ control, index }: { control: SettingsControl; index: 
 };
 
 const TeamsField = ({ control }: { control: SettingsControl }) => {
+  const t = useTranslation();
+  const teamRoleOptions = TEAM_ROLE_OPTIONS.map((option) => ({ ...option, label: t(option.label) }));
   const { fields, append, remove } = useFieldArray({ control, name: "teams" });
 
   return (
@@ -152,7 +154,7 @@ const TeamsField = ({ control }: { control: SettingsControl }) => {
             <FormField control={control} name={`teams.${index}.user_role`} label="Team Role">
               {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
                 <Select
-                  items={TEAM_ROLE_OPTIONS}
+                  items={teamRoleOptions}
                   value={value}
                   onValueChange={(selected) => onChange(selected ?? "user")}
                 >
@@ -165,9 +167,9 @@ const TeamsField = ({ control }: { control: SettingsControl }) => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {TEAM_ROLE_OPTIONS.map((option) => (
+                    {teamRoleOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        <L>{option.label}</L>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -200,6 +202,7 @@ interface SettingsViewProps {
 }
 
 const SettingsView = ({ values, roleOptions }: SettingsViewProps) => {
+  const t = useTranslation();
   const roleLabel = roleOptions.find((option) => option.value === values.user_role)?.label ?? values.user_role;
   const durationValue = values.budget_duration === "" ? NO_RESET : values.budget_duration;
   const durationLabel =
@@ -218,7 +221,9 @@ const SettingsView = ({ values, roleOptions }: SettingsViewProps) => {
         {values.models.length === 0 ? (
           <L>Not set</L>
         ) : (
-          values.models.map((model) => MODEL_SENTINEL_LABELS.get(model) ?? model).join(", ")
+          values.models
+            .map((model) => (MODEL_SENTINEL_LABELS.has(model) ? t(MODEL_SENTINEL_LABELS.get(model)!) : model))
+            .join(", ")
         )}
       </ViewRow>
       <div>
@@ -240,7 +245,10 @@ const SettingsView = ({ values, roleOptions }: SettingsViewProps) => {
                   <L> max budget</L>
                 </>
               )}
-              <> · {team.user_role}</>
+              <>
+                {" "}
+                · <L>{TEAM_ROLE_OPTIONS.find((option) => option.value === team.user_role)?.label ?? team.user_role}</L>
+              </>
             </p>
           ))
         )}
@@ -258,6 +266,7 @@ interface SettingsFormProps {
 }
 
 const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, onSaved }: SettingsFormProps) => {
+  const t = useTranslation();
   const queryClient = useQueryClient();
   const form = useZodForm(defaultUserSettingsSchema, { defaultValues: initialValues });
   const { isDirty } = form.formState;
@@ -297,7 +306,9 @@ const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, on
               <SelectContent>
                 {roleOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    <span>{option.label}</span>
+                    <span>
+                      <L>{option.label}</L>
+                    </span>
                     {option.description !== "" && (
                       <span className="text-xs text-muted-foreground">
                         <L>{option.description}</L>
@@ -327,7 +338,7 @@ const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, on
         >
           {({ id, value, onChange, "aria-invalid": ariaInvalid, "aria-describedby": ariaDescribedBy }) => (
             <Select
-              items={BUDGET_DURATION_OPTIONS}
+              items={BUDGET_DURATION_OPTIONS.map((option) => ({ ...option, label: t(option.label) }))}
               value={value === "" ? NO_RESET : value}
               onValueChange={(selected) => onChange(selected === null || selected === NO_RESET ? "" : selected)}
             >
@@ -337,7 +348,7 @@ const SettingsForm = ({ initialValues, roleOptions, updateSettings, onCancel, on
               <SelectContent>
                 {BUDGET_DURATION_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
-                    {option.label}
+                    <L>{option.label}</L>
                   </SelectItem>
                 ))}
               </SelectContent>

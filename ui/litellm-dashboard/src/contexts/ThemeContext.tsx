@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback, ReactNode } from "react";
 import { getProxyBaseUrl } from "@/components/networking";
 import { z } from "zod";
 import { uiHref } from "@/utils/uiHref";
@@ -51,12 +51,27 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, accessToken }) => {
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [logoUrlDark, setLogoUrlDark] = useState<string | null>(null);
-  const [faviconUrl, setFaviconUrl] = useState<string | null>(null);
+  const [logoUrl, setLogoUrlValue] = useState<string | null>(null);
+  const [logoUrlDark, setLogoUrlDarkValue] = useState<string | null>(null);
+  const [faviconUrl, setFaviconUrlValue] = useState<string | null>(null);
+
+  const editRevision = useRef(0);
+  const setLogoUrl = useCallback((url: string | null) => {
+    editRevision.current += 1;
+    setLogoUrlValue(url);
+  }, []);
+  const setLogoUrlDark = useCallback((url: string | null) => {
+    editRevision.current += 1;
+    setLogoUrlDarkValue(url);
+  }, []);
+  const setFaviconUrl = useCallback((url: string | null) => {
+    editRevision.current += 1;
+    setFaviconUrlValue(url);
+  }, []);
 
   useEffect(() => {
     const loadThemeSettings = async () => {
+      const revision = editRevision.current;
       try {
         const proxyBaseUrl = getProxyBaseUrl();
         const url = proxyBaseUrl ? `${proxyBaseUrl}/get/ui_theme_settings` : "/get/ui_theme_settings";
@@ -67,9 +82,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, accessTo
 
         if (response.ok) {
           const images = resolveThemeImages(await response.json(), proxyBaseUrl);
-          setLogoUrl(images.logoUrl);
-          setLogoUrlDark(images.logoUrlDark);
-          setFaviconUrl(images.faviconUrl);
+          if (editRevision.current !== revision) return;
+          setLogoUrlValue(images.logoUrl);
+          setLogoUrlDarkValue(images.logoUrlDark);
+          setFaviconUrlValue(images.faviconUrl);
         }
       } catch (error) {
         console.warn("Failed to load theme settings from backend:", error);

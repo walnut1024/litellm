@@ -21,7 +21,7 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
   const [logoUrlInput, setLogoUrlInput] = useState<string>("");
   const [logoUrlDarkInput, setLogoUrlDarkInput] = useState<string>("");
   const [faviconUrlInput, setFaviconUrlInput] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (accessToken) {
@@ -30,6 +30,7 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
   }, [accessToken]);
 
   const fetchThemeSettings = async () => {
+    setLoading(true);
     try {
       const proxyBaseUrl = getProxyBaseUrl();
       const url = proxyBaseUrl ? `${proxyBaseUrl}/get/ui_theme_settings` : "/get/ui_theme_settings";
@@ -52,6 +53,8 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
       }
     } catch (error) {
       console.error("Error fetching theme settings:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,12 +92,6 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
   };
 
   const handleReset = async () => {
-    setLogoUrlInput("");
-    setLogoUrlDarkInput("");
-    setFaviconUrlInput("");
-    setLogoUrl(null);
-    setLogoUrlDark(null);
-    setFaviconUrl(null);
     setLoading(true);
     try {
       const proxyBaseUrl = getProxyBaseUrl();
@@ -108,6 +105,12 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
         body: JSON.stringify({ logo_url: null, logo_url_dark: null, favicon_url: null }),
       });
       if (response.ok) {
+        setLogoUrlInput("");
+        setLogoUrlDarkInput("");
+        setFaviconUrlInput("");
+        setLogoUrl(null);
+        setLogoUrlDark(null);
+        setFaviconUrl(null);
         toast.success("Theme settings reset to default!");
       } else {
         throw new Error("Failed to reset");
@@ -138,6 +141,7 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
             </Label>
             <Input
               id="ui-theme-logo-url"
+              disabled={loading}
               placeholder="https://example.com/logo.png"
               value={logoUrlInput}
               onChange={(event) => {
@@ -155,6 +159,7 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
             </Label>
             <Input
               id="ui-theme-logo-url-dark"
+              disabled={loading}
               placeholder="https://example.com/logo-dark.png"
               value={logoUrlDarkInput}
               onChange={(event) => {
@@ -172,6 +177,7 @@ const UIThemeSettings: React.FC<UIThemeSettingsProps> = ({ userID, userRole, acc
             </Label>
             <Input
               id="ui-theme-favicon-url"
+              disabled={loading}
               placeholder="https://example.com/favicon.ico"
               value={faviconUrlInput}
               onChange={(event) => {

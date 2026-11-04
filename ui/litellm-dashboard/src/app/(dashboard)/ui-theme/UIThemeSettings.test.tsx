@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -70,6 +70,33 @@ describe("UIThemeSettings", () => {
     await waitFor(() => expect(patchCalls()).toHaveLength(1));
     expect(bodyOf(patchCalls()[0])).toEqual({ logo_url: url, logo_url_dark: null, favicon_url: null });
     expect(screen.getByRole("button", { name: "恢复默认" })).toBeInTheDocument();
+  });
+
+  it("waits for the saved configuration before enabling edits or reset", async () => {
+    const response = Promise.withResolvers<Response>();
+    fetchMock.mockReturnValue(response.promise);
+    render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="test-session" />);
+    expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toBeDisabled();
+    expect(screen.getByPlaceholderText(LOGO_DARK_PLACEHOLDER)).toBeDisabled();
+    expect(screen.getByPlaceholderText(FAVICON_PLACEHOLDER)).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Reset to Default" })).toBeDisabled();
+    await act(async () => response.resolve(Response.json({ values: {} })));
+    expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled();
+  });
+
+  it("keeps the current settings when reset is rejected by the backend", async () => {
+    fetchMock.mockImplementation(() => okResponse({ logo_url: "https://cdn.example.com/logo.svg" }));
+    render(<UIThemeSettings userID="user-1" userRole="Admin" accessToken="test-session" />);
+    await waitFor(() =>
+      expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toHaveValue("https://cdn.example.com/logo.svg"),
+    );
+    fetchMock.mockResolvedValue(new Response(null, { status: 500 }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Reset to Default" }));
+    await waitFor(() => expect(toast.fromError).toHaveBeenCalledWith("Failed to reset theme settings"));
+    expect(screen.getByPlaceholderText(LOGO_PLACEHOLDER)).toHaveValue("https://cdn.example.com/logo.svg");
+    expect(setLogoUrl).toHaveBeenLastCalledWith("https://cdn.example.com/logo.svg");
   });
 
   it("should render nothing without an access token", () => {

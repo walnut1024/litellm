@@ -2516,5 +2516,8 @@
   "{name} logo": "{name} 标志",
   "Select a domestic provider. MoMA uses an OpenAI-compatible API with an administrator-provided address.": "选择国产供应商。移动云 MoMA 使用 OpenAI 兼容协议，API 地址由管理员填写。",
   "No providers found": "未找到供应商",
-  "Loading providers...": "正在加载供应商…"
+  "Loading providers...": "正在加载供应商…",
+  "Please enter at least one model.": "请至少填写一个模型。",
+  "At least one model mapping is required": "至少需要一条模型映射",
+  "All model mappings must have valid public names": "所有模型映射都必须填写有效的对外模型名称"
 }

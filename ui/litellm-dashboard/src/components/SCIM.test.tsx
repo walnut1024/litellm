@@ -44,14 +44,13 @@ describe("SCIMConfig", () => {
     expect(screen.getByText("SCIM 租户地址")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("令牌名称"), { target: { value: "同步测试" } });
     await userEvent.setup().click(screen.getByRole("button", { name: "创建 SCIM 令牌" }));
-    await waitFor(() =>
-      expect(keyCreateCall).toHaveBeenCalledWith(ACCESS_TOKEN, USER_ID, {
-        key_alias: "同步测试",
-        team_id: null,
-        models: [],
-        allowed_routes: ["/scim/*"],
-      }),
-    );
+    const expectedPayload = {
+      key_alias: "同步测试",
+      team_id: null,
+      models: [],
+      allowed_routes: ["/scim/*"],
+    };
+    await waitFor(() => expect(keyCreateCall).toHaveBeenCalledWith(ACCESS_TOKEN, USER_ID, expectedPayload));
     expect(screen.getByText("请立即复制并妥善保存令牌，关闭后将无法再次查看")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "继续创建令牌" })).toBeInTheDocument();
     localStorage.clear();

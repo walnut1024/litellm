@@ -28,7 +28,7 @@ describe("BaseSSOSettingsForm", () => {
     localStorage.setItem("moma.locale", "zh-CN");
     const onSubmit = vi.fn();
     function Form() {
-      const form = useSSOSettingsForm("sso-settings", {
+      const initialValues = {
         ...emptySSOSettingsFormValues,
         sso_provider: "generic",
         generic_client_id: "client-id",
@@ -41,7 +41,8 @@ describe("BaseSSOSettingsForm", () => {
         use_role_mappings: true,
         group_claim: "groups",
         default_role: "internal_user",
-      });
+      };
+      const form = useSSOSettingsForm("sso-settings", initialValues);
       return (
         <>
           <BaseSSOSettingsForm form={form} onFormSubmit={onSubmit} />
@@ -58,16 +59,13 @@ describe("BaseSSOSettingsForm", () => {
     await user().click(screen.getByRole("combobox", { name: "默认角色" }));
     await user().click(await screen.findByRole("option", { name: "平台管理员" }));
     await user().click(screen.getByRole("button", { name: "提交" }));
-    await waitFor(() =>
-      expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({
-          sso_provider: "generic",
-          default_role: "proxy_admin",
-          generic_client_id: "client-id",
-          group_claim: "groups",
-        }),
-      ),
-    );
+    const expectedValues = {
+      sso_provider: "generic",
+      default_role: "proxy_admin",
+      generic_client_id: "client-id",
+      group_claim: "groups",
+    };
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining(expectedValues)));
   });
 
   it("should render", () => {

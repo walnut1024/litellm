@@ -3,10 +3,24 @@ import { describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { Logo } from "./Logo";
 import { Providers, providerLogoMap } from "@/components/provider_info_helpers";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 
 vi.mock("@/lib/serverRootPath", () => ({ serverRootPath: "/litellm" }));
 
 describe("Logo", () => {
+  it("translates the image description while preserving the supplied name", () => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    render(
+      <LocaleProvider>
+        <Logo src="https://cdn.example.test/logo.png" label="Google SSO" />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("img", { name: "Google SSO 标志" })).toHaveAttribute(
+      "src",
+      "https://cdn.example.test/logo.png",
+    );
+    localStorage.clear();
+  });
   it("renders the bundled logo untouched by the server root path for a known provider", () => {
     render(<Logo provider="openai" />);
     const img = screen.getByRole("img", { name: "openai logo" });

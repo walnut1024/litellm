@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { fireEvent, renderWithProviders, screen } from "../../../tests/test-utils";
 import DeleteResourceModal from "./DeleteResourceModal";
+import { LocaleProvider } from "@/contexts/LocaleContext";
+afterEach(() => localStorage.clear());
 
 describe("DeleteResourceModal", () => {
   const mockOnCancel = vi.fn();
@@ -18,6 +20,17 @@ describe("DeleteResourceModal", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it.each([false, true])("localizes delete controls, pending=%s", (pending) => {
+    localStorage.setItem("moma.locale", "zh-CN");
+    renderWithProviders(
+      <LocaleProvider>
+        <DeleteResourceModal {...defaultProps} confirmLoading={pending} />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: pending ? "正在删除…" : "删除" })).toBeInTheDocument();
   });
 
   it("should render", () => {

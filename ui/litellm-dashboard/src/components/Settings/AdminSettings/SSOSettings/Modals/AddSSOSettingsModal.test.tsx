@@ -1,7 +1,17 @@
 import { screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../../../../../tests/test-utils";
 import AddSSOSettingsModal from "./AddSSOSettingsModal";
+import { LocaleProvider } from "@/contexts/LocaleContext";
+
+const state = vi.hoisted(() => ({ isPending: false }));
+vi.mock("@/app/(dashboard)/hooks/sso/useEditSSOSettings", () => ({
+  useEditSSOSettings: () => ({ isPending: state.isPending, mutateAsync: vi.fn() }),
+}));
+afterEach(() => {
+  localStorage.clear();
+  state.isPending = false;
+});
 
 // Mock networking functions
 vi.mock("@/components/networking", () => ({
@@ -24,6 +34,17 @@ vi.mock("@/app/(dashboard)/hooks/useAuthorized", () => ({
 }));
 
 describe("AddSSOSettingsModal", () => {
+  it.each([false, true])("localizes the conditional submit button, pending=%s", (pending) => {
+    state.isPending = pending;
+    localStorage.setItem("moma.locale", "zh-CN");
+    renderWithProviders(
+      <LocaleProvider>
+        <AddSSOSettingsModal isVisible onCancel={vi.fn()} onSuccess={vi.fn()} />
+      </LocaleProvider>,
+    );
+    expect(screen.getByRole("button", { name: pending ? "正在添加…" : "添加单点登录配置" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "取消" })).toBeInTheDocument();
+  });
   it("should render", () => {
     const onCancel = vi.fn();
     const onSuccess = vi.fn();

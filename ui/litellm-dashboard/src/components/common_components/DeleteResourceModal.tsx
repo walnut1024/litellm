@@ -1,4 +1,5 @@
 import { CircleAlert } from "lucide-react";
+import { LocalizedText as L } from "@/contexts/LocaleContext";
 import React, { useState, useEffect } from "react";
 import { Alert, AlertTitle } from "@/components/shared/Alert";
 import { Button } from "@/components/ui/button";
@@ -96,14 +97,14 @@ export default function DeleteResourceModal({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel} disabled={confirmLoading}>
-            Cancel
+            <L>Cancel</L>
           </Button>
           <Button
             variant="destructive"
             onClick={onOk}
             disabled={(!!requiredConfirmation && requiredConfirmationInput !== requiredConfirmation) || confirmLoading}
           >
-            {confirmLoading ? "Deleting..." : "Delete"}
+            <L>{confirmLoading ? "Deleting..." : "Delete"}</L>
           </Button>
         </DialogFooter>
       </DialogContent>

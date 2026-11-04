@@ -67,7 +67,7 @@ const AddSSOSettingsModal: React.FC<AddSSOSettingsModalProps> = ({ isVisible, on
               onClick={submitMountedSSOValues(form, "sso-settings", handleFormSubmit)}
             >
               {isPending && <UiLoadingSpinner className="size-4 mr-1" />}
-              {isPending ? "Adding..." : "Add SSO"}
+              <L>{isPending ? "Adding..." : "Add SSO"}</L>
             </Button>
           </div>
         </DialogFooter>

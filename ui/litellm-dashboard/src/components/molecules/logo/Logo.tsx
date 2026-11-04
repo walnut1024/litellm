@@ -3,6 +3,7 @@ import { getProviderLogoAndName } from "@/components/provider_info_helpers";
 import { resolveLogoSrc } from "@/lib/assetPaths";
 import { cn } from "@/lib/cva.config";
 import { logoTreatmentFor, type LogoTreatment } from "@/lib/logoTreatments";
+import { useTranslation } from "@/contexts/LocaleContext";
 
 type LogoProps = { className?: string } & (
   | { provider: string; src?: never; label?: string }
@@ -15,6 +16,7 @@ const DARK_TREATMENT_CLASS: Readonly<Record<LogoTreatment, string>> = {
 };
 
 export const Logo: React.FC<LogoProps> = ({ provider, src, label, className = "w-4 h-4" }) => {
+  const t = useTranslation();
   const [erroredSrc, setErroredSrc] = useState<string | null>(null);
   const resolvedSrc = provider !== undefined ? getProviderLogoAndName(provider).logo : resolveLogoSrc(src) ?? "";
   const name = label ?? provider ?? "";
@@ -32,7 +34,7 @@ export const Logo: React.FC<LogoProps> = ({ provider, src, label, className = "w
   return (
     <img
       src={resolvedSrc}
-      alt={`${name || "-"} logo`}
+      alt={t("{name} logo", { name: name || "-" })}
       className={treatment === undefined ? className : cn(className, DARK_TREATMENT_CLASS[treatment])}
       onError={() => {
         console.warn(`Logo failed to load: ${resolvedSrc}`);

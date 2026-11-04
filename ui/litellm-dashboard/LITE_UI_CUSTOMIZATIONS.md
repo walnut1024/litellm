@@ -1,296 +1,274 @@
-# 轻量版差异与维护指南
+# MoMA 轻量版相对开源版定制清单
+
+## 对比基线与阅读口径
+
+本版面向内部模型服务分发。管理员接入采购的模型服务并配置用户、团队、权限和预算，员工登录后获取自己的 API Key，通过客户端调用模型
+
+本文按功能模块记录相对开源源码的屏蔽、新增和修改，同时列出保留能力、实现位置和验证边界。屏蔽项既有企业能力，也有实验功能和当前场景不需要的开源功能，不能把所有屏蔽项统称为企业版功能
+
+| 项目             | 本次核对口径                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------ |
+| 整理日期         | 2026-11-04                                                                                       |
+| 开源基线提交     | `9546f9a69ff470dfcc5a21eccab89d2fd86a634f`                                                       |
+| 基线标题与版本   | `test(router): audit #47498 (#48799)`，根目录 `pyproject.toml` 的版本为 `1.109.0`                |
+| 已核对的定制提交 | `6844f75ea916d700c0a68a2e2fc4ca1bbf5960a7`，后续本文整理提交只修改本文件                         |
+| 维护分支         | `main`，原 `litellm_lite_ui_masking` 分支保留                                                    |
+| 差异范围         | 上述两个提交之间共 461 个文件，包含界面、测试、说明、依赖配置和本机部署文件，并非 461 个功能改动 |
+| 本机预览入口     | [localhost:4001/ui/](http://localhost:4001/ui/)，这是部署地址，不是本次运行验收结论              |
+| 未提交改动       | 本次开始时工作区另有 19 个业务代码文件的修改，未作为本文已完成差异或验证依据，也未纳入本次提交   |
+
+`main` 已包含定制，不能把它当作未修改的开源源码。升级时应记录旧、新开源基线的 SHA 与版本，再逐模块核对。持续维护要求见[根目录 AGENTS.md](../../AGENTS.md#lightweight-fork-maintenance)
 
-## 用途与基线
+“屏蔽”指前端入口、控件或内容不可见，不表示删除源码、停用后端 API 或撤销已有授权。“新增”指基线没有的交互、组件或部署资料。“修改”包括展示、默认值、表单提交边界和查询行为的调整。复用原生接口实现的新交互仍属于前端新增，不表示新增后端能力
 
-这版面向公司内部使用。管理员接入公司采购的模型服务、配置员工权限和预算，员工登录后创建自己的 API Key，通过客户端调用模型
+本次对比中，`litellm/`、`enterprise/`、`litellm-rust/` 和 `prisma/` 没有源码差异。模型转发、供应商适配、数据库结构、API 路由、预算计算、鉴权与许可证校验沿用开源基线。隐藏数据仍可能在接口响应或已挂载组件中，敏感数据保护继续依靠后端权限
 
-本文件记录当前轻量版相对社区源码的前端差异及部署配置，供后续升级和合并时逐项核对。屏蔽清单同时包含企业版能力、实验功能和当前场景不需要的开源功能，不能把这里所有条目都视为企业版功能
+## 功能模块总览
+
+下表是定制后的可见范围，仍叠加开源原有角色、页面配置与后端权限。页面白名单不会赋予员工管理员权限
+
+| 功能模块           | 员工可见范围                               | 管理员可见范围                             | 主要定制                                                 |
+| ------------------ | ------------------------------------------ | ------------------------------------------ | -------------------------------------------------------- |
+| 导航与页面访问     | 工作台、模型、密钥、用量和原权限允许的团队 | 保留模型运营、访问控制和系统设置           | 新增 MoMA 导航与页面白名单，屏蔽非核心页面和推广入口     |
+| 工作台 Home        | 个人概览、模型入口和创建密钥               | 原权限范围内的概览和快捷入口               | 移除新闻、榜单，新增 Token 趋势、可用模型和使用指引      |
+| 模型服务           | 授权模型、基础详情、卡片与列表、快捷开通   | 另保留模型增删改、凭据、健康检查和重试配置 | 新增卡片与开通，供应商目录收窄并默认 MoMA，隐藏高级页签  |
+| API 密钥           | 本人有权访问的密钥及原有操作               | 原有密钥管理和用户、团队归属               | 简化所有者、类型、字段、详情、列与筛选                   |
+| 用量统计           | 原权限允许的本人和团队用量                 | 全局、本人、用户和团队视角                 | 隐藏资源统计与自然语言查询，调整概览布局与本地化         |
+| 请求日志           | 不开放日志页                               | Request Logs 与请求详情                    | 隐藏审计和删除记录页签，保留真实请求与费用               |
+| 团队               | 原权限允许的团队查看和操作                 | 团队、成员、模型、预算和 TPM/RPM           | 隐藏非模型资源与高级配置，成员角色和编辑字段保留         |
+| 用户               | 沿用原角色限制                             | 用户创建、批量邀请、详情、编辑及默认设置   | 隐藏 MCP 权限，补齐中文、金额与状态展示                  |
+| 访问组             | 沿用原角色限制                             | 基本信息、模型及原有管理流程               | 隐藏 MCP、智能体和技能页签与数量标记                     |
+| 预算               | 沿用原管理员限制                           | 原有预算管理                               | 本地化周期与人民币单位，不新增计费规则                   |
+| 路由设置           | 不开放                                     | 基础设置与原有重试配置                     | 隐藏路由策略、标签过滤和延迟高级配置                     |
+| 日志与告警设置     | 不开放                                     | 普通告警、参数和邮件设置                   | 隐藏日志回调、企业参数和部分集成，默认进入告警类型       |
+| 系统管理           | 不开放                                     | SSO、SCIM、UI Settings、Logging Settings   | 精简页签与界面开关，默认进入 UI Settings，保留许可证约束 |
+| 界面主题与通用展示 | 使用统一主题与语言切换                     | 另可配置 Logo 和浏览器图标                 | MoMA 品牌、统一布局、中英文和人民币显示                  |
+| 本机部署           | 无独立员工配置                             | 独立 Compose、数据库和静态 UI 发布流程     | 新增本机预览资料，未裁剪后端运行时                       |
+
+## 按功能模块的具体差异
 
-本分支的持续维护要求记录在[项目根目录 AGENTS.md](../../AGENTS.md#lightweight-fork-maintenance)，后续修改和社区版本合并均需按该约定核对并同步维护本文件
+### 导航、入口与页面访问
 
-| 项目             | 当前记录                                        |
-| ---------------- | ----------------------------------------------- |
-| 记录日期         | 2026-11-04                                      |
-| 工作分支         | `main`，保留原 `litellm_lite_ui_masking` 分支   |
-| 裁剪前的源码提交 | `9546f9a69ff470dfcc5a21eccab89d2fd86a634f`      |
-| 基线提交标题     | `test(router): audit #47498 (#48799)`           |
-| 基线源码版本     | `1.109.0`，见根目录 `pyproject.toml`            |
-| 轻量版预览       | [localhost:4001/ui/](http://localhost:4001/ui/) |
+开源基线已有侧栏、移动导航、命令搜索、菜单角色过滤和页面本身的权限判断。本版在这些能力上增加轻量白名单，并以 MoMA 分组导航替换控制台原有布局
 
-main 是轻量版维护分支。核对自定义修改应使用上表固定的社区基线，不能把 main 当作未修改的社区源码，也不能用其他版本的容器截图反推差异
+| 类型 | 具体差异                                                                                                                                                                               |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 新增 | `liteUi.ts` 集中定义页面、页签、字段和表格列策略，`LiteUiBoundary` 拦截不在白名单的页面，显示“当前版本不提供此页面”                                                                    |
+| 新增 | 模型服务、用量与配额、访问控制、系统设置四组导航。桌面使用左侧导航，小于 1100px 时改用同源抽屉，空分组不展示                                                                           |
+| 修改 | 侧栏、移动导航和命令搜索复用 `visibleMenuGroups`，先按轻量白名单收窄，再执行原角色、团队管理员身份和员工页面配置过滤                                                                   |
+| 屏蔽 | Organizations、Projects Beta、Playground、API Reference、Agents、Workflow Runs、Memory、MCP Servers、Skills、Guardrails、Policies、Search Tools、Vector Stores、Tool Policies          |
+| 屏蔽 | Model Insights、Cost Optimization、Lens、Guardrails Monitor、AI Hub、Learning Resources、Response Cache、Experimental 及其子入口，以及白名单外的 Chat、Moyai、Cost Tracking 等独立页面 |
+| 屏蔽 | 顶栏 View Switcher、Lite Admin、Docs、Blog、Community 等入口，移除上游版本徽章、发布说明外链及账户菜单中的版本查询                                                                     |
+| 修改 | 隐藏页签的触发器和内容都不渲染，旧页签 URL 回退到允许的默认项，`keepMounted` 不恢复隐藏内容                                                                                            |
+| 保留 | 登录、onboarding、修改密码和既有 `mcp` 回调路由，MCP 管理页仍被屏蔽。原有导航注册表、角色权限和相关源码保留                                                                            |
 
-## 修改边界
+页面路径与菜单 ID 并不总相同，例如 `models-and-endpoints` 对应 `models`，`usage` 对应 `new_usage`。访问控制页面继续由原页面和后端判断具体角色，不能把 `litePageAllowed` 单独视为授权系统。隐藏功能的依赖和静态页面未统一删除，不承诺安装包或 JavaScript 体积下降
+
+主要实现为 [liteUi.ts](src/utils/liteUi.ts)、[LiteUiContext.tsx](src/contexts/LiteUiContext.tsx)、[leftnav.tsx](src/components/leftnav.tsx)、[MomaNavigation.tsx](src/components/MomaNavigation.tsx)、[控制台 layout](<src/app/(dashboard)/layout.tsx>)、[tabs.tsx](src/components/ui/tabs.tsx) 和 [useUrlTab.ts](src/hooks/useUrlTab.ts)
+
+### 工作台 Home
+
+| 类型           | 开源基线                                 | 本版差异                                                                                    |
+| -------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
+| 屏蔽并移除请求 | Lite Admin、社区新闻、模型榜单与更新推广 | 首页不再渲染这些区块，移除对应博客和榜单查询，顶栏发布通知也不再查询上游更新                |
+| 新增           | 原有最近 7 天用量概览                    | 同一用量数据增加 Token 趋势，新增可用模型入口与使用指引，模型入口仅展示授权接口返回的前三项 |
+| 修改           | 原概览指标和首页排布                     | 改为工作台，花费、请求数、Token、平均花费、平均延迟采用五列，指标顶部对齐，首页趋势高 160px |
+| 保留           | 原有时间与角色范围                       | 继续统计最近 7 天实际花费，不改成当月数据或预计费用，创建密钥仍受只读角色约束               |
 
-前端调整包括入口、页面、页签、控件和展示字段屏蔽，以及 MoMA 主题与中英文国际化，默认中文。保留表单提交、页面权限、API 调用和后端业务实现
+本版未新增账户钱包、订单、支付、退订、Token Plan、智能路由、排行榜或 Token 计算器。页面中的“开通”含义见下一模块
 
-模型转发、供应商适配、数据库结构、API 路由、预算计算、鉴权和许可证校验均保持社区实现。前端隐藏不等于 API 禁用或权限隔离，隐藏的数据也可能仍在接口响应及已挂载组件中。必须继续依靠后端权限保护敏感数据
+主要实现为 [HomePage.tsx](<src/app/(dashboard)/home/_components/HomePage.tsx>)、[UsageStatStrip.tsx](<src/app/(dashboard)/usage/_components/components/overview/UsageStatStrip.tsx>) 和 [NotificationsBell](src/components/Navbar/NotificationsBell/)
 
-未删除隐藏功能的源码、依赖或静态导出页面，不承诺镜像、安装包或 JavaScript 体积下降。恢复能力时需要同步检查页面、表单、页签和关联入口，不能只恢复一个菜单
+### 模型服务、供应商与快捷开通
+
+| 类型 | 具体差异                                                                                                                                      |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 新增 | 模型卡片视图与卡片、列表切换。员工默认卡片，管理员默认列表，切换状态仅在当前组件内保存                                                        |
+| 新增 | 卡片“开通”和结果弹窗，复用 `POST /key/generate` 为当前用户创建所选具体模型的 `llm_api` Key，并显示模型名和网关 Base URL                       |
+| 修改 | 页面展示为模型广场，搜索、团队、查看范围、排序、筛选和分页仍使用 `AllModelsTab` 的原 nuqs 状态与服务端查询，切换视图不清空筛选                |
+| 修改 | 卡片和开通参数复用原有团队公开模型名称解析，保留团队别名、真实供应商、上下文参数及暂停状态，不编造介绍、价格、销量和排名                      |
+| 屏蔽 | Auto Routers、Pass Through、Model Group Alias、Model Access Group Budgets Beta、Price Data 页签，以及 Decision Models 推广和 User Connections |
+| 屏蔽 | 员工的新增、凭据、健康检查、重试和 Raw 页签，管理动作、上游模型、价格及模型设置区块，列表另隐藏凭据、输入成本和操作列                         |
+| 屏蔽 | 新增模型表单的 Team-BYOK 开关与配套团队选择区，Key 与模型共用高级字段的屏蔽项见附录一                                                         |
+| 修改 | 新增模型供应商由完整目录收窄为下表九项，首次进入和成功添加后都默认 MoMA，URL 供应商预填也受同一目录约束                                       |
+| 保留 | 管理员原有模型添加、编辑、删除、凭据复用、认证字段、连接测试、健康检查和重试，必需团队作用域、模型访问组及供应商认证不被误隐藏                |
+
+| 供应商选择项         | 原有适配标识        | 本版处理                                                                                                |
+| -------------------- | ------------------- | ------------------------------------------------------------------------------------------------------- |
+| 移动云 MoMA          | `OpenAI_Compatible` | 复用 OpenAI 兼容适配器，置于首项并默认选中，管理员手填上游模型名称和必填 API 地址，密钥使用通用中文标签 |
+| DeepSeek（深度求索） | `Deepseek`          | 保留原认证与协议                                                                                        |
+| 阿里云百炼           | `Qwen_AI_Platform`  | 保留原认证与协议                                                                                        |
+| 阿里云 DashScope     | `Dashscope`         | 保留原认证与协议                                                                                        |
+| 阿里云 QwenCloud     | `QwenCloud`         | 保留原认证与协议                                                                                        |
+| MiniMax              | `MINIMAX`           | 保留原认证与协议                                                                                        |
+| 月之暗面 Moonshot    | `MOONSHOT`          | 保留原认证与协议                                                                                        |
+| 腾讯云               | `Tencent`           | 保留原认证与协议                                                                                        |
+| 火山引擎             | `VolcEngine`        | 保留原认证与协议                                                                                        |
 
-## 菜单和页面
-
-以下“保留”均受社区原有角色、页面可见性和接口权限继续约束，不会因为轻量版白名单而给员工增加管理员权限
-
-| 区域               | 员工端                                        | 管理员端                                                           |
-| ------------------ | --------------------------------------------- | ------------------------------------------------------------------ |
-| Home               | 保留个人概览和创建 Key 等核心入口             | 保留核心概览                                                       |
-| Virtual Keys       | 保留本人有权访问的 Key 列表、创建、查看和管理 | 保留 Key 日常管理以及用户、团队归属                                |
-| Models + Endpoints | 保留获授权模型的列表和基础信息                | 保留添加、编辑、删除模型、凭据、健康检查、重试配置                 |
-| Usage              | 保留原权限允许的本人和团队用量                | 保留全局、本人、用户、团队用量                                     |
-| Logs               | 不开放，延续轻量版角色限制                    | 保留 Request Logs                                                  |
-| Teams              | 保留原权限允许的团队查看和操作                | 保留团队、成员分配与角色编辑、模型权限、预算、TPM/RPM              |
-| Internal Users     | 延续社区管理员角色限制                        | 保留员工创建、查看、编辑、预算和权限管理                           |
-| Access Groups      | 延续社区角色限制                              | 保留分组及其原有管理流程                                           |
-| Budgets            | 延续社区管理员角色限制                        | 保留原有预算管理页面                                               |
-| Organizations      | 屏蔽                                          | 屏蔽，已确认不保留 Enterprise 授权介绍页                           |
-| Projects Beta      | 屏蔽                                          | 屏蔽                                                               |
-| Settings           | 屏蔽管理员菜单和对应页面                      | 保留 Router Settings、Logging & Alerts、Admin Settings 和 UI Theme |
-
-两类用户都屏蔽 Playground、API Reference、Agents、Workflow Runs、Memory、MCP Servers、Skills、Guardrails、Policies、Search Tools、Vector Stores、Tool Policies、Model Insights、Cost Optimization、Lens、Guardrails Monitor、AI Hub、Learning Resources、Response Cache、Experimental 及其子入口，以及不在页面白名单内的其他独立页面，例如 Chat、Moyai、Cost Tracking
-
-侧栏、移动导航和命令搜索共用菜单过滤。直接访问被屏蔽的页面 URL 会显示当前版本不可用，不会展示原功能。登录、onboarding、修改密码和既有 MCP 回调路由继续保留，MCP 管理页面仍被屏蔽
-
-## 页签与页面内区块
-
-| 页面                     | 屏蔽项                                                                                                                                                  | 保留项和说明                                                                                                        |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Home                     | Lite Admin 入口、新闻、榜单和更新推广区域                                                                                                               | 核心用量与日常操作                                                                                                  |
-| Models + Endpoints       | Auto Routers、Pass Through、Model Group Alias、Model Access Group Budgets Beta、Price Data、Decision Models 推广、User Connections                      | 管理员的模型配置和供应商凭据正常保留                                                                                |
-| 员工模型详情             | 新增模型、凭据、健康检查、重试、Raw 页签，以及编辑等管理动作和上游配置展示                                                                              | 模型可用性和基础信息                                                                                                |
-| 模型新增表单             | Team-BYOK 专属模型开关和对应团队选择区域                                                                                                                | 原有必需团队作用域、模型访问组和供应商认证字段保留                                                                  |
-| Virtual Keys 详情        | Savings、Auto Router Usage、Regenerate Key、组织和项目展示、独立日志、自动轮换、Guardrails、Policies、Prompts、路由权限、标签及原始 Metadata 等高级区块 | 基本信息、模型、用量、预算、过期时间、编辑、删除及原权限允许的其他动作                                              |
-| Key 创建                 | Agent 所有者、非 AI API 类型及高级配置区块                                                                                                              | You、Service Account、Another User 按原角色提供，团队和访问组配置保留                                               |
-| Logs                     | Audit Logs、Deleted Keys、Deleted Teams，连同 Enterprise 预览和升级说明                                                                                 | Request Logs 及请求详情                                                                                             |
-| Teams                    | Default Team Settings 页签、MCP/智能体/搜索工具/技能配置与资源权限概览、创建团队中的独立 Logging Settings、组织与密钥管理展示、单模型预算编辑和展示     | 团队基本预算和成员预算保留，成员表中的原始限额数据不重算                                                            |
-| 团队成员添加或编辑       | 无额外裁剪                                                                                                                                              | 添加成员默认 User，可选择 Admin。编辑保留角色、模型范围、预算、周期、临时预算、TPM/RPM 和按原许可证开放的单模型预算 |
-| 访问组创建、编辑及详情   | MCP Servers、Agents、Skills 页签、对应内容及列表中的资源数量标记                                                                                        | 创建和编辑保留基本信息与模型，详情保留模型，隐藏项已有授权不会被清空                                                |
-| 用户详情及编辑           | MCP 权限展示、MCP 服务器选择和工具权限配置                                                                                                              | 用户身份、平台角色、团队、模型、预算和限流继续保留                                                                  |
-| Usage                    | MCP、Endpoints 页签、Aria 自然语言查询、Top Agents，以及 Customer、Tag、Agent、User Agent Activity、Organization 统计视角                               | 全局、本人、用户、团队统计按原权限提供                                                                              |
-| Router Settings          | 路由策略选择、标签过滤、基于延迟的高级配置                                                                                                              | 原有基础重试等设置                                                                                                  |
-| Logging & Alerts         | Logging Callbacks、CloudZero、MS Teams Alerts 页签、Region Outage 企业告警                                                                              | 告警类型、可用的普通告警设置、Email 设置。默认打开 Alerting Types                                                   |
-| 告警参数表               | 后端标记 `premium_field=true` 的整行，包括付费控件、说明和升级链接                                                                                      | 普通参数继续编辑和重置，重置使用原始配置索引                                                                        |
-| Email 设置               | `EMAIL_LOGO_URL`、`EMAIL_SUPPORT_CONTACT` 品牌定制                                                                                                      | SMTP、测试邮件和普通邮件事件                                                                                        |
-| Admin Settings           | Security Settings、Hashicorp Vault、CyberArk、Plugins、Web Search Interception                                                                          | SSO Settings、SCIM、UI Settings、Logging Settings。默认打开 UI Settings，SCIM 同步继续受后端企业许可证校验          |
-| Security Settings 原区块 | 旧 SSO 管理、IP 白名单、UI Access Control 弹窗入口                                                                                                      | 随所属页签整体屏蔽，后端安全配置和现有登录不变                                                                      |
-| UI Settings              | Projects、Chat、Agents、Vector Stores 相关开关、公开 AI Hub 认证设置、组织搜索作用域、客户端 Header 转发、供应商认证 Header 转发、Moyai 整个连接区域    | 其余原有开源设置，仍保留社区限制                                                                                    |
-| 顶栏                     | View Switcher、Lite Admin、Docs、Blog、Community 等非核心入口                                                                                           | 原有导航、搜索、账号及基础状态                                                                                      |
+移动云 MoMA 选项使用本地 [ecloud.png](public/assets/logos/ecloud.png)，通过共享 Logo 组件保留原色与比例，随静态资源打包，不在运行时请求官网，不影响顶部品牌和供应商提交值。图标来源沿用既有记录，为[移动云官网](https://ecloud.10086.cn/portal)引用的 [favicon](https://ecloud.eos-guangzhou-1.cmecloud.cn/fe/favicon.ico) 转为 PNG
 
-界面设置内的 Moyai、智能体、向量库与组织搜索区块分隔线随对应区块一起隐藏，避免被裁剪功能留下连续空白横线。单点登录设置补齐提供方、角色映射、字段、校验、创建与编辑弹窗及删除确认的中文，保留原提交值与密钥遮罩。SCIM 配置页补齐地址、令牌创建和结果提示的中文，并在未持有企业许可证时说明同步接口的授权限制。开放管理员配置页不改变后端鉴权、许可证或同步接口
+目录由后端返回的原供应商元数据筛选生成，不伪造缺失项。MoMA 没有预置服务地址，也没有新增后端供应商实现。这里限制的是新增模型界面，既有模型、凭据、API 权限和后端支持范围继续保留
 
-## 新增模型的供应商目录
+开通状态通过当前用户、所选个人或团队范围的全部 Key 分页计算，排除停用、删除、过期、非 `llm_api` 和所属团队停用的 Key。已有全模型或通配 Key 按原语义匹配，访问组等间接授权无法从 Key 列表确认时不推断为已开通。创建、编辑、删除和停用 Key 后，查询缓存失效同步刷新开通状态
 
-管理员接入步骤见 [README 的模型接入说明](../../README.md#模型接入)
+新 Key 的 `models` 仅包含所选具体模型，不提交空列表或通配授权。禁用员工个人 Key 创建时必须选择有权使用的团队，暂停模型、无权模型和只读用户不能快捷开通，最终权限、预算和限流由原后端校验。完整新 Key 仅存于结果弹窗的 React 状态，关闭后清除，不写浏览器存储或 URL。页面内请求锁防止连续点击重复创建，没有跨标签页或服务端幂等保证
 
-新增模型的供应商下拉仅保留现有国产供应商，包含 DeepSeek、阿里云百炼及其 DashScope 和 QwenCloud 适配、MiniMax、月之暗面、腾讯云和火山引擎。移动云 MoMA 位于首项，初次进入及成功添加后的表单均默认选中。MoMA 复用 OpenAI 兼容适配器，上游模型名称由管理员输入，API 地址不预置且必填，API 密钥字段使用通用中文名称。各供应商原有认证字段与适配协议保留
+开通仅创建原生凭证，不新增订单、审批、开通记录或数据库字段，也不代表上游连通。异常响应提示先查密钥结果，后台拒绝沿用错误反馈
 
-移动云 MoMA 选项使用[移动云官网](https://ecloud.10086.cn/portal)的蓝色云形图标，源文件为官网引用的 [favicon](https://ecloud.eos-guangzhou-1.cmecloud.cn/fe/favicon.ico)，转为 PNG 后保存在 `public/assets/logos/ecloud.png`。通过共享 `Logo` 组件显示，保留原色与比例，随静态资源打包，不在运行时请求官网。此显示标识不改变 OpenAI 兼容协议或供应商提交值
+主要实现为 [模型页面](<src/app/(dashboard)/models-and-endpoints/page.tsx>)、[AllModelsTable.tsx](<src/app/(dashboard)/models-and-endpoints/components/AllModelsTable.tsx>)、[AddModelPanel.tsx](<src/app/(dashboard)/models-and-endpoints/panels/AddModelPanel.tsx>)、[modelProviders.ts](src/components/add_model/modelProviders.ts)、[AddModelForm.tsx](src/components/add_model/AddModelForm.tsx)、[provider_specific_fields.tsx](src/components/add_model/provider_specific_fields.tsx)、[ModelCatalog.tsx](src/components/ModelCatalog.tsx)、[modelAccess.ts](src/components/modelAccess.ts)、[useKeys.ts](<src/app/(dashboard)/hooks/keys/useKeys.ts>) 和 [model_info_view.tsx](src/components/model_info_view.tsx)。操作说明见[模型接入](../../README.md#模型接入)
 
-目录由 `src/components/add_model/modelProviders.ts` 维护，`AddModelForm.tsx` 展示选项，`models-and-endpoints/panels/AddModelPanel.tsx` 管理默认值、模型提示和表单重置，`provider_specific_fields.tsx` 调整 MoMA 模型表单中的密钥标签。URL 预填同样限定在此目录，已有模型、供应商凭据、后端支持范围与 API 权限不受前端目录筛选影响。该目录不是后端供应商白名单
+### API 密钥
 
-## 字段与表格
+| 类型 | 具体差异                                                                                                                                                   |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 屏蔽 | 创建时的 Agent 所有者和非 AI API 类型，只提供 `llm_api`，You、Service Account、Another User 仍按原角色提供                                                 |
+| 屏蔽 | 创建和编辑中的资源授权、日志、组织、项目、标签、策略、提示词、路由及高级预算限流配置，完整字段名见附录一                                                   |
+| 屏蔽 | 详情的 Savings、Auto Router Usage、Regenerate Key、组织和项目、独立日志、自动轮换、Guardrails、Policies、Prompts、路由权限、标签和原始 Metadata 等高级区块 |
+| 屏蔽 | 组织、项目、标签和 End User 列，员工另隐藏用户 ID、用户和邮箱列，列选择器不能恢复这些列。对应高级筛选也隐藏                                                |
+| 修改 | 密钥模型列默认仅展示 1 个模型和剩余数量，其余模型通过原提示和详情查看，未修改 Key 的模型权限                                                               |
+| 修改 | 累计花费提示保留历史用量可能未回填的说明，去除上游版本与发布日期。无团队时不展示无意义的团队预算和限额说明                                                 |
+| 保留 | 基本信息、模型、用量、预算、周期、过期时间、TPM/RPM、团队和访问组，查看、创建、编辑、删除等仍受原角色与接口权限约束                                        |
 
-字段策略的准确信息以 [src/utils/liteUi.ts](src/utils/liteUi.ts) 为准。这里按提交字段名记录，避免社区调整英文标签后难以定位
+轻量版保存普通配置时不再重算或提交隐藏的资源授权，避免改名和改预算覆盖已有授权或被 MCP 目录失败阻塞。其他隐藏字段仍可能保留在表单状态并按原逻辑提交，不会自动撤销后端已有配置
 
-| 生效位置                             | 屏蔽字段                                                                                                                                                                                                                                                                                    |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 使用共享表单的页面                   | `organization_id`、`organization_ids`、`secret_manager_settings`、`model_max_budget`、`team_member_model_max_budget`、`allowed_passthrough_routes`、`logging_settings`、`disable_global_guardrails`                                                                                         |
-| 保留页面的资源授权表单               | `allowed_mcp_servers_and_groups`、`mcp_servers_and_groups`、`mcp_tool_permissions`、`allowed_agents_and_groups`、`agents_and_groups`、`allowed_skills`、`skills`、`object_permission_search_tools`、`object_permission_skills`、`vector_stores`、`allowed_vector_store_ids`                 |
-| Key 和模型表单的资源扩展             | `project_id`、`metadata`、`tags`、`guardrails`、`policies`、`prompts`、`vector_stores`、`vector_store_ids`、`allowed_vector_store_ids`、`allowed_routes`、`allowed_mcp_servers_and_groups`、`mcp_servers_and_groups`、`mcp_tool_permissions`、`allowed_agents_and_groups`、`allowed_skills` |
-| Key 和模型表单的高级预算与限流       | `soft_budget`、`budget_windows`、`budget_fallbacks`、`end_user_budget_id`、`tpd_limit`、`tpm_limit_type`、`rpm_limit_type`、`model_tpm_limit`、`model_rpm_limit`、`throttle_on_budget_exceeded`、`default_estimated_output_tokens`、`default_estimated_output_tokens_per_model`             |
-| Key 和模型表单的缓存、路由与成本参数 | `enable_prompt_caching`、`use_in_pass_through`、`kubernetes_pod_discovery`、`cache_control`、`cache_control_injection_points`、`litellm_extra_params`、`model_info_params`、`ptu_count`、`cost_per_ptu_per_hour`、`ptu_effective_from`、`ptu_effective_to`                                  |
+主要实现为 [create_key_button.tsx](src/components/organisms/create_key_button.tsx)、[key_edit_view.tsx](src/components/templates/key_edit_view.tsx)、[key_info_view.tsx](src/components/templates/key_info_view.tsx)、[KeyInfoHeader.tsx](src/components/templates/KeyInfoHeader.tsx) 和 [VirtualKeysPage](src/components/VirtualKeysPage/)
 
-共享 `ModelMaxBudgetField` 另行屏蔽整个区块，覆盖 Key、用户、团队和默认成员预算，不依赖当前是否有 Enterprise 许可证。成员编辑表单的附加字段恢复社区完整展示，不受上述字段屏蔽影响，单模型预算仍受原许可证校验约束。独立 `PremiumLoggingSettings` 同样不展示付费介绍或配置
+### 用量统计与图表
 
-`max_budget`、`budget_duration`、`tpm_limit`、`rpm_limit`、模型选择、供应商 `api_key` 等认证字段不在上述屏蔽列表。`team_id`、`access_group_ids`、`model_access_group` 继续保留
+| 类型 | 具体差异                                                                                                               |
+| ---- | ---------------------------------------------------------------------------------------------------------------------- |
+| 屏蔽 | MCP、Endpoints 页签，Aria 自然语言查询入口与编辑器，Top Agents                                                         |
+| 屏蔽 | Customer、Tag、Agent、User Agent Activity、Organization 统计视角，选择器仅保留全局、本人、用户和团队，再叠加原权限     |
+| 修改 | 概览五列指标将平均花费和平均延迟分开，供应商与用户排行在第一排，密钥排行与 API 路径请求量在第二排，1100px 以上双列对齐 |
+| 修改 | 普通概览图高 256px，compact 图高 224px，金额右对齐，图表日期、提示、空状态、筛选、导出和请求说明接入中文与人民币显示   |
+| 修改 | 日期控件使用 compact 展示和独立面板宽度，保留原日期语义、时间戳、查询状态和分享链接参数                                |
+| 保留 | 原权限允许的用量、模型、密钥、用户、错误统计及导出。历史非模型资源请求不因界面屏蔽而删除、过滤或漏算费用               |
 
-| 表格或筛选              | 修改                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------- |
-| 共享表格                | 隐藏 `organization_id`、`organization_alias` 列                                 |
-| Key、模型、日志列表     | 隐藏 `project_id`、`request_tags`、`tags`、`end_user` 列                        |
-| 员工 Key 列表           | 另隐藏 `user_id`、`user`、`user_email` 列                                       |
-| 员工模型列表            | 另隐藏 `litellm_credential_name`、`input_cost`、`actions` 列及对应管理展示      |
-| 共享筛选抽屉            | 隐藏 Organization 筛选                                                          |
-| Key、模型、日志筛选抽屉 | 另隐藏 Project、End User、Tags、Cache、Credential、Span Type、Request Type 筛选 |
+主要实现为 [UsagePageView.tsx](<src/app/(dashboard)/usage/_components/components/UsagePageView.tsx>)、[UsageViewSelect](<src/app/(dashboard)/usage/_components/components/UsageViewSelect/>)、[usage 概览组件](<src/app/(dashboard)/usage/_components/components/overview/>)、[UsagePage 公共组件](src/components/UsagePage/) 和 [advanced_date_picker.tsx](src/components/shared/advanced_date_picker.tsx)
 
-列过滤发生在创建表格实例之前，显示列菜单不能重新勾出被屏蔽的列。筛选抽屉当前按原始英文标签识别，翻译仅发生在显示层。社区改标签或调整国际化接入点时必须复查
+### 请求日志与审计
 
-## 实现位置与数据保留
+| 类型   | 具体差异                                                                                                                           |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 屏蔽   | Audit Logs、Deleted Keys、Deleted Teams 页签及其企业预览和升级说明，员工不开放日志页                                               |
+| 屏蔽   | 组织、项目、标签、End User 列与高级筛选，规则见附录一                                                                              |
+| 修改   | 请求筛选只保留公开模型查询及原后端参数，不再展示搜索工具专属说明。日志详情、费用拆分、缓存类别、原始数据占位和辅助操作名称补齐中文 |
+| 保留   | 管理员 Request Logs、请求详情、真实类型、费用、模型响应及原始 JSON，不伪造或删除历史请求                                           |
+| 未新增 | 没有实现独立操作审计系统，没有新增审计采集、存储、查询接口或绕过企业许可证                                                         |
 
-| 文件或目录，相对 dashboard                                                                          | 与社区源码的差异                                                                                                             |
-| --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `src/utils/liteUi.ts`                                                                               | 集中定义页面白名单、角色范围、隐藏页签、字段、列                                                                             |
-| `src/contexts/LiteUiContext.tsx`                                                                    | 轻量版上下文、页面边界、`LiteUiMask`                                                                                         |
-| `src/app/layout.tsx`                                                                                | 在原 AuthProvider 内挂载轻量版边界                                                                                           |
-| `src/components/leftnav.tsx`、`page_utils.ts`                                                       | 菜单、命令搜索数据源和页面可见性设置的过滤                                                                                   |
-| `src/components/ui/tabs.tsx`、`src/hooks/useUrlTab.ts`                                              | 屏蔽页签触发器和内容，处理已有 URL 选中隐藏页签的情况                                                                        |
-| `src/components/shared/form/FormField.tsx`、`common_components/MountedFormField.tsx`                | 共享表单字段屏蔽，保留注册和已有值                                                                                           |
-| `src/components/shared/DataTable/DataTable.tsx`、`DataTableFilterDrawer.tsx`                        | 列、列选择器和筛选区块过滤                                                                                                   |
-| `src/components/DashboardHeader.tsx`、Home 的 `HomePage.tsx`                                        | 入口和非核心区块屏蔽                                                                                                         |
-| `src/components/organisms/create_key_button.tsx`、`templates/key_edit_view.tsx`                     | Key 类型、所有者和高级表单区域屏蔽                                                                                           |
-| `src/components/templates/KeyInfoHeader.tsx`、`key_info_view.tsx`                                   | Key 重新生成按钮及详情展示区块屏蔽                                                                                           |
-| Models 下的 `page.tsx`、`AllModelsTable.tsx`、`ModelsTableColumns.tsx`、`LlmCredentialsPanel.tsx`   | 模型管理权限展示、表格和非核心面板                                                                                           |
-| 访问组下的 `AccessGroupCreateDialog.tsx`、`AccessGroupEditModal.tsx`、`AccessGroupsDetailsPage.tsx` | 复用集中页签过滤，创建、编辑和详情保留模型配置，编辑不清空隐藏授权                                                           |
-| `src/components/model_info_view.tsx`、`add_model/AddModelForm.tsx`                                  | 员工端管理区块和 Team-BYOK 控件屏蔽                                                                                          |
-| Usage 下的 `UsagePageView.tsx`、`UsageViewSelect.tsx`                                               | 非核心统计和查询入口屏蔽                                                                                                     |
-| `src/components/key_team_helpers/ModelMaxBudgetEditor.tsx`                                          | 共享单模型预算字段区块屏蔽                                                                                                   |
-| `src/components/common_components/PremiumLoggingSettings.tsx`                                       | Key 和团队独立日志的付费介绍及控件屏蔽                                                                                       |
-| `src/components/Teams.tsx`、`team/TeamInfo.tsx`、`team/EditMembership.tsx`                          | 团队日志与预算展示屏蔽，成员添加和编辑保留完整角色及附加字段                                                                 |
-| `src/components/object_permissions_view.tsx`                                                        | 轻量版不挂载资源权限概览，覆盖团队概览与设置详情及复用位置                                                                   |
-| `src/app/(dashboard)/users/_components/user_edit_view.tsx`、`view_users/user_info_view.tsx`         | 隐藏用户 MCP 配置与展示，普通用户配置保存不提交 MCP 授权                                                                     |
-| `src/app/(dashboard)/access-groups/_components/AccessGroupsTableColumns.tsx`                        | 轻量版资源数量仅展示模型，已有 MCP、智能体和技能授权不变                                                                     |
-| `src/components/logs/request/RequestLogsFilters.tsx`                                                | 保留公开模型查询及原后端参数，轻量版不展示搜索工具专属文案                                                                   |
-| `src/components/settings.tsx`、`alerting/dynamic_form.tsx`、`email_settings.tsx`                    | 默认告警页签、企业告警行和邮件品牌字段屏蔽                                                                                   |
-| `src/components/router_settings/RouterSettingsForm.tsx`                                             | 高级路由区块屏蔽                                                                                                             |
-| AdminPanel 和 `src/components/Settings/AdminSettings/UISettings/UISettings.tsx`                     | 管理设置默认页签和隐藏功能开关、关联入口。`TeamAdminEditableFieldsSettings.tsx` 另外隐藏 Projects 权限复选框，保留已有选择值 |
-| `eslint-suppressions.json`                                                                          | 随本分支既有 lint 清理收紧基线，不放宽规则                                                                                   |
-| 对应测试文件                                                                                        | 菜单、搜索、路由、表单值保留、页签、表格及付费控件行为回归                                                                   |
+主要实现为 [日志页面](<src/app/(dashboard)/logs/>)、[RequestLogsFilters.tsx](src/components/logs/request/RequestLogsFilters.tsx)、[日志详情组件](src/components/logs/detail/) 和共享页签、表格策略。审计抽屉的金额文案曾随公共格式更新，但审计入口仍隐藏，不能据此认定审计能力开放
 
-`LiteUiMask` 和共享字段用 `hidden` 与 `display:none` 隐藏区块，通常保留子组件挂载，避免表单编辑把原来存有的配置清空。屏蔽的页签内容则不渲染，即使有 `keepMounted` 或旧 URL 参数也不展示
+### 团队与成员
 
-共享字段对必填项和当前校验错误保留原有保护。例如 Team Admin 添加模型仍需要的团队作用域不能隐藏，否则原表单无法提交。团队成员表单保留原始角色选项和默认值，编辑时不会强制改写已有角色
+| 类型 | 具体差异                                                                                                                                 |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 屏蔽 | Default Team Settings 页签，创建团队中的独立 Logging Settings，以及组织、密钥管理设置、单模型预算编辑和详情展示                          |
+| 屏蔽 | 创建团队中的 MCP、智能体、搜索工具、技能四个折叠区，编辑中的对应授权字段及向量库字段，团队概览和详情的资源权限展示                       |
+| 修改 | 保存普通团队配置时跳过隐藏资源授权的重算和提交，避免目录不可用阻塞保存或覆盖已有权限                                                     |
+| 修改 | 团队、成员、默认预算、角色、周期、额度提示和权限表补齐中文及人民币单位，原始成员限额数据不重算                                           |
+| 保留 | 团队创建、编辑、删除、成员分配、模型权限、基本预算、成员预算和 TPM/RPM，团队管理员可编辑范围仍由原设置决定                               |
+| 保留 | 新增成员默认 User，可选择 Admin。编辑成员保留 Admin/User、模型范围、预算、周期、临时预算及到期时间、TPM/RPM 和按原许可证开放的单模型预算 |
 
-隐藏字段的已有值可能继续随原表单提交，或按社区原有 diff 逻辑不发送未改动字段。这不负责撤销已经启用的后端能力。若需要停用配置，必须另外评估并授权相应的数据或后端修改
+成员编辑是明确例外，附加字段通过局部解除轻量上下文恢复社区完整表单。不能将“共享单模型预算隐藏”写成“所有成员预算控件都删除”，也不能把恢复原表单写成新增权限
 
-团队和密钥在轻量版中保存普通配置时，不再重算或提交隐藏的资源授权。用户编辑也不提交 MCP 授权字段，避免改名、改预算时覆盖已有授权，或被不可用的 MCP 目录阻塞。资源权限概览不渲染，创建团队的资源折叠区和编辑团队的对应字段整体屏蔽，模型、预算、限流及成员 Admin/User 角色继续保留
+主要实现为 [Teams.tsx](src/components/Teams.tsx)、[TeamInfo.tsx](src/components/team/TeamInfo.tsx)、[EditMembership.tsx](src/components/team/EditMembership.tsx)、[TeamsPage](src/components/TeamsPage/)、[团队组件](src/components/team/) 和 [object_permissions_view.tsx](src/components/object_permissions_view.tsx)
 
-历史请求的实际类型、费用、模型响应和原始 JSON 继续保留，不按资源类型删除或漏算记录。日志中的公开模型筛选保留原查询字段，仅移除搜索工具专属文案。模型本身的工具调用参数不参与屏蔽。前端隐藏不会停用后端能力，已有配置、访问组授权、密钥或外部客户端仍可能发起相关请求
+### 用户管理与批量邀请
 
-## MoMA 主题与国际化
+| 类型 | 具体差异                                                                                                                                             |
+| ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 屏蔽 | 用户详情的 MCP 权限、编辑中的 MCP 服务器选择和工具权限，普通编辑不提交 MCP 授权字段                                                                  |
+| 屏蔽 | 共享组织和单模型预算字段，受共享表单策略覆盖的位置见附录一                                                                                           |
+| 修改 | 创建、详情、编辑、批量编辑、默认用户设置与批量邀请补齐中文，含角色、模型通配选项、预算周期、CSV 校验、预览和结果提示                                 |
+| 修改 | 用户详情的 Savings、Auto-router usage 补齐节省计算、缓存类别、空状态和日期，金额用人民币展示。这两个用户详情页签仍保留，不受密钥详情同名页签屏蔽影响 |
+| 保留 | 用户身份、平台角色、团队、模型、预算、限流和原有管理操作，CSV 模板列名、邮箱、用户输入与提交值不翻译                                                 |
 
-控制台使用左侧分组导航。桌面分为模型服务、用量与配额、访问控制和系统设置，顶部保留品牌、语言、搜索、主题、状态和账号。访问控制与系统设置直接复用社区菜单的对应分组，前者包含团队、用户管理、访问组和预算，后者包含路由设置、日志与告警、系统设置和界面主题。小于 1100px 时将同一份导航放入抽屉。菜单数据、角色判断、用户页面设置和页面白名单继续复用社区过滤函数，未新增管理员权限或放开已屏蔽页面。员工仅在访问控制中看到原有团队入口，没有可见设置项时不显示系统设置分组
+主要实现为 [用户管理目录](<src/app/(dashboard)/users/>)、[user_edit_view.tsx](<src/app/(dashboard)/users/_components/user_edit_view.tsx>)、[user_info_view.tsx](<src/app/(dashboard)/users/_components/view_users/user_info_view.tsx>)、[CreateUserButton.tsx](src/components/CreateUserButton.tsx)、[bulk_create_users_button.tsx](src/components/bulk_create_users_button.tsx) 和新增的 [BulkUserTemplateColumns.tsx](src/components/BulkUserTemplateColumns.tsx)。被屏蔽的独立 Cost Optimization 页中仍有被用户详情复用的组件，因此相关中文和金额修改不表示重新开放该页面
 
-默认品牌在控制台页头、窄屏导航、登录、开通账户、加载页和账户菜单中为纯文字 MoMA 轻量版。管理员可在界面主题配置普通、深色 Logo 和浏览器图标的 HTTP(S) 地址。页头和登录页通过 `MomaBrand.tsx` 显示已配置 Logo，深色标志缺失或加载失败时使用普通标志，全部不可用时显示默认文字。`ThemeContext.tsx` 同步图标预览与恢复默认，配置字段、保存接口和权限保持原实现，未新增文件上传入口。页面标题同时更新。供应商标识、模型名称和技术参数保留原值。保留页面的社区推广与文档链接按下述品牌清理规则移除
+### 访问组与预算
 
-浅蓝灰背景、白色侧栏与卡片、蓝紫色强调色集中在 `src/app/moma-theme.css`，同时保留深色模式。当前统一规范记录在 [DESIGN.md](DESIGN.md)，后续调整样式应先核对该规范。字号继续为相邻 1.5 倍的 `47.25 / 31.5 / 21 / 14px` 四档，页面标题和核心指标为 31.5px，区块标题、弹窗标题及桌面品牌为 21px，普通正文、模型名称、导航、表格和控件统一为 14px。47.25px 仅保留为确有需要时使用的展示档。桌面页头高 56px、侧栏宽 208px、内容内边距 20px。模型卡片按最小 240px 自动排布，间距 12px、内边距 16px，手机保持单列和导航抽屉
+| 类型 | 模块   | 具体差异                                                                                                            |
+| ---- | ------ | ------------------------------------------------------------------------------------------------------------------- |
+| 屏蔽 | 访问组 | 创建、编辑、详情中的 MCP Servers、Agents、Skills 页签和内容，列表资源数量仅显示模型                                 |
+| 修改 | 访问组 | 共享页签过滤同样处理强制选中隐藏页签，编辑只改可见内容，不清空已有隐藏资源授权                                      |
+| 保留 | 访问组 | 创建和编辑的基本信息、模型，详情的模型与原有管理流程，不新增后端分组规则                                            |
+| 修改 | 预算   | 创建、编辑、列表和提示使用中文与人民币，重置周期显示“总计、每天、每周、每月”，提交值仍为 `null`、`24h`、`7d`、`30d` |
+| 保留 | 预算   | 原预算 CRUD、校验、重置周期计算及接口，不新增钱包、汇率、收费或结算                                                 |
 
-字号从 `--moma-text-caption` 的 `0.875rem` 逐级乘以 1.5，映射 Tailwind 与已有固定字号类，以上像素值按默认根字号 16px 计算。继续使用系统中文字体、rem、原有中英文切换和人民币单位。原顶部导航的窄桌面压缩规则已删除，避免与新侧栏叠加
+主要实现为 [访问组目录](<src/app/(dashboard)/access-groups/>)、[预算目录](<src/app/(dashboard)/budgets/>)、[BudgetFormFields.tsx](<src/app/(dashboard)/budgets/_components/BudgetFormFields.tsx>)、[BudgetPeriodTooltip.tsx](src/components/shared/BudgetPeriodTooltip.tsx) 和 [InheritedBudgetHint.tsx](src/components/shared/InheritedBudgetHint.tsx)
 
-表格高度继续随内容结束，保留列调整、排序、筛选和横向滚动。侧栏占用宽度后，部分桌面宽度下也需要横向滚动查看完整密钥表格，未为适配外观删掉原有可用字段
+### 路由设置
 
-实体名称下钻统一复用 `shared/table_cells/identity_cell.tsx`。有点击回调或真实链接时，名称默认使用主色并常显右箭头，悬停增加浅色背景与名称下划线，键盘聚焦显示内侧 2px 主色边框与下划线。副标题、ID、状态和纯文本保留原有展示，不改变下钻目标、角色权限、修饰键新标签页或表格其他操作。影响团队、用户、密钥和关联实体列，以及复用该组件的模型、凭据、健康检查和访问组等列表，不恢复已屏蔽的页面。`team/TeamVirtualKeysTable.tsx` 的密钥别名也使用此组件，打开与原 Key ID 相同的密钥详情
+| 类型 | 具体差异                                                                                   |
+| ---- | ------------------------------------------------------------------------------------------ |
+| 屏蔽 | Routing Strategy Selector、Tag Filtering 和 Latency Based Configuration 高级配置区         |
+| 修改 | 基础设置、重试、回退和路由分组弹窗的标签、选项、说明和反馈接入中文，显示标签与请求枚举分离 |
+| 保留 | 可见的基础重试等设置、原配置归属和接口提交逻辑，隐藏设置的已有后端效果继续存在             |
 
-`shared/table_cells/UserPopoverCell.tsx` 的悬停卡片触发容器保留列宽限制，移除会裁掉关联用户链接焦点边框的额外 overflow 裁切，名称省略继续由 IdentityCell 和表格单元格负责
+主要实现为 [RouterSettingsForm.tsx](src/components/router_settings/RouterSettingsForm.tsx)、[路由设置组件](src/components/router_settings/)、[回退设置](src/components/Settings/RouterSettings/Fallbacks/) 和 [routing_groups](src/components/routing_groups/)。被其他保留界面复用的弹窗补译不表示恢复 Auto Routers 等隐藏页签
 
-普通桌面控件和分页设为 32px，手机主要控件保留 40px，抽屉导航项保留 44px。表头为 36px，数据单元格上下内边距 8px、行高 20px，多行内容自然增高。卡片使用统一的 16px 内边距、12px 圆角和单层边框。页面区块间距 16px、操作组间距 8px、字段间距 16px，清理重复的页面内边距。模型开通、权限、查询、原始字段及接口逻辑不变
+### 日志与告警、邮件设置
 
-密钥表格在 `VirtualKeysPage/keyTableColumns.tsx` 使用原 `ModelsCell` 的 `maxVisible` 参数，默认显示 1 个模型及剩余数量，避免窄列中的多个标签将整行撑高。其余模型继续通过原提示和密钥详情查看，不修改 Key 的 models、模型权限或接口提交值。对应表格测试同步检查首项和剩余数量，未修改共享 ModelsCell 的默认行为
+| 类型 | 具体差异                                                                                                     |
+| ---- | ------------------------------------------------------------------------------------------------------------ |
+| 屏蔽 | Logging Callbacks、CloudZero、MS Teams Alerts 页签，Region Outage 企业告警                                   |
+| 屏蔽 | 动态参数表中 `premium_field=true` 的整行，包括控件、说明和升级链接，独立 `PremiumLoggingSettings` 也不展示   |
+| 屏蔽 | 邮件品牌字段 `EMAIL_LOGO_URL`、`EMAIL_SUPPORT_CONTACT`                                                       |
+| 修改 | 默认页签从 Logging Callbacks 改为 Alerting Types，SMTP、普通邮件事件、动态告警、参数标签和反馈补齐中文       |
+| 保留 | 普通告警类型与参数、SMTP、测试邮件和普通邮件事件，原始事件 ID、SMTP 键、敏感值遮罩、仅提交修改字段和重置逻辑 |
 
-共享表格的工具栏、状态标记和分页一并应用主题。分页显示总条数和当前页码，完整结果范围与总页数继续提供给读屏工具，翻页和每页条数回调不变。中文日期与相对时间使用中文显示，英文使用英语日期和相对时间，原始时间戳不变。这些是展示调整，原有创建、编辑、筛选、排序、分页和弹窗操作继续使用原实现
+隐藏付费行不改变原配置数组索引，普通参数重置仍使用原始索引，不能先过滤数组再将新索引传给后端。界面设置中的 Logging Settings 与此处被隐藏的 Logging Callbacks 是不同区块，前者继续保留
 
-| 实现位置，相对 dashboard                                                                                                                                                                                                                                                                                                    | 维护内容                                               |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `src/components/MomaNavigation.tsx`、`DashboardHeader.tsx`、`src/app/(dashboard)/layout.tsx`                                                                                                                                                                                                                                | 左侧分组导航、顶部账号入口、窄屏同源抽屉               |
-| `src/app/moma-theme.css`、`src/components/shared/PageHeader.tsx`、`DataTable/DataTable.tsx`                                                                                                                                                                                                                                 | 主题令牌、页面留白、密钥页操作区、表格高度与样式作用域 |
-| `src/components/VirtualKeysPage/keyTableColumns.tsx`、`src/components/shared/DataTable/DataTablePagination.tsx`、`src/components/shared/table_cells/status_badge.tsx`、`date_cell.tsx`                                                                                                                                      | 默认列宽、分页展示、状态标记与日期格式                 |
-| `src/contexts/LocaleContext.tsx`、`src/i18n/translate.ts`、`src/i18n/zh-CN.json`                                                                                                                                                                                                                                            | 中英文切换、词典与参数插值、未知文案回退               |
-| `src/components/LanguageSwitcher.tsx`、`src/contexts/TerminologyContext.tsx`、`src/app/layout.tsx`                                                                                                                                                                                                                          | 语言切换按钮、现有术语层接入、默认中文和 HTML lang     |
-| `src/components/ui/` 中的 input、textarea、button、combobox、select、label、field、tabs、dialog、alert-dialog、card、sheet                                                                                                                                                                                                  | 标签、提示、占位符和无障碍文案的显示层翻译             |
-| `src/components/shared/` 中的 PageHeader、DataTable、CopyButton、MultiSelect、advanced_date_picker、chart_loader、CreatedKeyDisplay、form/LabelWithHint、table_cells                                                                                                                                                        | 表头、分页、状态、日期与常用交互文案                   |
-| `src/app/(dashboard)/` 下 home、api-keys、models-and-endpoints、usage、users、teams、access-groups、budgets、logs、admin-panel                                                                                                                                                                                              | 保留页面的静态中文文案                                 |
-| `src/components/` 下 UsagePage、Teams、TeamsPage、team、organisms/create_key_button、templates/key_info_view、templates/key_edit_view、model_info_view、CreateUserButton、bulk_create_users_button、settings、router_settings、email_settings、Settings/AdminSettings/UISettings、Settings/AdminSettings/UserBannerSettings | 保留表单、详情与管理区域的界面文案                     |
-| `src/components/CommandPalette/CommandPaletteTrigger.tsx`、`ThemeToggle/ThemeToggle.tsx`、`DeploymentHealth/DeploymentHealth.tsx`、`common_components/budget_duration_dropdown.tsx`                                                                                                                                         | 紧凑搜索入口、主题切换、告警标题、预算周期的界面文案   |
-| `src/app/login`、`src/app/onboarding`、`src/app/(dashboard)/change-password`、leftnav、navbar、SidebarAccountMenu、common_components/LoadingScreen                                                                                                                                                                          | 文字品牌与账户流程文案                                 |
+主要实现为 [settings.tsx](src/components/settings.tsx)、[dynamic_form.tsx](src/components/alerting/dynamic_form.tsx)、[email_settings.tsx](src/components/email_settings.tsx)、[email_event_settings.tsx](src/components/email_events/email_event_settings.tsx) 和 [PremiumLoggingSettings.tsx](src/components/common_components/PremiumLoggingSettings.tsx)
 
-`src/app/(dashboard)/ui-theme/UIThemeSettings.tsx`、`src/components/MomaBrand.tsx`、`DashboardHeader.tsx`、`src/app/login/LoginPage.tsx` 和 `src/contexts/ThemeContext.tsx` 负责主题配置与品牌展示，`SSOSettings/`、`SCIM.tsx`、`AdminPanel.tsx` 和 `liteUi.ts` 负责恢复身份配置入口及中文显示
+### 系统管理与身份配置
 
-共享组合框通过 `dismissLabel` 将屏幕阅读器关闭按钮接入词典，中文为“关闭”，语言切换时同步更新。`scripts/localize-base-ui.mjs` 在安装依赖和构建前为固定版本 `@base-ui/react@1.6.0` 应用最小补丁，覆盖 ESM、CommonJS 和类型声明。补丁保留原关闭事件与焦点管理，不扫描或改写 DOM。依赖版本或补丁锚点不匹配时停止安装或构建，升级前须核对补丁及共享组合框回归
+| 类型         | 具体差异                                                                                                                                                                |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 屏蔽         | Security Settings、Hashicorp Vault、CyberArk、Plugins、Web Search Interception 页签，旧 Security Settings 内的 SSO 管理、IP 白名单和 UI Access Control 弹窗入口随之隐藏 |
+| 保留并本地化 | 独立 SSO Settings、SCIM、UI Settings、Logging Settings，管理员可进入配置，默认打开 UI Settings                                                                          |
+| 修改         | SSO 提供方、角色映射、字段、校验、创建、编辑和删除确认补齐中文，保留原提交值与密钥遮罩                                                                                  |
+| 修改         | SCIM 地址、令牌创建与结果提示补齐中文，缺少企业许可证时说明同步接口的授权限制                                                                                           |
+| 屏蔽         | UI Settings 中 Projects、Chat、Agents、Vector Stores 相关开关，公开 AI Hub 认证、组织搜索作用域、客户端 Header 转发、供应商认证 Header 转发，以及 Moyai 整个连接区域    |
+| 屏蔽         | 团队管理员可编辑字段设置中的 Projects 权限复选框，已有选择值保留。被隐藏区块对应的分隔线一并隐藏                                                                        |
+| 保留         | 其他原有界面和日志设置、SSO 与 SCIM 原接口、鉴权和许可证。开放配置入口不等于获得企业授权，不停用已配置的安全策略或现有登录                                              |
 
-英文源码文案作为词典键，中文词典位于一个 JSON 文件。`LocalizedText` 只翻译显式包裹的界面字符串，不扫描或改写 DOM，不递归翻译用户数据。字段的 name、选项 value、请求参数、模型 ID、用户邮箱和密钥值保持原样。模型通配选项、角色选项等只翻译显示标签，提交值保持原值
+主要实现为 [AdminPanel.tsx](<src/app/(dashboard)/admin-panel/_components/AdminPanel.tsx>)、[UISettings.tsx](src/components/Settings/AdminSettings/UISettings/UISettings.tsx)、[TeamAdminEditableFieldsSettings.tsx](src/components/Settings/AdminSettings/UISettings/TeamAdminEditableFieldsSettings.tsx)、[SSOSettings](src/components/Settings/AdminSettings/SSOSettings/) 和 [SCIM.tsx](src/components/SCIM.tsx)
 
-语言偏好保存在浏览器 `moma.locale`，不发送到后端。支持 `zh-CN` 与 `en`，默认中文，刷新时恢复已保存语言。语言切换不重新挂载页面或表单。日期显示可以本地化，时间戳和时区语义保持原逻辑。货币标识默认人民币，金额数值和接口提交值保持原样
+### 界面主题、品牌与通用交互
 
-未知文案仍有英文回退机制，不能把回退作为新增界面文案的验收结果。普通说明、状态、选项、帮助与反馈使用中文。模型名称、供应商名称、用户输入、接口标识、原始模型响应、API 错误详情、JSON 和代码示例保留原文。社区新增或修改界面文案时，需要同步补充词典和渲染位置，不能把中英文字符串用于权限、路由或筛选条件判断。已有组织等字段屏蔽仍以原始字段名和英文配置标签为依据，翻译发生在显示层之后
+| 类型 | 具体差异                                                                                                                                                                        |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 新增 | MoMA 主题样式与 `MomaBrand`，页头、登录、账户开通、加载页和账户菜单默认使用“MoMA 轻量版”，页面标题同步调整                                                                      |
+| 修改 | 沿用原主题配置接口，管理员可配置普通 Logo、深色 Logo 和浏览器图标的 HTTP(S) 地址。深色 Logo 缺失或失败时回退普通 Logo，全部失败时回退文字，支持实时预览及恢复默认，没有新增上传 |
+| 修改 | 浅蓝灰背景、白色侧栏与卡片、蓝紫强调色并保留深色模式，统一页面、详情、控件、卡片、弹窗、表格和分页                                                                              |
+| 修改 | 页头高 56px，侧栏宽 208px，内容内边距 20px，区块间距 16px，操作组 8px。卡片最小 240px、间距 12px、内边距 16px、圆角 12px，手机单列                                              |
+| 修改 | 普通正文、导航、表格和控件为 14px，区块、弹窗标题及桌面品牌为 21px，页面标题与核心指标为 31.5px，47.25px 保留作展示档，按 rem 和默认根字号换算                                  |
+| 修改 | 桌面普通控件与分页 32px，手机主要控件 40px，抽屉项 44px，表头 36px，数据行上下内边距 8px、行高 20px，多行自然增高                                                               |
+| 修改 | 共享实体名称以主色、常显右箭头、悬停背景与下划线提示下钻，键盘焦点有内侧 2px 边框，团队内密钥别名与原 Key ID 打开同一详情                                                       |
+| 修改 | 共享用户悬停卡片去除会裁掉焦点边框的额外 overflow，继续保留列宽与省略。分页展示总条数和当前页，完整范围与总页数保留读屏说明                                                     |
+| 修改 | 密钥和团队创建弹窗宽 800px，模型参数与默认用户设置使用两列网格，去除重复缩进，动作可换行，窄屏保留内部滚动                                                                      |
+| 保留 | 表格原排序、筛选、列宽调整、横向滚动与翻页回调。表格高度随内容结束，窄桌面可能需要横向滚动，不因布局删掉其他可用字段                                                            |
 
-## 模型服务控制台与一键开通
+默认品牌和主题是本版新增或修改，配置 Logo 的后端能力则来自开源基线。实体下钻样式影响复用单元格的团队、用户、密钥、模型、凭据、健康检查、访问组等列表，不改变目标、权限、真实链接或修饰键行为
 
-首页改为工作台，展示原有最近 7 天实际花费、请求数、Token、平均费用与延迟，以及同一接口数据的 Token 趋势。没有改成当月统计或预计费用。另展示可用模型入口和使用指引，不提供账户钱包、订单、支付、退订、Token Plan、智能路由、模型排行榜或 Token 计算器。模型体验和工具管理继续按原裁剪策略隐藏
+保留页面移除社区文档、反馈和销售外链，保留字段解释与校验。部署健康告警仍展示真实密码、Redis、调试日志和许可证风险，忽略、暂缓、恢复及权限不变，已知文案补译，未知告警原样显示。通知面板保留组件与空状态，但不查询或展示上游版本发布通知
 
-模型页的员工默认视图为卡片，管理员默认仍为配置列表，两者均可切换卡片或列表。视图切换仅为当前组件的展示状态。搜索、团队、查看范围、排序、筛选和分页仍由 `AllModelsTab` 的原 nuqs 状态及服务端查询管理，列表视图保留完整的原有筛选与列操作，切换视图不清空筛选。卡片和开通参数复用社区的团队公开模型名称解析，保留团队别名。卡片沿用真实模型名、供应商标识、可用上下文参数和暂停状态，不补造模型介绍、价格、销量或排名
+主要实现为 [moma-theme.css](src/app/moma-theme.css)、[MomaBrand.tsx](src/components/MomaBrand.tsx)、[DashboardHeader.tsx](src/components/DashboardHeader.tsx)、[ThemeContext.tsx](src/contexts/ThemeContext.tsx)、[UIThemeSettings.tsx](<src/app/(dashboard)/ui-theme/UIThemeSettings.tsx>)、[shared 组件](src/components/shared/)、[identity_cell.tsx](src/components/shared/table_cells/identity_cell.tsx)、[UserPopoverCell.tsx](src/components/shared/table_cells/UserPopoverCell.tsx)、[TeamVirtualKeysTable.tsx](src/components/team/TeamVirtualKeysTable.tsx)、[DeploymentHealth](src/components/DeploymentHealth/) 和 [SidebarAccountMenu](src/components/SidebarAccountMenu/)。具体样式以 [DESIGN.md](DESIGN.md) 为准，视觉复核范围见 [design-qa.md](design-qa.md)
 
-“开通”是新的前端快捷交互，复用 `POST /key/generate`。员工点击后，为当前用户及所选个人或团队范围创建一个 `llm_api` Key，`models` 只包含所选具体模型，不提交空模型列表或通配权限，不新增订单、开通记录、审批接口或数据库字段。授权模型仍取自现有 `/models` 接口，预算、限流、团队及用户权限由原后端校验。禁用非管理员个人 Key 创建时需要选择有权使用的团队，管理员仍遵守原有角色边界
+### 中英文与系统资源显示名
 
-开通状态来自当前用户在所选范围的有效 Key。先读取全部 Key 列表分页，排除停用、删除、过期、管理型、只读型和被停用团队的 Key，已有 Key 覆盖所选模型时直接显示已开通及立即使用。已有全模型 Key 会使其覆盖的模型直接显示已开通，不制造另一份独立订购状态。访问组等间接授权不能从 Key 模型列表确认时，不推断为已开通，实际调用权限继续由后端决定
+| 类型 | 具体差异                                                                                                                                                  |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 新增 | `LocaleContext`、`LanguageSwitcher`、中文词典和翻译函数，支持 `zh-CN` 与 `en`，默认中文                                                                   |
+| 修改 | 语言偏好存于浏览器 `moma.locale`，刷新恢复并同步 HTML `lang`，切换语言不重新挂载页面和表单，不发送语言到后端                                              |
+| 修改 | 保留页面的静态说明、菜单、搜索、表头、日期、相对时间、状态、占位、表单、下拉、弹窗、通知、校验、操作反馈和辅助名称接入显示层翻译                          |
+| 修改 | 中文表单标签不附括号英文参数名，英文保留原标签，字段注册与用户输入不变。命令面板支持中文搜索                                                              |
+| 修改 | 组合框用 `dismissLabel` 翻译两个读屏关闭按钮，安装和构建前对固定 `@base-ui/react@1.6.0` 应用最小补丁，覆盖 ESM、CommonJS 与类型声明，版本或锚点失配时停止 |
+| 修改 | 非 React 反馈通过 `getLocale` 获取语言，真实异常由 `toast.fromError` 给出中文概要并保留技术详情，登录只翻译词典内已知错误                                 |
+| 保留 | 字段 name、选项 value、请求枚举、模型 ID、供应商名称、用户输入、邮箱、密钥、原始 JSON、代码示例、响应和未知上游错误，不递归翻译用户数据或扫描改写 DOM     |
 
-成功后展示新 Key、模型名和网关 Base URL，完整 Key 只放在当前结果弹窗的 React 状态中，关闭后清除，不写入浏览器存储、URL、截图或文档。已有凭证入口只使用原 Key 列表返回的标识。单个页面内用请求锁防止连续点击重复创建，未新增跨标签页或服务端幂等保证。响应不符合预期时提示先查看 API 密钥结果，失败不伪造成功
-
-开通只完成原生凭证配置，不代表上游服务已实际连通或调用成功。暂停模型和用户尚无权限的模型不能使用此快捷入口，后端拒绝时沿用错误反馈，不绕过管理员权限或许可证
-
-| 实现位置，相对 dashboard                                                                     | 当前差异                                                                                                                                    |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/components/MomaNavigation.tsx`、`DashboardHeader.tsx`、`src/app/(dashboard)/layout.tsx` | 分组侧栏、精简页头、桌面与抽屉共用菜单及社区可见性判断                                                                                      |
-| `src/app/moma-theme.css`                                                                     | 控制台布局、蓝紫色令牌、卡片、响应式尺寸与保留的字号阶梯                                                                                    |
-| `src/app/(dashboard)/home/_components/HomePage.tsx`                                          | 真实 7 天概览、趋势、可用模型入口和指引，删除原首页已隐藏的新闻与榜单渲染及其请求                                                           |
-| Models 下的 `page.tsx`、`components/AllModelsTab.tsx`、`AllModelsTable.tsx`                  | 模型广场文案、角色默认视图、复用原查询的卡片与列表切换                                                                                      |
-| `src/components/ModelCatalog.tsx`、`modelAccess.ts`                                          | 有效凭证匹配、原生创建 Key 的快捷开通及结果展示                                                                                             |
-| `src/app/(dashboard)/hooks/keys/useKeys.ts`                                                  | 无限分页与普通 Key 列表共用原查询命名空间，以额外键区分响应结构。原有创建、编辑、删除和停用的缓存失效同步刷新开通状态，无接口参数或响应变更 |
-| `src/i18n/zh-CN.json`                                                                        | 新导航、卡片、开通成功与失败提示的中文                                                                                                      |
-| 对应导航、页头、布局、首页和模型测试                                                         | 按当前裁剪版显示行为更新过时预期，新增开通成功、拒绝、重复点击和范围约束测试                                                                |
-
-合并社区版本时核对 Key 模型通配符与空列表含义、Key 类型、生命周期状态、个人 Key 设置、团队模型范围、用户归属和分页字段。若社区调整凭证列表结构或 `/key/generate` 的必填字段，同步修改快捷开通及其测试，不以新增后端兼容接口绕开原策略
-
-## 人民币单位
-
-界面货币单位默认人民币。金额符号使用 `¥`，中文单位使用人民币，英文单位使用 `CNY`。语言切换不会改变币种，不新增汇率、换算、货币切换或金额迁移
-
-花费、预算、模型价格、单次成本、图表坐标与提示、表单单位和金额导出表头统一更新。输入 150.75 仍按 150.75 提交，现有预算 10 仍显示为 ¥10.00。零值、精度、小额阈值、负数、预算比率和上限校验保留原实现。用户输入、模型标识、API 字段名、原始 JSON 和外部数据不会被全局替换
-
-这是前端单位标识调整。数据库、成本计算、模型费率、供应商账单、后端 API 及其社区 USD 说明没有修改，历史数值也没有重新计价。使用内置美元费率时，本次不会将其数值换算成人民币，真实成本口径需要由实际配置的模型价格保证
-
-| 实现位置，相对 dashboard                                                                                                                                                                                                    | 修改内容                                                                                                 |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `src/utils/dataUtils.ts`、`src/components/UsagePage/utils/value_formatters.tsx`、`src/app/(dashboard)/cost-optimization/_components/costOptimizationUtils.ts`                                                               | 公共金额、小额阈值、每秒成本、图表和节省金额格式器使用人民币符号。最后一个模块也被用户详情等保留页面复用 |
-| `src/components/shared/table_cells/`、`BudgetPeriodTooltip.tsx`、`InheritedBudgetHint.tsx`、`shared/charts/chart_tooltip.tsx`                                                                                               | 表格、预算提示、继承预算和图表金额显示                                                                   |
-| `src/components/organisms/create_key_button.tsx`、`templates/key_info_view.tsx`、`key_edit_view.tsx`、`key_team_helpers/`                                                                                                   | 密钥创建与编辑的 CNY 标签、明细、预算输入占位与提示，提交逻辑不变                                        |
-| `src/components/Teams.tsx`、`TeamsPage/`、`team/`、`src/app/(dashboard)/users/_components/`、`budgets/_components/`                                                                                                         | 团队、成员、用户和预算的金额、表单标签、CSV 表头                                                         |
-| `src/app/(dashboard)/models-and-endpoints/components/`、`src/components/molecules/models/ModelPricingSummary.tsx`、`ModelInfoEditForm.tsx`、`add_model/advanced_settings.tsx`、`common_components/check_openapi_schema.tsx` | 模型价格显示、访问组预算、费率单位与预算占位                                                             |
-| `src/components/UsagePage/components/`、`activity_metrics.tsx`、`per_user_usage.tsx`、`src/app/(dashboard)/usage/_components/components/`、`router-settings/_components/general_settings.tsx`                               | 用量卡片、排名、图表、导出金额标签与配置金额符号                                                         |
-| `src/components/logs/`                                                                                                                                                                                                      | 请求费用、分类器费用与成本明细。既有审计抽屉的金额文字也同步，审计入口仍屏蔽                             |
-| `src/i18n/zh-CN.json`、`translate.test.ts` 与对应组件测试                                                                                                                                                                   | 人民币翻译、英文 CNY 标签，以及输入数据不被翻译的回归验证                                                |
-
-后续合并时要检查新增的金额格式器、写死的美元符号、USD 单位、预算占位、图表提示和导出表头，保留对原始数据与代码示例的边界，不做全局字符串替换
-
-## 布局与本地化补充
-
-首页与用量的概览指标采用五列，平均花费和平均延迟分别展示，数值顶部对齐。首页趋势图高 160px，区块与面板内边距为 12px，可用模型仍只展示原授权接口返回的前三项。用量页的供应商与用户排行位于第一行，密钥排行与 API 路径请求量位于第二行，1100px 以上双列对齐。普通概览图高 256px，compact 图表高 224px，金额列沿用 numeric 元数据右对齐
-
-共享 Page 和 PageHeader 统一页面标题与内容边界，详情页移除重复缩进并允许动作换行。模型参数和默认用户设置采用两列网格，错误指标为标签预留一致高度。创建密钥和团队弹窗宽 800px，保留窄屏内部滚动、字段顺序、校验和提交处理。日期控件使用 compact 展示及独立面板宽度，InputGroup 内输入跟随外框高度，不改变查询状态或日期语义
-
-共享表单通过 `LocaleContext.LocalizedLabel` 显示标签，中文不附带括号英文参数名，英文模式保留原标签。表单字段注册、必填校验、隐藏值及请求键保持原实现，用户输入中的括号和英文不会被清理
-
-命令面板的首次提示、标题、分组、动作、类型、快捷键说明和中文搜索使用现有词典。密钥及日志筛选同时翻译选项与选中值，筛选仍提交原枚举。密钥、模型及用户详情的占位值、预算周期、凭据状态、每日与每周图表日期均按当前语言显示，金额数值和时间戳不变
-
-预算创建与编辑共用 `budgets/_components/BudgetFormFields.tsx`。重置周期下拉项和选中值显示为“总计、每天、每周、每月”，词典补齐 `per day`、`per week`、`per month`，英文模式保留原文。提交值仍为 `null`、`24h`、`7d`、`30d`，不改变预算重置规则或已有数据
-
-批量邀请的说明、CSV 校验、预览与结果提示，默认用户的角色和预算周期，模型模式、身份联合认证、路由分组和回退配置均使用中文显示。模型模式保留协议路径，角色、模型、周期、认证来源和路由策略仍提交原始值。模板列名与用户自定义名称不翻译
-
-用户详情的节省与自动路由用量补齐统计卡片、计算说明、缓存类别、空状态和日期。共享资源选择器、图表与用量排行补齐空状态，费用明细、复制操作、排序及筛选移除按钮补齐辅助名称。部署告警的忽略和暂缓时间按当前语言显示，不改变时间点和操作人标识
-
-SMTP、邮件事件、动态告警参数和日志设置接入现有翻译。事件 ID、参数键、原输入和仅提交修改字段的逻辑保留。`getLocale` 为非 React 操作反馈提供当前语言，已知界面提示与校验使用翻译，真实异常通过 `toast.fromError` 提供中文概要并保留技术详情。登录页只额外翻译词典内已知的凭据错误，不改后端响应，其他未知错误继续显示原文
-
-| 实现位置，相对 dashboard                                                                                                                                                          | 维护内容                                        |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `src/components/shared/Page.tsx`、`PageHeader.tsx`、`src/app/moma-theme.css`                                                                                                      | 页面对齐、详情、表单、控件与弹窗密度            |
-| 首页 `HomePage.tsx`、用量 `overview/UsageStatStrip.tsx`、`Primitives.tsx`、`UsageOverview.tsx`                                                                                    | 概览指标、趋势和统计面板排布                    |
-| `src/contexts/LocaleContext.tsx`、共享 `FormField.tsx`、`MountedFormField.tsx`、`LabeledField.tsx`                                                                                | 中文标签、注册值与语言切换边界                  |
-| `src/components/CommandPalette/`、`VirtualKeysPage/VirtualKeysTable.tsx`、`logs/request/RequestLogsFilters.tsx`                                                                   | 首次提示、中文搜索、状态筛选与空状态            |
-| `src/components/logs/detail/`、`templates/key_info_view.tsx`、`key_edit_view.tsx`、`ModelInfoEditForm.tsx`、用户 `user_info_view.tsx`                                             | 详情占位、人民币、角色、日期、请求说明与字号    |
-| 用量 `overview/UsageBreakdownChart.tsx`、`overviewData.ts`、`shared/advanced_date_picker.tsx`                                                                                     | 图表刻度、提示与日期面板本地化                  |
-| `src/components/email_events/email_event_settings.tsx`、`email_settings.tsx`、`alerting/dynamic_form.tsx`、`Settings/AdminSettings/LoggingSettings/LoggingSettings.tsx`           | 邮件、告警及日志设置文案，原参数提交不变        |
-| `src/components/bulk_create_users_button.tsx`、`BulkUserTemplateColumns.tsx`、用户 `default-user-settings/`                                                                       | 批量邀请与默认用户选项，原 CSV 列名和提交值保留 |
-| `src/components/ModelSelect/`、`shared/SearchSelect.tsx`、`model_add/FederationFields.tsx`、`add_model/AddModelForm.tsx`、`routing_groups/`、`Settings/RouterSettings/Fallbacks/` | 模型、资源、认证与路由弹窗的选项和说明          |
-| `src/components/shared/ScopedSavingsTab.tsx`、`SavingsTiles.tsx`、`SummaryCard.tsx`、`shared/charts/`、用户复用的 `cost-optimization/_components/`                                | 节省、路由用量和图表条件内容，日期和费用单位    |
-| `src/components/shared/CopyButton.tsx`、`shared/DataTable/`、`ui/sonner.tsx`                                                                                                      | 复制、排序、筛选及通知辅助名称                  |
-| `src/lib/toast.ts`、`src/app/login/LoginPage.tsx`、`src/i18n/zh-CN.json`                                                                                                          | 操作反馈、已知登录错误与词典                    |
-
-## 品牌文案与系统资源显示名
-
-顶栏不再挂载 Docs、Blog 和社区推广入口。账户菜单移除上游版本徽章、发布说明外链及版本查询，感谢提示使用 MoMA。轻量版通知面板保留组件与空状态，但不查询和展示上游版本发布通知。非轻量版分支保持社区行为
-
-密钥累计花费提示保留历史用量可能未回填的说明，移除上游版本和发布日期并接入翻译。模型新增、详情、凭据复用、连接测试、用户邀请、团队字段帮助和邮件设置移除社区文档或反馈链接，保留字段解释、校验和原操作。模型名称、调用参数、日志处理开销、复制辅助名称、开通成功说明和客户端接入说明使用产品文案
-
-部署健康告警继续展示。已知告警、分组、动作和许可证日期提供中文，保留共享环境密码、缺少 Redis、调试日志等实际风险和配置说明，移除厂商文档和销售联系。忽略、暂缓、恢复与原权限逻辑不变，未知告警继续显示原消息
-
-`src/utils/systemResourceLabel.ts` 只映射下表中的完整系统标识，中英文均有对应名称，不对子串或用户自定义内容做替换。共享 ID、身份及字段单元格，用量标签、排行、图表和日志筛选使用显示名。数据库值、筛选值、点击回调、链接与复制结果仍使用原始标识
+系统资源显示名仅精确匹配下表标识，中英文均有名称，不替换子串或用户自定义内容。表格、用量排行、图表与日志筛选显示名称，数据库值、过滤值、复制结果、链接和点击参数保持原始标识
 
 | 原始标识                                                                  | 中文显示名   |
 | ------------------------------------------------------------------------- | ------------ |
@@ -298,61 +276,137 @@ SMTP、邮件事件、动态告警参数和日志设置接入现有翻译。事�
 | `litellm_proxy_master_key`、`key-hash-litellm_proxy_master_key`           | 平台主密钥   |
 | `litellm-dashboard`                                                       | 控制台团队   |
 
-主要维护位置为 `DashboardHeader.tsx`、`navbar.tsx`、`SidebarAccountMenu/`、`Navbar/NotificationsBell/`、`DeploymentHealth/`、`licenseUtils.ts`、`VirtualKeysPage/keyTableColumns.tsx`、`templates/key_info_view.tsx`、`update_model_credentials_modal.tsx`、`shared/CreatedKeyDisplay.tsx`、`shared/SavingsTiles.tsx`、`SummaryCard.tsx`、`logs/detail/` 和词典
+主要实现为 [LocaleContext.tsx](src/contexts/LocaleContext.tsx)、[translate.ts](src/i18n/translate.ts)、[zh-CN.json](src/i18n/zh-CN.json)、[LanguageSwitcher.tsx](src/components/LanguageSwitcher.tsx)、[TerminologyContext.tsx](src/contexts/TerminologyContext.tsx)、[systemResourceLabel.ts](src/utils/systemResourceLabel.ts)、[toast.ts](src/lib/toast.ts)、[ui 公共组件](src/components/ui/) 和 [localize-base-ui.mjs](scripts/localize-base-ui.mjs)。`package.json` 新增 `postinstall` 与 `prebuild`，将 Base UI 版本由范围约束固定为 `1.6.0`
 
-原始 JSON 中的 `use_litellm_proxy` 等键、请求与响应、技术配置、请求头、未知上游错误、静态资源前缀 `/litellm-asset-prefix/`、隐藏功能源码和依赖元数据不做品牌替换，不承诺源码与网络请求中完全没有上游标识
+未知界面文案仍会回退英文，新增文案不能以回退作为中文验收。原生日期按钮受浏览器语言影响，动态供应商字段与技术错误不承诺全部翻译。API 键、请求头、静态资源前缀 `/litellm-asset-prefix/`、隐藏源码和依赖元数据不做全局品牌替换
 
-## Docker 与演示数据
+### 金额与人民币单位
 
-| 文件，相对仓库根目录                                         | 用途                                              |
-| ------------------------------------------------------------ | ------------------------------------------------- |
-| `Dockerfile`                                                 | 从源码完整构建 Python、Rust、Prisma 与 Dashboard  |
-| `docker/Dockerfile.lite-ui`                                  | 在已有源码运行时镜像上替换静态 Dashboard 导出物   |
-| `docker/docker-compose.lite-ui.yml`                          | 独立 Compose 项目、数据库卷和 localhost 4001 端口 |
-| `docker/lite-ui-preview.yaml`                                | 空 model_list，模型及供应商凭据由外部数据库管理   |
-| [docker/lite-ui-preview.md](../../docker/lite-ui-preview.md) | 构建、启动、停止及私有配置说明                    |
-| [README.md](../../README.md)                                 | 轻量版能力、构建入口、上游来源与许可证说明        |
+| 类型   | 开源基线                                         | 本版差异                                                                                                   |
+| ------ | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| 修改   | 界面美元符号和 USD 单位                          | 符号改为 ¥，中文单位“人民币”，英文单位 CNY，语言切换不改变币种                                             |
+| 修改   | 花费、预算、模型价格、单次费用、节省、图表与导出 | 公共格式器、坐标与提示、表单标签和金额导出表头同步使用人民币标识                                           |
+| 保留   | 数字、计算和接口                                 | 输入 150.75 仍提交 150.75，原预算 10 显示 ¥10.00，精度、零值、小额阈值、负数、预算比率和上限校验沿用原逻辑 |
+| 未新增 | 原成本计算与数据                                 | 没有汇率、金额换算、历史重计价、金额迁移、钱包或结算，不改变数据库、后端 API、内置模型费率和供应商账单     |
 
-上述部署文件不是后端裁剪。新数据库需要通过原生模型管理接口配置模型，镜像不内置账户、密钥或数据库中的模型记录。环境文件、数据库备份和上游凭据不加入源码或镜像。界面更新先完成 `npm run build`，再重建 Compose，不能读取尚未完成的静态导出目录
+这是前端金额单位定制，不是人民币计费改造。若仍使用内置美元费率，数值不会自动换算成人民币，真实成本口径需要由实际配置的模型价格保证。不能以显示 ¥ 或 CNY 作为人民币结算验收
 
-部署示例支持从 main 完整构建运行层，使用独立 Compose 项目及数据库，模型通过原生管理流程配置。具体部署版本、数据卷、供应商接入、账户和调用记录由部署方私有维护，不作为仓库默认状态或公开库存清单。后续重启应沿用对应项目、环境文件和镜像覆盖文件
+主要实现为 [dataUtils.ts](src/utils/dataUtils.ts)、[value_formatters.tsx](src/components/UsagePage/utils/value_formatters.tsx)、[金额单元格](src/components/shared/table_cells/money_cell.tsx)、[图表提示](src/components/shared/charts/chart_tooltip.tsx)、各模块预算和价格组件及词典。用户详情复用的 [costOptimizationUtils.ts](<src/app/(dashboard)/cost-optimization/_components/costOptimizationUtils.ts>) 也修改格式，不表示开放独立成本优化页面
 
-预览配置将 `general_settings.password_policy_check_breached_passwords` 设为 `false`，仅供本机测试。最少 12 位及其他密码强度要求仍使用原策略，不改变后端默认值。此配置不应作为生产部署模板，实际账户和密码操作不记录在本指南中
+### Docker、本机预览与演示资料
 
-完整运行层构建和仅替换静态 UI 是不同操作。UI 或文档发布层可以复用运行层，镜像发布 revision、UI 源码 revision 和运行源码 revision 应分别核对，不能仅凭镜像标签认定后端也来自同一提交
+| 类型       | 文件，相对仓库根目录                                                                        | 与开源基线的差异                                                                                          |
+| ---------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 保留       | `Dockerfile`                                                                                | 沿用源码完整构建 Python、Rust、Prisma 和 Dashboard 的流程，此文件未被本版修改                             |
+| 新增       | [docker/Dockerfile.lite-ui](../../docker/Dockerfile.lite-ui)                                | 在 `litellm-lite-runtime:local` 上替换已完成的静态 Dashboard 导出，不重新编译后端                         |
+| 新增       | [docker/docker-compose.lite-ui.yml](../../docker/docker-compose.lite-ui.yml)                | 独立应用和 PostgreSQL 服务、数据库卷，默认仅绑定 localhost 4001，密码和主密钥从外部环境提供               |
+| 新增       | [docker/lite-ui-preview.yaml](../../docker/lite-ui-preview.yaml)                            | 空 `model_list`，启用原数据库模型管理，仅本机测试关闭泄露密码在线查询                                     |
+| 新增       | [docker/lite-ui-preview.md](../../docker/lite-ui-preview.md)                                | 构建、启动、停止与私有配置流程                                                                            |
+| 修改       | [根 README](../../README.md)、[Dashboard README](README.md)                                 | 说明轻量版能力、接入和构建入口、上游来源与许可证                                                          |
+| 新增或修改 | 本文、[DESIGN.md](DESIGN.md)、[design-qa.md](design-qa.md)、[根 AGENTS.md](../../AGENTS.md) | 定制清单、设计规范、视觉验收与升级维护约定，另随既有 lint 清理收紧 `eslint-suppressions.json`，未放宽规则 |
 
-## 合并社区新版本
+镜像不内置账户、密钥、演示模型记录或供应商库存，新数据库通过原生管理配置。环境文件、备份、上游凭据与具体测试账户由部署方私有维护，不加入源码或镜像。已有本机数据库中的演示记录也不构成仓库默认数据
 
-每次升级都以本文件的源码提交为旧基线，记录新基线 SHA 和源码版本。先保留工作分支的已提交状态，再获取并检查社区目标版本，合并后重做下面的核对，不把更新许可证、改后端权限或删除数据夹带进 UI 合并
+先完成 `npm run build`，再重建静态 UI 层。Python 或 Rust 变化时应先完整重建运行层，不能仅凭镜像标签或 UI 更新认定后端也已升级。镜像发布 revision、UI revision 和运行源码 revision 应分别核对，重启沿用对应 Compose 项目、环境与覆盖文件
+
+预览的 `password_policy_check_breached_passwords: false` 仅关闭本机测试的在线查询，至少 12 位及其他强度规则沿用原策略，不改变后端默认值，也不应作为生产配置模板
+
+## 附录一 共享屏蔽规则与数据保留
+
+### 按路由核对页签值
+
+下表使用代码中的原始页签值，显示名称可随语言变化。创建、编辑或详情组件复用共享页签时同样生效
+
+| 路由                   | 所有角色隐藏的页签值                                                                      |
+| ---------------------- | ----------------------------------------------------------------------------------------- |
+| `models-and-endpoints` | `auto-routers`、`pass-through`、`model-group-alias`、`access-group-budgets`、`price-data` |
+| `api-keys`             | `savings`、`auto-router-usage`                                                            |
+| `usage`                | `mcp`、`endpoints`                                                                        |
+| `logs`                 | `audit logs`、`deleted keys`、`deleted teams`                                             |
+| `teams`                | `default-settings`                                                                        |
+| `access-groups`        | `mcp-servers`、`mcp`、`agents`、`skills`                                                  |
+| `logging-and-alerts`   | `logging-callbacks`、`cloudzero-cost-tracking`、`ms-teams-alerts`                         |
+| `admin-panel`          | `security-settings`、`hashicorp-vault`、`cyberark`、`plugins`、`web-search-interception`  |
+
+员工的 `models-and-endpoints` 另隐藏 `add`、`llm-credentials`、`health`、`retry-settings`、`raw`。该表不替代原角色校验，Key 详情隐藏同名页签也不影响用户详情中的节省和自动路由统计
+
+### 按字段名核对
+
+以下是集中策略的精确字段名，按生效范围列出。独立区块还可能通过 `LiteUiMask` 隐藏，应与上文各模块一起核对，不能只查此表
+
+| 生效范围                     | 屏蔽字段                                                                                                                                                                                                                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 所有使用共享字段策略的位置   | `organization_id`、`organization_ids`、`secret_manager_settings`、`model_max_budget`、`team_member_model_max_budget`、`allowed_passthrough_routes`、`logging_settings`、`disable_global_guardrails`                                                                             |
+| 保留页面的非模型资源授权     | `allowed_mcp_servers_and_groups`、`mcp_servers_and_groups`、`mcp_tool_permissions`、`allowed_agents_and_groups`、`agents_and_groups`、`allowed_skills`、`skills`、`object_permission_search_tools`、`object_permission_skills`、`vector_stores`、`allowed_vector_store_ids`     |
+| Key 和模型的资源扩展         | `project_id`、`metadata`、`tags`、`guardrails`、`policies`、`prompts`、`vector_store_ids`、`allowed_routes`                                                                                                                                                                     |
+| Key 和模型的高级预算、限流   | `soft_budget`、`budget_windows`、`budget_fallbacks`、`end_user_budget_id`、`tpd_limit`、`tpm_limit_type`、`rpm_limit_type`、`model_tpm_limit`、`model_rpm_limit`、`throttle_on_budget_exceeded`、`default_estimated_output_tokens`、`default_estimated_output_tokens_per_model` |
+| Key 和模型的缓存、路由、成本 | `enable_prompt_caching`、`use_in_pass_through`、`kubernetes_pod_discovery`、`cache_control`、`cache_control_injection_points`、`litellm_extra_params`、`model_info_params`、`ptu_count`、`cost_per_ptu_per_hour`、`ptu_effective_from`、`ptu_effective_to`                      |
+
+`max_budget`、`budget_duration`、`tpm_limit`、`rpm_limit`、`team_id`、`access_group_ids`、`model_access_group`、模型选择及供应商 `api_key` 等认证字段不在此屏蔽集合中。共享 `ModelMaxBudgetField` 还会隐藏 Key、用户、团队和默认成员预算中的整个单模型预算区块，成员编辑的完整表单是例外，仍受原许可证约束
+
+### 按列与筛选核对
+
+| 生效范围            | 隐藏内容                                                                        |
+| ------------------- | ------------------------------------------------------------------------------- |
+| 共享表格            | `organization_id`、`organization_alias` 列                                      |
+| Key、模型和日志表格 | 另隐藏 `project_id`、`request_tags`、`tags`、`end_user` 列                      |
+| 员工 Key 表格       | 另隐藏 `user_id`、`user`、`user_email` 列                                       |
+| 员工模型表格        | 另隐藏 `litellm_credential_name`、`input_cost`、`actions` 列                    |
+| 共享筛选抽屉        | Organization 筛选                                                               |
+| Key、模型和日志筛选 | 另隐藏 Project、End User、Tags、Cache、Credential、Span Type、Request Type 筛选 |
+
+列在建立表格实例前被过滤，不能从显示列菜单恢复。筛选按原始英文标签匹配，再翻译显示标签，社区重命名或改变翻译接入位置后必须复查
+
+### 隐藏与保存的边界
+
+`LiteUiMask` 及共享字段通常使用 `hidden` 与 `display:none`，保留子组件挂载和原表单状态。页签内容、资源权限概览及部分目录控件采用不渲染，两种处理不能混为源码删除或接口停用
+
+`MountedFormField` 对声明为必填的字段及当前校验错误保留显示保护，`FormField` 保留当前错误字段显示，模型必需团队作用域另在可见区保留。隐藏值可能继续按原表单提交，或由原 diff 逻辑省略，不能统一声称所有隐藏字段都不发送
+
+团队、Key 和用户的资源授权保存另有显式保护，普通编辑不重算或覆盖隐藏授权。访问组编辑也保留已有隐藏授权。需要停用旧配置时，应另行评估和授权后端或数据操作，不能通过清空隐藏表单实现
+
+主要实现为 [FormField.tsx](src/components/shared/form/FormField.tsx)、[MountedFormField.tsx](src/components/common_components/MountedFormField.tsx)、[ModelMaxBudgetEditor.tsx](src/components/key_team_helpers/ModelMaxBudgetEditor.tsx)、[DataTable.tsx](src/components/shared/DataTable/DataTable.tsx)、[DataTableFilterDrawer.tsx](src/components/shared/DataTable/DataTableFilterDrawer.tsx) 及对应模块组件
+
+## 社区升级与差异复核
+
+本文件列出功能差异和主要实现入口，不复制全部 461 个文件名。完整文件清单、测试文件和任意新增差异从固定基线生成，不能仅依赖历史修改说明
 
 ```bash
 git status --short --branch
 git diff --stat 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD
-git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard docker/Dockerfile.lite-ui docker/docker-compose.lite-ui.yml docker/lite-ui-preview.yaml docker/lite-ui-preview.md
+git diff --name-status 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD
+git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard docker README.md AGENTS.md
+git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- litellm enterprise litellm-rust prisma
 ```
 
-| 核对位置                  | 合并时要确认的行为                                                                                        |
-| ------------------------- | --------------------------------------------------------------------------------------------------------- |
-| 页面和菜单注册表          | 新增页面默认未进入轻量白名单，侧栏、搜索、移动端和直达 URL 一致                                           |
-| 路由 ID 和菜单 page 名    | `/models-and-endpoints` 对应 `models`，`/usage` 对应 `new_usage` 等映射没有失效                           |
-| Tabs 和 PageTabs          | 社区重写页签组件后仍会调用过滤，隐藏内容不能因 `keepMounted` 渲染                                         |
-| 默认页签和 URL 状态       | Admin Settings 仍默认 UI Settings，Logging & Alerts 仍默认普通告警页，旧高级页签链接能回退                |
-| 新增 Enterprise 控件      | 检查 `premiumUser`、`premium_field`、`Enterprise`、`Upgrade`、`license`，区分真正付费功能与普通供应商文字 |
-| Key、用户、团队和模型表单 | 新的字段组件是否绕过共享 `FormField` 或 `MountedFormField`，创建、详情、编辑三处都要看                    |
-| 已有隐藏值                | 改普通字段不会清空已有组织、项目、日志、单模型预算等配置，必填校验仍能完成                                |
-| 成员角色                  | 添加和编辑均保留 Admin/User 选项及原始提交值，新增成员默认 User，其他成员配置及许可证限制沿用社区逻辑     |
-| 表格及筛选                | 社区新增列 ID、列选择器或修改筛选标签后仍保持屏蔽，清空筛选不会带出隐藏控件                               |
-| 告警参数元数据            | `premium_field` 的含义和重置接口索引仍与原配置一致                                                        |
-| 关联入口                  | Home、模型详情、Key 详情、设置开关没有留下通往被屏蔽页面的按钮或链接                                      |
-| Docker 运行时             | Python 或 Rust 更新后先重建 `litellm-lite-runtime:local`，不能只替换 UI 后声称后端也升级                  |
-| 主题与导航                | 侧栏与窄屏抽屉复用同一权限过滤，管理员管理菜单不会遗漏原可用入口，深浅色均可读                            |
-| Beta 能力                 | 检索 BetaBadge、[BETA] 等标记，核对新入口、字段和直接链接的屏蔽，不按 beta 字符串过滤 API 协议或模型名称  |
-| 中文与数据边界            | 新文案补齐词典，用户输入、API 参数、权限判断与模型 ID 不参与翻译，语言切换不重置表单                      |
-| 视觉基准                  | 按 DESIGN.md 与 design-qa.md 重测桌面、中英文、手机和弹窗                                                 |
+每次升级记录旧、新基线 SHA 与版本，再核对全部模块并在同次变更更新本文。恢复功能时同时检查菜单、路由、页签、字段、详情和关联入口，不能只恢复一个菜单
 
-推荐把上述检查和本文清单一起更新。优先在集中策略或共享组件补规则，只有独立按钮、无共享表单字段的区块才增加就地屏蔽。已整页屏蔽的功能不再逐个改其内部组件
+| 核对范围             | 验收要点                                                                                                                                |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 页面、菜单、命令搜索 | 新页面默认未进入白名单，桌面、抽屉、搜索和直达 URL 一致，路径与菜单 ID 映射正确，原角色过滤继续生效                                     |
+| 页签与旧链接         | 隐藏内容不因 keepMounted 或 URL 渲染，系统管理默认 UI Settings，日志与告警默认 Alerting Types                                           |
+| 模型与供应商         | 目录、MoMA 默认和成功后重置、必填地址、认证字段、团队作用域与 URL 预填保持一致，不误限后端供应商                                        |
+| 快捷开通             | 核对 Key 类型、状态、通配与空列表语义、全分页、个人 Key 限制、团队别名、用户归属及缓存刷新，跟进原接口必填字段变化                      |
+| 表单与已有数据       | 新控件没有绕过共享策略，新增、编辑、详情都检查，隐藏授权不覆盖，必填和错误可见，成员 Admin/User 与完整附加字段继续保留                  |
+| 企业控件和 Beta      | 核对 premiumUser、premium_field、Enterprise、Upgrade、license、BetaBadge 与 [BETA]，不按 beta 字符串误删 API 协议或模型名，不放宽许可证 |
+| 表格、筛选、告警     | 新列 ID、列选择器、英文筛选标签和翻译顺序正确，普通告警重置沿用原索引                                                                   |
+| 中文、金额与品牌     | 新界面文案补词典，数据与提交值不翻译，语言切换保留表单，不以人民币标签宣称后端换算，不重新引入上游推广                                  |
+| 共享依赖补丁         | 升级 Base UI 前复查 dismissLabel 补丁的版本、锚点、类型与关闭按钮回归，不跳过失败保护                                                   |
+| 主题与交互           | 按 DESIGN.md、design-qa.md 核对双语、深浅色、管理员、员工、桌面、手机、弹窗、焦点和下钻                                                 |
+| 运行层与前端发布     | 区分完整源码构建和静态 UI 替换，后端变化先重建运行层，保留私有配置及数据，不夹带数据删除                                                |
+| 检查与证据           | 运行受影响的明确路径定向用例、构建及适用门禁，保留已有失败和未覆盖项，不运行无路径的完整前端套件                                        |
 
-## 验证记录与限制
+## 本次文档核对的验证范围
+
+本次先拉取维护分支，再按固定基线核对已提交的全仓文件差异、主要功能实现、集中策略及部署配置，按模块重写说明。后端目录无源码差异这一结论来自 Git 对比，功能清单来自源码核读，不是本次浏览器操作结果
+
+本次仅修改本文，检查 Markdown 格式、相对文件链接、章节引用、集中字段和页签清单与 Git 差异。未运行应用测试、生产构建、浏览器走查、容器重建、供应商调用或计费验证，不据此更新任何历史通过结论
+
+文档检查通过，109 处本地文件与目录链接及相关章节锚点有效，附录的 50 个屏蔽字段、8 组路由页签清单及员工额外隐藏的 5 个页签与定制源码一致，14 个新增生产代码文件均有对应说明。原有历史验证记录保留，同期提交 `1a89df2c57` 补充的 MoMA 图标浏览器验证也继续保留。3 处外部链接沿用部署入口或图标来源记录，本次未重新访问
+
+下列历史记录由原文保留，未在本次重新执行，也未重新取得仓库外的原始日志或截图。各轮可能覆盖同一用例，不能相加作为总覆盖量，更不能视为当前提交的完整回归。具体通用范围见 [design-qa.md](design-qa.md)
+
+## 附录二 历史验证记录与限制
 
 ### 移动云 MoMA 图标验证
 
@@ -363,8 +417,6 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 定向 7 个测试文件共 122 项通过，覆盖供应商目录、默认项、地址必填、模型名称原样提交、成功后重置、URL 预填边界、认证字段、请求构建与连接测试展示。生产构建、TypeScript、静态导出和适用前端检查通过。管理员浏览器核对九个供应商选项、MoMA 与 DeepSeek 切换、地址字段及必填校验。供应商搜索空状态与模型映射校验均已在部署后确认显示中文，未捕获浏览器错误或警告
 
 未提供实际 MoMA 地址与凭据，未创建真实 MoMA 模型或调用上游。供应商目录只限制新增模型界面，不改变后端支持与既有数据
-
-以下汇总既有实现的验证结果，保留影响维护判断的覆盖与失败，不将各轮重叠用例相加，也不代表当前提交重新运行了所有检查。具体执行记录与截图保存在仓库外，通用检查范围见 [design-qa.md](design-qa.md)，布局与字号以 [DESIGN.md](DESIGN.md) 为准
 
 ### 页面屏蔽与数据保留验证
 
@@ -471,5 +523,3 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 历史定向回归仍包含已屏蔽用量视图、旧货币或标签断言失败，以及三态 PATCH 表单的既有预期失败，没有通过全套前端测试。员工部分管理员配置请求仍可能返回 403，用量图表加载时曾出现宽高为零警告，未通过放宽权限或隐藏错误解决。访问组空状态已补齐中文。浏览器原生日期按钮的语言由浏览器环境决定，未知供应商动态字段、上游错误及原始 JSON 不承诺翻译
 
 既有验收不包含完整跨浏览器、可访问性、生产 SSO、实际邮件投递、所有模态、供应商账单及持续负载验证。社区升级或功能变更后应重跑受影响测试、构建和角色走查，定向 Vitest 必须传入明确文件，不运行整个前端套件
-
-文档整理只检查 Markdown 格式、相对链接、章节引用和 Git 差异，不据此更新已有测试、构建、浏览器或部署结论

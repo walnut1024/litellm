@@ -49,6 +49,12 @@ vi.mock("../networking", async () => {
     modelCreateCall: vi.fn().mockResolvedValue({ success: true }),
     getProviderCreateMetadata: vi.fn().mockResolvedValue([
       {
+        provider: "Deepseek",
+        provider_display_name: "Deepseek",
+        litellm_provider: "deepseek",
+        credential_fields: [{ key: "api_key", label: "API Key", field_type: "password", required: true }],
+      },
+      {
         provider: "OpenAI",
         provider_display_name: "OpenAI",
         litellm_provider: "openai",
@@ -103,6 +109,12 @@ vi.mock("../networking", async () => {
 vi.mock("@/app/(dashboard)/hooks/providers/useProviderFields", () => ({
   useProviderFields: vi.fn().mockReturnValue({
     data: [
+      {
+        provider: "Deepseek",
+        provider_display_name: "Deepseek",
+        litellm_provider: "deepseek",
+        credential_fields: [{ key: "api_key", label: "API Key", field_type: "password", required: true }],
+      },
       {
         provider: "OpenAI",
         provider_display_name: "OpenAI",
@@ -261,7 +273,7 @@ const createTestProps = (userRole = "proxy_admin", userId = "user-1", isTeamAdmi
     setSelectedProvider: vi.fn(),
     getPlaceholder: vi.fn((provider: string) => `Enter ${provider} model name`),
     setShowAdvancedSettings: vi.fn(),
-    selectedProvider: Providers.OpenAI,
+    selectedProvider: Providers.Deepseek,
     providerModels: ["gpt-4", "gpt-3.5-turbo"],
     showAdvancedSettings: false,
     teams,
@@ -484,8 +496,8 @@ describe("AddModelForm", () => {
 
     renderWithProviders(<AddModelForm {...createTestProps()} />);
     await screen.findByText("Provider");
-    await pickProvider(user, /OpenAI/);
-    fillApiKey("OpenAI API Key");
+    await pickProvider(user, /DeepSeek/);
+    fillApiKey("API Key");
     await pickModel(user, "gpt-4");
 
     await user.click(screen.getByTestId("test-connect-btn"));
@@ -832,11 +844,14 @@ describe("AddModelForm", () => {
       vi.mocked(testConnectionRequest).mockClear();
     });
 
-    const renderForm = async (selectedProvider: Providers = Providers.OpenAI) => {
+    const renderForm = async (selectedProvider: Providers = Providers.Deepseek) => {
       const mockUseAuthorized = vi.mocked(await import("@/app/(dashboard)/hooks/useAuthorized"));
       mockUseAuthorized.default.mockReturnValue(mockAuthorizedUser("proxy_admin", "user-1", true));
       const user = userEvent.setup({ pointerEventsCheck: PointerEventsCheckLevel.Never });
       const props = { ...createTestProps(), selectedProvider };
+      if (selectedProvider !== Providers.Deepseek) {
+        props.form.setValue("custom_llm_provider", selectedProvider);
+      }
       renderWithProviders(<AddModelForm {...props} />);
       await screen.findByText("Provider");
       return { user, props, clickTestConnect: () => user.click(screen.getByTestId("test-connect-btn")) };
@@ -853,7 +868,7 @@ describe("AddModelForm", () => {
     };
 
     const expectBlockedWith = async (inlineError: string) => {
-      expect(await screen.findByText(inlineError)).toBeInTheDocument();
+      await screen.findAllByText(inlineError);
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       expect(testConnectionRequest).not.toHaveBeenCalled();
     };
@@ -869,8 +884,8 @@ describe("AddModelForm", () => {
 
     it("runs the connection test once provider, auth and model are filled in", async () => {
       const { user, clickTestConnect } = await renderForm();
-      await pickProvider(user, /OpenAI/);
-      fillApiKey("OpenAI API Key");
+      await pickProvider(user, /DeepSeek/);
+      fillApiKey("API Key");
       await pickModel(user, "gpt-4");
 
       await clickTestConnect();
@@ -884,11 +899,11 @@ describe("AddModelForm", () => {
         props.form.reset({ litellm_credential_name: null });
         return true;
       });
-      await pickProvider(user, /OpenAI/);
-      fillApiKey("OpenAI API Key");
+      await pickProvider(user, /DeepSeek/);
+      fillApiKey("API Key");
       await pickModel(user, "gpt-4");
       await user.click(screen.getByTestId("add-model-btn"));
-      await waitFor(() => expect(screen.getByLabelText(/OpenAI API Key/)).toHaveValue(""));
+      await waitFor(() => expect(screen.getByLabelText(/^API Key/)).toHaveValue(""));
       expect(props.handleOk).toHaveBeenCalledOnce();
 
       await clickTestConnect();
@@ -898,19 +913,19 @@ describe("AddModelForm", () => {
 
     it("runs the connection test for the provider wildcard", async () => {
       const { user, clickTestConnect } = await renderForm();
-      await pickProvider(user, /OpenAI/);
-      await pickModel(user, "All OpenAI Models (Wildcard)");
-      fillApiKey("OpenAI API Key");
+      await pickProvider(user, /DeepSeek/);
+      await pickModel(user, "All Deepseek Models (Wildcard)");
+      fillApiKey("API Key");
 
       await clickTestConnect();
 
-      await expectTestRun({ model: "openai/*" });
+      await expectTestRun({ model: "deepseek/*" });
     });
 
     it("asks for the custom model name before testing a custom model", async () => {
       const { user, clickTestConnect } = await renderForm();
-      await pickProvider(user, /OpenAI/);
-      fillApiKey("OpenAI API Key");
+      await pickProvider(user, /DeepSeek/);
+      fillApiKey("API Key");
       await pickModel(user, "Custom Model Name (Enter below)");
 
       await clickTestConnect();
@@ -924,7 +939,6 @@ describe("AddModelForm", () => {
 
     it("runs the connection test for an Azure deployment name", async () => {
       const { user, clickTestConnect } = await renderForm(Providers.Azure);
-      await pickProvider(user, /Azure/);
       fireEvent.change(screen.getByLabelText(/Upstream Model Name/), { target: { value: "my-deployment" } });
 
       await clickTestConnect();
@@ -939,7 +953,6 @@ describe("AddModelForm", () => {
     it("asks for a credential before testing a credential-only auth type", async () => {
       const errorToast = vi.spyOn(toast, "error");
       const { user, clickTestConnect } = await renderForm(Providers.MICROSOFT_365_COPILOT);
-      await pickProvider(user, /Microsoft 365 Copilot/);
       await pickModel(user, "gpt-4");
       expect(await screen.findByRole("button", { name: "Create credential" })).toBeInTheDocument();
 
@@ -957,8 +970,7 @@ describe("AddModelForm", () => {
     });
 
     it("runs the connection test with a credential just created from the credential dialog", async () => {
-      const { user, clickTestConnect } = await renderForm();
-      await pickProvider(user, /OpenAI/);
+      const { user, clickTestConnect } = await renderForm(Providers.OpenAI);
       await pickModel(user, "gpt-4");
       await user.click(screen.getByRole("button", { name: "Use workload identity federation" }));
       fireEvent.change(screen.getByLabelText("Credential Name:"), { target: { value: "openai-federated" } });
@@ -973,12 +985,12 @@ describe("AddModelForm", () => {
 
     it("runs the connection test after the public model name is edited in the mapping table", async () => {
       const { user, clickTestConnect } = await renderForm();
-      await pickProvider(user, /OpenAI/);
-      fillApiKey("OpenAI API Key");
+      await pickProvider(user, /DeepSeek/);
+      fillApiKey("API Key");
       await pickModel(user, "gpt-4");
       const publicName = screen.getByDisplayValue("gpt-4");
       await user.clear(publicName);
-      const apiKey = screen.getByLabelText(/OpenAI API Key/);
+      const apiKey = screen.getByLabelText(/^API Key/);
       await user.clear(apiKey);
       await user.type(apiKey, "sk-rotated");
       await user.type(publicName, "my-gpt");
@@ -990,8 +1002,8 @@ describe("AddModelForm", () => {
 
     it("shows the mapping error instead of testing when the public model name is cleared", async () => {
       const { user, clickTestConnect } = await renderForm();
-      await pickProvider(user, /OpenAI/);
-      fillApiKey("OpenAI API Key");
+      await pickProvider(user, /DeepSeek/);
+      fillApiKey("API Key");
       await pickModel(user, "gpt-4");
       fireEvent.change(screen.getByDisplayValue("gpt-4"), { target: { value: "" } });
 

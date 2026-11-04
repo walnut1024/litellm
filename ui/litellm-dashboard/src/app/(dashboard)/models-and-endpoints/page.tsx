@@ -2,6 +2,8 @@
 
 import { LocalizedText as L } from "@/contexts/LocaleContext";
 import { PageHeader, PageHeaderTitle, PageHeaderDescription } from "@/components/shared/PageHeader";
+import CopyButton from "@/components/shared/CopyButton";
+import { getGatewayBaseUrl } from "@/components/networking";
 
 import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { useMemo, useState } from "react";
@@ -114,6 +116,8 @@ export default function ModelsAndEndpointsPage() {
     },
   );
   const isAdmin = all_admin_roles.includes(userRole);
+  const gatewayBaseUrl = getGatewayBaseUrl().replace(/\/+$/, "");
+  const apiBaseUrl = gatewayBaseUrl.endsWith("/v1") ? gatewayBaseUrl : `${gatewayBaseUrl}/v1`;
   const canViewAutoRouters =
     autoRouterCreationScope(
       { userRole, userID, isViewOnly },
@@ -195,16 +199,24 @@ export default function ModelsAndEndpointsPage() {
           <PageHeaderTitle>
             <L>Model marketplace</L>
           </PageHeaderTitle>
-          {isAdmin ? (
+          {isAdmin && (
             <PageHeaderDescription>
               <L>Add and manage models for the proxy</L>
             </PageHeaderDescription>
-          ) : (
-            <PageHeaderDescription>
-              <L>Use your API key to call any model you have access to.</L>
-            </PageHeaderDescription>
           )}
         </PageHeader>
+        <div className="mb-2 flex flex-col gap-2 rounded-lg border bg-card p-3">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="font-medium">
+              <L>Model API Base URL</L>
+            </span>
+            <code className="min-w-0 break-all font-mono">{apiBaseUrl}</code>
+            <CopyButton value={apiBaseUrl} label="Copy URL" variant="action" className="shrink-0" />
+          </div>
+          <p className="text-sm text-muted-foreground">
+            <L>Use this Base URL with your model name and API key in an OpenAI-compatible client.</L>
+          </p>
+        </div>
 
         {!isViewOnly && (
           <LiteUiMask>

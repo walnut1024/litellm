@@ -8,9 +8,14 @@ import { recordUiEvent } from "@/lib/telemetry/uiEvents";
 import ModelsAndEndpointsPage from "./page";
 import { LiteUiContext } from "@/contexts/LiteUiContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
+import { getGatewayBaseUrl } from "@/components/networking";
 
 vi.mock("@/lib/telemetry/uiEvents", () => ({ recordUiEvent: vi.fn(() => Promise.resolve()) }));
 vi.mock("next/navigation", () => ({ usePathname: () => "/ui/models-and-endpoints" }));
+vi.mock("@/components/networking", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/components/networking")>()),
+  getGatewayBaseUrl: vi.fn(() => "https://gateway.example"),
+}));
 
 vi.mock("./panels/AllModelsPanel", () => ({ default: () => <div data-testid="panel-all-models" /> }));
 vi.mock("./panels/AddModelPanel", () => ({ default: () => <div data-testid="panel-add" /> }));
@@ -78,6 +83,7 @@ const ADD_MODEL_PREFILL_LINK = "?tab=add&provider=typesafe&litellm_model=typesaf
 
 describe("ModelsAndEndpointsPage", () => {
   beforeEach(() => {
+    vi.mocked(getGatewayBaseUrl).mockReturnValue("https://gateway.example");
     detailState.modelId = null;
     detailState.teamId = null;
     mockUseAuthorized.mockReturnValue(ADMIN);
@@ -87,6 +93,37 @@ describe("ModelsAndEndpointsPage", () => {
       unobserve() {}
       disconnect() {}
     };
+  });
+
+  it.each([
+    ["https://gateway.example/", "https://gateway.example/v1"],
+    ["https://gateway.example/proxy///", "https://gateway.example/proxy/v1"],
+    ["https://worker.example/v1/", "https://worker.example/v1"],
+  ])("lets an employee copy the client Base URL from %s", async (gateway, expected) => {
+    mockUseAuthorized.mockReturnValue(NON_ADMIN);
+    vi.mocked(getGatewayBaseUrl).mockReturnValue(gateway);
+    const user = userEvent.setup();
+    renderPage();
+
+    expect(screen.getByText(expected, { exact: true })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Copy URL" }));
+    expect(await navigator.clipboard.readText()).toBe(expected);
+  });
+
+  it("keeps the gateway address visible in model details and translates the copy action", async () => {
+    mockUseAuthorized.mockReturnValue(NON_ADMIN);
+    detailState.modelId = "demo-model";
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocaleProvider>
+        <ModelsAndEndpointsPage />
+      </LocaleProvider>,
+    );
+
+    expect(screen.getByText("模型访问地址（Base URL）")).toBeVisible();
+    expect(screen.getByTestId("model-info")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "复制地址" }));
+    expect(await navigator.clipboard.readText()).toBe("https://gateway.example/v1");
   });
 
   it.each([ADMIN, NON_ADMIN])("hides beta budgets and clears their direct URL for $userRole", async (session) => {

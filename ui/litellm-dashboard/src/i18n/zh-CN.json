@@ -937,6 +937,8 @@
   "Gateway URL:": "网关地址",
   "Copy Virtual Key": "复制密钥",
   "Copy URL": "复制地址",
+  "Model API Base URL": "模型访问地址（Base URL）",
+  "Use this Base URL with your model name and API key in an OpenAI-compatible client.": "在兼容 OpenAI 的客户端中填写此 Base URL，并使用模型名称和 API Key 调用。",
   "Copied!": "已复制",
   "Agent instructions": "客户端配置说明",
   "Copy instructions": "复制配置说明",

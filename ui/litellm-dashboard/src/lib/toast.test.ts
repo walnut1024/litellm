@@ -26,8 +26,8 @@ describe("toast", () => {
 
   it("localizes UI titles while preserving provider error details", () => {
     preferences.locale = "zh-CN";
-    toast.success("Model activated");
-    expect(lastCall(sonner.success)[0]).toBe("开通成功");
+    toast.success("UI settings updated successfully");
+    expect(lastCall(sonner.success)[0]).toBe("界面设置已更新");
     toast.fromError(
       new ApiError("upstream-model: invalid parameter", 403, { error: { type: "permission_access_denied" } }),
     );

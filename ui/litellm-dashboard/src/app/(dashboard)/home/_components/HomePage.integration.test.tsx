@@ -119,6 +119,8 @@ describe("Home workspace", () => {
       "href",
       "/ui/models-and-endpoints",
     );
+    expect(within(models).getByRole("link", { name: /demo-chat/ })).toHaveTextContent("View details");
+    expect(screen.getByText("Choose a model you have access to. No activation is required.")).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Token usage trend" })).toBeInTheDocument();
     expect(screen.getByText("Last 7 days")).toBeInTheDocument();
   });

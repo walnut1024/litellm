@@ -71,7 +71,7 @@ export default function HomePage() {
             <Boxes className="size-7 text-primary" />
             <h3>{model.id}</h3>
             <span className="text-xs text-primary">
-              <L>View model and activate</L>
+              <L>View details</L>
             </span>
           </Link>
         ))}
@@ -131,10 +131,10 @@ export default function HomePage() {
             <Boxes className="size-5 shrink-0 text-primary" />
             <div>
               <h3 className="font-medium">
-                <L>Activate a model</L>
+                <L>Browse models</L>
               </h3>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                <L>Choose an available model and activate access without an order or approval.</L>
+                <L>Choose a model you have access to. No activation is required.</L>
               </p>
             </div>
           </div>

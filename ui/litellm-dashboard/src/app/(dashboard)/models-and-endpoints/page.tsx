@@ -201,7 +201,7 @@ export default function ModelsAndEndpointsPage() {
             </PageHeaderDescription>
           ) : (
             <PageHeaderDescription>
-              <L>Activate a model and start calling it with an API key.</L>
+              <L>Use your API key to call any model you have access to.</L>
             </PageHeaderDescription>
           )}
         </PageHeader>

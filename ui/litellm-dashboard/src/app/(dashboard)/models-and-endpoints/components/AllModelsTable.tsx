@@ -219,14 +219,7 @@ export function AllModelsTable({
         </p>
       );
     if (data.length === 0) return <EmptyState />;
-    return (
-      <ModelCatalog
-        key={`${userID}:${selectedTeamValue}`}
-        models={data}
-        teamId={selectedTeamValue === PERSONAL_TEAM_VALUE ? null : selectedTeamValue}
-        onModelClick={onModelIdClick}
-      />
-    );
+    return <ModelCatalog models={data} onModelClick={onModelIdClick} />;
   };
   if (layout === "cards") {
     return (

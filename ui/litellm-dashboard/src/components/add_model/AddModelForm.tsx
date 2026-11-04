@@ -32,6 +32,8 @@ import { type CredentialItem, credentialCreateCall, modelAvailableCall } from ".
 import CredentialModal from "../model_add/CredentialModal";
 import { federatedProviderOf } from "../model_add/credential_federation";
 import { buildCredential, type CredentialSubmission } from "../model_add/credential_form_helpers";
+import ecloudLogo from "../../../public/assets/logos/ecloud.png";
+import { Logo } from "../molecules/logo/Logo";
 import { ProviderLogo } from "../molecules/models/ProviderLogo";
 import AccessGroupTagsCombobox from "./AccessGroupTagsCombobox";
 import AdvancedSettings from "./advanced_settings";
@@ -179,7 +181,13 @@ const AddModelForm: React.FC<AddModelFormProps> = ({
         label: providerInfo.provider_display_name,
         value: providerInfo.provider,
         icon:
-          providerInfo.provider === MOMA_PROVIDER ? undefined : (
+          providerInfo.provider === MOMA_PROVIDER ? (
+            <Logo
+              src={ecloudLogo.src}
+              label={providerInfo.provider_display_name}
+              className="size-5 shrink-0 object-contain"
+            />
+          ) : (
             <ProviderLogo provider={providerInfo.provider} className="w-5 h-5" />
           ),
       })),

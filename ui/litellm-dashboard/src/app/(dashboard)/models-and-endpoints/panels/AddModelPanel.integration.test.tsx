@@ -217,6 +217,18 @@ describe("AddModelPanel submit payload contract", () => {
     expect(screen.getByLabelText(/API Base/)).toHaveValue("");
   });
 
+  it("shows the bundled cloud logo on the MoMA option and keeps it selectable", async () => {
+    const { user } = await setup();
+    await user.click(screen.getByRole("combobox", { name: /provider/i }));
+    const option = await screen.findByRole("option", { name: /移动云 MoMA/ });
+    expect(within(option).getByRole("img", { name: "移动云 MoMA logo" })).toHaveAttribute(
+      "src",
+      "/_next/static/media/ecloud.png",
+    );
+    await user.click(option);
+    expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("移动云 MoMA");
+  });
+
   it("ignores a prefill for a provider outside the domestic catalog", async () => {
     await setup("?provider=anthropic&litellm_model=foreign-model");
     expect(screen.getByRole("combobox", { name: /provider/i })).toHaveValue("移动云 MoMA");

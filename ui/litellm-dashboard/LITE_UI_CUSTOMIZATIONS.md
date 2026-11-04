@@ -83,6 +83,8 @@ main 是轻量版维护分支。核对自定义修改应使用上表固定的社
 
 新增模型的供应商下拉仅保留现有国产供应商，包含 DeepSeek、阿里云百炼及其 DashScope 和 QwenCloud 适配、MiniMax、月之暗面、腾讯云和火山引擎。移动云 MoMA 位于首项，初次进入及成功添加后的表单均默认选中。MoMA 复用 OpenAI 兼容适配器，上游模型名称由管理员输入，API 地址不预置且必填，API 密钥字段使用通用中文名称。各供应商原有认证字段与适配协议保留
 
+移动云 MoMA 选项使用[移动云官网](https://ecloud.10086.cn/portal)的蓝色云形图标，源文件为官网引用的 [favicon](https://ecloud.eos-guangzhou-1.cmecloud.cn/fe/favicon.ico)，转为 PNG 后保存在 `public/assets/logos/ecloud.png`。通过共享 `Logo` 组件显示，保留原色与比例，随静态资源打包，不在运行时请求官网。此显示标识不改变 OpenAI 兼容协议或供应商提交值
+
 目录由 `src/components/add_model/modelProviders.ts` 维护，`AddModelForm.tsx` 展示选项，`models-and-endpoints/panels/AddModelPanel.tsx` 管理默认值、模型提示和表单重置，`provider_specific_fields.tsx` 调整 MoMA 模型表单中的密钥标签。URL 预填同样限定在此目录，已有模型、供应商凭据、后端支持范围与 API 权限不受前端目录筛选影响。该目录不是后端供应商白名单
 
 ## 字段与表格
@@ -351,6 +353,10 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- ui/litellm-dashboard 
 推荐把上述检查和本文清单一起更新。优先在集中策略或共享组件补规则，只有独立按钮、无共享表单字段的区块才增加就地屏蔽。已整页屏蔽的功能不再逐个改其内部组件
 
 ## 验证记录与限制
+
+### 移动云 MoMA 图标验证
+
+新增模型面板、模型表单与共享 Logo 组件的 3 个定向测试文件共 87 项通过，覆盖 MoMA 选项本地图标、选中与表单提交。生产构建、TypeScript 与静态导出通过。图标仅补充供应商选项，不改变顶部品牌或上游模型数据
 
 ### 国产供应商与 MoMA 默认项验证
 

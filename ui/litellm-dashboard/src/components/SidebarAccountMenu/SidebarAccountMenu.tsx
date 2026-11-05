@@ -1,13 +1,6 @@
 import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
-import { useDisableBlogPosts } from "@/app/(dashboard)/hooks/useDisableBlogPosts";
-import { useDisableBouncingIcon } from "@/app/(dashboard)/hooks/useDisableBouncingIcon";
-import { useDisableLiteAdmin } from "@/app/(dashboard)/hooks/useDisableLiteAdmin";
-import { ARIA_AGENT_LABEL } from "@/components/liteadmin/aria-brand";
-import { useDisableShowNewBadge } from "@/app/(dashboard)/hooks/useDisableShowNewBadge";
-import { useDisableShowPrompts } from "@/app/(dashboard)/hooks/useDisableShowPrompts";
-import { emitLocalStorageChange, removeLocalStorageItem, setLocalStorageItem } from "@/utils/localStorageUtils";
 import { navAccountDisplayName } from "@/components/Navbar/navDisplayName";
 import CopyButton from "@/components/shared/CopyButton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -15,10 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/cva.config";
 import { uiHref } from "@/utils/uiHref";
-import { isProxyAdminRole } from "@/utils/roles";
 import { ChevronsUpDown, Crown, IdCard, KeyRound, LogOut, Mail, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -86,64 +77,9 @@ interface SidebarAccountMenuProps {
 
 const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, collapsed = false }) => {
   const t = useTranslation();
-  const {
-    userId,
-    userEmail,
-    userRole: role,
-    userRoleLabel: userRole,
-    isViewOnly,
-    premiumUser,
-    loginMethod,
-  } = useAuthorized();
+  const { userId, userEmail, userRoleLabel: userRole, premiumUser, loginMethod } = useAuthorized();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const disableShowPrompts = useDisableShowPrompts();
-  const disableBlogPosts = useDisableBlogPosts();
-  const disableBouncingIcon = useDisableBouncingIcon();
-  const disableShowNewBadge = useDisableShowNewBadge();
-  const [disableLiteAdmin, setDisableLiteAdmin] = useDisableLiteAdmin(userId);
-  const canUseLiteAdmin = userId && !isViewOnly && isProxyAdminRole(role);
-
-  const setFlag = (key: string, checked: boolean) => {
-    if (checked) {
-      setLocalStorageItem(key, "true");
-    } else {
-      removeLocalStorageItem(key);
-    }
-    emitLocalStorageChange(key);
-  };
-
-  const toggles = [
-    {
-      key: "disableShowNewBadge",
-      label: "Hide New Feature Indicators",
-      ariaLabel: "Toggle hide new feature indicators",
-      checked: disableShowNewBadge,
-      onCheckedChange: (checked: boolean) => setFlag("disableShowNewBadge", checked),
-    },
-    {
-      key: "disableShowPrompts",
-      label: "Hide All Prompts",
-      ariaLabel: "Toggle hide all prompts",
-      checked: disableShowPrompts,
-      onCheckedChange: (checked: boolean) => setFlag("disableShowPrompts", checked),
-    },
-    {
-      key: "disableBlogPosts",
-      label: "Hide Blog Posts",
-      ariaLabel: "Toggle hide blog posts",
-      checked: disableBlogPosts,
-      onCheckedChange: (checked: boolean) => setFlag("disableBlogPosts", checked),
-    },
-    {
-      key: "disableBouncingIcon",
-      label: "Hide Bouncing Icon",
-      ariaLabel: "Toggle hide bouncing icon",
-      checked: disableBouncingIcon,
-      onCheckedChange: (checked: boolean) => setFlag("disableBouncingIcon", checked),
-    },
-  ];
-
   const seed = userEmail || userId || "user";
   const initials = initialsFromIdentity(userEmail, userId);
   const hue = hueFromString(seed);
@@ -192,17 +128,6 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
       >
         <div className="flex items-center gap-2 border-b border-border px-3 py-3">
           <span className="text-[15px] font-bold tracking-tight text-foreground">MoMA 轻量版</span>
-          {!disableBouncingIcon && (
-            <span
-              className="animate-bounce text-lg leading-none"
-              style={{ animationDuration: "2s" }}
-              title={t("Thanks for using MoMA!")}
-              aria-hidden
-            >
-              🌴
-            </span>
-          )}
-          <span className="flex-1" />
         </div>
 
         <div className="flex flex-col px-3 py-2">
@@ -230,38 +155,6 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
           <InfoRow icon={<IdCard className="size-[17px]" />} label="User ID">
             <MonoValue value={userId} copyLabel="Copy user ID" />
           </InfoRow>
-        </div>
-
-        <Separator />
-
-        <div className="py-1">
-          {toggles.map((toggle) => (
-            <div key={toggle.key} className="flex h-[38px] items-center justify-between gap-3 px-3">
-              <span className="text-[13px] text-foreground">
-                <L>{toggle.label}</L>
-              </span>
-              <Switch
-                size="sm"
-                checked={toggle.checked}
-                onCheckedChange={toggle.onCheckedChange}
-                aria-label={toggle.ariaLabel}
-              />
-            </div>
-          ))}
-          {premiumUser === true && canUseLiteAdmin && (
-            <div className="flex h-[38px] items-center justify-between gap-3 px-3">
-              <span className="text-[13px] text-foreground">
-                <L>Hide </L>
-                {ARIA_AGENT_LABEL}
-              </span>
-              <Switch
-                size="sm"
-                checked={disableLiteAdmin}
-                onCheckedChange={setDisableLiteAdmin}
-                aria-label={`Toggle hide ${ARIA_AGENT_LABEL}`}
-              />
-            </div>
-          )}
         </div>
 
         <Separator />

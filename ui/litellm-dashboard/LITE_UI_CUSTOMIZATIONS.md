@@ -11,11 +11,11 @@
 | 整理日期         | 2026-11-05                                                                                      |
 | 开源基线提交     | `9546f9a69ff470dfcc5a21eccab89d2fd86a634f`                                                      |
 | 基线标题与版本   | `test(router): audit #47498 (#48799)`，根目录 `pyproject.toml` 的版本为 `1.109.0`               |
-| 已核对的定制提交 | 以本文所在提交为准，前一提交为 `75d6f3db2c`，本次在账户菜单显示轻量版产品版本 V1.0              |
+| 已核对的定制提交 | 以本文所在提交为准，前一提交为 `e085a83bf8`，本次拆分 AI Hub 模型广场与管理员模型管理           |
 | 维护分支         | `litellm_ui_visual_polish`，原定制分支保留                                                      |
-| 差异范围         | 开源基线至本次变更共 476 个文件，包含界面、测试、说明、依赖配置和本机部署文件，不等同于功能数量 |
+| 差异范围         | 开源基线至本次变更共 488 个文件，包含界面、测试、说明、依赖配置和本机部署文件，不等同于功能数量 |
 | 本机预览入口     | [localhost:4001/ui/](http://localhost:4001/ui/)，这是部署地址，不是本次运行验收结论             |
-| 本次提交范围     | 账户菜单版本标记和悬停标题显示“轻量版 V1.0”，同步英文展示、定向回归及本机镜像                   |
+| 本次提交范围     | 模型广场按模型组展示，保留双协议地址；模型管理保留轻量版范围与中文，更新导航、链接和权限回归    |
 
 `main` 已包含定制，不能把它当作未修改的开源源码。升级时应记录旧、新开源基线的 SHA 与版本，再逐模块核对。持续维护要求见[根目录 AGENTS.md](../../AGENTS.md#lightweight-fork-maintenance)
 
@@ -27,23 +27,24 @@
 
 下表是定制后的可见范围，仍叠加开源原有角色、页面配置与后端权限。页面白名单不会赋予员工管理员权限
 
-| 功能模块           | 员工可见范围                               | 管理员可见范围                                 | 主要定制                                                            |
-| ------------------ | ------------------------------------------ | ---------------------------------------------- | ------------------------------------------------------------------- |
-| 导航与页面访问     | 工作台、模型、密钥、用量和原权限允许的团队 | 保留模型运营、访问控制和系统设置               | 新增 MoMA 导航与页面白名单，屏蔽非核心页面和推广入口                |
-| 工作台 Home        | 个人概览、模型入口和创建密钥               | 原权限范围内的概览和快捷入口                   | 移除新闻、榜单，新增 Token 趋势、可用模型和使用指引                 |
-| 模型服务           | 授权模型、基础详情、卡片与列表、直接使用   | 另保留模型增删改、凭据、健康检查和重试配置     | 新增卡片视图，模型直接使用，供应商目录收窄并默认 MoMA，隐藏高级页签 |
-| API 密钥           | 本人有权访问的密钥及原有操作               | 原有密钥管理和用户、团队归属                   | 简化所有者、类型、字段、详情、列与筛选                              |
-| 用量统计           | 原权限允许的本人和团队用量                 | 全局、本人、用户和团队视角                     | 隐藏资源统计与自然语言查询，调整概览布局与本地化                    |
-| 请求日志           | 不开放日志页                               | Request Logs 与请求详情                        | 隐藏审计和删除记录页签，保留真实请求与费用                          |
-| 团队               | 原权限允许的团队查看和操作                 | 团队、成员、模型、预算和 TPM/RPM               | 隐藏非模型资源与高级配置，成员角色和编辑字段保留                    |
-| 用户               | 沿用原角色限制                             | 用户创建、批量邀请、详情、编辑及默认设置       | 隐藏 MCP 权限，补齐中文、金额与状态展示                             |
-| 访问组             | 沿用原角色限制                             | 基本信息、模型及原有管理流程                   | 隐藏 MCP、智能体和技能页签与数量标记                                |
-| 预算               | 沿用原管理员限制                           | 原有预算管理                                   | 本地化周期与人民币单位，不新增计费规则                              |
-| 路由设置           | 不开放                                     | 基础重试、路由分组、回退、提示词缓存和通用参数 | 隐藏基础负载均衡页的全局路由策略、标签过滤和延迟高级配置            |
-| 日志与告警设置     | 不开放                                     | 普通告警、参数和邮件设置                       | 隐藏日志回调、企业参数和部分集成，默认进入告警类型                  |
-| 系统管理           | 不开放                                     | SSO、SCIM、UI Settings、Logging Settings       | 精简页签与界面开关，默认进入 UI Settings，保留许可证约束            |
-| 界面主题与通用展示 | 使用统一主题与语言切换                     | 另可配置 Logo 和浏览器图标                     | MoMA 品牌、统一布局、中英文和人民币显示                             |
-| 本机部署           | 无独立员工配置                             | 独立 Compose、数据库和静态 UI 发布流程         | 新增本机预览资料，未裁剪后端运行时                                  |
+| 功能模块           | 员工可见范围                               | 管理员可见范围                                 | 主要定制                                                   |
+| ------------------ | ------------------------------------------ | ---------------------------------------------- | ---------------------------------------------------------- |
+| 导航与页面访问     | 工作台、模型、密钥、用量和原权限允许的团队 | 保留模型运营、访问控制和系统设置               | 新增 MoMA 导航与页面白名单，屏蔽非核心页面和推广入口       |
+| 工作台 Home        | 个人概览、模型入口和创建密钥               | 原权限范围内的概览和快捷入口                   | 移除新闻、榜单，新增 Token 趋势、可用模型和使用指引        |
+| 模型广场           | 授权模型组、能力、价格与调用示例           | 同一目录及模型组详情                           | 基于 AI Hub 登录态接口，保留双协议接入地址，不提供管理动作 |
+| 模型管理           | 不开放                                     | 部署列表、模型增删改、凭据、健康检查和重试配置 | 恢复独立管理入口与中文，保留轻量版供应商和高级页签屏蔽范围 |
+| API 密钥           | 本人有权访问的密钥及原有操作               | 原有密钥管理和用户、团队归属                   | 简化所有者、类型、字段、详情、列与筛选                     |
+| 用量统计           | 原权限允许的本人和团队用量                 | 全局、本人、用户和团队视角                     | 隐藏资源统计与自然语言查询，调整概览布局与本地化           |
+| 请求日志           | 不开放日志页                               | Request Logs 与请求详情                        | 隐藏审计和删除记录页签，保留真实请求与费用                 |
+| 团队               | 原权限允许的团队查看和操作                 | 团队、成员、模型、预算和 TPM/RPM               | 隐藏非模型资源与高级配置，成员角色和编辑字段保留           |
+| 用户               | 沿用原角色限制                             | 用户创建、批量邀请、详情、编辑及默认设置       | 隐藏 MCP 权限，补齐中文、金额与状态展示                    |
+| 访问组             | 沿用原角色限制                             | 基本信息、模型及原有管理流程                   | 隐藏 MCP、智能体和技能页签与数量标记                       |
+| 预算               | 沿用原管理员限制                           | 原有预算管理                                   | 本地化周期与人民币单位，不新增计费规则                     |
+| 路由设置           | 不开放                                     | 基础重试、路由分组、回退、提示词缓存和通用参数 | 隐藏基础负载均衡页的全局路由策略、标签过滤和延迟高级配置   |
+| 日志与告警设置     | 不开放                                     | 普通告警、参数和邮件设置                       | 隐藏日志回调、企业参数和部分集成，默认进入告警类型         |
+| 系统管理           | 不开放                                     | SSO、SCIM、UI Settings、Logging Settings       | 精简页签与界面开关，默认进入 UI Settings，保留许可证约束   |
+| 界面主题与通用展示 | 使用统一主题与语言切换                     | 另可配置 Logo 和浏览器图标                     | MoMA 品牌、统一布局、中英文和人民币显示                    |
+| 本机部署           | 无独立员工配置                             | 独立 Compose、数据库和静态 UI 发布流程         | 新增本机预览资料，未裁剪后端运行时                         |
 
 ## 按功能模块的具体差异
 
@@ -51,18 +52,18 @@
 
 开源基线已有侧栏、移动导航、命令搜索、菜单角色过滤和页面本身的权限判断。本版在这些能力上增加轻量白名单，并以 MoMA 分组导航替换控制台原有布局
 
-| 类型 | 具体差异                                                                                                                                                                               |
-| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 新增 | `liteUi.ts` 集中定义页面、页签、字段和表格列策略，`LiteUiBoundary` 拦截不在白名单的页面，显示“当前版本不提供此页面”                                                                    |
-| 新增 | 模型服务、用量与配额、访问控制、系统设置四组导航。桌面使用左侧导航，小于 1100px 时改用同源抽屉，空分组不展示                                                                           |
-| 修改 | 侧栏、移动导航和命令搜索复用 `visibleMenuGroups`，先按轻量白名单收窄，再执行原角色、团队管理员身份和员工页面配置过滤                                                                   |
-| 屏蔽 | Organizations、Projects Beta、Playground、API Reference、Agents、Workflow Runs、Memory、MCP Servers、Skills、Guardrails、Policies、Search Tools、Vector Stores、Tool Policies          |
-| 屏蔽 | Model Insights、Cost Optimization、Lens、Guardrails Monitor、AI Hub、Learning Resources、Response Cache、Experimental 及其子入口，以及白名单外的 Chat、Moyai、Cost Tracking 等独立页面 |
-| 屏蔽 | 顶栏 View Switcher、Lite Admin、Docs、Blog、Community 等入口，移除上游版本徽章、发布说明外链及账户菜单中的版本查询                                                                     |
-| 修改 | 隐藏页签的触发器和内容都不渲染，旧页签 URL 回退到允许的默认项，`keepMounted` 不恢复隐藏内容                                                                                            |
-| 保留 | 登录、onboarding、修改密码和既有 `mcp` 回调路由，MCP 管理页仍被屏蔽。原有导航注册表、角色权限和相关源码保留                                                                            |
+| 类型 | 具体差异                                                                                                                                                                       |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 新增 | `liteUi.ts` 集中定义页面、页签、字段和表格列策略，`LiteUiBoundary` 拦截不在白名单的页面，显示“当前版本不提供此页面”                                                            |
+| 新增 | 模型服务、用量与配额、访问控制、系统设置四组导航。桌面使用左侧导航，小于 1100px 时改用同源抽屉，空分组不展示                                                                   |
+| 修改 | 侧栏、移动导航和命令搜索复用 `visibleMenuGroups`，先按轻量白名单收窄，再执行原角色、团队管理员身份和员工页面配置过滤                                                           |
+| 屏蔽 | Organizations、Projects Beta、Playground、API Reference、Agents、Workflow Runs、Memory、MCP Servers、Skills、Guardrails、Policies、Search Tools、Vector Stores、Tool Policies  |
+| 屏蔽 | Model Insights、Cost Optimization、Lens、Guardrails Monitor、Learning Resources、Response Cache、Experimental 及其子入口，以及白名单外的 Chat、Moyai、Cost Tracking 等独立页面 |
+| 屏蔽 | 顶栏 View Switcher、Lite Admin、Docs、Blog、Community 等入口，移除上游版本徽章、发布说明外链及账户菜单中的版本查询                                                             |
+| 修改 | 隐藏页签的触发器和内容都不渲染，旧页签 URL 回退到允许的默认项，`keepMounted` 不恢复隐藏内容                                                                                    |
+| 保留 | 登录、onboarding、修改密码和既有 `mcp` 回调路由，MCP 管理页仍被屏蔽。原有导航注册表、角色权限和相关源码保留                                                                    |
 
-页面路径与菜单 ID 并不总相同，例如 `models-and-endpoints` 对应 `models`，`usage` 对应 `new_usage`。访问控制页面继续由原页面和后端判断具体角色，不能把 `litePageAllowed` 单独视为授权系统。隐藏功能的依赖和静态页面未统一删除，不承诺安装包或 JavaScript 体积下降
+页面路径与菜单 ID 并不总相同，例如 `model-hub-table` 对应员工设置中的 `models`，`models-and-endpoints` 对应仅管理员可用的 `model-management`，`usage` 对应 `new_usage`。访问控制页面继续由原页面和后端判断具体角色，不能把 `litePageAllowed` 单独视为授权系统。隐藏功能的依赖和静态页面未统一删除，不承诺安装包或 JavaScript 体积下降
 
 主要实现为 [liteUi.ts](src/utils/liteUi.ts)、[LiteUiContext.tsx](src/contexts/LiteUiContext.tsx)、[leftnav.tsx](src/components/leftnav.tsx)、[MomaNavigation.tsx](src/components/MomaNavigation.tsx)、[控制台 layout](<src/app/(dashboard)/layout.tsx>)、[tabs.tsx](src/components/ui/tabs.tsx) 和 [useUrlTab.ts](src/hooks/useUrlTab.ts)
 
@@ -79,21 +80,37 @@
 
 主要实现为 [HomePage.tsx](<src/app/(dashboard)/home/_components/HomePage.tsx>)、[UsageStatStrip.tsx](<src/app/(dashboard)/usage/_components/components/overview/UsageStatStrip.tsx>) 和 [NotificationsBell](src/components/Navbar/NotificationsBell/)
 
-### 模型服务、供应商与直接使用
+### 模型广场
 
-| 类型 | 具体差异                                                                                                                                        |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| 新增 | 模型卡片视图与卡片、列表切换。员工默认卡片，管理员默认列表，切换状态仅在当前组件内保存                                                          |
-| 新增 | 模型广场顶部同时展示 OpenAI 与 Anthropic Base URL，各有复制按钮与填写说明，卡片、列表和模型详情均可查看，员工可见                               |
-| 修改 | 模型无需单独开通，卡片“立即使用”直接进入原有 API 密钥页，不自动创建密钥，不查询或显示开通状态                                                   |
-| 修改 | 页面展示为模型广场，搜索、团队、查看范围、排序、筛选和分页仍使用 `AllModelsTab` 的原 nuqs 状态与服务端查询，切换视图不清空筛选                  |
-| 修改 | 卡片复用原有团队公开模型名称解析，展示可复制的调用模型 ID、真实供应商及暂停状态，移除卡片上下文窗口，详情参数保留，不编造介绍、价格、销量和排名 |
-| 屏蔽 | Auto Routers、Pass Through、Model Group Alias、Model Access Group Budgets Beta、Price Data 页签，以及 Decision Models 推广和 User Connections   |
-| 屏蔽 | 员工的新增、凭据、健康检查、重试和 Raw 页签，管理动作、上游模型、价格及模型设置区块，列表另隐藏凭据、输入成本和操作列                           |
-| 屏蔽 | 新增模型表单的 Team-BYOK 开关与配套团队选择区，Key 与模型共用高级字段的屏蔽项见附录一                                                           |
-| 修改 | 新增模型供应商由完整目录收窄为下表九项，首次进入和成功添加后都默认 MoMA，URL 供应商预填也受同一目录约束                                         |
-| 修改 | 模型名称必填、对外名称映射及价格非负数校验补齐中文，计价方式选项按语言展示，供应商枚举、模型名称与价格提交值不变                                |
-| 保留 | 管理员原有模型添加、编辑、删除、凭据复用、认证字段、连接测试、健康检查和重试，必需团队作用域、模型访问组及供应商认证不被误隐藏                  |
+开源 AI Hub 使用模型组目录，本版将其登录态入口 `model-hub-table` 改为员工与管理员共用的模型广场。通过既有 `useModelHub` 和 `/model_group/info` 读取当前账号获授权的模型组，不调用公共目录发布接口，不要求管理员另行发布，不把目录可见性当成 API Key 的调用授权
+
+| 类型 | 具体差异                                                                                                                                                                                   |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 新增 | 复用原卡片样式，改以 `model_group` 为展示、详情、复制和调用名称，不再将每个部署记录当作一张模型卡片                                                                                        |
+| 新增 | 广场顶部保留 OpenAI 与 Anthropic 协议 Base URL、独立复制按钮和中文填写说明，模型详情弹窗不移除地址区块                                                                                     |
+| 修改 | 描述、供应商、类型和能力来自模型组元数据，详情保留输入输出 Token 上限、每百万 Token 价格和调用示例。价格沿用现有人民币展示口径，不做汇率换算；缺失字段显示未设置，不推断单个部署的暂停状态 |
+| 修改 | 搜索、供应商、类型和选中模型使用 nuqs URL 状态，可分享模型组详情。查询缓存按用户 ID 与角色隔离，切换身份不复用另一账号的目录                                                               |
+| 屏蔽 | 广场不挂载 Agents、MCP、Skills、公共发布管理、社区外链或部署管理表单，过滤模型接口附带的 A2A 资源条目                                                                                      |
+| 保留 | 立即使用仍打开 API 密钥页，不查询 Key 列表、不自动创建密钥或新增开通流程。代码示例使用占位 API Key，不包含当前登录令牌                                                                     |
+
+访问地址继续复用 `getGatewayBaseUrl()`，按已有公开网关与 Worker 选择解析。去掉末尾斜杠及末尾单个 `/v1` 后作为 Anthropic Base URL，再追加 `/v1` 作为 OpenAI Base URL，其他路径前缀保留，不展示供应商 `api_base` 或上游凭据。此处没有新增协议或扩大 Worker 支持范围
+
+首页、导航、命令搜索与模型名称下钻进入广场。原员工页面配置中的 `models` 继续控制广场可见性。团队和密钥详情的真实模型名称打开目录详情，访问组名称仅在管理员视角保留部署筛选链接，员工保留名称显示，不跳到无权访问的模型管理页。独立公共目录路由和源码未删除，但没有因本次改造开放新匿名目录或修改其后端配置
+
+主要实现为 [目录页面](<src/app/(dashboard)/model-hub-table/page.tsx>)、[ModelMarketplace.tsx](src/components/AIHub/ModelMarketplace.tsx)、[ModelCatalog.tsx](src/components/ModelCatalog.tsx)、[ModelGatewayAddresses.tsx](src/components/ModelGatewayAddresses.tsx)、[useModels.ts](<src/app/(dashboard)/hooks/models/useModels.ts>) 和 [entityLinks.ts](src/utils/entityLinks.ts)
+
+### 模型管理、供应商与接入
+
+开源 Models + Endpoints 继续使用 `models-and-endpoints` 路径，恢复为独立“模型管理”。导航、页面白名单和直达路由仅向平台管理员开放，读写动作继续受原后端权限及只读管理员限制，不提升角色权限
+
+| 类型 | 具体差异                                                                                                                                                                  |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 修改 | 管理页移除定制卡片视图和卡片切换，恢复部署表格，保留原搜索、团队、查看范围、排序、筛选、分页及 nuqs 状态                                                                  |
+| 保留 | 已接入模型、添加模型、供应商凭据、健康状态和模型重试设置五个轻量版页签及原中文文案，保留详情、编辑、删除和测试连接                                                        |
+| 屏蔽 | 继续隐藏 Auto Routers、Pass Through、Model Group Alias、Model Access Group Budgets Beta、Price Data，以及 Decision Models 推广和 User Connections，本次不恢复开源全部页签 |
+| 屏蔽 | 新增模型表单的 Team-BYOK 开关与配套团队选择区，以及共享策略中的非模型资源和高级字段，字段提交边界不变                                                                     |
+| 修改 | 新增模型供应商收窄为下表九项，首次进入和成功添加后默认 MoMA，URL 供应商预填也受同一目录约束                                                                               |
+| 修改 | 模型名称必填、对外名称映射、价格校验、计价选项及管理表格继续使用现有中文和人民币显示，原供应商枚举、模型名称与价格提交值不变                                              |
 
 | 供应商选择项         | 原有适配标识        | 本版处理                                                                                                |
 | -------------------- | ------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -111,15 +128,7 @@
 
 目录由后端返回的原供应商元数据筛选生成，不伪造缺失项。MoMA 没有预置服务地址，也没有新增后端供应商实现。这里限制的是新增模型界面，既有模型、凭据、API 权限和后端支持范围继续保留
 
-模型卡片显示“调用模型 ID”及常显复制图标，复制值为调用请求中 `model` 使用的公开名称，优先取 `model_info.team_public_model_name`，否则取 `model_name`。不复制模型记录 UUID 或供应商内部模型名。复用 `CopyButton` 的复制反馈和失败处理，点击复制不打开详情。卡片移除“上下文窗口”，原接口数据、模型详情与上下文参数保持不变
-
-模型访问地址复用原 `getGatewayBaseUrl()`，选中 Worker 时使用 Worker 地址，否则优先使用已配置的公开网关地址，未配置时回退现有网关解析结果。去除尾部斜杠及末尾单个 `/v1` 后作为 Anthropic Base URL，再追加 `/v1` 作为 OpenAI Base URL，其他路径前缀保留。分别提供复制按钮，复制内容与对应展示地址一致，说明 OpenAI 客户端保留 `/v1`，Anthropic SDK 的 `base_url` 或 `ANTHROPIC_BASE_URL` 不添加该后缀。此处展示客户端接入的网关地址，不是供应商 `api_base`，不展示上游凭据或登录令牌，也不新增接口能力或扩大 Worker 协议支持范围
-
-获授权模型可以直接调用，调用时使用具有对应模型权限的 API Key。卡片保留模型详情、可用或暂停状态和“立即使用”入口，暂停模型的使用入口禁用。首页指引和模型页说明同步取消开通步骤，不要求每个模型单独生成 Key
-
-模型卡片不读取 Key 列表、不计算已开通状态、不自动创建模型专用 Key，也不展示新密钥结果弹窗。已创建的 Key 和历史数据保留，原密钥创建入口、用户与团队权限、模型范围、预算、限流及后端鉴权继续生效。移除仅供快捷开通使用的 `modelAccess.ts` 及其旧测试，`useInfiniteKeys` 仍被其他原有页面使用，予以保留
-
-主要实现为 [模型页面](<src/app/(dashboard)/models-and-endpoints/page.tsx>)、[AllModelsTable.tsx](<src/app/(dashboard)/models-and-endpoints/components/AllModelsTable.tsx>)、[AddModelPanel.tsx](<src/app/(dashboard)/models-and-endpoints/panels/AddModelPanel.tsx>)、[modelProviders.ts](src/components/add_model/modelProviders.ts)、[AddModelForm.tsx](src/components/add_model/AddModelForm.tsx)、[provider_specific_fields.tsx](src/components/add_model/provider_specific_fields.tsx)、[ModelCatalog.tsx](src/components/ModelCatalog.tsx)、[useKeys.ts](<src/app/(dashboard)/hooks/keys/useKeys.ts>) 和 [model_info_view.tsx](src/components/model_info_view.tsx)。操作说明见[模型接入](../../README.md#模型接入)
+主要实现为 [管理页面](<src/app/(dashboard)/models-and-endpoints/page.tsx>)、[AllModelsTable.tsx](<src/app/(dashboard)/models-and-endpoints/components/AllModelsTable.tsx>)、[AllModelsTab.tsx](<src/app/(dashboard)/models-and-endpoints/components/AllModelsTab.tsx>)、[AddModelPanel.tsx](<src/app/(dashboard)/models-and-endpoints/panels/AddModelPanel.tsx>)、[modelProviders.ts](src/components/add_model/modelProviders.ts)、[AddModelForm.tsx](src/components/add_model/AddModelForm.tsx) 和 [model_info_view.tsx](src/components/model_info_view.tsx)。操作说明见[模型接入](../../README.md#模型接入)
 
 ### API 密钥
 
@@ -353,7 +362,7 @@
 | `logging-and-alerts`   | `logging-callbacks`、`cloudzero-cost-tracking`、`ms-teams-alerts`                         |
 | `admin-panel`          | `security-settings`、`hashicorp-vault`、`cyberark`、`plugins`、`web-search-interception`  |
 
-员工的 `models-and-endpoints` 另隐藏 `add`、`llm-credentials`、`health`、`retry-settings`、`raw`。该表不替代原角色校验，Key 详情隐藏同名页签也不影响用户详情中的节省和自动路由统计
+集中策略仍对员工上下文的 `models-and-endpoints` 隐藏 `add`、`llm-credentials`、`health`、`retry-settings`、`raw`。当前员工不能进入模型管理路由，此处保留的是共享控件策略，不表示员工拥有管理入口。该表不替代原角色校验，Key 详情隐藏同名页签也不影响用户详情中的节省和自动路由统计
 
 ### 按字段名核对
 
@@ -422,6 +431,18 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- litellm enterprise li
 | 检查与证据           | 运行受影响的明确路径定向用例、构建及适用门禁，保留已有失败和未覆盖项，不运行无路径的完整前端套件                                        |
 
 ## 验证记录与限制
+
+### AI Hub 模型广场与模型管理拆分
+
+2026-11-05 按确认范围保留轻量版管理能力，未恢复被隐藏的高级页签。14 个定向文件的 282 项测试及团队、密钥详情 2 个文件中选取的 42 项链接相关测试通过，共 324 项不同用例；后两份文件其余 159 项未选取，不记为完整文件通过。目录价格格式简化后另复跑 4 项广场接线用例通过，不重复计入总数。覆盖账号目录缓存隔离、模型组复制及详情、调用示例占位密钥、向量模型示例、双协议地址与路径前缀、导航和直达限制、管理表格、首页及实体下钻
+
+生产构建、TypeScript、58 个静态页面导出及前端格式、ESLint、预算门禁通过，未提高预算或增加项目依赖。首轮发现的管理表格团队标签遗漏、旧卡片断言和新中文词条遗漏已修复；目录组件的嵌套条件、过大内联参数和复杂度问题按既有规则简化后通过检查。相对固定开源基线核对，后端、企业、Rust 和 Prisma 目录仍无源码差异
+
+4001 更新为 `litellm-moma:model-marketplace-20261105`，本次源码构建的静态前端覆盖前一镜像，后端运行层保留。Compose 对比只有应用镜像变化，应用容器重建启动，数据库启动时间未变化，就绪接口 HTTP 200。管理员实测广场、模型组详情、双协议地址复制、搜索空态及重置、中英文往返，以及模型管理保留的五个中文页签。原“检查全部模型”和保存按钮未点击，没有执行真实供应商请求或修改模型配置
+
+普通账号使用现有凭据在独立本机域名登录，确认模型目录与两种地址可见，无模型管理菜单，直达管理路由显示无权访问。没有重置密码或改变角色；正常登录仍可能按原后端机制产生会话密钥和请求日志，不能记为数据库完全无写入。浏览器复核结束时两种角色均未捕获控制台错误或警告，页面没有框架错误覆盖层，关闭临时测试标签页后保留原管理员会话并恢复中文。截图和日志保存在本机临时目录，未提交到仓库
+
+未运行完整前端套件、手机专项、跨浏览器、真实模型调用、完整计费或负载验收，没有验证通过目录请求新授权或公开发布模型。本轮只复用后端已有授权，不增加目录外模型的调用权限
 
 ### 轻量版产品版本号
 

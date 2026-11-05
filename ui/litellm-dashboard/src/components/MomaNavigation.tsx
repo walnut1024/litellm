@@ -17,7 +17,7 @@ import {
 import { useTranslation } from "@/contexts/LocaleContext";
 import { isUserTeamAdminForAnyTeam } from "@/utils/roles";
 import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
-const servicePages = ["home", "models", "api-keys"];
+const servicePages = ["home", "models", "model-management", "api-keys"];
 const usagePages = ["new_usage", "logs"];
 
 export function MomaNavigation() {
@@ -60,7 +60,7 @@ export function MomaNavigation() {
       className="moma-nav-link"
     >
       {item.icon}
-      {t(item.page === "models" ? "Model marketplace" : labelText(item))}
+      {t(labelText(item))}
     </Link>
   );
   return (

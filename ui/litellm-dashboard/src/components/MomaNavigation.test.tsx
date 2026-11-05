@@ -27,6 +27,8 @@ describe("MomaNavigation", () => {
         <MomaNavigation />
       </LocaleProvider>,
     );
+    expect(screen.getByRole("link", { name: "模型广场" })).toHaveAttribute("href", "/ui/model-hub-table");
+    expect(screen.queryByRole("link", { name: "模型管理" })).not.toBeInTheDocument();
     const keys = screen.getByRole("link", { name: "API 密钥" });
     expect(keys).toHaveAttribute("href", "/ui/api-keys");
     expect(keys).toHaveAttribute("aria-current", "page");
@@ -43,6 +45,8 @@ describe("MomaNavigation", () => {
         <MomaNavigation />
       </LocaleProvider>,
     );
+    expect(screen.getByRole("link", { name: "模型管理" })).toHaveAttribute("href", "/ui/models-and-endpoints");
+    expect(screen.getByRole("link", { name: "模型广场" })).toHaveAttribute("href", "/ui/model-hub-table");
     const accessControl = within(screen.getByRole("region", { name: "访问控制" }));
     expect(accessControl.getAllByRole("link")).toHaveLength(4);
     expect(accessControl.getByRole("link", { name: "团队" })).toHaveAttribute("href", "/ui/teams");

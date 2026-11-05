@@ -25,7 +25,7 @@ describe("lightweight UI visibility", () => {
     expect(litePageAllowed(page, "Internal User")).toBe(true),
   );
 
-  it.each(["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel", "ui-theme"])(
+  it.each(["model-management", "logs", "settings", "router-settings", "logging-and-alerts", "admin-panel", "ui-theme"])(
     "reserves %s for administrators",
     (page) => {
       expect(litePageAllowed(page, "Internal User")).toBe(false);
@@ -79,6 +79,10 @@ describe("lightweight UI visibility", () => {
   });
 
   it("keeps model administration available only in the administrator view", () => {
+    expect(liteRouteAllowed("models-and-endpoints", "Internal User")).toBe(false);
+    expect(liteRouteAllowed("models-and-endpoints", "Admin")).toBe(true);
+    expect(liteRouteAllowed("model-hub-table", "Internal User")).toBe(true);
+    expect(liteRouteAllowed("model-hub-table", "Admin")).toBe(true);
     expect(liteTabAllowed("models-and-endpoints", "add", false)).toBe(false);
     expect(liteTabAllowed("models-and-endpoints", "add", true)).toBe(true);
     expect(liteTabAllowed("models-and-endpoints", "auto-routers", true)).toBe(false);

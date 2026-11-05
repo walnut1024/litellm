@@ -782,15 +782,16 @@ describe("KeyInfoView", () => {
 
       expect(await screen.findByRole("link", { name: "gpt-4.1" })).toHaveAttribute(
         "href",
-        expect.stringContaining("/models-and-endpoints?model_group=gpt-4.1"),
+        expect.stringContaining("/model-hub-table?model=gpt-4.1"),
       );
       expect(screen.getByRole("link", { name: "anthropic/*" })).toHaveAttribute(
         "href",
-        expect.stringContaining("/models-and-endpoints?model_group=anthropic%2F*"),
+        expect.stringContaining("/model-hub-table?model=anthropic%2F*"),
       );
     });
 
     it("links access-group model chips to the access-group filter", async () => {
+      vi.mocked(useAuthorized).mockReturnValue({ ...baseUseAuthorizedMock, userRole: "Admin" });
       vi.mocked(useModelAccessGroupNames).mockReturnValue(new Set(["repro-access-group"]));
       const keyData = { ...MOCK_KEY_DATA, models: ["repro-access-group"] };
       renderWithProviders(
@@ -808,6 +809,23 @@ describe("KeyInfoView", () => {
         "href",
         expect.stringMatching(/\?access_group=repro-access-group$/),
       );
+    });
+
+    it("shows employee access-group chips without an administrator management link", async () => {
+      vi.mocked(useAuthorized).mockReturnValue({ ...baseUseAuthorizedMock, userRole: "Internal User" });
+      vi.mocked(useModelAccessGroupNames).mockReturnValue(new Set(["repro-access-group"]));
+      renderWithProviders(
+        <KeyInfoView
+          keyData={{ ...MOCK_KEY_DATA, models: ["repro-access-group"] }}
+          onClose={() => {}}
+          keyId="test-key-id"
+          onKeyDataUpdate={() => {}}
+          teams={[]}
+        />,
+      );
+      const overview = await screen.findByRole("tabpanel", { name: "Overview" });
+      expect(within(overview).getByText("repro-access-group")).toBeVisible();
+      expect(screen.queryByRole("link", { name: "repro-access-group" })).not.toBeInTheDocument();
     });
 
     it("keeps access-group model chips unlinked while access-group names are loading", async () => {

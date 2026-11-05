@@ -28,8 +28,8 @@ describe("teamDetailHref", () => {
 
 describe("modelGroupHref", () => {
   it("targets the models page filtered to the encoded model group", () => {
-    expect(modelGroupHref("gpt-4.1")).toMatch(/\/models-and-endpoints\?model_group=gpt-4\.1$/);
-    expect(modelGroupHref("openai/*")).toMatch(/\?model_group=openai%2F\*$/);
+    expect(modelGroupHref("gpt-4.1")).toMatch(/\/model-hub-table\?model=gpt-4\.1$/);
+    expect(modelGroupHref("openai/*")).toMatch(/\?model=openai%2F\*$/);
   });
 
   it.each(["all-proxy-models", "all-team-models", "no-default-models"])(
@@ -47,22 +47,28 @@ describe("accessGroupHref", () => {
 });
 
 describe("modelOrAccessGroupHref", () => {
+  it("keeps employee model links in the catalog without linking to administrator group management", () => {
+    expect(modelOrAccessGroupHref("team-group", new Set(["team-group"]), "Internal User")).toBeUndefined();
+    expect(modelOrAccessGroupHref("catalog-chat", new Set(), "Internal User")).toMatch(
+      /\/model-hub-table\?model=catalog-chat$/,
+    );
+  });
   it("uses the access-group filter for a known access group", () => {
-    expect(modelOrAccessGroupHref("repro-access-group", new Set(["repro-access-group"]))).toMatch(
+    expect(modelOrAccessGroupHref("repro-access-group", new Set(["repro-access-group"]), "Admin")).toMatch(
       /\?access_group=repro-access-group$/,
     );
   });
 
   it("uses the model-group filter for a name outside the access-group set", () => {
-    expect(modelOrAccessGroupHref("gpt-4.1", new Set(["repro-access-group"]))).toMatch(/\?model_group=gpt-4\.1$/);
+    expect(modelOrAccessGroupHref("gpt-4.1", new Set(["repro-access-group"]), "Admin")).toMatch(/\?model=gpt-4\.1$/);
   });
 
   it("keeps grant sentinels without a link unless they are access groups", () => {
-    expect(modelOrAccessGroupHref("all-team-models", new Set())).toBeUndefined();
+    expect(modelOrAccessGroupHref("all-team-models", new Set(), "Admin")).toBeUndefined();
   });
 
   it("keeps model names unlinked until access group names are available", () => {
-    expect(modelOrAccessGroupHref("repro-access-group", undefined)).toBeUndefined();
-    expect(modelOrAccessGroupHref("gpt-4.1", undefined)).toBeUndefined();
+    expect(modelOrAccessGroupHref("repro-access-group", undefined, "Admin")).toBeUndefined();
+    expect(modelOrAccessGroupHref("gpt-4.1", undefined, "Admin")).toBeUndefined();
   });
 });

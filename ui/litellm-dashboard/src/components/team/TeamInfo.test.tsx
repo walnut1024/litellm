@@ -402,7 +402,7 @@ describe("TeamInfoView", () => {
       const settings = await screen.findByRole("tabpanel", { name: "设置" });
       expect(within(settings).getByRole("link", { name: "Default" })).toHaveAttribute(
         "href",
-        expect.stringMatching(/\?model_group=Default$/),
+        expect.stringMatching(/\?model=Default$/),
       );
     });
 
@@ -420,7 +420,7 @@ describe("TeamInfoView", () => {
       );
       expect(screen.getByRole("link", { name: "gpt-4.1" })).toHaveAttribute(
         "href",
-        expect.stringMatching(/\?model_group=gpt-4\.1$/),
+        expect.stringMatching(/\?model=gpt-4\.1$/),
       );
 
       await userEvent.setup({ delay: null }).click(screen.getByRole("tab", { name: "Settings" }));
@@ -431,7 +431,7 @@ describe("TeamInfoView", () => {
       );
       expect(within(settings).getByRole("link", { name: "gpt-4.1" })).toHaveAttribute(
         "href",
-        expect.stringMatching(/\?model_group=gpt-4\.1$/),
+        expect.stringMatching(/\?model=gpt-4\.1$/),
       );
     });
 
@@ -459,11 +459,11 @@ describe("TeamInfoView", () => {
 
       expect(await screen.findByRole("link", { name: "gpt-4.1" })).toHaveAttribute(
         "href",
-        expect.stringContaining("/models-and-endpoints?model_group=gpt-4.1"),
+        expect.stringContaining("/model-hub-table?model=gpt-4.1"),
       );
       expect(screen.getByRole("link", { name: "claude-sonnet-5" })).toHaveAttribute(
         "href",
-        expect.stringContaining("/models-and-endpoints?model_group=claude-sonnet-5"),
+        expect.stringContaining("/model-hub-table?model=claude-sonnet-5"),
       );
     });
 

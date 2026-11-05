@@ -8,16 +8,6 @@ import { renderWithProviders } from "../../../../../tests/test-utils";
 import AllModelsTab from "./AllModelsTab";
 import { STATUS_COLUMN_ID, toServerSortField } from "./ModelsTableColumns";
 
-vi.mock("@/components/ModelCatalog", () => ({
-  ModelCatalog: ({ models }: { models: readonly { model_name: string }[] }) => (
-    <div>
-      {models.map((model) => (
-        <h3 key={model.model_name}>{model.model_name}</h3>
-      ))}
-    </div>
-  ),
-}));
-
 const mockModelDeleteCall = vi.fn().mockResolvedValue({});
 const mockModelPatchUpdateCall = vi.fn().mockResolvedValue({});
 vi.mock("@/components/networking", () => ({
@@ -190,13 +180,12 @@ describe("AllModelsTab", () => {
       expect(mockUseCredentials).toHaveBeenLastCalledWith({ enabled: true });
     });
 
-    it("skips the admin-only credential list for the employee catalog", async () => {
+    it("skips the admin-only credential query for non-admin consumers", async () => {
       vi.spyOn(useAuthorizedModule, "default").mockReturnValue({ ...MOCK_AUTHORIZED, userRole: "Internal User" });
       setModelsInfo([rowWithCredential()]);
       renderWithProviders(<AllModelsTab {...defaultProps} />);
 
-      expect(await screen.findByRole("heading", { name: "gpt-4" })).toBeInTheDocument();
-      expect(screen.queryByText("Prod OpenAI")).not.toBeInTheDocument();
+      expect(await screen.findByText("gpt-4")).toBeInTheDocument();
       expect(mockUseCredentials).toHaveBeenLastCalledWith({ enabled: false });
     });
   });

@@ -141,7 +141,7 @@ describe("Sidebar (leftnav)", () => {
     );
 
     expect(screen.getByText("SI GATEWAY")).toBeInTheDocument();
-    expect(screen.getByText("Models + Endpoints")).toBeInTheDocument();
+    expect(screen.getByText("Model Management")).toBeInTheDocument();
     expect(screen.queryByText("AI Hub")).not.toBeInTheDocument();
   });
 
@@ -155,7 +155,7 @@ describe("Sidebar (leftnav)", () => {
     for (const label of [
       "Home",
       "Virtual Keys",
-      "Models + Endpoints",
+      "Model Management",
       "Usage",
       "Logs",
       "Internal Users",
@@ -186,7 +186,7 @@ describe("Sidebar (leftnav)", () => {
   it("restores employee access-control menus under the original role checks", () => {
     mockUseAuthorized.mockReturnValue(teamMemberAuthorization);
     renderWithProviders(<Sidebar {...defaultProps} enableProjectsUI />);
-    for (const label of ["Home", "Virtual Keys", "Models + Endpoints", "Usage", "Teams"]) {
+    for (const label of ["Home", "Virtual Keys", "Model marketplace", "Usage", "Teams"]) {
       expect(screen.getByRole("link", { name: label })).toBeInTheDocument();
     }
     for (const label of [
@@ -218,7 +218,7 @@ describe("Sidebar (leftnav)", () => {
     mockUseAuthorized.mockReturnValue({ ...teamMemberAuthorization, userRole: "admin", isViewOnly: true });
     renderWithProviders(<Sidebar {...defaultProps} />);
     expect(screen.queryByRole("link", { name: "Playground" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Models + Endpoints" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Model Management" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Logs" })).toBeInTheDocument();
   });
 
@@ -244,7 +244,8 @@ describe("getBreadcrumb", () => {
   });
 
   it("resolves routes whose segment differs from the sidebar page id", () => {
-    expect(getBreadcrumb("/ui/models-and-endpoints")).toEqual({ section: "AI Gateway", title: "Models + Endpoints" });
+    expect(getBreadcrumb("/ui/model-hub-table")).toEqual({ section: "AI Gateway", title: "Model marketplace" });
+    expect(getBreadcrumb("/ui/models-and-endpoints")).toEqual({ section: "AI Gateway", title: "Model Management" });
     expect(getBreadcrumb("/ui/usage")).toEqual({ section: "Observability", title: "Usage" });
     expect(getBreadcrumb("/ui/old-usage")).toEqual({ section: "Developer Tools", title: "Old Usage" });
   });

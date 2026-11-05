@@ -4,6 +4,9 @@ import { createQueryKeys } from "../common/queryKeysFactory";
 import { modelInfoCall, modelHubCall, modelAvailableCall } from "@/components/networking";
 import useAuthorized from "../useAuthorized";
 import { EndpointType, isModeCompatibleWithEndpoint } from "@/components/chat_ui/mode_endpoint_mapping";
+import type { components } from "@/lib/http/schema";
+
+export type ModelHubGroup = components["schemas"]["ModelGroupInfoProxy"];
 
 export interface ProxyModel {
   id: string;
@@ -246,9 +249,9 @@ export const useInvalidateAutoRouters = (): (() => Promise<void>) => {
 };
 
 export const useModelHub = () => {
-  const { accessToken } = useAuthorized();
-  return useQuery({
-    queryKey: modelHubKeys.list({}),
+  const { accessToken, userId, userRole } = useAuthorized();
+  return useQuery<{ data: ModelHubGroup[] }>({
+    queryKey: modelHubKeys.list({ filters: { ...(userId && { userId }), userRole } }),
     queryFn: async () => await modelHubCall(accessToken!),
     enabled: Boolean(accessToken),
   });

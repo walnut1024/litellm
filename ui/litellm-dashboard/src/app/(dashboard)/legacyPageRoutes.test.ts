@@ -7,7 +7,8 @@ const redirect = (query: string) => legacyPageRedirectHref(new URLSearchParams(q
 describe("legacyPageRedirectHref", () => {
   it("sends an old ?page= bookmark to the path route that replaced it", () => {
     expect(redirect("page=logs")).toBe("/ui/logs");
-    expect(redirect("page=models")).toBe("/ui/models-and-endpoints");
+    expect(redirect("page=models")).toBe("/ui/model-hub-table");
+    expect(redirect("page=model-management")).toBe("/ui/models-and-endpoints");
     expect(redirect("page=llm-playground")).toBe("/ui/playground");
     expect(redirect("page=new_usage")).toBe("/ui/usage");
     expect(redirect("page=usage")).toBe("/ui/old-usage");

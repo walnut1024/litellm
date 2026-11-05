@@ -294,6 +294,19 @@ describe("useModelsInfo", () => {
 });
 
 describe("useModelHub", () => {
+  it("fetches a separate catalog after the signed-in identity changes", async () => {
+    const adminCatalog = { data: [{ model_group: "admin-model" }] };
+    const employeeCatalog = { data: [{ model_group: "employee-model" }] };
+    vi.mocked(modelHubCall).mockResolvedValue(adminCatalog);
+    const { result, rerender } = renderHook(() => useModelHub(), { wrapper });
+    await waitFor(() => expect(result.current.data).toEqual(adminCatalog));
+    mockUseAuthorized.mockReturnValue({ accessToken: "employee-key", userId: "employee", userRole: "Internal User" });
+    vi.mocked(modelHubCall).mockResolvedValue(employeeCatalog);
+    rerender();
+    await waitFor(() => expect(result.current.data).toEqual(employeeCatalog));
+    expect(modelHubCall).toHaveBeenLastCalledWith("employee-key");
+  });
+
   let queryClient: QueryClient;
 
   beforeEach(() => {

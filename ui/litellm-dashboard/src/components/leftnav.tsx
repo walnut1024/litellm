@@ -215,8 +215,15 @@ const menuGroups: MenuGroup[] = [
       {
         key: "models",
         page: "models",
+        route: "model-hub-table",
+        label: "Model marketplace",
+        icon: <LayoutGrid {...ICON} />,
+      },
+      {
+        key: "model-management",
+        page: "model-management",
         route: "models-and-endpoints",
-        label: "Models + Endpoints",
+        label: "Model Management",
         icon: <Network {...ICON} />,
         roles: rolesAllowedToViewWriteScopedPages,
       },
@@ -364,7 +371,6 @@ const menuGroups: MenuGroup[] = [
     groupLabel: "DEVELOPER TOOLS",
     items: [
       { key: "api_ref", page: "api_ref", route: "api-reference", label: "API Reference", icon: <Code2 {...ICON} /> },
-      { key: "model-hub-table", page: "model-hub-table", label: "AI Hub", icon: <LayoutGrid {...ICON} /> },
       {
         key: "learning-resources",
         page: "learning-resources",

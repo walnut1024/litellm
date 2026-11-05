@@ -2,13 +2,22 @@ import { isAdminRole } from "./roles";
 
 const employeePages = ["home", "api-keys", "models", "new_usage"];
 const accessControlPages = ["teams", "users", "access-groups", "budgets"];
-const adminPages = ["logs", "settings", "router-settings", "logging-and-alerts", "admin-panel", "ui-theme"];
+const adminPages = [
+  "model-management",
+  "logs",
+  "settings",
+  "router-settings",
+  "logging-and-alerts",
+  "admin-panel",
+  "ui-theme",
+];
 
 const routePages: Readonly<Record<string, string>> = {
   "": "home",
   home: "home",
   "api-keys": "api-keys",
-  "models-and-endpoints": "models",
+  "models-and-endpoints": "model-management",
+  "model-hub-table": "models",
   usage: "new_usage",
   logs: "logs",
   users: "users",

@@ -840,7 +840,7 @@ export default function KeyInfoView({
                     currentKeyData.models.map((model, index) => (
                       <BadgeLink
                         key={index}
-                        href={modelOrAccessGroupHref(model, accessGroupNames)}
+                        href={modelOrAccessGroupHref(model, accessGroupNames, userRole)}
                         className="min-w-0 break-words"
                       >
                         {model}
@@ -885,16 +885,16 @@ export default function KeyInfoView({
                     currentKeyData.metadata.disable_global_guardrails === true && (
                       <div className="mt-3 pt-3 border-t border-border">
                         <Badge variant="destructive">
-                        <L>Global Guardrails Disabled</L>
-                      </Badge>
+                          <L>Global Guardrails Disabled</L>
+                        </Badge>
                       </div>
                     )}
                 </Card>
 
                 <Card className="block p-6">
                   <p className="text-sm font-medium mb-3">
-                  <L>Policies</L>
-                </p>
+                    <L>Policies</L>
+                  </p>
                   {Array.isArray(currentKeyData.metadata?.policies) && currentKeyData.metadata.policies.length > 0 ? (
                     <div className="space-y-4">
                       {currentKeyData.metadata.policies.map((policy: string, index: number) => (
@@ -903,9 +903,11 @@ export default function KeyInfoView({
                             <Badge variant="secondary" className="min-w-0 break-words">
                               {policy}
                             </Badge>
-                            {loadingPolicies && <p className="text-xs text-muted-foreground">
-                              <L>Loading guardrails...</L>
-                            </p>}
+                            {loadingPolicies && (
+                              <p className="text-xs text-muted-foreground">
+                                <L>Loading guardrails...</L>
+                              </p>
+                            )}
                           </div>
                           {!loadingPolicies && policyGuardrails[policy] && policyGuardrails[policy].length > 0 && (
                             <div className="ml-4 pl-3 border-l-2 border-border">
@@ -926,8 +928,8 @@ export default function KeyInfoView({
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                    <L>No policies configured</L>
-                  </p>
+                      <L>No policies configured</L>
+                    </p>
                   )}
                 </Card>
 
@@ -1256,7 +1258,7 @@ export default function KeyInfoView({
                         currentKeyData.models.map((model, index) => (
                           <BadgeLink
                             key={index}
-                            href={modelOrAccessGroupHref(model, accessGroupNames)}
+                            href={modelOrAccessGroupHref(model, accessGroupNames, userRole)}
                             className="min-w-0 break-words"
                           >
                             {model}

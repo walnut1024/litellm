@@ -6,11 +6,8 @@ import { LiteUiMask } from "@/contexts/LiteUiContext";
 import { ROUTING_STATUS_FILTER_ID } from "../utils/routingStatus";
 
 import { ColumnFiltersState, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table";
-import { Search, Settings, LayoutGrid, List } from "lucide-react";
+import { Search, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
-import { ModelCatalog } from "@/components/ModelCatalog";
-import { Input } from "@/components/ui/input";
-import { DataTablePagination } from "@/components/shared/DataTable/DataTablePagination";
 
 import { ModelData } from "@/components/model_dashboard/types";
 import {
@@ -64,7 +61,6 @@ export interface ModelsTableTeamOption {
 }
 
 interface AllModelsTableProps {
-  initialLayout?: "cards" | "table";
   data: ModelData[];
   rowCount: number;
   isLoading: boolean;
@@ -116,7 +112,6 @@ function EmptyState() {
 }
 
 export function AllModelsTable({
-  initialLayout = "table",
   data,
   rowCount,
   isLoading,
@@ -152,8 +147,6 @@ export function AllModelsTable({
 }: AllModelsTableProps) {
   const t = useTranslation();
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [requestedLayout, setLayout] = useState<"cards" | "table" | null>(null);
-  const layout = requestedLayout ?? initialLayout;
 
   const columns = useMemo(() => {
     const columnDeps = {
@@ -211,73 +204,6 @@ export function AllModelsTable({
   const selectedTeamLabel =
     teamOptions.find((option) => option.value === selectedTeamValue)?.label ?? teamOptions[0]?.label ?? "";
 
-  const renderCatalog = () => {
-    if (isLoading)
-      return (
-        <p role="status">
-          <L>Loading models…</L>
-        </p>
-      );
-    if (data.length === 0) return <EmptyState />;
-    return <ModelCatalog models={data} onModelClick={onModelIdClick} />;
-  };
-  if (layout === "cards") {
-    return (
-      <section>
-        <div className="moma-catalog-toolbar">
-          <Input
-            className="min-w-40 flex-1"
-            aria-label="Search model names"
-            placeholder="Search model names…"
-            value={searchValue}
-            onChange={(event) => onSearchChange(event.target.value)}
-          />
-          <Select value={selectedTeamValue} onValueChange={(value) => onTeamChange(String(value))}>
-            <SelectTrigger aria-label={t("Current team")} className="max-w-52">
-              <L>{selectedTeamValue === PERSONAL_TEAM_VALUE ? "Personal" : selectedTeamLabel}</L>
-            </SelectTrigger>
-            <SelectContent>
-              {teamOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value} disabled={isLoadingTeams}>
-                  {option.value === PERSONAL_TEAM_VALUE ? <L>Personal</L> : option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={viewMode} onValueChange={(value) => onViewModeChange(value as ModelViewMode)}>
-            <SelectTrigger aria-label={t("Model scope")} className="max-w-56">
-              <L>{VIEW_MODE_LABELS[viewMode]}</L>
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(VIEW_MODE_LABELS).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  <L>{label}</L>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button variant="outline" onClick={onRefresh} disabled={isRefreshing}>
-            <L>Refresh</L>
-          </Button>
-          <Button variant="outline" onClick={() => void setLayout("table")}>
-            <List />
-            <L>Table view</L>
-          </Button>
-        </div>
-        {renderCatalog()}
-        <DataTablePagination
-          page={pagination.pageIndex}
-          pageSize={pagination.pageSize}
-          rowCount={rowCount}
-          onPageChange={(pageIndex) => onPaginationChange({ ...pagination, pageIndex })}
-          onPageSizeChange={(pageSize) => onPaginationChange({ pageIndex: 0, pageSize })}
-          pageSizeOptions={[10, 25, 50]}
-          isLoading={isLoading}
-        />
-      </section>
-    );
-  }
-
   return (
     <DataTable
       data={data}
@@ -315,10 +241,6 @@ export function AllModelsTable({
             filterLabels={FILTER_LABELS}
             formatFilterValue={formatFilterValue}
           >
-            <Button variant="outline" size="sm" onClick={() => void setLayout("cards")}>
-              <LayoutGrid />
-              <L>Card view</L>
-            </Button>
             <Select value={selectedTeamValue} onValueChange={(value) => onTeamChange(String(value))}>
               <SelectTrigger
                 size="sm"

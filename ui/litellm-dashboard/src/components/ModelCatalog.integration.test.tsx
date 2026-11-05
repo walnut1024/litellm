@@ -4,109 +4,55 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../tests/test-utils";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import { ModelCatalog } from "./ModelCatalog";
-import type { ModelData } from "./model_dashboard/types";
+import type { ModelHubGroup } from "@/app/(dashboard)/hooks/models/useModels";
 
-const model: ModelData = {
-  model_name: "demo-chat",
-  provider: "openai",
-  litellm_model_name: "openai/demo-chat",
-  input_cost: null,
-  output_cost: null,
-  litellm_params: { model: "openai/demo-chat" },
-  cleanedLitellmParams: {},
-  model_info: {
-    id: "model-id",
-    created_at: "",
-    updated_at: "",
-    created_by: "admin",
-    team_id: "",
-    db_model: true,
-    access_groups: [],
-  },
+const model: ModelHubGroup = {
+  model_group: "catalog-chat",
+  providers: ["openai"],
+  mode: "chat",
+  is_public_model_group: false,
+  supported_openai_params: [],
+  supports_fast_mode: false,
+  supports_function_calling: true,
+  supports_parallel_function_calling: false,
+  supports_reasoning: false,
+  supports_url_context: false,
+  supports_vision: false,
+  supports_web_search: false,
 };
 
-describe("direct model use", () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    localStorage.removeItem("moma.locale");
-  });
+afterEach(() => localStorage.removeItem("moma.locale"));
 
-  it("offers API key management without checking keys or creating a credential", () => {
-    const fetcher = vi.fn();
-    vi.stubGlobal("fetch", fetcher);
-    renderWithProviders(<ModelCatalog models={[model]} onModelClick={vi.fn()} />);
-
-    expect(screen.getByRole("heading", { name: model.model_name })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Use model" })).toHaveAttribute("href", "/ui/api-keys");
-    expect(screen.getByText("Available")).toBeInTheDocument();
-    expect(fetcher).not.toHaveBeenCalled();
-  });
-
-  it("uses a team public name while opening the original model details", () => {
-    const publicName = "team-public-chat";
+describe("model group catalog", () => {
+  it("uses the callable group name for details and key management", () => {
     const onModelClick = vi.fn();
-    renderWithProviders(
-      <ModelCatalog
-        models={[{ ...model, model_info: { ...model.model_info, team_public_model_name: publicName } }]}
-        onModelClick={onModelClick}
-      />,
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: publicName }));
+    renderWithProviders(<ModelCatalog models={[model]} onModelClick={onModelClick} />);
+    fireEvent.click(screen.getByRole("button", { name: model.model_group }));
     fireEvent.click(screen.getByRole("button", { name: "View details" }));
-    expect(onModelClick.mock.calls).toEqual([[model.model_info.id], [model.model_info.id]]);
+    expect(onModelClick.mock.calls).toEqual([[model.model_group], [model.model_group]]);
     expect(screen.getByRole("link", { name: "Use model" })).toHaveAttribute("href", "/ui/api-keys");
+    expect(screen.getByText("Function calling")).toBeVisible();
   });
 
-  it("keeps paused models unavailable", () => {
-    renderWithProviders(
-      <ModelCatalog
-        models={[{ ...model, model_info: { ...model.model_info, blocked: true } }]}
-        onModelClick={vi.fn()}
-      />,
-    );
-
-    expect(screen.getByText("Paused")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Use model" })).toBeDisabled();
-  });
-
-  it.each([undefined, "team-public-chat"])("copies the callable model name with public name %s", async (publicName) => {
+  it("copies the callable model group without opening details", async () => {
     const user = userEvent.setup();
     const onModelClick = vi.fn();
-    const apiModelName = "proxy/chat-model";
-    renderWithProviders(
-      <ModelCatalog
-        models={[
-          {
-            ...model,
-            model_name: apiModelName,
-            model_info: { ...model.model_info, team_public_model_name: publicName },
-          },
-        ]}
-        onModelClick={onModelClick}
-      />,
-    );
-
+    renderWithProviders(<ModelCatalog models={[model]} onModelClick={onModelClick} />);
     await user.click(screen.getByRole("button", { name: "Copy model ID" }));
-
-    expect(await navigator.clipboard.readText()).toBe(publicName ?? apiModelName);
+    expect(await navigator.clipboard.readText()).toBe(model.model_group);
     expect(onModelClick).not.toHaveBeenCalled();
   });
 
-  it("shows direct use in Chinese without requiring a key query", () => {
+  it("localizes catalog labels and keeps model descriptions unchanged", () => {
     localStorage.setItem("moma.locale", "zh-CN");
-    const fetcher = vi.fn();
-    vi.stubGlobal("fetch", fetcher);
     renderWithProviders(
       <LocaleProvider>
-        <ModelCatalog models={[model]} onModelClick={vi.fn()} />
+        <ModelCatalog models={[{ ...model, description: "My model description" }]} onModelClick={vi.fn()} />
       </LocaleProvider>,
     );
-
     expect(screen.getByRole("link", { name: "立即使用" })).toHaveAttribute("href", "/ui/api-keys");
-    expect(screen.getByText("可用")).toBeInTheDocument();
-    expect(screen.getByText("调用模型 ID")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "复制模型 ID" })).toBeInTheDocument();
-    expect(fetcher).not.toHaveBeenCalled();
+    expect(screen.getByText("调用模型 ID")).toBeVisible();
+    expect(screen.getByText("工具调用")).toBeVisible();
+    expect(screen.getByText("My model description")).toBeVisible();
   });
 });

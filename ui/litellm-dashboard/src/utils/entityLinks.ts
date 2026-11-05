@@ -1,5 +1,6 @@
 import { DEFAULT_PROXY_ADMIN_USER_ID, UI_TEAM_ID } from "@/utils/sentinels";
 import { uiHref } from "@/utils/uiHref";
+import { isAdminRole } from "@/utils/roles";
 
 const MODEL_GRANT_SENTINELS: ReadonlySet<string> = new Set([
   "all-proxy-models",
@@ -27,7 +28,7 @@ export function orgDetailHref(orgId: string): string {
 
 export function modelGroupHref(modelGroup: string): string | undefined {
   if (MODEL_GRANT_SENTINELS.has(modelGroup)) return undefined;
-  return `${uiHref("models-and-endpoints")}?model_group=${encodeURIComponent(modelGroup)}`;
+  return `${uiHref("model-hub-table")}?model=${encodeURIComponent(modelGroup)}`;
 }
 
 export function accessGroupHref(accessGroup: string): string {
@@ -37,7 +38,9 @@ export function accessGroupHref(accessGroup: string): string {
 export function modelOrAccessGroupHref(
   name: string,
   accessGroupNames: ReadonlySet<string> | undefined,
+  userRole: string,
 ): string | undefined {
   if (accessGroupNames === undefined) return undefined;
-  return accessGroupNames.has(name) ? accessGroupHref(name) : modelGroupHref(name);
+  if (!accessGroupNames.has(name)) return modelGroupHref(name);
+  return isAdminRole(userRole) ? accessGroupHref(name) : undefined;
 }

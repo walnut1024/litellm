@@ -117,7 +117,7 @@ describe("Home workspace", () => {
     const models = screen.getByRole("region", { name: "Available models" });
     expect(await within(models).findByRole("link", { name: /demo-chat/ })).toHaveAttribute(
       "href",
-      "/ui/models-and-endpoints",
+      "/ui/model-hub-table",
     );
     expect(within(models).getByRole("link", { name: /demo-chat/ })).toHaveTextContent("View details");
     expect(screen.getByText("Choose a model you have access to. No activation is required.")).toBeInTheDocument();

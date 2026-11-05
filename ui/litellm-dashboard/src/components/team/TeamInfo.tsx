@@ -166,8 +166,9 @@ const TEAM_MODEL_BADGE_TONES: Record<TeamModelBadgeKind, StatusTone> = {
 const teamModelBadgeHref = (
   badge: TeamModelBadge,
   accessGroupNames: ReadonlySet<string> | undefined,
+  userRole: string,
 ): string | undefined => {
-  if (badge.kind === "direct") return modelOrAccessGroupHref(badge.label, accessGroupNames);
+  if (badge.kind === "direct") return modelOrAccessGroupHref(badge.label, accessGroupNames, userRole);
   if (badge.kind === "access-group") return modelGroupHref(badge.label);
   return undefined;
 };
@@ -1511,7 +1512,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                     <StatusBadge
                       tone={TEAM_MODEL_BADGE_TONES[badge.kind]}
                       label={badge.label}
-                      href={teamModelBadgeHref(badge, accessGroupNames)}
+                      href={teamModelBadgeHref(badge, accessGroupNames, userRole)}
                     />
                   </span>
                 </SimpleTooltip>
@@ -2422,7 +2423,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                 </p>
                 <div className="flex flex-wrap gap-2 mt-1">
                   {info.models.map((model, index) => (
-                    <BadgeLink key={index} href={modelOrAccessGroupHref(model, accessGroupNames)}>
+                    <BadgeLink key={index} href={modelOrAccessGroupHref(model, accessGroupNames, userRole)}>
                       {MODEL_SENTINEL_LABELS[model] ? t(MODEL_SENTINEL_LABELS[model]) : model}
                     </BadgeLink>
                   ))}
@@ -2435,7 +2436,7 @@ const TeamInfoView: React.FC<TeamInfoProps> = ({
                   </p>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {info.default_team_member_models.map((model, index) => (
-                      <BadgeLink key={index} href={modelOrAccessGroupHref(model, accessGroupNames)}>
+                      <BadgeLink key={index} href={modelOrAccessGroupHref(model, accessGroupNames, userRole)}>
                         {model}
                       </BadgeLink>
                     ))}

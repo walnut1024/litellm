@@ -67,7 +67,7 @@ export default function HomePage() {
     return (
       <div className="moma-model-grid">
         {models.data?.data.slice(0, 3).map((model) => (
-          <Link key={model.id} className="moma-model-card hover:border-primary" href={uiHref("models-and-endpoints")}>
+          <Link key={model.id} className="moma-model-card hover:border-primary" href={uiHref("model-hub-table")}>
             <Boxes className="size-7 text-primary" />
             <h3>{model.id}</h3>
             <span className="text-xs text-primary">
@@ -149,7 +149,7 @@ export default function HomePage() {
               </p>
             </div>
           </div>
-          <Button className="mt-auto" render={<Link href={uiHref("models-and-endpoints")} />}>
+          <Button className="mt-auto" render={<Link href={uiHref("model-hub-table")} />}>
             <L>Browse models</L>
             <ArrowUpRight />
           </Button>
@@ -160,7 +160,7 @@ export default function HomePage() {
           <h2 id="home-models" className="moma-panel-title">
             <L>Available models</L>
           </h2>
-          <Button variant="ghost" size="sm" render={<Link href={uiHref("models-and-endpoints")} />}>
+          <Button variant="ghost" size="sm" render={<Link href={uiHref("model-hub-table")} />}>
             <L>View all</L>
             <ArrowUpRight />
           </Button>

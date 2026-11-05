@@ -6,8 +6,6 @@ import { ModelData } from "@/components/model_dashboard/types";
 
 import { AllModelsTable } from "./AllModelsTable";
 
-vi.mock("@/components/ModelCatalog", () => ({ ModelCatalog: () => <div>Model cards</div> }));
-
 const makeModel = (overrides: Partial<ModelData> = {}): ModelData =>
   ({
     model_name: "gpt-4-public",
@@ -78,15 +76,6 @@ const row = (modelId: string): HTMLElement => {
 };
 
 describe("AllModelsTable", () => {
-  it("uses the resolved role default until the user chooses a layout", () => {
-    const { rerender } = render(<AllModelsTable {...baseProps} initialLayout="cards" />);
-    expect(screen.getByText("Model cards")).toBeInTheDocument();
-    rerender(<AllModelsTable {...baseProps} initialLayout="table" />);
-    expect(screen.queryByText("Model cards")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Card view" }));
-    rerender(<AllModelsTable {...baseProps} initialLayout="table" />);
-    expect(screen.getByText("Model cards")).toBeInTheDocument();
-  });
   it("renders the nine design columns and hides Source behind the Columns menu", async () => {
     const user = userEvent.setup();
     render(<AllModelsTable {...baseProps} />);

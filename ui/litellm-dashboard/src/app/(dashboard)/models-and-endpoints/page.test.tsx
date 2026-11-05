@@ -96,18 +96,22 @@ describe("ModelsAndEndpointsPage", () => {
   });
 
   it.each([
-    ["https://gateway.example/", "https://gateway.example/v1"],
-    ["https://gateway.example/proxy///", "https://gateway.example/proxy/v1"],
-    ["https://worker.example/v1/", "https://worker.example/v1"],
-  ])("lets an employee copy the client Base URL from %s", async (gateway, expected) => {
+    ["https://gateway.example/", "https://gateway.example/v1", "https://gateway.example"],
+    ["https://gateway.example/proxy///", "https://gateway.example/proxy/v1", "https://gateway.example/proxy"],
+    ["https://worker.example/v1/", "https://worker.example/v1", "https://worker.example"],
+    ["https://gateway.example/proxy/v1///", "https://gateway.example/proxy/v1", "https://gateway.example/proxy"],
+  ])("lets an employee copy both protocol Base URLs from %s", async (gateway, openAiUrl, anthropicUrl) => {
     mockUseAuthorized.mockReturnValue(NON_ADMIN);
     vi.mocked(getGatewayBaseUrl).mockReturnValue(gateway);
     const user = userEvent.setup();
     renderPage();
 
-    expect(screen.getByText(expected, { exact: true })).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Copy URL" }));
-    expect(await navigator.clipboard.readText()).toBe(expected);
+    expect(screen.getByText(openAiUrl, { exact: true })).toBeVisible();
+    expect(screen.getByText(anthropicUrl, { exact: true })).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Copy OpenAI URL" }));
+    expect(await navigator.clipboard.readText()).toBe(openAiUrl);
+    await user.click(screen.getByRole("button", { name: "Copy Anthropic URL" }));
+    expect(await navigator.clipboard.readText()).toBe(anthropicUrl);
   });
 
   it("keeps the gateway address visible in model details and translates the copy action", async () => {
@@ -120,10 +124,15 @@ describe("ModelsAndEndpointsPage", () => {
       </LocaleProvider>,
     );
 
-    expect(screen.getByText("模型访问地址（Base URL）")).toBeVisible();
+    expect(screen.getByRole("region", { name: "OpenAI 协议 Base URL" })).toBeVisible();
+    expect(screen.getByRole("region", { name: "Anthropic 协议 Base URL" })).toBeVisible();
+    expect(screen.getByText("填写到 OpenAI 兼容客户端的 Base URL，保留末尾 /v1。")).toBeVisible();
+    expect(screen.getByText("填写到 Anthropic SDK 的 base_url 或 ANTHROPIC_BASE_URL，不添加 /v1。")).toBeVisible();
     expect(screen.getByTestId("model-info")).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "复制地址" }));
+    await user.click(screen.getByRole("button", { name: "复制 OpenAI 地址" }));
     expect(await navigator.clipboard.readText()).toBe("https://gateway.example/v1");
+    await user.click(screen.getByRole("button", { name: "复制 Anthropic 地址" }));
+    expect(await navigator.clipboard.readText()).toBe("https://gateway.example");
   });
 
   it.each([ADMIN, NON_ADMIN])("hides beta budgets and clears their direct URL for $userRole", async (session) => {

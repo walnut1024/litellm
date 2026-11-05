@@ -11,11 +11,11 @@
 | 整理日期         | 2026-11-05                                                                                      |
 | 开源基线提交     | `9546f9a69ff470dfcc5a21eccab89d2fd86a634f`                                                      |
 | 基线标题与版本   | `test(router): audit #47498 (#48799)`，根目录 `pyproject.toml` 的版本为 `1.109.0`               |
-| 已核对的定制提交 | 以本文所在提交为准，前一提交为 `3cd0ff3b33`，本次展示 OpenAI 与 Anthropic 两种协议的 Base URL   |
+| 已核对的定制提交 | 以本文所在提交为准，前一提交为 `cfb31e4a2a`，本次修正账户菜单版本名称并核对显示偏好开关         |
 | 维护分支         | `litellm_ui_visual_polish`，原定制分支保留                                                      |
 | 差异范围         | 开源基线至本次变更共 476 个文件，包含界面、测试、说明、依赖配置和本机部署文件，不等同于功能数量 |
 | 本机预览入口     | [localhost:4001/ui/](http://localhost:4001/ui/)，这是部署地址，不是本次运行验收结论             |
-| 本次提交范围     | 模型广场顶部展示两种协议地址、独立复制按钮与填写说明，补充路径归一化、复制及中文回归和维护文档  |
+| 本次提交范围     | 账户菜单非 Premium 版本标记改为轻量版，补充中英文回归并记录四项显示偏好的原有作用与当前限制     |
 
 `main` 已包含定制，不能把它当作未修改的开源源码。升级时应记录旧、新开源基线的 SHA 与版本，再逐模块核对。持续维护要求见[根目录 AGENTS.md](../../AGENTS.md#lightweight-fork-maintenance)
 
@@ -272,6 +272,8 @@
 
 默认品牌和主题是本版新增或修改，配置 Logo 的后端能力则来自开源基线。实体下钻样式影响复用单元格的团队、用户、密钥、模型、凭据、健康检查、访问组等列表，不改变目标、权限、真实链接或修饰键行为
 
+页头与侧栏共用的账户菜单将非 Premium 版本标记由开源的 Standard 改为“轻量版”，英文为 Lite edition，Premium 分支及后端许可证判断保留。四项隐藏开关沿用开源实现，仅保存当前浏览器的 localStorage 显示偏好，不修改权限或服务端配置。隐藏新功能标记控制 Beta 徽章及提示点，隐藏提示控制 Slack 与 GitHub 社区推广入口，并非模型提示词或表单帮助，隐藏博客入口控制博客菜单及首页更新列表，隐藏动态图标控制账户菜单中的跳动棕榈树。轻量版已经统一屏蔽社区入口、博客和多数 Beta 标记，因此前三项在这些区域通常没有可见效果，关闭偏好也不会恢复已屏蔽功能。本次不移除开关或修改其行为
+
 保留页面移除社区文档、反馈和销售外链，保留字段解释与校验。部署健康告警仍展示真实密码、Redis、调试日志和许可证风险，忽略、暂缓、恢复及权限不变，已知文案补译，未知告警原样显示。通知面板保留组件与空状态，但不查询或展示上游版本发布通知
 
 主要实现为 [moma-theme.css](src/app/moma-theme.css)、[MomaBrand.tsx](src/components/MomaBrand.tsx)、[DashboardHeader.tsx](src/components/DashboardHeader.tsx)、[ThemeContext.tsx](src/contexts/ThemeContext.tsx)、[UIThemeSettings.tsx](<src/app/(dashboard)/ui-theme/UIThemeSettings.tsx>)、[shared 组件](src/components/shared/)、[identity_cell.tsx](src/components/shared/table_cells/identity_cell.tsx)、[UserPopoverCell.tsx](src/components/shared/table_cells/UserPopoverCell.tsx)、[TeamVirtualKeysTable.tsx](src/components/team/TeamVirtualKeysTable.tsx)、[DeploymentHealth](src/components/DeploymentHealth/) 和 [SidebarAccountMenu](src/components/SidebarAccountMenu/)。具体样式以 [DESIGN.md](DESIGN.md) 为准，视觉复核范围见 [design-qa.md](design-qa.md)
@@ -418,6 +420,12 @@ git diff 9546f9a69ff470dfcc5a21eccab89d2fd86a634f..HEAD -- litellm enterprise li
 | 检查与证据           | 运行受影响的明确路径定向用例、构建及适用门禁，保留已有失败和未覆盖项，不运行无路径的完整前端套件                                        |
 
 ## 验证记录与限制
+
+### 账户菜单版本名称
+
+2026-11-05 账户菜单与词典 2 个定向文件共 31 项通过，覆盖中英文轻量版标记、Premium 分支和原有账户操作。生产构建、TypeScript 和 58 个静态页面导出通过。四项显示偏好开关未修改，仅核对源码调用方并补充本文说明
+
+4001 已更新为 `litellm-moma:account-lite-20261105`，仅重建静态前端层和应用容器，Compose 对比只有应用镜像变化，数据库未重启。就绪接口恢复 HTTP 200，现有管理员会话实测账户菜单的版本为“轻量版”，页面没有框架错误覆盖层。浏览器保留应用重启期间的请求失败日志，未将控制台记录为零错误，未提交业务表单或切换四项偏好。未运行全量测试、员工浏览器或上游模型调用
 
 ### 双协议 Base URL 展示
 

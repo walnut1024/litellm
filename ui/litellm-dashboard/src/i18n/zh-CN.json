@@ -2014,7 +2014,7 @@
   "Copy call ID": "复制调用 ID",
   "Copy call ID to clipboard": "复制调用 ID",
   "Thanks for using MoMA!": "感谢使用 MoMA",
-  "Standard edition": "标准版",
+  "Lite edition": "轻量版",
   "Cumulative spend across every budget period. Budget resets do not touch this value. Earlier usage may be excluded because lifetime tracking was introduced after this key was created.": "跨所有预算周期的累计花费，重置预算不会清零。对于启用累计统计前创建的密钥，早期用量可能未计入",
   "Lifetime tracking was introduced after this key was created. Earlier usage was not backfilled, so lifetime spend may be lower than current-period spend.": "此密钥创建时尚未启用累计统计，早期用量未补录，因此累计花费可能低于当前周期花费",
   "Whether this request was served from the gateway's response cache (e.g. Redis / in-memory), skipping the LLM provider call entirely. This is separate from provider prompt caching; a Miss here does not mean prompt caching failed.": "此请求是否直接使用网关响应缓存，例如 Redis 或内存缓存，而未调用上游模型。响应缓存与供应商提示词缓存相互独立，此处未命中不表示提示词缓存失败",

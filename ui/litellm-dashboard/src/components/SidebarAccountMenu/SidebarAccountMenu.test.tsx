@@ -75,6 +75,7 @@ describe("SidebarAccountMenu", () => {
     );
     await user.click(screen.getByRole("button", { name: /账户菜单/ }));
     expect(await screen.findByText("版本")).toBeVisible();
+    expect(screen.getByText("轻量版")).toBeVisible();
     expect(screen.getAllByText("管理员（全部权限）").length).toBeGreaterThan(0);
     expect(screen.getByText("test-user-id")).toBeVisible();
   });
@@ -134,13 +135,13 @@ describe("SidebarAccountMenu", () => {
     expect(screen.getAllByText("Admin").length).toBeGreaterThan(0);
   });
 
-  it("should display Standard tier for non-premium users", async () => {
+  it("should display the lite edition for non-premium users", async () => {
     const user = userEvent.setup();
     renderWithProviders(<SidebarAccountMenu onLogout={mockOnLogout} />);
 
     await openMenu(user);
 
-    expect(screen.getByText("Standard")).toBeInTheDocument();
+    expect(screen.getByText("Lite edition")).toBeInTheDocument();
   });
 
   it("should display Premium tier for premium users", async () => {

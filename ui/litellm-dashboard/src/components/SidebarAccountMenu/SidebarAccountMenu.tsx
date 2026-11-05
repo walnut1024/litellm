@@ -213,9 +213,9 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
                 <L>Premium</L>
               </Badge>
             ) : (
-              <Badge variant="secondary" className="gap-1" title={t("Standard edition")}>
+              <Badge variant="secondary" className="gap-1" title={t("Lite edition")}>
                 <Crown />
-                <L>Standard</L>
+                <L>Lite edition</L>
               </Badge>
             )}
           </InfoRow>

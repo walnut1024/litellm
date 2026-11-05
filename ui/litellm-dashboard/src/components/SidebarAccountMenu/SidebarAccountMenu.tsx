@@ -77,6 +77,7 @@ interface SidebarAccountMenuProps {
 
 const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, collapsed = false }) => {
   const t = useTranslation();
+  const liteEditionLabel = `${t("Lite edition")} V1.0`;
   const { userId, userEmail, userRoleLabel: userRole, premiumUser, loginMethod } = useAuthorized();
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
@@ -138,9 +139,9 @@ const SidebarAccountMenu: React.FC<SidebarAccountMenuProps> = ({ onLogout, colla
                 <L>Premium</L>
               </Badge>
             ) : (
-              <Badge variant="secondary" className="gap-1" title={t("Lite edition")}>
+              <Badge variant="secondary" className="gap-1" title={liteEditionLabel}>
                 <Crown />
-                <L>Lite edition</L>
+                {liteEditionLabel}
               </Badge>
             )}
           </InfoRow>

@@ -1,6 +1,6 @@
 # MoMA 轻量版 Dashboard
 
-基于 Next.js 的控制台，生产构建静态导出后由网关服务提供。角色边界、页面裁剪和合并要求见 [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md)，界面规范见 [DESIGN.md](DESIGN.md)
+基于 Next.js 的控制台，生产构建静态导出后由网关服务提供。角色边界、页面裁剪和定制差异见 [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md)，界面规范见 [DESIGN.md](DESIGN.md)
 
 ## 开发与构建
 
@@ -17,7 +17,7 @@ npm run dev
 npm run build
 ```
 
-默认构建输出为 `out`，完整应用与仅替换前端的部署方式见[本地部署说明](../../docker/lite-ui-preview.md)。测试应传入明确的受影响文件，检查范围与限制见[维护指南](LITE_UI_CUSTOMIZATIONS.md#验证记录与限制)
+默认构建输出为 `out`，完整应用与仅替换前端的部署方式见[本地部署说明](../../docker/lite-ui-preview.md)。测试应传入明确的受影响文件，功能差异与实现边界见[差异清单](LITE_UI_CUSTOMIZATIONS.md)
 
 ## 页面检查
 

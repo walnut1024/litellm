@@ -1,6 +1,6 @@
 # MoMA 轻量版界面验收清单
 
-本文件提供可复用的检查范围。当前样式以 [DESIGN.md](DESIGN.md) 为准，功能差异、已执行验证及已知限制见 [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md#验证记录与限制)。检查项不代表每个提交都已重新验证
+本文件提供可复用的检查范围。当前样式以 [DESIGN.md](DESIGN.md) 为准，功能差异与实现边界见 [LITE_UI_CUSTOMIZATIONS.md](LITE_UI_CUSTOMIZATIONS.md)。检查项不代表每个提交都已重新验证
 
 ## 角色与页面
 

@@ -155,3 +155,6 @@ coverage-rust.xml
 # make lens-dev worker token, generated config and logs
 .lens-dev/
 .mypy_cache/
+/docker/moma-model-catalog.md
+/ui/litellm-dashboard/usage-page-audit-*.md
+/ui/litellm-dashboard/design/

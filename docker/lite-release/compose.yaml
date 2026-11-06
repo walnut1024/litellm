@@ -1,0 +1,39 @@
+services:
+  litellm:
+    image: litellm-moma:lite-v1.0.0-amd64
+    platform: linux/amd64
+    pull_policy: never
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MOMA_PORT:-4000}:4000"
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?set LITELLM_MASTER_KEY}
+      LITELLM_SALT_KEY: ${LITELLM_SALT_KEY:?set LITELLM_SALT_KEY}
+      UI_USERNAME: admin
+      UI_PASSWORD: ${UI_PASSWORD:?set UI_PASSWORD}
+      DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@db:5432/litellm
+      STORE_MODEL_IN_DB: "True"
+    volumes:
+      - ./moma-config.yaml:/app/moma-config.yaml:ro
+    command: ["--config", "/app/moma-config.yaml", "--port", "4000"]
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: moma-lite-postgres:16-amd64
+    platform: linux/amd64
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: litellm
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - db_data:/var/lib/postgresql/data
+volumes:
+  db_data:

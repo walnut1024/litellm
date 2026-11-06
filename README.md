@@ -53,6 +53,8 @@ git pull --ff-only
 docker build -t litellm-moma:local .
 ```
 
+x86_64 服务器可从 [GitHub Release](https://github.com/walnut1024/litellm/releases/tag/moma-lite-v1.0.0) 下载应用与 PostgreSQL 镜像安装包，无需在服务器编译源码，步骤见[安装包说明](docker/lite-release/README.md)
+
 本地部署使用独立 PostgreSQL 数据库，示例 Compose 仅绑定 `127.0.0.1`。将管理员密码、主密钥、加密 salt、数据库密码保存在仓库外的私有环境文件中，供应商凭据通过原生模型管理流程保存。镜像不包含已接入的模型记录或凭据
 
 部署步骤、Compose 镜像覆盖方式、重启和数据保留要求见[本地部署说明](docker/lite-ui-preview.md)。使用根 Dockerfile 构建的镜像时，通过覆盖文件指定镜像，并使用 `--no-build` 启动，避免触发示例 Compose 的 UI 叠加构建流程

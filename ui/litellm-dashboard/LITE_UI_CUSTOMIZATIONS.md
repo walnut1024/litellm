@@ -325,19 +325,25 @@
 
 ### Docker、本机预览与演示资料
 
-| 类型       | 文件，相对仓库根目录                                                                        | 与开源基线的差异                                                                            |
-| ---------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| 保留       | `Dockerfile`                                                                                | 沿用源码完整构建 Python、Rust、Prisma 和 Dashboard 的流程，此文件未被本版修改               |
-| 新增       | [docker/Dockerfile.lite-ui](../../docker/Dockerfile.lite-ui)                                | 在 `litellm-lite-runtime:local` 上替换已完成的静态 Dashboard 导出，不重新编译后端           |
-| 新增       | [docker/docker-compose.lite-ui.yml](../../docker/docker-compose.lite-ui.yml)                | 独立应用和 PostgreSQL 服务、数据库卷，默认仅绑定 localhost 4001，密码和主密钥从外部环境提供 |
-| 新增       | [docker/lite-ui-preview.yaml](../../docker/lite-ui-preview.yaml)                            | 空 `model_list`，启用原数据库模型管理，仅本机测试关闭泄露密码在线查询                       |
-| 新增       | [docker/lite-ui-preview.md](../../docker/lite-ui-preview.md)                                | 构建、启动、停止与私有配置流程                                                              |
-| 修改       | [根 README](../../README.md)、[Dashboard README](README.md)                                 | 说明轻量版能力、接入和构建入口、上游来源与许可证                                            |
-| 新增或修改 | 本文、[DESIGN.md](DESIGN.md)、[design-qa.md](design-qa.md)、[根 AGENTS.md](../../AGENTS.md) | 定制清单、设计规范、视觉验收与升级维护约定，`eslint-suppressions.json` 的规则豁免数量收紧   |
+| 类型       | 文件，相对仓库根目录                                                                        | 与开源基线的差异                                                                                         |
+| ---------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 修改       | `Dockerfile`                                                                                | 沿用源码完整构建流程，在 `npm ci` 前复制本地化脚本，使 `postinstall` 可执行                              |
+| 修改       | `.dockerignore`                                                                             | 保留 Dashboard 已提交的本地依赖归档，避免完整镜像构建遗漏 `vendor/*.tgz`                                 |
+| 新增       | `docker/lite-release/`                                                                      | x86_64 镜像安装包的 Compose、空模型配置和安装说明，应用与 PostgreSQL 均使用本地镜像，默认仅绑定本机 4000 |
+| 新增       | [docker/Dockerfile.lite-ui](../../docker/Dockerfile.lite-ui)                                | 在 `litellm-lite-runtime:local` 上替换已完成的静态 Dashboard 导出，不重新编译后端                        |
+| 新增       | [docker/docker-compose.lite-ui.yml](../../docker/docker-compose.lite-ui.yml)                | 独立应用和 PostgreSQL 服务、数据库卷，默认仅绑定 localhost 4001，密码和主密钥从外部环境提供              |
+| 新增       | [docker/lite-ui-preview.yaml](../../docker/lite-ui-preview.yaml)                            | 空 `model_list`，启用原数据库模型管理，仅本机测试关闭泄露密码在线查询                                    |
+| 新增       | [docker/lite-ui-preview.md](../../docker/lite-ui-preview.md)                                | 构建、启动、停止与私有配置流程                                                                           |
+| 修改       | [根 README](../../README.md)、[Dashboard README](README.md)                                 | 说明轻量版能力、接入和构建入口、上游来源与许可证                                                         |
+| 新增或修改 | 本文、[DESIGN.md](DESIGN.md)、[design-qa.md](design-qa.md)、[根 AGENTS.md](../../AGENTS.md) | 定制清单、设计规范、视觉验收与升级维护约定，`eslint-suppressions.json` 的规则豁免数量收紧                |
 
 镜像不内置账户、密钥、演示模型记录或供应商库存，新数据库通过原生管理配置。环境文件、备份、上游凭据与具体测试账户由部署方私有维护，不加入源码或镜像。已有本机数据库中的演示记录也不构成仓库默认数据
 
 静态 UI 镜像使用 `npm run build` 导出的前端产物，沿用基础镜像中的 Python、Rust 和 Prisma 运行层。仅替换静态 UI 不会更新后端源码或运行时版本
+
+2026-11-06 的 V1.0 x86_64 安装包使用 `34a581c46200d1c35a5813b61b7076bbd3f6a74a` 的应用源码与本次修复后的根 Docker 构建文件，完整构建后端和静态 UI。安装包内的 `manifest.txt` 分别记录应用源码提交、发布配置提交、构建文件哈希和镜像 ID，不包含数据库或私有环境文件
+
+本次已通过 `linux/amd64` 完整构建、Rust 扩展加载、镜像导出和导入、Compose 配置校验、私有配置生成及拒绝覆盖检查、新数据库初始化、存活与就绪检查、管理员登录、控制台 HTML 与 JavaScript 资源访问、应用重启后的就绪检查，以及发布改动的格式、ESLint 和规则预算检查。运行验证使用 ARM64 宿主的 amd64 模拟环境，未在实体 x86_64 机器验证，未验证真实上游调用、计费、角色权限、负载或现有部署升级
 
 预览的 `password_policy_check_breached_passwords: false` 仅关闭本机测试的在线查询，至少 12 位及其他强度规则沿用原策略，不改变后端默认值，也不应作为生产配置模板
 

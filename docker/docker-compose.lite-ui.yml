@@ -13,6 +13,7 @@ services:
       UI_PASSWORD: ${LITELLM_PREVIEW_PASSWORD:?set LITELLM_PREVIEW_PASSWORD}
       DATABASE_URL: postgresql://litellm:${LITELLM_PREVIEW_DB_PASSWORD:?set LITELLM_PREVIEW_DB_PASSWORD}@db:5432/litellm
       STORE_MODEL_IN_DB: "True"
+      LITELLM_USE_CHAT_COMPLETIONS_URL_FOR_ANTHROPIC_MESSAGES: "1"
     volumes:
       - ./lite-ui-preview.yaml:/app/lite-ui-preview.yaml:ro
     command: ["--config", "/app/lite-ui-preview.yaml", "--port", "4000"]

@@ -336,6 +336,7 @@ V4 分支通过静态导出、变更文件的 ESLint 和格式检查。用预览
 | 新增       | `docker/lite-release/`                                                                      | x86_64 镜像安装包的 Compose、空模型配置和安装说明，应用与 PostgreSQL 均使用本地镜像，默认仅绑定本机 4000 |
 | 新增       | [docker/Dockerfile.lite-ui](../../docker/Dockerfile.lite-ui)                                | 在 `litellm-lite-runtime:local` 上替换已完成的静态 Dashboard 导出，不重新编译后端                        |
 | 新增       | [docker/docker-compose.lite-ui.yml](../../docker/docker-compose.lite-ui.yml)                | 独立应用和 PostgreSQL 服务、数据库卷，默认仅绑定 localhost 4001，密码和主密钥从外部环境提供              |
+| 修改       | `docker/docker-compose.lite-ui.yml`、`docker/lite-release/compose.yaml`                      | 固定注入 `LITELLM_USE_CHAT_COMPLETIONS_URL_FOR_ANTHROPIC_MESSAGES=1`，使代理 `/v1/messages` 对 OpenAI 兼容部署桥接 chat/completions 而非 Responses。移动云网关未提供 `/v1/responses`，默认桥接下 38 个声明 Anthropic 的模型仅 2 个可用，开启后实测 37/38（唯一失败为上游池故障），流式与 system、多轮语义正确 |
 | 新增       | [docker/lite-ui-preview.yaml](../../docker/lite-ui-preview.yaml)                            | 空 `model_list`，启用原数据库模型管理，仅本机测试关闭泄露密码在线查询                                    |
 | 新增       | [docker/lite-ui-preview.md](../../docker/lite-ui-preview.md)                                | 构建、启动、停止与私有配置流程                                                                           |
 | 修改       | [根 README](../../README.md)、[Dashboard README](README.md)                                 | 说明轻量版能力、接入和构建入口、上游来源与许可证                                                         |

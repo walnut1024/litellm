@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import useIsOrgAdmin from "@/app/(dashboard)/hooks/useIsOrgAdmin";
 import { useTeams } from "@/app/(dashboard)/hooks/teams/useTeams";
@@ -20,7 +23,8 @@ import { routeSegmentForPathname, uiHref } from "@/utils/uiHref";
 const servicePages = ["home", "models", "model-management", "api-keys"];
 const usagePages = ["new_usage", "logs"];
 
-export function MomaNavigation() {
+export function MomaNavigation({ collapsible = false }: { collapsible?: boolean }) {
+  const [collapsed, setCollapsed] = useState(false);
   const { userRole, userId, isViewOnly } = useAuthorized();
   const isOrgAdmin = useIsOrgAdmin();
   const { data: teams } = useTeams();
@@ -57,22 +61,42 @@ export function MomaNavigation() {
       key={item.key}
       href={uiHref(routeOf(item))}
       aria-current={current === routeOf(item) ? "page" : undefined}
+      title={collapsed ? t(labelText(item)) : undefined}
       className="moma-nav-link"
     >
       {item.icon}
-      {t(labelText(item))}
+      <span className={collapsed ? "sr-only" : undefined}>{t(labelText(item))}</span>
     </Link>
   );
   return (
-    <nav aria-label={t("Navigation")} className="moma-navigation">
-      {sections
-        .filter((section) => section.items.length > 0)
-        .map((section) => (
-          <section key={section.label} aria-label={t(section.label)}>
-            <div className="moma-nav-section">{t(section.label)}</div>
-            {section.items.flatMap((item) => item.children ?? [item]).map(link)}
-          </section>
-        ))}
+    <nav aria-label={t("Navigation")} className="moma-navigation" data-collapsed={collapsed}>
+      <div className="moma-nav-product" aria-label="MoMA Lite">
+        MoMA<span className={collapsed ? "sr-only" : "text-primary"}> Lite</span>
+      </div>
+      <div className="moma-nav-sections">
+        {sections
+          .filter((section) => section.items.length > 0)
+          .map((section) => (
+            <section key={section.label} aria-label={t(section.label)}>
+              <div className={collapsed ? "sr-only" : "moma-nav-section"}>{t(section.label)}</div>
+              {section.items.flatMap((item) => item.children ?? [item]).map(link)}
+            </section>
+          ))}
+      </div>
+      {collapsible && (
+        <div className="moma-nav-toggle">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
+            title={collapsed ? "Expand navigation" : "Collapse navigation"}
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+          </Button>
+        </div>
+      )}
     </nav>
   );
 }

@@ -29,8 +29,8 @@ export function ModelCatalog({
     <div className="moma-model-grid">
       {models.map((model) => (
         <article key={model.model_group} className="moma-model-card">
-          <div className="flex items-start gap-2">
-            <ProviderLogo provider={model.providers[0] ?? ""} className="size-7 shrink-0" />
+          <div className="flex items-center gap-3">
+            <ProviderLogo provider={model.providers[0] ?? ""} className="size-10 shrink-0" />
             <h3 className="min-w-0 flex-1">
               <button className="text-left hover:text-primary" onClick={() => onModelClick(model.model_group)}>
                 {model.model_group}

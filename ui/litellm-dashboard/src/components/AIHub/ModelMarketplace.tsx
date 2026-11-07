@@ -1,16 +1,20 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import Image from "next/image";
 import { parseAsString, useQueryStates } from "nuqs";
-import { RefreshCw } from "lucide-react";
+import { ArrowUpRight, ChevronDown, ChevronUp, RefreshCw, Search } from "lucide-react";
+import coverOne from "../../../public/assets/moma-lite/model-cover-1.webp";
+import coverTwo from "../../../public/assets/moma-lite/model-cover-2.webp";
+import coverThree from "../../../public/assets/moma-lite/model-cover-3.webp";
 import { useModelHub, type ModelHubGroup } from "@/app/(dashboard)/hooks/models/useModels";
 import { ModelCatalog, modelCapabilities } from "@/components/ModelCatalog";
 import { ModelGatewayAddresses } from "@/components/ModelGatewayAddresses";
-import { PageHeader, PageHeaderTitle, PageHeaderDescription } from "@/components/shared/PageHeader";
+import { PageHeader, PageHeaderTitle, PageHeaderDescription, PageHeaderControls } from "@/components/shared/PageHeader";
 import CopyButton from "@/components/shared/CopyButton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { getGatewayBaseUrl } from "@/components/networking";
@@ -27,6 +31,7 @@ const catalogParams = {
   mode: parseAsString.withDefault(""),
   model: parseAsString.withDefault(""),
 };
+const spotlightCovers = [coverOne, coverTwo, coverThree];
 
 const pricePerMillion = (cost: number | null | undefined, missing: string): string =>
   cost == null ? missing : valueFormatterSpend(cost * 1_000_000);
@@ -51,6 +56,71 @@ function modelExample(model: ModelHubGroup): string {
   return generateCodeSnippet(params);
 }
 
+function MarketplaceIntro({
+  models,
+  loaded,
+  onModelClick,
+}: {
+  models: readonly ModelHubGroup[];
+  loaded: boolean;
+  onModelClick: (modelName: string) => void;
+}) {
+  const [showSpotlights, setShowSpotlights] = useState(true);
+  const spotlights = spotlightCovers.flatMap((cover, index) => {
+    const model = models[index];
+    return model ? [{ cover, model }] : [];
+  });
+  const hasSpotlights = loaded && spotlights.length > 0;
+  return (
+    <>
+      <PageHeader>
+        <PageHeaderTitle>Model marketplace</PageHeaderTitle>
+        <PageHeaderDescription>
+          Explore models available to your account and learn how to call them.
+        </PageHeaderDescription>
+        {hasSpotlights && (
+          <PageHeaderControls>
+            <Button
+              variant="ghost"
+              aria-expanded={showSpotlights}
+              aria-controls="model-spotlights"
+              onClick={() => setShowSpotlights(!showSpotlights)}
+            >
+              {showSpotlights ? <ChevronUp /> : <ChevronDown />}
+              <L>{showSpotlights ? "Hide featured models" : "Show featured models"}</L>
+            </Button>
+          </PageHeaderControls>
+        )}
+      </PageHeader>
+      {hasSpotlights && (
+        <div id="model-spotlights" className="moma-model-spotlights" hidden={!showSpotlights}>
+          {spotlights.map(({ model, cover }) => (
+            <button
+              key={model.model_group}
+              type="button"
+              className="moma-model-spotlight"
+              onClick={() => onModelClick(model.model_group)}
+            >
+              <Image src={cover} alt="" fill className="moma-spotlight-art" />
+              <span className="moma-spotlight-copy">
+                <span className="text-xs">{model.providers.join(", ")}</span>
+                <strong>{model.model_group}</strong>
+                <Badge className="border-0 bg-white/20 text-white">
+                  <L>{formatModelModeLabel(model.mode ?? undefined)}</L>
+                </Badge>
+                <span className="flex items-center gap-1.5 text-xs">
+                  <L>View details</L>
+                  <ArrowUpRight className="size-3.5" />
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function ModelMarketplace() {
   const t = useTranslation();
   const { locale } = useLocale();
@@ -66,6 +136,7 @@ export default function ModelMarketplace() {
     return matchesProvider && matchesMode;
   });
   const loaded = !isLoading && !isError;
+  const openModel = (model: string) => void setParams({ model });
   const selectedModel = models.find((model) => model.model_group === params.model);
   const example = selectedModel ? modelExample(selectedModel) : "";
   const details = selectedModel
@@ -86,21 +157,20 @@ export default function ModelMarketplace() {
 
   return (
     <div className="moma-model-page flex flex-col gap-4">
-      <PageHeader>
-        <PageHeaderTitle>Model marketplace</PageHeaderTitle>
-        <PageHeaderDescription>
-          Explore models available to your account and learn how to call them.
-        </PageHeaderDescription>
-      </PageHeader>
+      <MarketplaceIntro models={models} loaded={loaded} onModelClick={openModel} />
       <ModelGatewayAddresses />
       <div className="moma-catalog-toolbar">
-        <Input
-          className="min-w-40 flex-1"
-          aria-label={t("Search models")}
-          placeholder={t("Search models")}
-          value={params.search}
-          onChange={(event) => void setParams({ search: event.target.value || null })}
-        />
+        <InputGroup className="w-full sm:w-64 lg:w-[min(36%,360px)]">
+          <InputGroupAddon>
+            <Search />
+          </InputGroupAddon>
+          <InputGroupInput
+            aria-label={t("Search models")}
+            placeholder={t("Search models")}
+            value={params.search}
+            onChange={(event) => void setParams({ search: event.target.value || null })}
+          />
+        </InputGroup>
         <Select value={params.provider} onValueChange={(provider) => void setParams({ provider: provider || null })}>
           <SelectTrigger aria-label={t("Provider")} className="w-full sm:w-48">
             {params.provider || t("All providers")}
@@ -144,7 +214,7 @@ export default function ModelMarketplace() {
       )}
       {loaded &&
         (visibleModels.length > 0 ? (
-          <ModelCatalog models={visibleModels} onModelClick={(model) => void setParams({ model })} />
+          <ModelCatalog models={visibleModels} onModelClick={openModel} />
         ) : (
           <div className="py-10 text-center text-muted-foreground">
             <p>
@@ -167,10 +237,10 @@ export default function ModelMarketplace() {
           if (!open) void setParams({ model: null });
         }}
       >
-        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-3xl">
+        <DialogContent className="moma-catalog-detail max-h-[85dvh] overflow-y-auto sm:max-w-3xl">
           {selectedModel && (
             <>
-              <DialogHeader>
+              <DialogHeader className="pr-6 wrap-anywhere">
                 <DialogTitle>{selectedModel.model_group}</DialogTitle>
               </DialogHeader>
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -178,7 +248,7 @@ export default function ModelMarketplace() {
                 {selectedModel.providers.join(", ")}
               </div>
               {selectedModel.description && <p className="text-sm">{selectedModel.description}</p>}
-              <div className="flex min-w-0 items-center gap-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-2 rounded bg-muted px-4 py-2">
                 <span className="text-muted-foreground">
                   <L>API model ID</L>
                 </span>
@@ -192,13 +262,13 @@ export default function ModelMarketplace() {
                   </Badge>
                 ))}
               </div>
-              <dl className="grid gap-3 sm:grid-cols-2">
+              <dl className="grid gap-px overflow-hidden rounded-xl bg-border sm:grid-cols-2">
                 {details.map(({ label, value }) => (
-                  <div key={label}>
-                    <dt className="text-sm text-muted-foreground">
+                  <div key={label} className="bg-muted p-4">
+                    <dt className="text-xs text-muted-foreground">
                       <L>{label}</L>
                     </dt>
-                    <dd>{value}</dd>
+                    <dd className="mt-1 font-medium tabular-nums">{value}</dd>
                   </div>
                 ))}
               </dl>

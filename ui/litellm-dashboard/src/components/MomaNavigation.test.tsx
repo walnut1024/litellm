@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import { MomaNavigation } from "./MomaNavigation";
@@ -72,5 +72,18 @@ describe("MomaNavigation", () => {
     );
     expect(screen.queryByRole("link", { name: "模型广场" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "API 密钥" })).toBeVisible();
+  });
+
+  it("keeps named links and their selected state when desktop navigation is collapsed", () => {
+    render(
+      <LocaleProvider>
+        <MomaNavigation collapsible />
+      </LocaleProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "收起导航", expanded: true }));
+    expect(screen.getByRole("link", { name: "API 密钥", current: "page" })).toBeVisible();
+    expect(screen.queryByRole("link", { name: "模型管理" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "展开导航", expanded: false }));
+    expect(screen.getByRole("button", { name: "收起导航", expanded: true })).toBeVisible();
   });
 });

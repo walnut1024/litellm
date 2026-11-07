@@ -40,16 +40,17 @@ export default function UsageOverview({
   budget,
 }: UsageOverviewProps) {
   return (
-    <div className="grid gap-3">
-      <UsageStatStrip
-        results={results}
-        totals={totals}
-        loading={loading}
-        requestCountsPending={requestCountsPending}
-        budget={budget}
-      />
-
-      <UsageBreakdownChart results={results} loading={loading} />
+    <div className="grid gap-4">
+      <div className="moma-usage-overview">
+        <UsageStatStrip
+          results={results}
+          totals={totals}
+          loading={loading}
+          requestCountsPending={requestCountsPending}
+          budget={budget}
+        />
+        <UsageBreakdownChart results={results} loading={loading} />
+      </div>
 
       {topAgents}
       <div className="grid items-start gap-3 min-[1100px]:grid-cols-2">

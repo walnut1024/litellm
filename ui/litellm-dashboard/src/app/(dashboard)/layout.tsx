@@ -198,10 +198,10 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
             <div className="moma-workspace flex min-h-0 flex-1">
               {isDesktop && (
                 <aside className="moma-sidebar">
-                  <MomaNavigation />
+                  <MomaNavigation collapsible />
                 </aside>
               )}
-              <main className="min-h-0 min-w-0 flex-1 overflow-y-auto">
+              <main className="min-h-0 min-w-0 flex-1 overflow-y-auto" data-moma-page={routeSegment}>
                 <TelemetryEnvBanner />
                 <div className="moma-content">{children}</div>
               </main>

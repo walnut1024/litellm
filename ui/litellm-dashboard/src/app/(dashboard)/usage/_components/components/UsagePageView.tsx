@@ -502,7 +502,7 @@ const UsagePage: React.FC<UsagePageProps> = ({ teams, organizations, teamsLoadin
                 onValueChange={(tab: string) => void setUrlParams(usageTabPatch(tab))}
                 className="gap-3"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="moma-usage-tabs-bar">
                   <TabsList variant="line">
                     <TabsTrigger value="cost" className="flex-none px-3">
                       <L>Overview</L>

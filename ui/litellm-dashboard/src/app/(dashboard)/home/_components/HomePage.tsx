@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight, Boxes, KeyRound, Plus } from "lucide-react";
+import welcomeArt from "../../../../../public/assets/moma-lite/orbit.svg";
 import useAuthorized from "@/app/(dashboard)/hooks/useAuthorized";
 import { useAllProxyModels } from "@/app/(dashboard)/hooks/models/useModels";
 import { Button } from "@/components/ui/button";
 import { Page } from "@/components/shared/Page";
-import { PageHeader, PageHeaderControls, PageHeaderTitle } from "@/components/shared/PageHeader";
+import { PageHeader, PageHeaderControls, PageHeaderDescription, PageHeaderTitle } from "@/components/shared/PageHeader";
 import { LineChart } from "@/components/shared/charts/line_chart";
 import { LocalizedText as L, useTranslation } from "@/contexts/LocaleContext";
 import { uiHref } from "@/utils/uiHref";
@@ -41,7 +43,7 @@ export default function HomePage() {
         valueFormatter={formatCompact}
         showLegend={false}
         showDots
-        className="h-40"
+        className="h-[250px]"
       />
     );
   };
@@ -80,19 +82,23 @@ export default function HomePage() {
   };
   return (
     <Page className="moma-home">
-      <PageHeader className="flex flex-wrap items-center justify-between gap-4">
-        <PageHeaderTitle>
-          <L>Welcome to your workspace</L>
-        </PageHeaderTitle>
-        {!isViewOnly && (
-          <PageHeaderControls className="mt-0">
-            <Button render={<Link href={uiHref("api-keys?create=true")} />}>
-              <Plus />
-              <L>Create New Virtual Key</L>
-            </Button>
-          </PageHeaderControls>
-        )}
-      </PageHeader>
+      <div className="moma-home-welcome">
+        <Image src={welcomeArt} alt="" width={480} height={280} className="moma-home-welcome-art" />
+        <PageHeader>
+          <PageHeaderTitle>Welcome to your workspace</PageHeaderTitle>
+          <PageHeaderDescription>
+            Explore models available to your account and learn how to call them.
+          </PageHeaderDescription>
+          {!isViewOnly && (
+            <PageHeaderControls>
+              <Button render={<Link href={uiHref("api-keys?create=true")} />}>
+                <Plus />
+                <L>Create New Virtual Key</L>
+              </Button>
+            </PageHeaderControls>
+          )}
+        </PageHeader>
+      </div>
       <section aria-label={t("Usage, last {days} days", { days: HOME_USAGE_DAYS })}>
         {usage.failed ? (
           <div role="alert" className="moma-panel flex items-center justify-between gap-2">
@@ -113,9 +119,9 @@ export default function HomePage() {
           />
         )}
       </section>
-      <div className="grid gap-3 min-[1100px]:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
+      <div className="grid gap-6 min-[1100px]:grid-cols-[minmax(0,2fr)_minmax(16rem,1fr)]">
         <section className="moma-panel" aria-labelledby="home-usage-trend">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
             <h2 id="home-usage-trend" className="moma-panel-title">
               <L>Token usage trend</L>
             </h2>
@@ -123,11 +129,11 @@ export default function HomePage() {
           </div>
           {renderTrend()}
         </section>
-        <section className="moma-panel flex flex-col gap-2" aria-labelledby="home-start">
+        <section className="moma-panel moma-home-start flex flex-col gap-3" aria-labelledby="home-start">
           <h2 id="home-start" className="moma-panel-title">
             <L>Start using models</L>
           </h2>
-          <div className="flex gap-2">
+          <div className="moma-home-step">
             <Boxes className="size-5 shrink-0 text-primary" />
             <div>
               <h3 className="font-medium">
@@ -138,7 +144,7 @@ export default function HomePage() {
               </p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="moma-home-step">
             <KeyRound className="size-5 shrink-0 text-primary" />
             <div>
               <h3 className="font-medium">
@@ -149,7 +155,7 @@ export default function HomePage() {
               </p>
             </div>
           </div>
-          <Button className="mt-auto" render={<Link href={uiHref("model-hub-table")} />}>
+          <Button className="mt-auto self-start" render={<Link href={uiHref("model-hub-table")} />}>
             <L>Browse models</L>
             <ArrowUpRight />
           </Button>

@@ -83,11 +83,12 @@ async def test_openai_messages_forwards_stop_sequences_to_chat_completions(
 
 
 @pytest.mark.parametrize("stop_sequences", [None, []], ids=["no-stops", "empty-stops"])
-def test_anthropic_messages_handler(stop_sequences):
+def test_anthropic_messages_handler(stop_sequences, monkeypatch: pytest.MonkeyPatch):
     """
     Test that api key is passed to litellm.responses for OpenAI models.
     OpenAI and Azure models are routed directly to the Responses API.
     """
+    monkeypatch.setattr(litellm, "use_chat_completions_url_for_anthropic_messages", False)
     from litellm.llms.anthropic.messages.native.handler import (
         anthropic_messages_handler,
     )
@@ -108,12 +109,13 @@ def test_anthropic_messages_handler(stop_sequences):
 
 
 @pytest.mark.asyncio
-async def test_openai_model_does_not_forward_stream_options_to_responses_api():
+async def test_openai_model_does_not_forward_stream_options_to_responses_api(monkeypatch: pytest.MonkeyPatch):
     """
     Regression test for LIT-4779. `always_include_stream_usage` injects
     stream_options={'include_usage': True} into every streaming request, but OpenAI
     models on /v1/messages go to the Responses API, which 400s on that param.
     """
+    monkeypatch.setattr(litellm, "use_chat_completions_url_for_anthropic_messages", False)
     responses_payload = {
         "id": "resp_stream_options",
         "object": "response",
@@ -366,7 +368,7 @@ async def test_bedrock_converse_budget_tokens_preserved():
         )
 
 
-def test_openai_model_with_thinking_converts_to_reasoning():
+def test_openai_model_with_thinking_converts_to_reasoning(monkeypatch: pytest.MonkeyPatch):
     """
     Test that when using an OpenAI model with thinking parameter, the thinking is
     converted to a Responses API `reasoning` param (NOT passed as thinking).
@@ -374,6 +376,7 @@ def test_openai_model_with_thinking_converts_to_reasoning():
     OpenAI models are routed directly to the Responses API, so we verify that
     litellm.responses() is called with `reasoning` properly set.
     """
+    monkeypatch.setattr(litellm, "use_chat_completions_url_for_anthropic_messages", False)
     from litellm.llms.anthropic.messages.native.handler import (
         anthropic_messages_handler,
     )
@@ -632,8 +635,9 @@ class TestThinkingSummaryPreservation:
         finally:
             litellm.reasoning_auto_summary = original
 
-    def test_openai_model_with_thinking_summary_end_to_end(self):
+    def test_openai_model_with_thinking_summary_end_to_end(self, monkeypatch: pytest.MonkeyPatch):
         """End-to-end: anthropic_messages_handler should preserve thinking.summary for OpenAI models."""
+        monkeypatch.setattr(litellm, "use_chat_completions_url_for_anthropic_messages", False)
         from litellm.llms.anthropic.messages.native.handler import (
             anthropic_messages_handler,
         )
@@ -1094,7 +1098,7 @@ def test_first_party_claude_4_8_plus_cost_map_entries_carry_mid_conversation_sys
         ("perplexity/sonar", "sonar", "https://api.perplexity.ai/chat/completions"),
     ],
 )
-async def test_messages_strips_provider_prefix_exactly_once(requested_model, expected_wire_model, expected_url):
+async def test_messages_strips_provider_prefix_exactly_once(requested_model, expected_wire_model, expected_url, monkeypatch: pytest.MonkeyPatch):
     """
     BerriAI/litellm#37716: only the leading provider segment may be stripped on the way upstream.
 
@@ -1109,6 +1113,7 @@ async def test_messages_strips_provider_prefix_exactly_once(requested_model, exp
     stubbed with a response body: these ids take different bridges (chat completions
     versus the Responses API) and would otherwise need different response shapes.
     """
+    monkeypatch.setattr(litellm, "use_chat_completions_url_for_anthropic_messages", False)
     captured = {}
 
     async def fake_send(self, request, **kwargs):
@@ -1144,6 +1149,7 @@ async def test_messages_honors_a_chat_pin_on_a_prefixed_responses_deployment(
 ) -> None:
     """A deployment id whose stripped form is a chat row is kept on the Responses API, unless the
     deployment pins ``mode: chat``, which has to decide the route before the prefix is stripped."""
+    monkeypatch.setattr(litellm, "use_chat_completions_url_for_anthropic_messages", False)
     monkeypatch.setattr(litellm, "model_cost", copy.deepcopy(litellm.model_cost))
     litellm.model_cost["perplexity/perplexity/pin-test-model"] = {
         "litellm_provider": "perplexity",
@@ -2396,3 +2402,39 @@ def test_native_messages_tool_config_point_marks_last_tool_and_drops_the_key(mon
     assert "cache_control" not in captured["params"]["tools"][0]
     assert captured["messages"][0]["content"][-1]["cache_control"] == {"type": "ephemeral"}
     assert tools == tools_before
+
+
+def _flag_value_in_subprocess(env: dict[str, str]) -> str:
+    import subprocess
+    import sys
+
+    merged_env: Final = {**os.environ, **env}
+    merged_env.pop("LITELLM_USE_CHAT_COMPLETIONS_URL_FOR_ANTHROPIC_MESSAGES", None)
+    merged_env.update({k: v for k, v in env.items()})
+    return subprocess.run(
+        [sys.executable, "-c", "import litellm; print(litellm.use_chat_completions_url_for_anthropic_messages)"],
+        capture_output=True,
+        text=True,
+        env=merged_env,
+        check=True,
+    ).stdout.strip()
+
+
+def test_chat_bridge_defaults_on_for_openai_compatible_gateways():
+    """OpenAI-compatible gateways (MoMA) rarely serve /v1/responses, so the
+    chat-completions bridge must be on unless explicitly disabled."""
+    assert _flag_value_in_subprocess({}) == "True"
+    assert (
+        _flag_value_in_subprocess({"LITELLM_USE_CHAT_COMPLETIONS_URL_FOR_ANTHROPIC_MESSAGES": "false"})
+        == "False"
+    )
+
+
+def test_should_route_to_responses_api_respects_chat_bridge_flag(monkeypatch: pytest.MonkeyPatch):
+    from litellm.llms.anthropic.messages.native.handler import _should_route_to_responses_api
+
+    monkeypatch.setattr(litellm, "use_chat_completions_url_for_anthropic_messages", True)
+    assert _should_route_to_responses_api(custom_llm_provider="openai") is False
+
+    monkeypatch.setattr(litellm, "use_chat_completions_url_for_anthropic_messages", False)
+    assert _should_route_to_responses_api(custom_llm_provider="openai") is True
